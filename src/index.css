@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --color-bg-warm: #f5f5f0;
+  --color-accent-olive: #5A5A40;
+  --color-accent-olive-hover: #4A4A30;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #5A5A40;
+}
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--color-bg-warm);
+  color: var(--color-text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
+
+p, span, div, a, button, input, textarea {
+  font-family: var(--font-sans);
+}
+
+/* Custom Utility Classes */
+.olive-button {
+  background-color: var(--color-accent-olive);
+  color: white;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease;
+}
+
+.olive-button:hover {
+  background-color: var(--color-accent-olive-hover);
+}
+
+.card {
+  background-color: #FFFFFF;
+  border-radius: 32px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+}

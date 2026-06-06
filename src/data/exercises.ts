@@ -1,0 +1,77 @@
+export interface Exercise {
+  id: string;
+  translationKeyTitle: string;
+  translationKeyDesc: string;
+  translationKeyCategory: string;
+  duration: string;
+  image: string;
+  instructionKeys: string[];
+}
+
+export const exercises: Exercise[] = [
+  {
+    id: '478-breathing',
+    translationKeyTitle: 'exercises.card.478.title',
+    translationKeyDesc: 'exercises.card.478.desc',
+    translationKeyCategory: 'category.breathwork',
+    duration: '5 min',
+    image: 'https://picsum.photos/seed/breath/800/600',
+    instructionKeys: [
+      'instruction.478.1',
+      'instruction.478.2',
+      'instruction.478.3',
+      'instruction.478.4',
+      'instruction.478.5',
+      'instruction.478.6',
+      'instruction.478.7'
+    ]
+  },
+  {
+    id: 'box-breathing',
+    translationKeyTitle: 'exercises.card.box.title',
+    translationKeyDesc: 'exercises.card.box.desc',
+    translationKeyCategory: 'category.breathwork',
+    duration: '3 min',
+    image: 'https://picsum.photos/seed/box/800/600',
+    instructionKeys: [
+      'instruction.box.1',
+      'instruction.box.2',
+      'instruction.box.3',
+      'instruction.box.4',
+      'instruction.box.5',
+      'instruction.box.6'
+    ]
+  },
+  {
+    id: 'pmr',
+    translationKeyTitle: 'exercises.card.pmr.title',
+    translationKeyDesc: 'exercises.card.pmr.desc',
+    translationKeyCategory: 'category.somatic',
+    duration: '10 min',
+    image: 'https://picsum.photos/seed/relax/800/600',
+    instructionKeys: [
+      'instruction.pmr.1',
+      'instruction.pmr.2',
+      'instruction.pmr.3',
+      'instruction.pmr.4',
+      'instruction.pmr.5',
+      'instruction.pmr.6'
+    ]
+  },
+  {
+    id: 'neck-stretches',
+    translationKeyTitle: 'exercises.card.neck.title',
+    translationKeyDesc: 'exercises.card.neck.desc',
+    translationKeyCategory: 'category.movement',
+    duration: '2 min',
+    image: 'https://picsum.photos/seed/neck/800/600',
+    instructionKeys: [
+      'instruction.neck.1',
+      'instruction.neck.2',
+      'instruction.neck.3',
+      'instruction.neck.4',
+      'instruction.neck.5',
+      'instruction.neck.6'
+    ]
+  }
+];
