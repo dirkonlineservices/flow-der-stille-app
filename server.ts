@@ -242,6 +242,11 @@ app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
   }
 });
 
+// Daily Rest / Parasympathetic Impulse Route
+app.get('/api/daily', (req, res) => {
+  res.json({ message: "Willkommen beim Flow der Stille. Dein Parasympathikus-Impuls folgt!" });
+});
+
 async function startServer() {
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
