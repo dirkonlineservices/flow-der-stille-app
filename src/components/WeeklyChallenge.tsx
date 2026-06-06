@@ -4,51 +4,21 @@ import { CheckCircle, Circle, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
-interface Task {
-  id: number;
-  week_number: number;
-  description: string;
-}
-
 export default function WeeklyChallenge() {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [task, setTask] = useState<Task | null>(null);
+  
+  // Da der Agent später die Aufgaben liefert, nutzen wir hier einen Platzhalter
+  // anstelle eines kaputten /api/ Aufrufs.
   const [completed, setCompleted] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/tasks/current')
-      .then(res => res.json())
-      .then(data => {
-        setTask(data);
-        if (user) {
-          fetch(`/api/tasks/status/${data.id}`)
-            .then(res => res.json())
-            .then(status => setCompleted(status.completed));
-        }
-        setLoading(false);
-      });
-  }, [user]);
 
   const handleComplete = () => {
-    if (!user || !task) return;
-
-    fetch('/api/tasks/complete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ taskId: task.id })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        setCompleted(true);
-      }
-    });
+    if (!user) return;
+    
+    // Später senden wir hier an Supabase, dass der User die Agenten-Aufgabe 
+    // erledigt hat. Für jetzt setzen wir es lokal einfach auf "Erledigt".
+    setCompleted(true);
   };
-
-  if (loading) return <div className="animate-pulse h-24 bg-stone-100 rounded-2xl"></div>;
-  if (!task) return null;
 
   return (
     <motion.div 
@@ -63,11 +33,12 @@ export default function WeeklyChallenge() {
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-2 opacity-80">
           <Trophy size={18} />
-          <span className="text-xs font-medium uppercase tracking-wider">{t('challenge.title')}</span>
+          <span className="text-xs font-medium uppercase tracking-wider">{t('challenge.title') || 'WÖCHENTLICHE CHALLENGE'}</span>
         </div>
         
+        {/* Platzhalter-Text, bis der Agent übernimmt */}
         <h3 className="text-xl font-serif mb-4 leading-snug">
-          {t(task.description)}
+          "Nimm dir heute 5 Minuten Zeit, um dein Handy bewusst außer Reichweite zu legen und die Stille zu genießen."
         </h3>
 
         {user ? (
@@ -81,11 +52,11 @@ export default function WeeklyChallenge() {
             }`}
           >
             {completed ? <CheckCircle size={16} /> : <Circle size={16} />}
-            {completed ? t('challenge.completed') : t('challenge.complete')}
+            {completed ? 'Geschafft!' : 'Aufgabe abschließen'}
           </button>
         ) : (
           <p className="text-xs opacity-70 italic">
-            {t('challenge.login')}
+            Logge dich ein, um an der Challenge teilzunehmen.
           </p>
         )}
       </div>
