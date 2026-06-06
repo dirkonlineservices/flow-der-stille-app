@@ -10,20 +10,18 @@ interface Recipe {
   icon_type: string;
 }
 
+// Statische Rezepte direkt im Frontend definieren, damit wir keine API brauchen
+const DEFAULT_RECIPES: Recipe[] = [
+  { id: 1, translation_key_base: 'recipes.card.golden', category_key: 'category.drinks', icon_type: 'Coffee' },
+  { id: 2, translation_key_base: 'recipes.card.salad', category_key: 'category.meals', icon_type: 'Leaf' },
+  { id: 3, translation_key_base: 'recipes.card.omega', category_key: 'category.meals', icon_type: 'Utensils' },
+  { id: 4, translation_key_base: 'recipes.card.tea', category_key: 'category.drinks', icon_type: 'Coffee' }
+];
+
 export default function Recipes() {
   const { t } = useLanguage();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/recipes/current')
-      .then(res => res.json())
-      .then(data => {
-        setRecipes(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const [recipes, setRecipes] = useState<Recipe[]>(DEFAULT_RECIPES); // Direkt mit Standardwerten starten
+  const [loading, setLoading] = useState(false); // Kein Ladebildschirm mehr nötig
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -35,9 +33,6 @@ export default function Recipes() {
   };
 
   const getIngredients = (baseKey: string) => {
-      // Helper to get ingredients based on key convention
-      // This is a bit hacky but works for the prototype structure
-      // Ideally API returns ingredient keys
       const keyMap: Record<string, string[]> = {
           'recipes.card.golden': ['ingredient.turmeric', 'ingredient.ginger', 'ingredient.pepper', 'ingredient.almondmilk', 'ingredient.honey'],
           'recipes.card.salad': ['ingredient.spinach', 'ingredient.pumpkinseeds', 'ingredient.avocado', 'ingredient.quinoa'],
@@ -103,4 +98,3 @@ function RecipeCard({ title, category, ingredients, description, icon }: { title
     </motion.div>
   );
 }
-
