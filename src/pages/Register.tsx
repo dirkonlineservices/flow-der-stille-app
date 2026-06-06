@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert } from 'lucide-react';
+import { supabase } from '../supabase'; // <-- NEU: Unsere Datenbank-Brücke
 
 export default function Register() {
   const { login } = useAuth();
@@ -25,27 +26,32 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password,
-          newsletter: newsletter,
-          dsgvo: dsgvo
-        })
+      // <-- NEU: Der direkte Aufruf an deine Supabase-Datenbank
+      const { data, error: supabaseError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            newsletter_optin: newsletter,
+          }
+        }
       });
-      const data = await res.json();
-      if (res.ok) {
+
+      if (supabaseError) {
+        // Gibt die direkte Fehlermeldung von Supabase aus (z.B. Passwort zu kurz)
+        setError(supabaseError.message);
+        return;
+      }
+
+      if (data?.user) {
+        // Erfolgreich registriert! Nutzer wird eingeloggt und weitergeleitet.
         login(data.user);
         navigate('/');
-      } else {
-        setError(data.error || 'Registrierung fehlgeschlagen.');
       }
     } catch (err) {
-      setError('Verbindung zum Server fehlgeschlagen.');
+      setError('Ein unerwarteter Fehler ist aufgetreten.');
     } finally {
       setLoading(false);
     }
