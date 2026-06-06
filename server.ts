@@ -233,23 +233,57 @@ app.get('/api/recipes/current', (req, res) => {
 });
 
 // Chat Route
-app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
-  const { message } = req.body;
+app.post('/api/chat', async (req: any, res: any) => {
+  const { message, history = [] } = req.body;
   if (!message) return res.status(400).json({ error: 'Message required' });
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const ai = new GoogleGenAI({ 
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
+
+    const SYSTEM_INSTRUCTION = `Du bist "Aura", der einfühlsame und wissenschaftlich fundierte KI-Mentor für Achtsamkeit, Stressabbau und die Darm-Hirn-Achse in der App "Flow der Stille".
+
+Deine fachlichen Schwerpunkte umfassen:
+1. Progressive Muskelentspannung (PMR): Erkläre fundiert, wie man Muskelgruppen gezielt an- und entspannt, um das vegetative Nervensystem herunterzufahren. Biete kurze, geführte Anleitungen oder nützliche Ratschläge an.
+2. Vagusnerv-Stimulation & Parasympathikus: Erläutere, wie man den Ruhe- und Verdauungsnerv aktiviert (z.B. durch tiefe Atemübungen wie 4-7-8, bewusstes Summen, kaltes Wasser).
+3. Darm-Hirn-Achse: Erkläre verständlich, wie Stress direkt die Verdauung beeinflusst und durch welche Achtsamkeits-Tipps und beruhigenden Impulse der Magen-Darm-Trakt entlastet werden kann.
+4. Alltagstipps für Achtsamkeit: Gib sofort anwendbare, kurze und bodenständige Tipps (z. B. analoge Mahlzeiten ohne Smartphone, Achtsamkeits-Übungen, Waldbaden).
+
+Verhalten und Tonalität:
+- Sei beruhigend, verständnisvoll, erdend, absolut warmherzig und motivierend.
+- Sprich den Nutzer respektvoll mit Du an.
+- Antworte auf Deutsch und halte deine Antworten strukturiert, einladend und leicht verständlich. Vermeide unnötiges Fachchinesisch.
+- Bleibe in deiner Rolle. Beantworte keine Programmierfragen oder unpassenden Themen. Verweise unaufdringlich zurück auf Achtsamkeit.`;
+
+    // Map history to the contents structure expected by @google/genai
+    const contents = [
+      ...history.map((h: any) => ({
+        role: h.role === 'bot' || h.role === 'model' ? 'model' : 'user',
+        parts: [{ text: h.text }]
+      })),
+      {
+        role: 'user',
+        parts: [{ text: message }]
+      }
+    ];
+
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: message,
+      model: "gemini-3.5-flash",
+      contents: contents,
       config: {
-        systemInstruction: "You are a helpful assistant for an app focused on the parasympathetic nervous system. You answer user questions strictly based on scientific facts. Do not provide hypothetical answers or medical advice. If you don't know a fact, state that. Keep answers concise and helpful."
+        systemInstruction: SYSTEM_INSTRUCTION
       }
     });
 
     res.json({ reply: response.text });
   } catch (err) {
-    console.error(err);
+    console.error("Gemini Error:", err);
     res.status(500).json({ error: 'Failed to generate response' });
   }
 });

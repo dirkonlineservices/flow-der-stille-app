@@ -11,6 +11,7 @@ interface User {
   is_premium: boolean;
   newsletter_optin?: boolean;
   purchased_products?: string[];
+  completed_tasks?: string[];
 }
 
 interface AuthContextType {
@@ -59,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       is_premium: !!metadata.is_premium, 
       newsletter_optin: !!metadata.newsletter_optin,
       purchased_products: metadata.purchased_products || [],
+      completed_tasks: metadata.completed_tasks || [],
     });
   };
 

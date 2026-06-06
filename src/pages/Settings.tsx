@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { 
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
-  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon 
+  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -451,6 +451,102 @@ export default function Settings() {
                   );
                 })}
               </div>
+            </section>
+
+            {/* 4. Meine gemeisterten Aufgaben */}
+            <section className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 md:p-8">
+              <div className="flex items-center gap-2 mb-2">
+                <Award className="text-[var(--color-accent-olive)] w-6 h-6" />
+                <h2 className="text-2xl font-serif text-stone-800">Mein Achtsamkeits-Fortschritt</h2>
+              </div>
+              <p className="text-stone-400 text-xs mb-6">
+                Ein Journal deiner erfolgreich absolvierten täglichen Impulse und wöchentlichen Aufgaben, sicher verwahrt in deinem Profil.
+              </p>
+
+              {user.completed_tasks && user.completed_tasks.length > 0 ? (
+                <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+                  {user.completed_tasks.map((key) => {
+                    // Helper to translate task keys
+                    let type = 'Impuls';
+                    let title = key;
+                    let desc = 'Erfolgreich abgeschlossen';
+                    let isWeekly = key.startsWith('weekly_challenge_week_');
+
+                    if (key.startsWith('exercise_')) {
+                      type = 'Achtsamkeitsübung';
+                      const parts = key.split('_');
+                      const dateStr = parts[parts.length - 1];
+                      const exerciseId = parts.slice(1, parts.length - 1).join('_');
+
+                      if (exerciseId === 'pmr') title = 'Progressive Muskelentspannung';
+                      else if (exerciseId === '478-breathing') title = '4-7-8 Atmungs-Session';
+                      else if (exerciseId === 'box-breathing') title = 'Box-Atmungs-Session';
+                      else if (exerciseId === 'neck-stretches') title = 'Sanfte Nackendehnungen';
+                      else title = exerciseId;
+
+                      let formattedDate = dateStr;
+                      const dateParts = dateStr.split('-');
+                      if (dateParts.length === 3) {
+                        formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+                      }
+                      desc = `Gemeistert am ${formattedDate}`;
+                    } else if (isWeekly) {
+                      const weekNum = key.replace('weekly_challenge_week_', '');
+                      type = 'Wochenaufgabe';
+                      title = `Woche ${weekNum}`;
+                      desc = 'Als gemeistert markiert';
+                    } else if (key.includes('_202')) {
+                      // daily_lemon_water_2026-06-06
+                      type = 'Täglicher Impuls';
+                      const parts = key.split('_');
+                      const dateStr = parts[parts.length - 1];
+                      const taskId = parts.slice(0, parts.length - 1).join('_');
+                      
+                      if (taskId === 'daily_lemon_water') title = 'Zitronenwasser am Morgen';
+                      else if (taskId === 'daily_box_breathing') title = 'Fokussierte Box-Atmung';
+                      else if (taskId === 'daily_no_screen_meal') title = 'Analoges Essen ohne Bildschirm';
+                      else if (taskId === 'daily_neck_stretches') title = 'Lockernde Nackendehnungen';
+                      else if (taskId === 'daily_evening_offline') title = 'Bildschirmfreie Abendruhe';
+                      else if (taskId === 'daily_humming_vagus') title = 'Vagusnerv-Summen';
+                      else if (taskId === 'daily_herbal_tea') title = 'Achtsame Kräuterteepause';
+                      else if (taskId === 'daily_wisdom') title = 'Tägliche Weisheit reflektiert';
+                      
+                      let formattedDate = dateStr;
+                      const dateParts = dateStr.split('-');
+                      if (dateParts.length === 3) {
+                        formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+                      }
+                      desc = `Abgeschlossen am ${formattedDate}`;
+                    }
+
+                    return (
+                      <div 
+                        key={key} 
+                        className="flex items-center justify-between p-4 bg-stone-50 border border-stone-100 rounded-2xl"
+                      >
+                        <div className="flex items-center justify-between gap-3 w-full">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-xl shrink-0 ${isWeekly ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                              <CheckCircle2 size={16} />
+                            </div>
+                            <div>
+                              <span className="text-[10px] uppercase font-bold text-stone-400 block tracking-wider">{type}</span>
+                              <h4 className="text-sm font-medium text-stone-800">{title}</h4>
+                            </div>
+                          </div>
+                          <span className="text-xs text-stone-500 italic shrink-0 text-right">{desc}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="p-8 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+                  <Sparkles className="mx-auto text-stone-300 w-8 h-8 mb-2" />
+                  <p className="text-stone-500 text-sm">Noch keine Aufgaben abgeschlossen.</p>
+                  <p className="text-stone-400 text-xs mt-1">Absolviere deinen ersten Tagesimpuls oder deine Wochenaufgabe auf der Startseite!</p>
+                </div>
+              )}
             </section>
 
           </div>

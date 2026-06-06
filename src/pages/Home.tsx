@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import SEO from '../components/SEO';
+import { supabase } from '../supabase';
 
 export default function Home() {
-  const { t } = useLanguage();
-  const { user } = useAuth();
+  const { t, language } = useLanguage();
+  const { user, login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [localCompleted, setLocalCompleted] = useState(false);
+
   const timeOfDay = new Date().getHours();
   let greetingKey = 'home.greeting.morning';
   if (timeOfDay >= 12 && timeOfDay < 18) greetingKey = 'home.greeting.afternoon';
@@ -17,6 +21,47 @@ export default function Home() {
   const getUserName = () => {
     if (!user) return 'Traveler';
     return user.first_name || user.username || 'Traveler';
+  };
+
+  // Date formatted key for daily wisdom: daily_wisdom_YYYY-MM-DD
+  const dateStr = new Date().toISOString().split('T')[0];
+  const completedKey = `daily_wisdom_${dateStr}`;
+
+  // Check if user has already marked this wisdom as completed
+  const isCompleted = localCompleted || !!user?.completed_tasks?.includes(completedKey);
+
+  const handleCompleteWisdom = async () => {
+    if (!user) return;
+    setLoading(true);
+
+    try {
+      const currentCompleted = user.completed_tasks || [];
+      if (!currentCompleted.includes(completedKey)) {
+        const nextCompleted = [...currentCompleted, completedKey];
+
+        // Save progress securely to Supabase user_metadata
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            completed_tasks: nextCompleted
+          }
+        });
+
+        if (!error && data?.user) {
+          setLocalCompleted(true);
+          // Sync AuthContext immediately
+          login({
+            ...user,
+            completed_tasks: nextCompleted
+          });
+        } else if (error) {
+          console.error('Error updating user metadata in database:', error.message);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save wisdom progress:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,7 +84,9 @@ export default function Home() {
           </p>
         </header>
 
-        <WeeklyChallenge />
+        <div className="max-w-3xl">
+          <WeeklyChallenge />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <QuickActionCard 
@@ -68,11 +115,40 @@ export default function Home() {
           />
         </div>
 
-        <section className="mt-12 p-8 bg-white rounded-3xl shadow-sm border border-stone-100">
-          <h2 className="text-2xl font-serif text-[var(--color-accent-olive)] mb-4">{t('home.wisdom.title')}</h2>
-          <p className="text-stone-600 italic text-lg leading-relaxed">
-            {t('home.wisdom.text')}
-          </p>
+        <section className="mt-12 p-8 bg-white rounded-3xl shadow-sm border border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen size={18} className="text-[var(--color-accent-olive)]" />
+              <h2 className="text-2xl font-serif text-[var(--color-accent-olive)]">{t('home.wisdom.title')}</h2>
+            </div>
+            <p className="text-stone-600 italic text-lg leading-relaxed max-w-2xl">
+              {t('home.wisdom.text')}
+            </p>
+          </div>
+
+          <div className="shrink-0 flex items-center">
+            {user ? (
+              <button 
+                id="btn-complete-daily-wisdom"
+                onClick={handleCompleteWisdom}
+                disabled={isCompleted || loading}
+                className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all ${
+                  isCompleted 
+                    ? 'bg-emerald-55 border border-emerald-100 text-emerald-800 bg-emerald-50 cursor-default shadow-sm' 
+                    : 'bg-[var(--color-bg-warm)] hover:bg-stone-150 text-stone-700 border border-stone-200 shadow-sm active:scale-95'
+                }`}
+              >
+                {isCompleted ? <CheckCircle size={16} className="text-emerald-600" /> : <Circle size={16} className="text-stone-400" />}
+                {isCompleted 
+                  ? (language === 'de' ? 'Inmitten der Stille reflektiert' : 'Wisdom Reflected') 
+                  : (loading ? '...' : (language === 'de' ? 'Als reflektiert markieren' : 'Mark as Reflected'))}
+              </button>
+            ) : (
+              <p className="text-xs text-stone-400 italic">
+                {language === 'de' ? 'Melde dich an, um die heutige Weisheit zu reflektieren.' : 'Log in to reflect on today\'s wisdom.'}
+              </p>
+            )}
+          </div>
         </section>
       </div>
     </>
