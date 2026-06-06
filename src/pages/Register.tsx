@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
-import { Mail, Lock, User, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../supabase';
 
 export default function Register() {
@@ -19,6 +19,7 @@ export default function Register() {
   const [dsgvo, setDsgvo] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   // NEU: Wir merken uns, ob die Registrierung erfolgreich war, 
   // aber die E-Mail noch bestätigt werden muss.
@@ -175,13 +176,22 @@ export default function Register() {
                 <Lock size={16} />
               </span>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3.5 bg-stone-50 rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none transition-all text-sm"
+                className="w-full pl-11 pr-12 py-3.5 bg-stone-50 rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none transition-all text-sm"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-4 text-stone-400 hover:text-stone-600 focus:outline-none focus:ring-0"
+                tabIndex={-1}
+                aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
