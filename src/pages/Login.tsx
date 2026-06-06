@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../supabase';
 
 export default function Login() {
-  const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -16,6 +14,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
+      // Direkter Abgleich mit der Supabase-Datenbank
       const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
         email: username,
         password: password,
@@ -27,7 +26,6 @@ export default function Login() {
       }
 
       if (data?.user) {
-        // Handled reactively by AuthContext onAuthStateChange, but we trigger local login state anyway
         navigate('/');
       }
     } catch (err) {
@@ -42,9 +40,9 @@ export default function Login() {
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-600 mb-1">E-Mail-Adresse oder Benutzername</label>
+            <label className="block text-sm font-medium text-stone-600 mb-1">E-Mail-Adresse</label>
             <input
-              type="text"
+              type="email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="beispiel@domain.de"
@@ -70,7 +68,7 @@ export default function Login() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-stone-500">
-          Don't have an account? <Link to="/register" className="text-[var(--color-accent-olive)] hover:underline">{t('auth.register')}</Link>
+          Noch keinen Account? <Link to="/register" className="text-[var(--color-accent-olive)] hover:underline">Hier registrieren</Link>
         </p>
       </div>
     </div>
