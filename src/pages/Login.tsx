@@ -38,11 +38,12 @@ export default function Login() {
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-600 mb-1">{t('auth.username')}</label>
+            <label className="block text-sm font-medium text-stone-600 mb-1">E-Mail-Adresse oder Benutzername</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="beispiel@domain.de"
               className="w-full p-3 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none"
               required
             />

@@ -14,6 +14,7 @@ import Settings from './pages/Settings';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Contact from './pages/Contact';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="chat" element={<Chat />} />
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
+              <Route path="contact" element={<Contact />} />
             </Route>
           </Routes>
         </BrowserRouter>

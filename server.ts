@@ -43,6 +43,13 @@ db.exec(`
   );
 `);
 
+// Try altering the table to add GDPR and newsletter support
+try { db.exec("ALTER TABLE users ADD COLUMN first_name TEXT;"); } catch(e){}
+try { db.exec("ALTER TABLE users ADD COLUMN last_name TEXT;"); } catch(e){}
+try { db.exec("ALTER TABLE users ADD COLUMN email TEXT;"); } catch(e){}
+try { db.exec("ALTER TABLE users ADD COLUMN newsletter BOOLEAN DEFAULT 0;"); } catch(e){}
+try { db.exec("ALTER TABLE users ADD COLUMN dsgvo BOOLEAN DEFAULT 0;"); } catch(e){}
+
 // Seed initial weekly task if empty
 const taskCount = db.prepare('SELECT count(*) as count FROM weekly_tasks').get() as { count: number };
 if (taskCount.count === 0) {
@@ -93,36 +100,41 @@ const authenticateToken = (req: any, res: any, next: any) => {
 
 // Auth Routes
 app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+  const { first_name, last_name, email, password, newsletter, dsgvo } = req.body;
+  if (!email || !password || !first_name || !last_name) {
+    return res.status(400).json({ error: 'Vorname, Nachname, E-Mail und Passwort sind Pflichtfelder.' });
+  }
+  if (!dsgvo) {
+    return res.status(400).json({ error: 'Sie müssen die Datenschutzerklärung akzeptieren.' });
+  }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const stmt = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
-    const info = stmt.run(username, hashedPassword);
+    const stmt = db.prepare('INSERT INTO users (username, email, first_name, last_name, password, newsletter, dsgvo) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    const info = stmt.run(email, email, first_name, last_name, hashedPassword, newsletter ? 1 : 0, dsgvo ? 1 : 0);
     
-    const token = jwt.sign({ id: info.lastInsertRowid, username, is_premium: 0 }, JWT_SECRET);
+    const token = jwt.sign({ id: info.lastInsertRowid, username: email, is_premium: 0 }, JWT_SECRET);
     res.cookie('token', token, { httpOnly: true, sameSite: 'strict' });
-    res.json({ user: { id: info.lastInsertRowid, username, is_premium: false } });
+    res.json({ user: { id: info.lastInsertRowid, username: email, first_name, last_name, email, is_premium: false } });
   } catch (err: any) {
     if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      return res.status(400).json({ error: 'Username already exists' });
+      return res.status(400).json({ error: 'Diese E-Mail-Adresse wird bereits verwendet.' });
     }
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Serverfehler bei der Registrierung.' });
   }
 });
 
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as any;
+  const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username, username) as any;
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'Ungültige Anmeldedaten' });
   }
 
   const token = jwt.sign({ id: user.id, username: user.username, is_premium: user.is_premium }, JWT_SECRET);
   res.cookie('token', token, { httpOnly: true, sameSite: 'strict' });
-  res.json({ user: { id: user.id, username: user.username, is_premium: !!user.is_premium } });
+  res.json({ user: { id: user.id, username: user.username, first_name: user.first_name, last_name: user.last_name, email: user.email, is_premium: !!user.is_premium } });
 });
 
 app.post('/api/logout', (req, res) => {
@@ -131,8 +143,8 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/me', authenticateToken, (req: any, res) => {
-  // Fetch fresh user data to get latest premium status
-  const user = db.prepare('SELECT id, username, is_premium FROM users WHERE id = ?').get(req.user.id) as any;
+  // Fetch fresh user data to get latest premium status and details
+  const user = db.prepare('SELECT id, username, first_name, last_name, email, is_premium FROM users WHERE id = ?').get(req.user.id) as any;
   if (!user) return res.sendStatus(401);
   res.json({ user: { ...user, is_premium: !!user.is_premium } });
 });
