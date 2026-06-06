@@ -4,6 +4,7 @@ import { Wind, Sun, Moon, Coffee } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import WeeklyChallenge from '../components/WeeklyChallenge';
+import SEO from '../components/SEO';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -19,56 +20,62 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-8">
-      <header className="mb-12">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-6xl font-light text-[var(--color-accent-olive)] mb-2"
-        >
-          {t(greetingKey)}, {getUserName()}.
-        </motion.h1>
-        <p className="text-stone-500 text-lg font-light">
-          {t('home.subtitle')}
-        </p>
-      </header>
+    <>
+      <SEO 
+        title="Persönlicher Ruhebereich" 
+        description="Finden Sie innere Ruhe bei Flow der Stille. Ihr persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
+      />
+      <div className="space-y-8">
+        <header className="mb-12">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-light text-[var(--color-accent-olive)] mb-2"
+          >
+            {t(greetingKey)}, {getUserName()}.
+          </motion.h1>
+          <p className="text-stone-500 text-lg font-light">
+            {t('home.subtitle')}
+          </p>
+        </header>
 
-      <WeeklyChallenge />
+        <WeeklyChallenge />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <QuickActionCard 
-          title={t('home.card.morning.title')} 
-          description={t('home.card.morning.desc')}
-          icon={<Sun className="text-amber-500" />}
-          delay={0.1}
-        />
-        <QuickActionCard 
-          title={t('home.card.breathing.title')} 
-          description={t('home.card.breathing.desc')}
-          icon={<Wind className="text-blue-400" />}
-          delay={0.2}
-        />
-        <QuickActionCard 
-          title={t('home.card.meal.title')} 
-          description={t('home.card.meal.desc')}
-          icon={<Coffee className="text-emerald-600" />}
-          delay={0.3}
-        />
-        <QuickActionCard 
-          title={t('home.card.evening.title')} 
-          description={t('home.card.evening.desc')}
-          icon={<Moon className="text-indigo-400" />}
-          delay={0.4}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <QuickActionCard 
+            title={t('home.card.morning.title')} 
+            description={t('home.card.morning.desc')}
+            icon={<Sun className="text-amber-500" />}
+            delay={0.1}
+          />
+          <QuickActionCard 
+            title={t('home.card.breathing.title')} 
+            description={t('home.card.breathing.desc')}
+            icon={<Wind className="text-blue-400" />}
+            delay={0.2}
+          />
+          <QuickActionCard 
+            title={t('home.card.meal.title')} 
+            description={t('home.card.meal.desc')}
+            icon={<Coffee className="text-emerald-600" />}
+            delay={0.3}
+          />
+          <QuickActionCard 
+            title={t('home.card.evening.title')} 
+            description={t('home.card.evening.desc')}
+            icon={<Moon className="text-indigo-400" />}
+            delay={0.4}
+          />
+        </div>
+
+        <section className="mt-12 p-8 bg-white rounded-3xl shadow-sm border border-stone-100">
+          <h2 className="text-2xl font-serif text-[var(--color-accent-olive)] mb-4">{t('home.wisdom.title')}</h2>
+          <p className="text-stone-600 italic text-lg leading-relaxed">
+            {t('home.wisdom.text')}
+          </p>
+        </section>
       </div>
-
-      <section className="mt-12 p-8 bg-white rounded-3xl shadow-sm border border-stone-100">
-        <h2 className="text-2xl font-serif text-[var(--color-accent-olive)] mb-4">{t('home.wisdom.title')}</h2>
-        <p className="text-stone-600 italic text-lg leading-relaxed">
-          {t('home.wisdom.text')}
-        </p>
-      </section>
-    </div>
+    </>
   );
 }
 
@@ -90,4 +97,3 @@ function QuickActionCard({ title, description, icon, delay }: { title: string; d
     </motion.div>
   );
 }
-

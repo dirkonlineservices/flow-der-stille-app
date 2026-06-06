@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import MusicPlayer from './MusicPlayer';
 
 export default function Layout() {
   const location = useLocation();
@@ -106,8 +105,6 @@ export default function Layout() {
           </motion.div>
         </AnimatePresence>
       </main>
-
-      <MusicPlayer />
     </div>
   );
 }
