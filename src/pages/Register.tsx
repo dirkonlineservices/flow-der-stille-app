@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert } from 'lucide-react';
-import { supabase } from '../supabase'; // <-- NEU: Unsere Datenbank-Brücke
+import { supabase } from '../supabase';
 
 export default function Register() {
   const { login } = useAuth();
@@ -19,6 +19,10 @@ export default function Register() {
   const [dsgvo, setDsgvo] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // NEU: Wir merken uns, ob die Registrierung erfolgreich war, 
+  // aber die E-Mail noch bestätigt werden muss.
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +30,6 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // <-- NEU: Der direkte Aufruf an deine Supabase-Datenbank
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: email,
         password: password,
@@ -40,23 +43,14 @@ export default function Register() {
       });
 
       if (supabaseError) {
-        // Gibt die direkte Fehlermeldung von Supabase aus (z.B. Passwort zu kurz)
         setError(supabaseError.message);
         return;
       }
 
+      // Wenn die Anfrage durchging, schalten wir auf die Erfolgsmeldung um,
+      // leiten aber NICHT sofort auf die Startseite weiter!
       if (data?.user) {
-        // Erfolgreich registriert! Nutzer wird eingeloggt und weitergeleitet.
-        login({
-          id: data.user.id,
-          email: data.user.email || '',
-          first_name: firstName,
-          last_name: lastName,
-          is_premium: false,
-          newsletter_optin: newsletter,
-          purchased_products: []
-        });
-        navigate('/');
+        setIsSubmitted(true);
       }
     } catch (err) {
       setError('Ein unerwarteter Fehler ist aufgetreten.');
@@ -65,6 +59,37 @@ export default function Register() {
     }
   };
 
+  // Wenn die Daten gesendet wurden, zeigen wir nur noch diesen Hinweis:
+  if (isSubmitted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-lg bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-stone-100 text-center"
+        >
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-600">
+              <Mail size={32} />
+            </div>
+          </div>
+          <h2 className="text-3xl font-serif text-[var(--color-accent-olive)] mb-4">Fast geschafft!</h2>
+          <p className="text-stone-600 mb-6 leading-relaxed">
+            Wir haben eine Bestätigungsmail an <strong className="text-stone-800">{email}</strong> gesendet. 
+            Bitte klicken Sie auf den Link in dieser E-Mail, um Ihren Account zu aktivieren und sich einzuloggen.
+          </p>
+          <div className="pt-6 border-t border-stone-100">
+            <p className="text-sm text-stone-500 mb-4">E-Mail nicht gefunden? Prüfen Sie auch Ihren Spam-Ordner.</p>
+            <Link to="/login" className="inline-block py-3 px-6 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-medium transition-colors">
+              Zurück zum Login
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Hier kommt das ganz normale Formular (wird nur angezeigt, solange isSubmitted = false ist)
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4">
       <motion.div 
