@@ -47,7 +47,15 @@ export default function Register() {
 
       if (data?.user) {
         // Erfolgreich registriert! Nutzer wird eingeloggt und weitergeleitet.
-        login(data.user);
+        login({
+          id: data.user.id,
+          email: data.user.email || '',
+          first_name: firstName,
+          last_name: lastName,
+          is_premium: false,
+          newsletter_optin: newsletter,
+          purchased_products: []
+        });
         navigate('/');
       }
     } catch (err) {

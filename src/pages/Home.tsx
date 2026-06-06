@@ -2,14 +2,21 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Wind, Sun, Moon, Coffee } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 
 export default function Home() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const timeOfDay = new Date().getHours();
   let greetingKey = 'home.greeting.morning';
   if (timeOfDay >= 12 && timeOfDay < 18) greetingKey = 'home.greeting.afternoon';
   if (timeOfDay >= 18) greetingKey = 'home.greeting.evening';
+
+  const getUserName = () => {
+    if (!user) return 'Traveler';
+    return user.first_name || user.username || 'Traveler';
+  };
 
   return (
     <div className="space-y-8">
@@ -19,7 +26,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl md:text-6xl font-light text-[var(--color-accent-olive)] mb-2"
         >
-          {t(greetingKey)}, Traveler.
+          {t(greetingKey)}, {getUserName()}.
         </motion.h1>
         <p className="text-stone-500 text-lg font-light">
           {t('home.subtitle')}

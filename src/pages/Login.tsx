@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../supabase';
 
 export default function Login() {
   const { login } = useAuth();
@@ -13,21 +14,24 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+      const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
+        email: username,
+        password: password,
       });
-      const data = await res.json();
-      if (res.ok) {
-        login(data.user);
+
+      if (supabaseError) {
+        setError(supabaseError.message === 'Invalid login credentials' ? 'Ungültige Anmeldedaten. Bitte überprüfen Sie Ihre E-Mail und Ihr Passwort.' : supabaseError.message);
+        return;
+      }
+
+      if (data?.user) {
+        // Handled reactively by AuthContext onAuthStateChange, but we trigger local login state anyway
         navigate('/');
-      } else {
-        setError(data.error);
       }
     } catch (err) {
-      setError('Login failed');
+      setError('Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
     }
   };
 
