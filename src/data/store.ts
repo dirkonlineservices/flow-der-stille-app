@@ -12,9 +12,9 @@ export const PRODUCTS: Product[] = [
   {
     id: 'premium_chat',
     title: 'Premium Chat',
-    description: 'Unbegrenzter Zugang zum KI-Assistenten. 9.99 € im Monat.',
-    priceNum: 9.99,
-    price: '9,99 € / Monat',
+    description: 'Unbegrenzter Zugang zum KI-Assistenten. 4.99 € im Monat.',
+    priceNum: 4.99,
+    price: '4,99 € / Monat',
     duration: 'Monatliches Abo',
     category: 'feature'
   },

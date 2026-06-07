@@ -12,12 +12,19 @@ export default function HomeChatWidget() {
   ]);
   const [input, setInput] = useState('');
   
+  // Track daily usage
+  const today = new Date().toISOString().split('T')[0];
+  const usageKey = `chat_usage_${user?.id}_${today}`;
+  const [dailyUsageCount, setDailyUsageCount] = useState(() => {
+    const saved = localStorage.getItem(usageKey);
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  
   // Premium check
   const isPremium = user?.purchased_products?.includes('premium_chat') || false;
   
-  // Limit to 3 user messages if not premium
-  const userMessagesCount = messages.filter(m => m.role === 'user').length;
-  const reachedLimit = !isPremium && userMessagesCount >= 3;
+  // Limit to 3 user messages per day if not premium
+  const reachedLimit = !isPremium && dailyUsageCount >= 3;
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +33,12 @@ export default function HomeChatWidget() {
 
     setMessages(prev => [...prev, { role: 'user', content: input }]);
     setInput('');
+    
+    if (!isPremium) {
+      const newCount = dailyUsageCount + 1;
+      setDailyUsageCount(newCount);
+      localStorage.setItem(usageKey, newCount.toString());
+    }
 
     // Simulate standard response
     setTimeout(() => {
@@ -60,7 +73,7 @@ export default function HomeChatWidget() {
         </div>
         {!isPremium && (
           <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-text-muted)] bg-stone-200/50 px-2.5 py-1 rounded-full border border-stone-200">
-            {3 - userMessagesCount} Nachrichten übrig
+            {Math.max(0, 3 - dailyUsageCount)} Freie Nachrichten heute
           </span>
         )}
       </div>
@@ -80,9 +93,9 @@ export default function HomeChatWidget() {
         {reachedLimit && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center mt-4">
             <Star className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-            <h4 className="font-serif text-amber-900 mb-1">Limit erreicht</h4>
+            <h4 className="font-serif text-amber-900 mb-1">Tägliches Limit erreicht</h4>
             <p className="text-amber-700 text-xs mb-4">
-              Um weiterhin unbegrenzt mit dem Assistenten zu chatten, wird die Premium-Funktion benötigt (9,99 € / Monat).
+              Um weiterhin unbegrenzt mit dem Assistenten zu chatten, wird die Premium-Funktion benötigt (4,99 € / Monat).
             </p>
             <button 
               onClick={handleUpgrade}
@@ -100,7 +113,7 @@ export default function HomeChatWidget() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={reachedLimit || !isPremium && userMessagesCount >= 3}
+            disabled={reachedLimit || (!isPremium && dailyUsageCount >= 3)}
             placeholder={reachedLimit ? "Zuerst Premium freischalten..." : "Schreibe eine Nachricht..."}
             className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-full pl-5 pr-12 py-3 text-sm focus:outline-none focus:border-[var(--color-accent-primary)] disabled:opacity-50"
           />
