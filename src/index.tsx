@@ -30,6 +30,17 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   return children;
 };
 
+// NEU: Zuweisung zur richtigen Chat-Komponente
+const ChatRoute = () => {
+  const { user } = useAuth();
+  if (user) {
+    // Wenn eingeloggt, leite weiter zur neuen Premium Chat/Atem-Erfahrung
+    return <Navigate to="/atemchat" replace />;
+  }
+  // Ansonsten die Fallback/Paywall-Version zeigen
+  return <Chat />;
+};
+
 export default function App() {
   return (
     <AuthProvider>
@@ -45,7 +56,7 @@ export default function App() {
               <Route path="recipes" element={<Recipes />} />
               <Route path="learn" element={<Learn />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="chat" element={<Chat />} />
+              <Route path="chat" element={<ChatRoute />} />
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />
               <Route path="contact" element={<Contact />} />

@@ -8,12 +8,8 @@ import { useAuth } from '../context/AuthContext';
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t, language, setLanguage } = useLanguage();
+  const { t } = useLanguage();
   const { user, logout } = useAuth();
-
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'de' : 'en');
-  };
 
   const handleLogout = () => {
     logout();
@@ -37,13 +33,6 @@ export default function Layout() {
         </div>
 
         <div className="mt-auto flex flex-col gap-6 items-center">
-          <button 
-            onClick={toggleLanguage}
-            className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 flex flex-col items-center gap-1"
-          >
-            <span className="text-2xl">{language === 'en' ? '🇺🇸' : '🇩🇪'}</span>
-            <span className="text-[10px] font-medium tracking-wide uppercase">{language.toUpperCase()}</span>
-          </button>
           
           {user ? (
             <button 

@@ -9,8 +9,10 @@ import {
   Waves,
   Leaf,
   Info,
-  Mic
+  Mic,
+  ArrowLeft
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -303,6 +305,9 @@ export default function AtemChat() {
       <header id="quiet-header" className="sticky top-0 bg-[#F7F6F2]/90 backdrop-blur-md border-b border-[#E3E1D9] z-30 py-4 px-6 md:px-10 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
+            <Link to="/" className="p-2 rounded-full hover:bg-white text-[#808a82] hover:text-[#3D3B35] transition-colors mr-2">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
             <div className="w-10 h-10 rounded-full bg-[#8A9A8A] flex items-center justify-center text-white float-slow">
               <Wind className="w-5 h-5" />
             </div>
