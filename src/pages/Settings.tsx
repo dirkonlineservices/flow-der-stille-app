@@ -9,34 +9,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabase';
-
-// Define available products in the store
-const ECOURSES = [
-  {
-    id: 'parasympathikus_kurs',
-    title: 'Parasympathikus-Kompaktkurs',
-    description: 'Aktivierung des Vagusnervs für sofortige innere Ruhe & Entspannung im Alltag.',
-    price: '49,00 €',
-    duration: '4 Wochen Kurs',
-    accentColor: 'bg-emerald-50 text-emerald-800 border-emerald-100'
-  },
-  {
-    id: 'darm_hirn_class',
-    title: 'Darm-Hirn-Achse Masterclass',
-    description: 'Ganzheitliche Wege & Ernährungstipps gegen stressbedingte Verdauungsbeschwerden.',
-    price: '79,00 €',
-    duration: '6 Module Video-Content',
-    accentColor: 'bg-amber-50 text-amber-800 border-amber-100'
-  },
-  {
-    id: 'atemschule_deep',
-    title: 'Tiefenentspannung & Atemschule',
-    description: 'Atemtechniken zur Steigerung der Herzratenvariabilität (HRV) und Stressresistenz.',
-    price: '35,00 €',
-    duration: '12 angeleitete Praxis-Sessions',
-    accentColor: 'bg-sky-50 text-sky-800 border-sky-100'
-  }
-];
+import SEO from '../components/SEO';
+import { PRODUCTS } from '../data/store';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -57,9 +31,6 @@ export default function Settings() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
-
-  // Product actions states
-  const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null);
 
   // Sync profile fields from user context once loaded
   useEffect(() => {
@@ -96,10 +67,6 @@ export default function Settings() {
         setProfileError(error.message);
       } else {
         setProfileSuccess('Ihr Profil wurde erfolgreich aktualisiert!');
-        // Refresh local user variables
-        if (data?.user) {
-          // Auto updated via auth state change listener in AuthContext!
-        }
       }
     } catch (err) {
       setProfileError('Ein unerwarteter Fehler ist aufgetreten.');
@@ -143,41 +110,6 @@ export default function Settings() {
     }
   };
 
-  // Buy or unlock product simulation
-  const handleToggleProduct = async (productId: string) => {
-    if (!user) return;
-    setPurchaseLoading(productId);
-
-    try {
-      const currentPurchased = user.purchased_products || [];
-      let nextPurchased = [...currentPurchased];
-
-      if (currentPurchased.includes(productId)) {
-        // Remove for toggle simulation
-        nextPurchased = nextPurchased.filter(id => id !== productId);
-      } else {
-        // Add
-        nextPurchased.push(productId);
-      }
-
-      const { data, error } = await supabase.auth.updateUser({
-        data: {
-          purchased_products: nextPurchased
-        }
-      });
-
-      if (error) {
-        alert('Fehler beim Aktualisieren des Produktstatus: ' + error.message);
-      } else {
-        // Updated!
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setPurchaseLoading(null);
-    }
-  };
-
   const handleExportData = () => {
     if (!user) return;
     const userData = {
@@ -200,33 +132,34 @@ export default function Settings() {
 
   return (
     <div className="space-y-12 max-w-4xl mx-auto py-8 px-4">
+      <SEO title="Einstellungen" description="Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort und betrachten Sie Ihre Einkäufe." />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <SettingsIcon className="text-[var(--color-accent-olive)] w-8 h-8" />
-          <h1 className="text-4xl font-serif text-[var(--color-accent-olive)]">Konto & App-Einstellungen</h1>
+          <SettingsIcon className="text-[var(--color-accent-primary)] w-8 h-8" />
+          <h1 className="text-4xl font-serif text-[var(--color-accent-primary)]">Konto & App-Einstellungen</h1>
         </div>
-        <p className="text-stone-500 text-base max-w-2xl">
+        <p className="text-[var(--color-text-muted)] text-base max-w-2xl">
           Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort, werfen Sie einen Blick in Ihre erworbenen Kurse oder laden Sie Ihre gespeicherten Daten herunter.
         </p>
       </header>
 
       {!user ? (
-        <div className="bg-stone-50 border border-stone-200 rounded-3xl p-8 text-center max-w-xl mx-auto">
-          <User className="mx-auto w-12 h-12 text-stone-400 mb-4" />
-          <h2 className="text-xl font-serif text-stone-800 mb-2">Sie sind nicht eingeloggt</h2>
-          <p className="text-stone-500 text-sm mb-6 leading-relaxed">
+        <div className="bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-3xl p-8 text-center max-w-xl mx-auto">
+          <User className="mx-auto w-12 h-12 text-[var(--color-text-muted-light)] mb-4" />
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Sie sind nicht eingeloggt</h2>
+          <p className="text-[var(--color-text-muted)] text-sm mb-6 leading-relaxed">
             Um Ihr Profil anzupassen, Ihren Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melden Sie sich bitte an oder erstellen Sie ein neues Konto.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link 
               to="/login" 
-              className="px-6 py-2.5 bg-[var(--color-accent-olive)] hover:bg-[var(--color-accent-olive-hover)] text-white font-medium rounded-xl transition-all"
+              className="px-6 py-2.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-medium rounded-xl transition-all"
             >
               Einloggen
             </Link>
             <Link 
               to="/register" 
-              className="px-6 py-2.5 bg-white border border-stone-200 text-stone-700 font-medium rounded-xl hover:bg-stone-50 transition-all"
+              className="px-6 py-2.5 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-[var(--color-text-main)] font-medium rounded-xl hover:bg-[var(--color-bg-alt)] transition-all"
             >
               Registrieren
             </Link>
@@ -239,9 +172,9 @@ export default function Settings() {
           <div className="lg:col-span-2 space-y-8">
             
             {/* 1. Profile information */}
-            <section className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 md:p-8">
-              <h2 className="text-2xl font-serif text-stone-800 mb-6 flex items-center gap-2">
-                <User size={22} className="text-[var(--color-accent-olive)]" />
+            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
+              <h2 className="text-2xl font-serif text-[var(--color-text-main)] mb-6 flex items-center gap-2">
+                <User size={22} className="text-[var(--color-accent-primary)]" />
                 Persönliche Daten und Profil
               </h2>
 
@@ -262,52 +195,52 @@ export default function Settings() {
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Vorname</label>
+                    <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Vorname</label>
                     <input
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="Ihr Vorname"
-                      className="w-full px-4 py-3 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none text-sm transition-all text-stone-800 font-medium"
+                      className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Nachname</label>
+                    <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Nachname</label>
                     <input
                       type="text"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Ihr Nachname"
-                      className="w-full px-4 py-3 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none text-sm transition-all text-stone-800 font-medium"
+                      className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">E-Mail-Adresse (nicht änderbar)</label>
+                  <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">E-Mail-Adresse (nicht änderbar)</label>
                   <input
                     type="email"
                     value={user.email || ''}
                     disabled
-                    className="w-full px-4 py-3 bg-stone-100 text-stone-500 rounded-xl border-none outline-none text-sm cursor-not-allowed font-medium"
+                    className="w-full px-4 py-3 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl border-none outline-none text-sm cursor-not-allowed font-medium"
                   />
-                  <p className="text-stone-400 text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Supabase-Konto verknüpft.</p>
+                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Supabase-Konto verknüpft.</p>
                 </div>
 
                 {/* Newsletter Preference Section */}
-                <div className="pt-4 border-t border-stone-100 mt-6">
+                <div className="pt-4 border-t border-[var(--color-border-main)] mt-6">
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={newsletter}
                       onChange={(e) => setNewsletter(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-olive)] focus:ring-[var(--color-accent-olive)]"
+                      className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)]"
                     />
                     <div>
-                      <span className="text-sm font-medium text-stone-700 leading-tight block group-hover:text-stone-900 transition-colors">
+                      <span className="text-sm font-medium text-[var(--color-text-main)] leading-tight block group-hover:text-stone-900 transition-colors">
                         Sicherstellung des monatlichen Newsletters
                       </span>
-                      <span className="text-xs text-stone-400 block mt-0.5 leading-relaxed">
+                      <span className="text-xs text-[var(--color-text-muted-light)] block mt-0.5 leading-relaxed">
                         Ich möchte weiterhin einmal im Monat wertvolle, kuratierte Ratschläge, wissenschaftliche Hintergründe der Darm-Hirn-Achse und Tipps zur Parasympathikus-Aktivierung per E-Mail erhalten. (Abbestellbar per Form-Opt-out).
                       </span>
                     </div>
@@ -318,7 +251,7 @@ export default function Settings() {
                   <button
                     type="submit"
                     disabled={profileLoading}
-                    className="px-6 py-3 bg-[var(--color-accent-olive)] hover:bg-[var(--color-accent-olive-hover)] text-white font-medium rounded-xl text-sm transition-all shadow-sm disabled:opacity-50"
+                    className="px-6 py-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-medium rounded-xl text-sm transition-all shadow-sm disabled:opacity-50"
                   >
                     {profileLoading ? 'Aktualisiere...' : 'Profil speichern'}
                   </button>
@@ -327,9 +260,9 @@ export default function Settings() {
             </section>
 
             {/* 2. Change password section */}
-            <section className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 md:p-8">
-              <h2 className="text-2xl font-serif text-stone-800 mb-6 flex items-center gap-2">
-                <Lock size={22} className="text-[var(--color-accent-olive)]" />
+            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
+              <h2 className="text-2xl font-serif text-[var(--color-text-main)] mb-6 flex items-center gap-2">
+                <Lock size={22} className="text-[var(--color-accent-primary)]" />
                 Passwort ändern
               </h2>
 
@@ -350,24 +283,24 @@ export default function Settings() {
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Neues Passwort</label>
+                    <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Neues Passwort</label>
                     <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full px-4 py-3 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none text-sm transition-all"
+                      className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">Bestätigen</label>
+                    <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Bestätigen</label>
                     <input
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full px-4 py-3 bg-stone-50 rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none text-sm transition-all"
+                      className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all"
                       required
                     />
                   </div>
@@ -377,7 +310,7 @@ export default function Settings() {
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="px-6 py-3 bg-[var(--color-accent-olive)] hover:bg-[var(--color-accent-olive-hover)] text-white font-medium rounded-xl text-sm transition-all shadow-sm disabled:opacity-50"
+                    className="px-6 py-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-medium rounded-xl text-sm transition-all shadow-sm disabled:opacity-50"
                   >
                     {passwordLoading ? 'Speichere...' : 'Sicher ändern'}
                   </button>
@@ -386,80 +319,68 @@ export default function Settings() {
             </section>
 
             {/* 3. My purchased products */}
-            <section className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 md:p-8">
+            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
               <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="text-[var(--color-accent-olive)] w-6 h-6" />
-                <h2 className="text-2xl font-serif text-stone-800">Meine gekauften Produkte</h2>
+                <ShoppingBag className="text-[var(--color-accent-primary)] w-6 h-6" />
+                <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Meine gekauften Produkte</h2>
               </div>
-              <p className="text-stone-400 text-xs mb-6">
+              <p className="text-[var(--color-text-muted-light)] text-xs mb-6">
                 Ihre verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung Ihrer Käufe.
               </p>
 
               <div className="space-y-4">
-                {ECOURSES.map(course => {
+                {PRODUCTS.map(course => {
                   const isPurchased = (user.purchased_products || []).includes(course.id);
+                  if (!isPurchased) return null; // Only show purchased!
                   return (
                     <div 
                       key={course.id}
-                      className={`p-5 rounded-2xl border transition-all ${
-                        isPurchased 
-                          ? 'bg-stone-50/55 border-stone-200' 
-                          : 'bg-white border-stone-100 shadow-sm'
-                      }`}
+                      className="p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                         <div>
-                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
-                            isPurchased ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'
-                          }`}>
-                            {isPurchased ? 'Aktiviert & Freigeschaltet' : 'Noch nicht erworben'}
+                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                            Aktiviert & Freigeschaltet
                           </span>
-                          <h3 className="text-lg font-serif text-stone-800 mt-1.5">{course.title}</h3>
+                          <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course.title}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-sm font-semibold text-stone-700 block">{course.duration}</span>
-                          <span className="text-xs text-stone-400 block">{course.price}</span>
+                          <span className="text-sm font-semibold text-[var(--color-text-main)] block">{course.duration}</span>
+                          <span className="text-xs text-[var(--color-text-muted-light)] block">{course.price}</span>
                         </div>
                       </div>
 
-                      <p className="text-stone-500 text-xs leading-relaxed mb-4">{course.description}</p>
+                      <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course.description}</p>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-                        {isPurchased ? (
-                          <>
-                            <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
-                              <CheckCircle2 size={14} /> Bereit zum Lernen
-                            </span>
-                            <button className="px-4 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
-                              <Eye size={12} /> Kurs öffnen
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-stone-400 text-xs">Exklusive Premium-Inhalte</span>
-                            <button
-                              onClick={() => handleToggleProduct(course.id)}
-                              disabled={purchaseLoading !== null}
-                              className="px-4 py-1.5 bg-[var(--color-accent-olive)] hover:bg-[var(--color-accent-olive-hover)] text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1 active:scale-95"
-                            >
-                              Freischalten
-                            </button>
-                          </>
-                        )}
+                      <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-main)]">
+                         <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
+                           <CheckCircle2 size={14} /> Bereit zum Lernen
+                         </span>
+                         <button className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
+                           <Eye size={12} /> Kurs öffnen
+                         </button>
                       </div>
                     </div>
                   );
                 })}
+                {(!user.purchased_products || user.purchased_products.length === 0) && (
+                  <div className="text-[var(--color-text-muted)] text-center p-6 border border-dashed border-[var(--color-border-main)] rounded-2xl">
+                    <p className="mb-4">Noch keine Premium-Kurse erworben.</p>
+                    {/* <Link to="/shop" className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border-main)] text-[var(--color-text-main)] hover:text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)]">
+                       Zum Premium Shop
+                    </Link> */}
+                  </div>
+                )}
               </div>
             </section>
 
             {/* 4. Meine gemeisterten Aufgaben */}
-            <section className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 md:p-8">
+            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
               <div className="flex items-center gap-2 mb-2">
-                <Award className="text-[var(--color-accent-olive)] w-6 h-6" />
-                <h2 className="text-2xl font-serif text-stone-800">Mein Achtsamkeits-Fortschritt</h2>
+                <Award className="text-[var(--color-accent-primary)] w-6 h-6" />
+                <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Mein Achtsamkeits-Fortschritt</h2>
               </div>
-              <p className="text-stone-400 text-xs mb-6">
+              <p className="text-[var(--color-text-muted-light)] text-xs mb-6">
                 Ein Journal deiner erfolgreich absolvierten täglichen Impulse und wöchentlichen Aufgaben, sicher verwahrt in deinem Profil.
               </p>
 
@@ -491,10 +412,24 @@ export default function Settings() {
                       }
                       desc = `Gemeistert am ${formattedDate}`;
                     } else if (isWeekly) {
-                      const weekNum = key.replace('weekly_challenge_week_', '');
+                      // example format: weekly_challenge_week_1_V1_2026-06-07
+                      const parts = key.split('_');
+                      const weekNum = parts[3] || '?';
+                      const versionPart = parts.length > 4 && parts[4].startsWith('V') ? parts[4].replace('V', '') : '1';
+                      const dateStr = parts.length > 5 ? parts[parts.length - 1] : '';
+
                       type = 'Wochenaufgabe';
-                      title = `Woche ${weekNum}`;
-                      desc = 'Als gemeistert markiert';
+                      title = `Level ${weekNum}`;
+                      
+                      let formattedDate = dateStr;
+                      if (formattedDate) {
+                        const dateParts = formattedDate.split('-');
+                        if (dateParts.length === 3) {
+                          formattedDate = `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
+                        }
+                      }
+                      
+                      desc = formattedDate ? `Meilenstein #${versionPart} am ${formattedDate}` : 'Als gemeistert markiert';
                     } else if (key.includes('_202')) {
                       // daily_lemon_water_2026-06-06
                       type = 'Täglicher Impuls';
@@ -522,7 +457,7 @@ export default function Settings() {
                     return (
                       <div 
                         key={key} 
-                        className="flex items-center justify-between p-4 bg-stone-50 border border-stone-100 rounded-2xl"
+                        className="flex items-center justify-between p-4 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-2xl"
                       >
                         <div className="flex items-center justify-between gap-3 w-full">
                           <div className="flex items-center gap-3">
@@ -530,21 +465,21 @@ export default function Settings() {
                               <CheckCircle2 size={16} />
                             </div>
                             <div>
-                              <span className="text-[10px] uppercase font-bold text-stone-400 block tracking-wider">{type}</span>
-                              <h4 className="text-sm font-medium text-stone-800">{title}</h4>
+                              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted-light)] block tracking-wider">{type}</span>
+                              <h4 className="text-sm font-medium text-[var(--color-text-main)]">{title}</h4>
                             </div>
                           </div>
-                          <span className="text-xs text-stone-500 italic shrink-0 text-right">{desc}</span>
+                          <span className="text-xs text-[var(--color-text-muted)] italic shrink-0 text-right">{desc}</span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               ) : (
-                <div className="p-8 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+                <div className="p-8 text-center bg-[var(--color-bg-alt)] rounded-2xl border border-dashed border-[var(--color-border-main)]">
                   <Sparkles className="mx-auto text-stone-300 w-8 h-8 mb-2" />
-                  <p className="text-stone-500 text-sm">Noch keine Aufgaben abgeschlossen.</p>
-                  <p className="text-stone-400 text-xs mt-1">Absolviere deinen ersten Tagesimpuls oder deine Wochenaufgabe auf der Startseite!</p>
+                  <p className="text-[var(--color-text-muted)] text-sm">Noch keine Aufgaben abgeschlossen.</p>
+                  <p className="text-[var(--color-text-muted-light)] text-xs mt-1">Absolviere deinen ersten Tagesimpuls oder deine Wochenaufgabe auf der Startseite!</p>
                 </div>
               )}
             </section>
@@ -555,17 +490,17 @@ export default function Settings() {
           <div className="space-y-6">
             
             {/* Quick Profile Overview Badge */}
-            <div className="bg-[var(--color-bg-warm)] rounded-3xl p-6 border border-stone-200/60 text-center">
-              <div className="w-20 h-20 rounded-full bg-[var(--color-accent-olive)] text-white flex items-center justify-center text-3xl font-serif mx-auto mb-4 shadow-sm">
+            <div className="bg-[var(--color-bg-body)] rounded-3xl p-6 border border-[var(--color-border-main)]/60 text-center">
+              <div className="w-20 h-20 rounded-full bg-[var(--color-accent-primary)] text-white flex items-center justify-center text-3xl font-serif mx-auto mb-4 shadow-sm">
                 {(user.first_name || user.username || 'T').charAt(0).toUpperCase()}
               </div>
-              <h3 className="text-xl font-serif text-stone-800">
+              <h3 className="text-xl font-serif text-[var(--color-text-main)]">
                 {user.first_name ? `${user.first_name} ${user.last_name || ''}` : user.username}
               </h3>
-              <p className="text-xs text-stone-400 mt-1">{user.email}</p>
+              <p className="text-xs text-[var(--color-text-muted-light)] mt-1">{user.email}</p>
               
               <div className="mt-4 flex flex-wrap gap-1.5 justify-center">
-                <span className="px-2 py-0.5 bg-stone-100 text-stone-600 text-[10px] rounded-full uppercase font-semibold">
+                <span className="px-2 py-0.5 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] text-[10px] rounded-full uppercase font-semibold">
                   Mitglied seit {new Date().getFullYear()}
                 </span>
                 {user.newsletter_optin ? (
@@ -573,16 +508,16 @@ export default function Settings() {
                     Newsletter Ja
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 bg-stone-100 text-stone-400 text-[10px] rounded-full uppercase font-semibold">
+                  <span className="px-2 py-0.5 bg-[var(--color-bg-border)] text-[var(--color-text-muted-light)] text-[10px] rounded-full uppercase font-semibold">
                     Newsletter Nein
                   </span>
                 )}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-stone-200/60">
+              <div className="mt-6 pt-6 border-t border-[var(--color-border-main)]/60">
                 <button
                   onClick={handleLogout}
-                  className="w-full py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] font-medium rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
                 >
                   <LogOut size={14} />
                   <span>Abmelden (Sitzung beenden)</span>
@@ -591,19 +526,19 @@ export default function Settings() {
             </div>
 
             {/* GDPR Box */}
-            <div className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm">
-              <h4 className="font-serif text-stone-800 text-lg mb-2 flex items-center gap-1.5">
-                <Shield size={16} className="text-[var(--color-accent-olive)]" />
+            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm">
+              <h4 className="font-serif text-[var(--color-text-main)] text-lg mb-2 flex items-center gap-1.5">
+                <Shield size={16} className="text-[var(--color-accent-primary)]" />
                 Datenschutz & DSGVO
               </h4>
-              <p className="text-stone-500 text-xs leading-relaxed mb-4">
+              <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
                 Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Sie behalten die volle Kontrolle über Ihre Daten.
               </p>
               
               <div className="space-y-3">
                 <button
                   onClick={handleExportData}
-                  className="w-full py-2.5 px-3 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all"
+                  className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all"
                 >
                   <Download size={14} />
                   <span>Daten herunterladen (JSON)</span>
@@ -611,7 +546,7 @@ export default function Settings() {
 
                 <Link
                   to="/datenschutz"
-                  className="w-full py-2.5 px-3 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-2 transition-all block text-left"
+                  className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all block text-left"
                 >
                   <FileText size={14} />
                   <span>Datenschutzerklärung einsehen</span>

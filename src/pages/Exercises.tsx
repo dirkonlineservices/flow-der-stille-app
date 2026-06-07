@@ -4,15 +4,17 @@ import { motion } from 'motion/react';
 import { Wind, Activity, Timer, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
+import SEO from '../components/SEO';
 
 export default function Exercises() {
   const { t } = useLanguage();
 
   return (
     <div className="space-y-8">
+      <SEO title="Übungen" description="Achtsamkeitsübungen und Atemtechniken zur Entspannung." />
       <header className="mb-8">
-        <h1 className="text-4xl font-serif text-[var(--color-accent-olive)] mb-4">{t('exercises.title')}</h1>
-        <p className="text-stone-500">
+        <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">{t('exercises.title')}</h1>
+        <p className="text-[var(--color-text-muted)]">
           {t('exercises.subtitle')}
         </p>
       </header>
@@ -41,7 +43,7 @@ function ExerciseCard({ id, title, category, duration, description, icon, image 
     <Link to={`/exercises/${id}`}>
       <motion.div 
         whileHover={{ y: -2 }}
-        className="bg-white rounded-2xl shadow-sm border border-stone-100 flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+        className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
       >
         <div className="w-full md:w-48 h-48 md:h-auto shrink-0 relative overflow-hidden">
           <img 
@@ -55,17 +57,17 @@ function ExerciseCard({ id, title, category, duration, description, icon, image 
         
         <div className="p-6 flex-1 flex flex-col justify-center">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs px-2 py-1 bg-stone-100 rounded-full text-stone-500 uppercase tracking-wider font-medium">{category}</span>
-            <div className="flex items-center gap-1 text-xs text-stone-400">
+            <span className="text-xs px-2 py-1 bg-[var(--color-bg-border)] rounded-full text-[var(--color-text-muted)] uppercase tracking-wider font-medium">{category}</span>
+            <div className="flex items-center gap-1 text-xs text-[var(--color-text-muted-light)]">
               <Timer size={12} />
               <span>{duration}</span>
             </div>
           </div>
           
-          <h3 className="text-xl font-serif text-stone-800 mb-2 group-hover:text-[var(--color-accent-olive)] transition-colors">{title}</h3>
-          <p className="text-stone-500 text-sm leading-relaxed mb-4 line-clamp-2">{description}</p>
+          <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2 group-hover:text-[var(--color-accent-primary)] transition-colors">{title}</h3>
+          <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-4 line-clamp-2">{description}</p>
           
-          <div className="mt-auto flex items-center text-[var(--color-accent-olive)] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+          <div className="mt-auto flex items-center text-[var(--color-accent-primary)] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
             <span>{t('exercise.view')}</span>
             <ArrowRight size={16} className="ml-1" />
           </div>

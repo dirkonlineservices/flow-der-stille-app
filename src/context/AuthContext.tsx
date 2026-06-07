@@ -12,6 +12,10 @@ interface User {
   newsletter_optin?: boolean;
   purchased_products?: string[];
   completed_tasks?: string[];
+  task_progress?: {
+    current_task: number;
+    completions: Record<number, number>;
+  };
 }
 
 interface AuthContextType {
@@ -61,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       newsletter_optin: !!metadata.newsletter_optin,
       purchased_products: metadata.purchased_products || [],
       completed_tasks: metadata.completed_tasks || [],
+      task_progress: metadata.task_progress || { current_task: 0, completions: {} },
     });
   };
 

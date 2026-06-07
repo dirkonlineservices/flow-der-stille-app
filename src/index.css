@@ -5,17 +5,58 @@
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
   
-  --color-bg-warm: #f5f5f0;
-  --color-accent-olive: #5A5A40;
-  --color-accent-olive-hover: #4A4A30;
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #5A5A40;
+  --color-bg-body: var(--bg-body);
+  --color-bg-alt: var(--bg-alt);
+  --color-bg-alt-darker: var(--bg-alt-darker);
+  --color-bg-card: var(--bg-card);
+  --color-bg-border: var(--bg-border);
+  --color-border-main: var(--border-main);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-muted-light: var(--text-muted-light);
+  
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+}
+
+:root {
+  --bg-body: #f5f5f0;
+  --bg-alt: #F7F6F2;
+  --bg-alt-darker: #ECEBE4;
+  --bg-card: #FFFFFF;
+  --bg-border: #f5f5f0;
+  --border-main: #E3E1D9;
+  
+  --text-main: #3D3B35;
+  --text-muted: #695C4D;
+  --text-muted-light: #A09E94;
+  
+  --accent-primary: #8A9A8A;
+  --accent-hover: #728372;
+}
+
+.dark {
+  --bg-body: #1c1917;
+  --bg-alt: #171717;
+  --bg-alt-darker: #0c0a09;
+  --bg-card: #292524;
+  --bg-border: #292524;
+  --border-main: #44403c;
+  
+  --text-main: #e7e5e4;
+  --text-muted: #a8a29e;
+  --text-muted-light: #78716c;
+  
+  --accent-primary: #8A9A8A;
+  --accent-hover: #728372;
 }
 
 body {
   font-family: var(--font-serif);
-  background-color: var(--color-bg-warm);
-  color: var(--color-text-primary);
+  background-color: var(--color-bg-body);
+  color: var(--color-text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -28,7 +69,7 @@ p, span, div, a, button, input, textarea {
 
 /* Custom Utility Classes */
 .olive-button {
-  background-color: var(--color-accent-olive);
+  background-color: var(--color-accent-primary);
   color: white;
   border-radius: 9999px;
   padding: 12px 24px;
@@ -37,11 +78,11 @@ p, span, div, a, button, input, textarea {
 }
 
 .olive-button:hover {
-  background-color: var(--color-accent-olive-hover);
+  background-color: var(--color-accent-hover);
 }
 
 .card {
-  background-color: #FFFFFF;
+  background-color: var(--color-bg-card);
   border-radius: 32px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
 }

@@ -1,15 +1,20 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle } from 'lucide-react';
+import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useCart } from '../context/CartContext';
 
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { setCartOpen, items } = useCart();
+  const cartItemCount = items.length;
 
   const handleLogout = () => {
     logout();
@@ -17,27 +22,52 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-warm)] text-[var(--color-text-primary)] font-sans pb-24 md:pb-0 md:pl-24">
+    <div className="min-h-screen bg-[var(--color-bg-body)] text-[var(--color-text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300">
+      
+      {/* Top Right Floating Actions */}
+      <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+        {/* <button 
+          onClick={() => setCartOpen(true)}
+          className="relative p-3 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
+          aria-label="Open Cart"
+        >
+          <ShoppingBag size={20} />
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm">
+              {cartItemCount}
+            </span>
+          )}
+        </button> */}
+        <button 
+          onClick={toggleTheme}
+          className="p-3 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
+          aria-label="Toggle dark mode"
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+      </div>
+
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-white/50 backdrop-blur-sm border-r border-stone-200 z-50">
-        <Link to="/" className="mb-12 p-2 rounded-full hover:bg-stone-100 transition-colors">
-          <Leaf className="w-8 h-8 text-[var(--color-accent-olive)]" />
+      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--color-bg-card)]/50 backdrop-blur-sm border-r border-[var(--color-border-main)] z-50 overflow-y-auto">
+        <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--color-bg-border)] transition-colors shrink-0">
+          <Leaf className="w-8 h-8 text-[var(--color-accent-primary)]" />
         </Link>
         
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6 w-full">
           <NavLink to="/" icon={<Home />} label={t('nav.home')} />
           <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} />
           <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} />
           <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} />
           <NavLink to="/chat" icon={<MessageCircle />} label="Chat" />
+          {/* <NavLink to="/shop" icon={<ShoppingBag />} label="Shop" /> */}
         </div>
 
-        <div className="mt-auto flex flex-col gap-6 items-center">
+        <div className="mt-auto pt-6 flex flex-col gap-6 items-center w-full">
           
           {user ? (
             <button 
               onClick={handleLogout}
-              className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 flex flex-col items-center gap-1"
+              className="p-2 rounded-xl hover:bg-[var(--color-bg-border)] transition-colors text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] flex flex-col items-center gap-1"
             >
               <LogOut size={24} />
               <span className="text-[10px] font-medium tracking-wide uppercase">{t('auth.logout')}</span>
@@ -45,7 +75,7 @@ export default function Layout() {
           ) : (
             <Link 
               to="/login"
-              className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-600 flex flex-col items-center gap-1"
+              className="p-2 rounded-xl hover:bg-[var(--color-bg-border)] transition-colors text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] flex flex-col items-center gap-1"
             >
               <LogIn size={24} />
               <span className="text-[10px] font-medium tracking-wide uppercase">{t('auth.login')}</span>
@@ -57,31 +87,31 @@ export default function Layout() {
       </nav>
 
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-stone-200 px-4 py-3 flex justify-between items-center z-50 overflow-x-auto">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 flex justify-between items-center z-50 overflow-x-auto gap-2">
         <NavLink to="/" icon={<Home />} label={t('nav.home')} mobile />
         <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
-        <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
         <NavLink to="/chat" icon={<MessageCircle />} label="Chat" mobile />
+        {/* <NavLink to="/shop" icon={<ShoppingBag />} label="Shop" mobile /> */}
         
         {user ? (
-           <button onClick={handleLogout} className="flex flex-col items-center gap-1 min-w-[60px]">
-             <div className="p-2 rounded-xl text-stone-400">
+           <button onClick={handleLogout} className="flex flex-col items-center gap-1 min-w-[50px]">
+             <div className="p-2 rounded-xl text-[var(--color-text-muted-light)]">
                <LogOut size={24} />
              </div>
-             <span className="text-[10px] font-medium tracking-wide uppercase text-stone-400">{t('auth.logout')}</span>
+             <span className="text-[10px] font-medium tracking-wide uppercase text-[var(--color-text-muted-light)]">{t('auth.logout')}</span>
            </button>
         ) : (
-           <Link to="/login" className="flex flex-col items-center gap-1 min-w-[60px]">
-             <div className="p-2 rounded-xl text-stone-400">
+           <Link to="/login" className="flex flex-col items-center gap-1 min-w-[50px]">
+             <div className="p-2 rounded-xl text-[var(--color-text-muted-light)]">
                <LogIn size={24} />
              </div>
-             <span className="text-[10px] font-medium tracking-wide uppercase text-stone-400">{t('auth.login')}</span>
+             <span className="text-[10px] font-medium tracking-wide uppercase text-[var(--color-text-muted-light)]">{t('auth.login')}</span>
            </Link>
         )}
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto p-6 md:p-12">
+      <main className="max-w-5xl mx-auto p-6 md:p-12 pt-20 md:pt-12">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -106,10 +136,10 @@ function NavLink({ to, icon, label, mobile = false }: { to: string; icon: React.
     <Link 
       to={to} 
       className={`flex flex-col items-center gap-1 transition-colors ${
-        isActive ? 'text-[var(--color-accent-olive)]' : 'text-stone-400 hover:text-stone-600'
+        isActive ? 'text-[var(--color-accent-primary)]' : 'text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)]'
       }`}
     >
-      <div className={`p-2 rounded-xl ${isActive ? 'bg-[var(--color-accent-olive)]/10' : ''}`}>
+      <div className={`p-2 rounded-xl ${isActive ? 'bg-[var(--color-accent-primary)]/10' : ''}`}>
         {React.cloneElement(icon as React.ReactElement<any>, { size: mobile ? 24 : 28, strokeWidth: isActive ? 2.5 : 2 })}
       </div>
       <span className="text-[10px] font-medium tracking-wide uppercase">{label}</span>

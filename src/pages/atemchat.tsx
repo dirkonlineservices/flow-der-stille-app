@@ -10,9 +10,54 @@ import {
   Leaf,
   Info,
   Mic,
-  ArrowLeft
+  ArrowLeft,
+  Moon,
+  Sun
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
+import { useTheme } from "../context/ThemeContext";
+
+// Hilfsfunktion: Spielt einen sanften Gong/Klangschalen-Ton
+const playPhaseSound = (phase: "ein" | "halten" | "aus") => {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+
+    // Leicht unterschiedliche Töne je nach Phase:
+    // Einatmen: A3 (220 Hz)
+    // Halten: Schwebt auf gleichem Ton, aber etwas leiser (220 Hz)
+    // Ausatmen: G3 (196 Hz) - ein tieferer, loslassender Ton
+    const fundamental = phase === "aus" ? 196.00 : 220.00;
+    const baseAmp = phase === "halten" ? 0.15 : 0.25;
+
+    const createHarmonic = (freq: number, amplitude: number, decayDuration: number) => {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(amplitude, ctx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + decayDuration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + decayDuration);
+    };
+
+    createHarmonic(fundamental, baseAmp, 4);
+    createHarmonic(fundamental * 2.1, baseAmp * 0.4, 3);
+    createHarmonic(fundamental * 3.14, baseAmp * 0.2, 2);
+
+  } catch (err) {
+    console.error("Audio playback failed", err);
+  }
+};
 
 interface Message {
   id: string;
@@ -23,6 +68,8 @@ interface Message {
 }
 
 export default function AtemChat() {
+  const { theme, toggleTheme } = useTheme();
+
   // Conversational State
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -178,6 +225,7 @@ export default function AtemChat() {
               }
             }
 
+            playPhaseSound(nextPhase);
             setBreathingPhase(nextPhase);
             return nextDuration;
           }
@@ -200,6 +248,7 @@ export default function AtemChat() {
     if (nextState) {
       setBreathingPhase("ein");
       setBreathingTimer(breathingMode === "deep" ? 4 : breathingMode === "classic" ? 4 : 5);
+      playPhaseSound("ein");
     }
   };
 
@@ -300,28 +349,36 @@ export default function AtemChat() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] text-[#3D3B35] flex flex-col antialiased">
+    <div className="min-h-screen bg-[var(--color-bg-alt)] text-[var(--color-text-main)] flex flex-col antialiased">
+      <SEO title="Geführte Atemübungen" description="Beruhigen Sie Ihr Nervensystem durch sanfte Atemführung." />
       {/* Top Quiet Navbar */}
-      <header id="quiet-header" className="sticky top-0 bg-[#F7F6F2]/90 backdrop-blur-md border-b border-[#E3E1D9] z-30 py-4 px-6 md:px-10 transition-all">
+      <header id="quiet-header" className="sticky top-0 bg-[var(--color-bg-alt)]/90 backdrop-blur-md border-b border-[var(--color-border-main)] z-30 py-4 px-6 md:px-10 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Link to="/" className="p-2 rounded-full hover:bg-white text-[#808a82] hover:text-[#3D3B35] transition-colors mr-2">
+            <Link to="/" className="p-2 rounded-full hover:bg-[var(--color-bg-card)] text-[#808a82] hover:text-[var(--color-text-main)] transition-colors mr-2">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-10 h-10 rounded-full bg-[#8A9A8A] flex items-center justify-center text-white float-slow">
+            <div className="w-10 h-10 rounded-full bg-[var(--color-accent-primary)] flex items-center justify-center text-white float-slow">
               <Wind className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="font-serif italic text-xl md:text-2xl font-medium tracking-wide text-[#3D3B35]">
+              <h1 className="font-serif italic text-xl md:text-2xl font-medium tracking-wide text-[var(--color-text-main)]">
                 Flow der Stille
               </h1>
-              <p className="text-[10px] tracking-widest text-[#8A9A8A] uppercase font-semibold">
+              <p className="text-[10px] tracking-widest text-[var(--color-accent-primary)] uppercase font-semibold">
                 Anker für Ihre Gegenwart
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <button 
+              onClick={toggleTheme}
+              className="p-2 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
+              aria-label="Toggle dark mode"
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <button
               id="btn-helpline"
               onClick={() => setShowHelpline(true)}
@@ -342,16 +399,16 @@ export default function AtemChat() {
         <section id="grounding-room" className="lg:col-span-5 flex flex-col gap-6">
           
           {/* Card: Atem-Kanal */}
-          <div className="bg-white border border-[#E3E1D9] rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm transition-all hover:shadow-md">
+          <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm transition-all hover:shadow-md">
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="p-2 bg-[#F7F6F2] rounded-xl text-[#8A9A8A]">
+                <span className="p-2 bg-[var(--color-bg-alt)] rounded-xl text-[var(--color-accent-primary)]">
                   <Waves className="w-4 h-4" />
                 </span>
-                <h2 className="font-serif text-lg font-medium text-[#3D3B35]">Geführter Atem-Flow</h2>
+                <h2 className="font-serif text-lg font-medium text-[var(--color-text-main)]">Geführter Atem-Flow</h2>
               </div>
-              <span className="px-2.5 py-1 bg-[#F7F6F2] rounded-full text-xs text-[#8A9A8A] font-medium">
+              <span className="px-2.5 py-1 bg-[var(--color-bg-alt)] rounded-full text-xs text-[var(--color-accent-primary)] font-medium">
                 {breathingMode === "deep" ? "Entspannung 4-7-8" : breathingMode === "classic" ? "Klassisch 4-4-4" : "Wellen-Atmung 5-5"}
               </span>
             </div>
@@ -362,8 +419,8 @@ export default function AtemChat() {
                 onClick={() => changeBreathingMode("deep")}
                 className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
                   breathingMode === "deep"
-                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
-                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                    ? "bg-[var(--color-accent-primary)] text-white border-transparent shadow-sm"
+                    : "bg-[var(--color-bg-alt)] text-[var(--color-text-main)] border-[var(--color-border-main)] hover:bg-[#eae8df]"
                 }`}
               >
                 Deep-Breath
@@ -372,8 +429,8 @@ export default function AtemChat() {
                 onClick={() => changeBreathingMode("classic")}
                 className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
                   breathingMode === "classic"
-                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
-                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                    ? "bg-[var(--color-accent-primary)] text-white border-transparent shadow-sm"
+                    : "bg-[var(--color-bg-alt)] text-[var(--color-text-main)] border-[var(--color-border-main)] hover:bg-[#eae8df]"
                 }`}
               >
                 Klassisch
@@ -382,8 +439,8 @@ export default function AtemChat() {
                 onClick={() => changeBreathingMode("calm")}
                 className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
                   breathingMode === "calm"
-                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
-                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                    ? "bg-[var(--color-accent-primary)] text-white border-transparent shadow-sm"
+                    : "bg-[var(--color-bg-alt)] text-[var(--color-text-main)] border-[var(--color-border-main)] hover:bg-[#eae8df]"
                 }`}
               >
                 Ausgleich
@@ -398,7 +455,7 @@ export default function AtemChat() {
                 {breathingIsActive && (
                   <motion.div
                     key="breathing-ring-1"
-                    className="absolute w-44 h-44 top-10 rounded-full border border-[#8A9A8A]/30 pointer-events-none"
+                    className="absolute w-44 h-44 top-10 rounded-full border border-[var(--color-accent-primary)]/30 pointer-events-none"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1.7, opacity: [0, 0.35, 0] }}
                     exit={{ opacity: 0 }}
@@ -420,9 +477,9 @@ export default function AtemChat() {
                       ? breathingPhase === "ein"
                         ? "bg-[#EBF1EB] text-[#4A574A] shadow-[#C1D2C1]/60"
                         : breathingPhase === "halten"
-                        ? "bg-[#F5EFE6] text-[#695C4D] shadow-[#E4D5C2]/60"
+                        ? "bg-[#F5EFE6] text-[var(--color-text-muted)] shadow-[#E4D5C2]/60"
                         : "bg-[#Ebf2f2] text-[#455A64] shadow-[#CFDCE2]/60"
-                      : "bg-[#F7F6F2] text-[#8A9A8A] shadow-[#eae7de]/50"
+                      : "bg-[var(--color-bg-alt)] text-[var(--color-accent-primary)] shadow-[#eae7de]/50"
                   }`}
                 >
                   <div className="text-2xl font-serif font-medium select-none text-center">
@@ -433,26 +490,26 @@ export default function AtemChat() {
 
               {/* Text directive */}
               <div className="mt-12 text-center min-h-[48px] px-4 z-10">
-                <p className="font-serif italic text-base font-medium text-[#3D3B35] transition-all">
+                <p className="font-serif italic text-base font-medium text-[var(--color-text-main)] transition-all">
                   {getPhaseText()}
                 </p>
-                <p className="text-[#8A9A8A] font-sans mt-1 uppercase tracking-wider font-semibold text-[10px]">
+                <p className="text-[var(--color-accent-primary)] font-sans mt-1 uppercase tracking-wider font-semibold text-[10px]">
                   {breathingIsActive ? "Ganz ruhig strömen lassen" : "Bereit für einen klaren Augenblick"}
                 </p>
               </div>
             </div>
 
             {/* Instruction Box */}
-            <div className="mb-6 bg-[#F7F6F2]/60 rounded-2xl p-4 text-[#3D3B35] font-sans text-xs border border-[#E3E1D9]/50">
+            <div className="mb-6 bg-[var(--color-bg-alt)]/60 rounded-2xl p-4 text-[var(--color-text-main)] font-sans text-xs border border-[var(--color-border-main)]/50">
               <p className="font-semibold mb-1 text-sm text-[#4A574A]">
                 {breathingMode === "deep" ? "Tiefenentspannung (4-7-8)" : breathingMode === "classic" ? "Klassische Box-Atmung (4-4-4)" : "Wellen-Atmung (5-5)"}
               </p>
-              <p className="mb-3 text-[#695C4D] leading-relaxed">
+              <p className="mb-3 text-[var(--color-text-muted)] leading-relaxed">
                 {breathingMode === "deep" ? "Beruhigt das Nervensystem stark und hilft, akuten Stress abzubauen. Ideal bei Anspannung." : breathingMode === "classic" ? "Schafft durch gleichmäßige Phasen Fokus und mentale Klarheit im Alltag." : "Eine sanfte, fließende Atmung ohne Pausen. Bringt Körper und Geist in Balance."}
               </p>
-              <div className="bg-white rounded-xl p-3.5 border border-[#E3E1D9] flex items-start gap-2.5 shadow-sm">
-                <Info className="w-4 h-4 text-[#8A9A8A] flex-shrink-0 mt-0.5" />
-                <div className="text-[#8A9A8A] leading-relaxed space-y-1.5 flex-1">
+              <div className="bg-[var(--color-bg-card)] rounded-xl p-3.5 border border-[var(--color-border-main)] flex items-start gap-2.5 shadow-sm">
+                <Info className="w-4 h-4 text-[var(--color-accent-primary)] flex-shrink-0 mt-0.5" />
+                <div className="text-[var(--color-accent-primary)] leading-relaxed space-y-1.5 flex-1">
                   <p><strong>Bewusstsein:</strong> Schließen Sie gerne sanft Ihre Augen, um sich besser auf diesen Rhythmus zu konzentrieren und jeden Atemzug ganz bewusst wahrzunehmen.</p>
                   <p><strong>Einatmen</strong> tief durch die Nase.</p>
                   <p><strong>Ausatmen</strong> durch den Mund, um Belastendes spürbar loszulassen. Bei einer leichten Übung einfach sanft durch die Nase ausatmen.</p>
@@ -467,7 +524,7 @@ export default function AtemChat() {
               className={`w-full py-3.5 rounded-2xl flex items-center justify-center space-x-2 font-medium tracking-wide transition-all duration-300 shadow-sm cursor-pointer ${
                 breathingIsActive
                   ? "bg-[#cc7a6d] hover:bg-[#bf6859] text-white"
-                  : "bg-[#8A9A8A] hover:bg-[#728372] text-white"
+                  : "bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white"
               }`}
             >
               <Wind className="w-5 h-5" />
@@ -477,23 +534,23 @@ export default function AtemChat() {
         </section>
 
         {/* Right Side: Conversation Chat Container */}
-        <section id="chat-room" className="lg:col-span-7 flex flex-col bg-white border border-[#E3E1D9] rounded-3xl overflow-hidden shadow-sm transition-all hover:shadow-md">
+        <section id="chat-room" className="lg:col-span-7 flex flex-col bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl overflow-hidden shadow-sm transition-all hover:shadow-md">
           {/* Header of Chat */}
-          <div className="p-5 border-b border-[#E3E1D9] bg-white/85 backdrop-blur-sm flex items-center justify-between">
+          <div className="p-5 border-b border-[var(--color-border-main)] bg-[var(--color-bg-card)]/85 backdrop-blur-sm flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <span className="flex h-3 w-3 absolute -top-0.5 -right-0.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8A9A8A] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#8A9A8A]"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-primary)] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[var(--color-accent-primary)]"></span>
                 </span>
-                <div className="w-10 h-10 rounded-full bg-[#F7F6F2] flex items-center justify-center text-[#8A9A8A] font-serif font-semibold border border-[#E3E1D9]">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-bg-alt)] flex items-center justify-center text-[var(--color-accent-primary)] font-serif font-semibold border border-[var(--color-border-main)]">
                   S
                 </div>
               </div>
               <div>
-                <div className="font-serif text-base font-semibold text-[#3D3B35] flex items-center gap-1.5">
+                <div className="font-serif text-base font-semibold text-[var(--color-text-main)] flex items-center gap-1.5">
                   Stress-Begleiter
-                  <span className="text-[10px] uppercase tracking-wider bg-[#F7F6F2] text-[#8A9A8A] px-2 py-0.5 rounded font-semibold font-sans border border-[#E3E1D9]">
+                  <span className="text-[10px] uppercase tracking-wider bg-[var(--color-bg-alt)] text-[var(--color-accent-primary)] px-2 py-0.5 rounded font-semibold font-sans border border-[var(--color-border-main)]">
                     Aktiv
                   </span>
                 </div>
@@ -501,13 +558,13 @@ export default function AtemChat() {
               </div>
             </div>
 
-            <span className="text-[10px] text-[#8A9A8A] uppercase tracking-wider font-semibold hidden sm:block flex items-center gap-1">
+            <span className="text-[10px] text-[var(--color-accent-primary)] uppercase tracking-wider font-semibold hidden sm:block flex items-center gap-1">
               🔒 Ihre Privatsphäre ist geschützt
             </span>
           </div>
 
           {/* Scrollable Conversation Panel */}
-          <div className="flex-1 overflow-y-auto p-5 md:p-8 space-y-6 max-h-[500px] sm:max-h-[600px] md:max-h-[640px] lg:max-h-[700px] bg-[#F7F6F2]/30">
+          <div className="flex-1 overflow-y-auto p-5 md:p-8 space-y-6 max-h-[500px] sm:max-h-[600px] md:max-h-[640px] lg:max-h-[700px] bg-[var(--color-bg-alt)]/30">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -516,7 +573,7 @@ export default function AtemChat() {
                 }`}
               >
                 {msg.sender === "assistant" && (
-                  <span className="text-[10px] uppercase tracking-widest text-[#8A9A8A] font-semibold ml-4 mb-2">
+                  <span className="text-[10px] uppercase tracking-widest text-[var(--color-accent-primary)] font-semibold ml-4 mb-2">
                     Begleiter
                   </span>
                 )}
@@ -524,23 +581,23 @@ export default function AtemChat() {
                 <div
                   className={`p-5 md:p-6 text-[15px] leading-relaxed whitespace-pre-wrap transition-all shadow-sm ${
                     msg.sender === "user"
-                      ? "bg-[#8A9A8A] text-white rounded-[2rem] rounded-tr-lg border-none"
-                      : "bg-white text-[#3D3B35] rounded-[2rem] rounded-tl-lg border border-[#E3E1D9]"
+                      ? "bg-[var(--color-accent-primary)] text-white rounded-[2rem] rounded-tr-lg border-none"
+                      : "bg-[var(--color-bg-card)] text-[var(--color-text-main)] rounded-[2rem] rounded-tl-lg border border-[var(--color-border-main)]"
                   }`}
                 >
                   {msg.text}
                   {msg.hasPremiumOffer && (
-                    <div className="mt-4 pt-4 border-t border-[#E3E1D9] flex flex-col gap-3">
+                    <div className="mt-4 pt-4 border-t border-[var(--color-border-main)] flex flex-col gap-3">
                       <div className="flex items-center gap-2">
-                        <span className="p-1.5 bg-[#F7F6F2] rounded-lg text-[#8A9A8A] shrink-0">
+                        <span className="p-1.5 bg-[var(--color-bg-alt)] rounded-lg text-[var(--color-accent-primary)] shrink-0">
                           <Leaf className="w-4 h-4" />
                         </span>
-                        <h4 className="font-serif text-sm font-medium text-[#3D3B35]">Geführte Premium-Meditation</h4>
+                        <h4 className="font-serif text-sm font-medium text-[var(--color-text-main)]">Geführte Premium-Meditation</h4>
                       </div>
-                      <p className="text-xs text-[#695C4D]">
+                      <p className="text-xs text-[var(--color-text-muted)]">
                         Mit dieser speziell entwickelten Meditation können Sie tiefere innere Ruhe finden und die angesprochenen Themen auflösen. 
                       </p>
-                      <button className="self-start mt-2 px-4 py-2 bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-semibold rounded-full transition-all shadow-sm">
+                      <button className="self-start mt-2 px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-full transition-all shadow-sm">
                         Meditation freischalten (4,99 €)
                       </button>
                     </div>
@@ -554,14 +611,14 @@ export default function AtemChat() {
             {/* AI Generation State Loader */}
             {isLoading && (
               <div className="flex flex-col mr-auto items-start max-w-[85%] md:max-w-[75%]">
-                <span className="text-[10px] uppercase tracking-widest text-[#8A9A8A] font-semibold ml-4 mb-2">
+                <span className="text-[10px] uppercase tracking-widest text-[var(--color-accent-primary)] font-semibold ml-4 mb-2">
                   Begleiter
                 </span>
-                <div className="bg-white border border-[#E3E1D9] rounded-[2rem] rounded-tl-lg p-5 flex items-center space-x-1.5 shadow-sm">
-                  <span className="text-xs text-[#8A9A8A] font-sans mr-1 tracking-wide font-medium">Begleiter atmet nach...</span>
-                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000"></span>
-                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000 delay-150"></span>
-                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000 delay-300"></span>
+                <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-[2rem] rounded-tl-lg p-5 flex items-center space-x-1.5 shadow-sm">
+                  <span className="text-xs text-[var(--color-accent-primary)] font-sans mr-1 tracking-wide font-medium">Begleiter atmet nach...</span>
+                  <span className="w-1.5 h-1.5 bg-[var(--color-accent-primary)] rounded-full animate-bounce duration-1000"></span>
+                  <span className="w-1.5 h-1.5 bg-[var(--color-accent-primary)] rounded-full animate-bounce duration-1000 delay-150"></span>
+                  <span className="w-1.5 h-1.5 bg-[var(--color-accent-primary)] rounded-full animate-bounce duration-1000 delay-300"></span>
                 </div>
               </div>
             )}
@@ -570,8 +627,8 @@ export default function AtemChat() {
           </div>
 
           {/* Prompt Presets / Selection chips */}
-          <div className="px-5 py-4 bg-[#F7F6F2]/70 border-t border-b border-[#E3E1D9]">
-            <p className="text-[10px] uppercase tracking-widest text-[#8A9A8A] mb-3.5 flex items-center gap-1.5 font-bold font-sans">
+          <div className="px-5 py-4 bg-[var(--color-bg-alt)]/70 border-t border-b border-[var(--color-border-main)]">
+            <p className="text-[10px] uppercase tracking-widest text-[var(--color-accent-primary)] mb-3.5 flex items-center gap-1.5 font-bold font-sans">
               <Sparkles className="w-3.5 h-3.5" /> Welches Empfinden beschreibt Ihren Zustand?
             </p>
             <div className="flex flex-wrap gap-2">
@@ -580,7 +637,7 @@ export default function AtemChat() {
                   key={feel.label}
                   onClick={() => handleSendMessage(feel.prompt)}
                   disabled={isLoading}
-                  className="text-xs text-[#3D3B35] bg-white border border-[#E3E1D9] py-2 px-3.5 rounded-full hover:bg-[#F7F6F2] hover:text-[#8A9A8A] hover:border-[#8A9A8A] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center shadow-sm"
+                  className="text-xs text-[var(--color-text-main)] bg-[var(--color-bg-card)] border border-[var(--color-border-main)] py-2 px-3.5 rounded-full hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center shadow-sm"
                 >
                   {feel.label}
                 </button>
@@ -590,7 +647,7 @@ export default function AtemChat() {
 
           {/* Speech Status Banner */}
           {isListening && (
-            <div className="px-5 py-2.5 bg-[#EBF1EB] text-[#4A574A] border-b border-[#E3E1D9] text-xs flex items-center justify-between">
+            <div className="px-5 py-2.5 bg-[#EBF1EB] text-[#4A574A] border-b border-[var(--color-border-main)] text-xs flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#cc7a6d] animate-pulse" />
                 <span className="font-sans italic">Ich höre Ihnen zu... Sprechen Sie ganz gelassen. 🌱</span>
@@ -609,7 +666,7 @@ export default function AtemChat() {
           )}
 
           {speechError && (
-            <div className="px-5 py-2.5 bg-[#fcedeb] text-[#cc4c3d] border-b border-[#E3E1D9] text-xs flex items-center justify-between">
+            <div className="px-5 py-2.5 bg-[#fcedeb] text-[#cc4c3d] border-b border-[var(--color-border-main)] text-xs flex items-center justify-between">
               <span>{speechError}</span>
               <button
                 type="button"
@@ -627,7 +684,7 @@ export default function AtemChat() {
               e.preventDefault();
               handleSendMessage(inputValue);
             }}
-            className="p-5 bg-white flex items-center space-x-3.5"
+            className="p-5 bg-[var(--color-bg-card)] flex items-center space-x-3.5"
           >
             <div className="flex-1 relative">
               <input
@@ -637,7 +694,7 @@ export default function AtemChat() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isLoading}
-                className="w-full py-4 pl-6 pr-14 rounded-full bg-white border border-[#E3E1D9] text-sm text-[#3D3B35] focus:outline-none focus:ring-2 focus:ring-[#8A9A8A]/30 focus:border-[#8A9A8A] placeholder-[#C0BEB4] transition-all disabled:opacity-60 shadow-inner"
+                className="w-full py-4 pl-6 pr-14 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-sm text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]/30 focus:border-[var(--color-accent-primary)] placeholder-[#C0BEB4] transition-all disabled:opacity-60 shadow-inner"
               />
               <span className="absolute right-4.5 top-4 text-[10px] text-[#A09E94] font-mono tracking-widest uppercase hidden sm:inline select-none">
                 Send ↵
@@ -652,7 +709,7 @@ export default function AtemChat() {
               className={`p-4 rounded-full transition-all shadow-md cursor-pointer ${
                 isListening
                   ? "bg-[#cc7a6d] text-white animate-pulse"
-                  : "bg-[#F7F6F2] hover:bg-[#E3E1D9] text-[#8A9A8A]"
+                  : "bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-main)] text-[var(--color-accent-primary)]"
               }`}
               title={isListening ? "Spracheingabe stoppen" : "Gedanken aussprechen"}
             >
@@ -663,7 +720,7 @@ export default function AtemChat() {
               id="btn-send-message"
               type="submit"
               disabled={!inputValue.trim() || isLoading}
-              className="p-4 bg-[#8A9A8A] hover:bg-[#728372] text-white rounded-full transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="p-4 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white rounded-full transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               title="Nachricht senden"
             >
               <Send className="w-4 h-4" />
@@ -671,9 +728,9 @@ export default function AtemChat() {
           </form>
 
           {/* Embedded quiet metadata info */}
-          <div className="px-5 py-3 bg-white border-t border-[#E3E1D9] text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold flex items-center justify-between">
+          <div className="px-5 py-3 bg-[var(--color-bg-card)] border-t border-[var(--color-border-main)] text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold flex items-center justify-between">
             <span className="flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-[#8A9A8A]" /> Keine Daten werden dauerhaft gespeichert.
+              <Info className="w-3.5 h-3.5 text-[var(--color-accent-primary)]" /> Keine Daten werden dauerhaft gespeichert.
             </span>
             <span>v1.2 • Sicherer &amp; freier raum</span>
           </div>
@@ -763,7 +820,7 @@ export default function AtemChat() {
               <button
                 id="btn-helpline-acknowledged"
                 onClick={() => setShowHelpline(false)}
-                className="w-full mt-6 py-3 bg-[#8A9A8A] hover:bg-[#728372] text-white text-sm font-medium rounded-2xl transition-colors cursor-pointer"
+                className="w-full mt-6 py-3 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-medium rounded-2xl transition-colors cursor-pointer"
               >
                 Ich verstehe, danke
               </button>
@@ -773,17 +830,17 @@ export default function AtemChat() {
       </AnimatePresence>
 
       {/* Little warm footer */}
-      <footer className="py-6 px-6 border-t border-[#E3E1D9] bg-transparent text-center text-xs text-[#808a82]">
+      <footer className="py-6 px-6 border-t border-[var(--color-border-main)] bg-transparent text-center text-xs text-[#808a82]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="flex items-center justify-center gap-1">
             Gestaltet für die App <span className="font-serif italic font-medium">Flow der Stille</span> • In Achtsamkeit gefertigt 🌱
           </p>
           <div className="flex items-center space-x-4">
-            <button onClick={() => setShowHelpline(true)} className="hover:underline hover:text-[#8A9A8A] cursor-pointer">
+            <button onClick={() => setShowHelpline(true)} className="hover:underline hover:text-[var(--color-accent-primary)] cursor-pointer">
               Therapeutischer Hinweis
             </button>
             <span>•</span>
-            <span className="font-mono text-[#8A9A8A]">100% Sicher &amp; Privat</span>
+            <span className="font-mono text-[var(--color-accent-primary)]">100% Sicher &amp; Privat</span>
           </div>
         </div>
       </footer>

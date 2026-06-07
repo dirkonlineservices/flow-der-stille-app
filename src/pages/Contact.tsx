@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Send, User, Mail, MessageSquare, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 export default function Contact() {
   const [name, setName] = useState('');
@@ -31,20 +32,21 @@ export default function Contact() {
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
+      <SEO title="Kontakt" description="Schreibe uns eine Nachricht." />
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-serif text-[var(--color-accent-olive)] mb-2">Kontakt</h1>
-        <p className="text-stone-500">Schreibe uns eine Nachricht. Wir melden uns bei dir.</p>
+        <h1 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-2">Kontakt</h1>
+        <p className="text-[var(--color-text-muted)]">Schreibe uns eine Nachricht. Wir melden uns bei dir.</p>
       </header>
 
-      <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
+      <div className="bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)]">
         {status === 'success' ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <CheckCircle className="text-emerald-500 w-16 h-16 mb-4" />
-            <h3 className="text-xl font-serif text-stone-800 mb-2">Nachricht gesendet!</h3>
-            <p className="text-stone-500 mb-6">Vielen Dank für deine Nachricht. Wir melden uns in Kürze bei dir.</p>
+            <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Nachricht gesendet!</h3>
+            <p className="text-[var(--color-text-muted)] mb-6">Vielen Dank für deine Nachricht. Wir melden uns in Kürze bei dir.</p>
             <button
               onClick={() => setStatus('idle')}
-              className="px-6 py-2 bg-stone-100 text-stone-600 rounded-xl hover:bg-stone-200 transition-colors"
+              className="px-6 py-2 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl hover:bg-stone-200 transition-colors"
             >
               Neue Nachricht schreiben
             </button>
@@ -53,7 +55,7 @@ export default function Contact() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-stone-600 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
                   <User size={16} /> Voller Name
                 </label>
                 <input
@@ -61,13 +63,13 @@ export default function Contact() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Max Mustermann"
-                  className="w-full p-4 bg-stone-50 rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none transition-all"
+                  className="w-full p-4 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-stone-600 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
                   <Mail size={16} /> E-Mail Adresse
                 </label>
                 <input
@@ -75,14 +77,14 @@ export default function Contact() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="max@beispiel.de"
-                  className="w-full p-4 bg-stone-50 rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none transition-all"
+                  className="w-full p-4 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-stone-600 mb-2 flex items-center gap-2">
+              <label className="block text-sm font-medium text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
                 <MessageSquare size={16} /> Deine Nachricht
               </label>
               <textarea
@@ -90,7 +92,7 @@ export default function Contact() {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Wie können wir dir helfen?"
                 rows={5}
-                className="w-full p-4 bg-stone-50 rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none transition-all resize-none"
+                className="w-full p-4 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all resize-none"
                 required
               />
             </div>
@@ -101,9 +103,9 @@ export default function Contact() {
                   type="checkbox"
                   checked={newsletter}
                   onChange={(e) => setNewsletter(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-olive)] focus:ring-[var(--color-accent-olive)]"
+                  className="mt-1 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)]"
                 />
-                <span className="text-sm text-stone-600 leading-tight">
+                <span className="text-sm text-[var(--color-text-muted)] leading-tight">
                   Ja, ich möchte mich für den Newsletter anmelden und regelmäßig Tipps rund um Achtsamkeit erhalten. (Freiwillig)
                 </span>
               </label>
@@ -113,11 +115,11 @@ export default function Contact() {
                   type="checkbox"
                   checked={dsgvo}
                   onChange={(e) => setDsgvo(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-olive)] focus:ring-[var(--color-accent-olive)]"
+                  className="mt-1 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)]"
                   required
                 />
-                <span className="text-sm text-stone-600 leading-tight">
-                  Ich habe die <Link to="/datenschutz" className="text-[var(--color-accent-olive)] hover:underline">Datenschutzerklärung</Link> zur Kenntnis genommen. Ich stimme zu, dass meine Angaben und Daten zur Beantwortung meiner Anfrage elektronisch erhoben und gespeichert werden. *
+                <span className="text-sm text-[var(--color-text-muted)] leading-tight">
+                  Ich habe die <Link to="/datenschutz" className="text-[var(--color-accent-primary)] hover:underline">Datenschutzerklärung</Link> zur Kenntnis genommen. Ich stimme zu, dass meine Angaben und Daten zur Beantwortung meiner Anfrage elektronisch erhoben und gespeichert werden. *
                 </span>
               </label>
             </div>
@@ -129,7 +131,7 @@ export default function Contact() {
             <button
               type="submit"
               disabled={status === 'loading' || !dsgvo}
-              className="w-full py-4 bg-[var(--color-accent-olive)] text-white rounded-2xl font-medium hover:bg-[var(--color-accent-olive-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-[var(--color-accent-primary)] text-white rounded-2xl font-medium hover:bg-[var(--color-accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {status === 'loading' ? (
                 'Wird gesendet...'

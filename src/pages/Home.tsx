@@ -1,17 +1,33 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import WeeklyChallenge from '../components/WeeklyChallenge';
+import HomeChatWidget from '../components/HomeChatWidget';
 import SEO from '../components/SEO';
 import { supabase } from '../supabase';
+
+const dailyWisdoms = [
+  { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
+  { title: "Tägliche Weisheit", text: "\"Achtsamkeit bedeutet nicht, dass wir unsere Gefühle unterdrücken. Es bedeutet, dass wir ihnen Raum geben, ohne uns von ihnen beherrschen zu lassen.\"" },
+  { title: "Tägliche Weisheit", text: "\"In der Stille liegt eine sanfte Kraft. Nimm dir heute einen Moment, um ihr einfach nur zuzuhören.\"" },
+  { title: "Tägliche Weisheit", text: "\"Jeder tiefe Atemzug ist ein kleiner Neuanfang. Du kannst jederzeit von vorne beginnen.\"" },
+  { title: "Tägliche Weisheit", text: "\"Es gibt nichts zu tun, außer zu sein. Erlaube dir für einen Moment, einfach nur zu existieren.\"" },
+  { title: "Tägliche Weisheit", text: "\"Stress ist oft der Versuch des Körpers, gegen die Realität anzukämpfen. Entspannung beginnt mit dem Akzeptieren des Jetzt.\"" },
+  { title: "Tägliche Weisheit", text: "\"Dein Atem ist ein Anker im Hier und Jetzt. Wenn die Gedanken rasen, kehre sanft zu ihm zurück.\"" },
+];
 
 export default function Home() {
   const { t, language } = useLanguage();
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
+
+  // Calculate daily wisdom index
+  const dayOfYear = Math.floor((Date.now() - Number(new Date(new Date().getFullYear(), 0, 0))) / 86400000);
+  const todaysWisdom = dailyWisdoms[dayOfYear % dailyWisdoms.length];
 
   const timeOfDay = new Date().getHours();
   let greetingKey = 'home.greeting.morning';
@@ -75,17 +91,45 @@ export default function Home() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-light text-[var(--color-accent-olive)] mb-2"
+            className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4"
           >
             {t(greetingKey)}, {getUserName()}.
           </motion.h1>
-          <p className="text-stone-500 text-lg font-light">
+          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6">
             {t('home.subtitle')}
           </p>
+          
+          {!user && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[var(--color-bg-alt)] p-6 rounded-2xl border border-[var(--color-border-main)] max-w-3xl flex flex-col md:flex-row gap-6 items-center justify-between"
+            >
+              <div className="flex-1">
+                <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Willkommen bei Flow der Stille</h3>
+                <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">
+                  Die Anmeldung ist kostenlos und unverbindlich. Um deine Fortschritte dauerhaft zu speichern und Zugriff auf wöchentliche Impulse sowie weitere Premium-Funktionen zu erhalten, benötigst du einen Login. Dort findest du mehr.
+                </p>
+              </div>
+              <div className="shrink-0 flex gap-3 w-full md:w-auto">
+                <Link to="/login" className="flex-1 md:flex-none text-center px-6 py-2.5 bg-[var(--color-bg-card)] text-[var(--color-text-main)] text-sm font-medium rounded-full border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] transition-colors shadow-sm">
+                  Anmelden
+                </Link>
+                <Link to="/register" className="flex-1 md:flex-none text-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+                  Kostenlos registrieren
+                </Link>
+              </div>
+            </motion.div>
+          )}
         </header>
 
-        <div className="max-w-3xl">
-          <WeeklyChallenge />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <WeeklyChallenge />
+          </div>
+          <div className="lg:col-span-1">
+            <HomeChatWidget />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -94,35 +138,39 @@ export default function Home() {
             description={t('home.card.morning.desc')}
             icon={<Sun className="text-amber-500" />}
             delay={0.1}
+            to="/atemchat"
           />
           <QuickActionCard 
             title={t('home.card.breathing.title')} 
             description={t('home.card.breathing.desc')}
             icon={<Wind className="text-blue-400" />}
             delay={0.2}
+            to="/exercises"
           />
           <QuickActionCard 
             title={t('home.card.meal.title')} 
             description={t('home.card.meal.desc')}
             icon={<Coffee className="text-emerald-600" />}
             delay={0.3}
+            to="/recipes"
           />
           <QuickActionCard 
             title={t('home.card.evening.title')} 
             description={t('home.card.evening.desc')}
             icon={<Moon className="text-indigo-400" />}
             delay={0.4}
+            to="/evening"
           />
         </div>
 
-        <section className="mt-12 p-8 bg-white rounded-3xl shadow-sm border border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <section className="mt-12 p-8 bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen size={18} className="text-[var(--color-accent-olive)]" />
-              <h2 className="text-2xl font-serif text-[var(--color-accent-olive)]">{t('home.wisdom.title')}</h2>
+              <BookOpen size={18} className="text-[var(--color-accent-primary)]" />
+              <h2 className="text-2xl font-serif text-[var(--color-accent-primary)]">{todaysWisdom.title}</h2>
             </div>
-            <p className="text-stone-600 italic text-lg leading-relaxed max-w-2xl">
-              {t('home.wisdom.text')}
+            <p className="text-[var(--color-text-muted)] italic text-lg leading-relaxed max-w-2xl">
+              {todaysWisdom.text}
             </p>
           </div>
 
@@ -135,16 +183,16 @@ export default function Home() {
                 className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all ${
                   isCompleted 
                     ? 'bg-emerald-55 border border-emerald-100 text-emerald-800 bg-emerald-50 cursor-default shadow-sm' 
-                    : 'bg-[var(--color-bg-warm)] hover:bg-stone-150 text-stone-700 border border-stone-200 shadow-sm active:scale-95'
+                    : 'bg-[var(--color-bg-body)] hover:bg-stone-150 text-[var(--color-text-main)] border border-[var(--color-border-main)] shadow-sm active:scale-95'
                 }`}
               >
-                {isCompleted ? <CheckCircle size={16} className="text-emerald-600" /> : <Circle size={16} className="text-stone-400" />}
+                {isCompleted ? <CheckCircle size={16} className="text-emerald-600" /> : <Circle size={16} className="text-[var(--color-text-muted-light)]" />}
                 {isCompleted 
                   ? (language === 'de' ? 'Inmitten der Stille reflektiert' : 'Wisdom Reflected') 
                   : (loading ? '...' : (language === 'de' ? 'Als reflektiert markieren' : 'Mark as Reflected'))}
               </button>
             ) : (
-              <p className="text-xs text-stone-400 italic">
+              <p className="text-xs text-[var(--color-text-muted-light)] italic">
                 {language === 'de' ? 'Melde dich an, um die heutige Weisheit zu reflektieren.' : 'Log in to reflect on today\'s wisdom.'}
               </p>
             )}
@@ -155,21 +203,23 @@ export default function Home() {
   );
 }
 
-function QuickActionCard({ title, description, icon, delay }: { title: string; description: string; icon: React.ReactNode; delay: number }) {
+function QuickActionCard({ title, description, icon, delay, to }: { title: string; description: string; icon: React.ReactNode; delay: number; to: string }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay }}
-      className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-stone-50 group"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-[var(--color-bg-warm)] transition-colors">
-          {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
+    <Link to={to} className="block group">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay }}
+        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-stone-50 h-full"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl group-hover:bg-[var(--color-bg-body)] transition-colors">
+            {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
+          </div>
         </div>
-      </div>
-      <h3 className="text-xl font-medium text-stone-800 mb-2 font-sans">{title}</h3>
-      <p className="text-stone-500 text-sm leading-relaxed">{description}</p>
-    </motion.div>
+        <h3 className="text-xl font-medium text-[var(--color-text-main)] mb-2 font-sans group-hover:text-[var(--color-accent-primary)] transition-colors">{title}</h3>
+        <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{description}</p>
+      </motion.div>
+    </Link>
   );
 }

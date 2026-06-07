@@ -2,15 +2,17 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Brain, Activity, Zap, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 export default function Learn() {
   const { t } = useLanguage();
 
   return (
     <div className="space-y-12 max-w-3xl">
+      <SEO title="Leitfaden" description="Verstehen Sie das Nervensystem, Sympathikus und Parasympathikus." />
       <header>
-        <h1 className="text-4xl font-serif text-[var(--color-accent-olive)] mb-4">{t('learn.title')}</h1>
-        <p className="text-stone-500 text-lg">
+        <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">{t('learn.title')}</h1>
+        <p className="text-[var(--color-text-muted)] text-lg">
           {t('learn.subtitle')}
         </p>
       </header>
@@ -31,8 +33,8 @@ export default function Learn() {
         color="bg-emerald-50"
       />
 
-      <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
-        <h2 className="text-2xl font-serif text-[var(--color-accent-olive)] mb-6">{t('learn.switch.title')}</h2>
+      <div className="bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)]">
+        <h2 className="text-2xl font-serif text-[var(--color-accent-primary)] mb-6">{t('learn.switch.title')}</h2>
         <div className="space-y-6">
           <Tip 
             title={t('learn.tip.breathing.title')} 
@@ -64,9 +66,9 @@ function Section({ title, subtitle, icon, content, color }: { title: string; sub
         {React.cloneElement(icon as React.ReactElement<any>, { size: 32 })}
       </div>
       <div>
-        <h3 className="text-2xl font-serif text-stone-800 mb-1">{title}</h3>
-        <p className="text-sm font-medium text-stone-400 uppercase tracking-wider mb-3">{subtitle}</p>
-        <p className="text-stone-600 leading-relaxed">{content}</p>
+        <h3 className="text-2xl font-serif text-[var(--color-text-main)] mb-1">{title}</h3>
+        <p className="text-sm font-medium text-[var(--color-text-muted-light)] uppercase tracking-wider mb-3">{subtitle}</p>
+        <p className="text-[var(--color-text-muted)] leading-relaxed">{content}</p>
       </div>
     </motion.div>
   );
@@ -75,10 +77,10 @@ function Section({ title, subtitle, icon, content, color }: { title: string; sub
 function Tip({ title, text }: { title: string; text: string }) {
   return (
     <div className="flex gap-4 items-start">
-      <div className="w-2 h-2 rounded-full bg-[var(--color-accent-olive)] mt-2 shrink-0" />
+      <div className="w-2 h-2 rounded-full bg-[var(--color-accent-primary)] mt-2 shrink-0" />
       <div>
-        <h4 className="font-medium text-stone-800 mb-1">{title}</h4>
-        <p className="text-stone-500 text-sm">{text}</p>
+        <h4 className="font-medium text-[var(--color-text-main)] mb-1">{title}</h4>
+        <p className="text-[var(--color-text-muted)] text-sm">{text}</p>
       </div>
     </div>
   );
