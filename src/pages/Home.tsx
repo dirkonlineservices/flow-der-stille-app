@@ -123,13 +123,8 @@ export default function Home() {
           )}
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <WeeklyChallenge />
-          </div>
-          <div className="lg:col-span-1">
-            <HomeChatWidget />
-          </div>
+        <div className="max-w-3xl">
+          <WeeklyChallenge />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

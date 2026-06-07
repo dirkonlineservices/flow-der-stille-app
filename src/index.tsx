@@ -66,14 +66,10 @@ export default function App() {
                   <Route path="datenschutz" element={<Datenschutz />} />
                 </Route>
 
-                {/* NEU: Dein geschützter, vollflächiger Premium-Raum (Ohne Standard-Menü) */}
+                {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}
                 <Route 
                   path="/atemchat" 
-                  element={
-                    <ProtectedRoute>
-                      <AtemChat />
-                    </ProtectedRoute>
-                  } 
+                  element={<AtemChat />} 
                 />
 
               </Routes>

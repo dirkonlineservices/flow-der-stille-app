@@ -17,6 +17,9 @@ import {
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { PRODUCTS } from "../data/store";
 
 // Hilfsfunktion: Spielt einen sanften Gong/Klangschalen-Ton
 const playPhaseSound = (phase: "ein" | "halten" | "aus") => {
@@ -69,6 +72,19 @@ interface Message {
 
 export default function AtemChat() {
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+
+  // Track daily usage
+  const today = new Date().toISOString().split('T')[0];
+  const usageKey = `chat_usage_${user?.id}_${today}`;
+  const [dailyUsageCount, setDailyUsageCount] = useState(() => {
+    const saved = localStorage.getItem(usageKey);
+    return saved ? parseInt(saved, 10) : 0;
+  });
+
+  const isPremium = user?.purchased_products?.includes('premium_chat') || false;
+  const reachedLimit = user && !isPremium && dailyUsageCount >= 3;
 
   // Conversational State
   const [messages, setMessages] = useState<Message[]>([
@@ -261,6 +277,13 @@ export default function AtemChat() {
   // Submit chat message to Backend Express
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || isLoading) return;
+    if (!user || reachedLimit) return;
+
+    if (!isPremium) {
+      const newCount = dailyUsageCount + 1;
+      setDailyUsageCount(newCount);
+      localStorage.setItem(usageKey, newCount.toString());
+    }
 
     const userMessage: Message = {
       id: Math.random().toString(),
@@ -554,7 +577,14 @@ export default function AtemChat() {
                     Aktiv
                   </span>
                 </div>
-                <div className="text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold">Ganzheitlich begleitend • Ohne Urteile</div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <div className="text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold">Ganzheitlich begleitend • Ohne Urteile</div>
+                  {user && !isPremium && (
+                    <span className="text-[9px] uppercase font-bold tracking-widest text-[var(--color-text-muted)] bg-stone-200/50 px-2 py-0.5 rounded-full border border-stone-200">
+                      {Math.max(0, 3 - dailyUsageCount)} Nachrichten übrig
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -627,26 +657,51 @@ export default function AtemChat() {
           </div>
 
           {/* Prompt Presets / Selection chips */}
-          <div className="px-5 py-4 bg-[var(--color-bg-alt)]/70 border-t border-b border-[var(--color-border-main)]">
-            <p className="text-[10px] uppercase tracking-widest text-[var(--color-accent-primary)] mb-3.5 flex items-center gap-1.5 font-bold font-sans">
-              <Sparkles className="w-3.5 h-3.5" /> Welches Empfinden beschreibt Ihren Zustand?
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {starterFeelings.map((feel) => (
-                <button
-                  key={feel.label}
-                  onClick={() => handleSendMessage(feel.prompt)}
-                  disabled={isLoading}
-                  className="text-xs text-[var(--color-text-main)] bg-[var(--color-bg-card)] border border-[var(--color-border-main)] py-2 px-3.5 rounded-full hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center shadow-sm"
-                >
-                  {feel.label}
-                </button>
-              ))}
+          {!reachedLimit && user && (
+            <div className="px-5 py-4 bg-[var(--color-bg-alt)]/70 border-t border-b border-[var(--color-border-main)]">
+              <p className="text-[10px] uppercase tracking-widest text-[var(--color-accent-primary)] mb-3.5 flex items-center gap-1.5 font-bold font-sans">
+                <Sparkles className="w-3.5 h-3.5" /> Welches Empfinden beschreibt Ihren Zustand?
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {starterFeelings.map((feel) => (
+                  <button
+                    key={feel.label}
+                    onClick={() => handleSendMessage(feel.prompt)}
+                    disabled={isLoading}
+                    className="text-xs text-[var(--color-text-main)] bg-[var(--color-bg-card)] border border-[var(--color-border-main)] py-2 px-3.5 rounded-full hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center shadow-sm"
+                  >
+                    {feel.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* User Limits Info Banner */}
+          {!user && (
+            <div className="bg-amber-50 border-t border-amber-200 p-4 text-center">
+              <p className="text-sm text-amber-800 font-medium">Melden Sie sich kostenlos an, um 3 Freinachrichten pro Tag im Entspannungsassistenten zu nutzen.</p>
+              <Link to="/register" className="mt-2 inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-full hover:bg-amber-700 transition">
+                Kostenlos registrieren
+              </Link>
+            </div>
+          )}
+
+          {user && !isPremium && reachedLimit && (
+            <div className="bg-amber-50 border-t border-amber-200 p-4 text-center">
+              <p className="text-sm text-amber-800 font-medium mb-2">Tägliches Limit von 3 Nachrichten erreicht.</p>
+              <p className="text-xs text-amber-700 mb-3">Schalten Sie Premium frei, um unbegrenzt zu chatten (4,99 € / Monat).</p>
+              <button onClick={() => {
+                const feature = PRODUCTS.find(p => p.id === 'premium_chat');
+                if (feature) addToCart(feature);
+              }} className="inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-full hover:bg-amber-700 transition">
+                Premium freischalten
+              </button>
+            </div>
+          )}
 
           {/* Speech Status Banner */}
-          {isListening && (
+          {isListening && !reachedLimit && user && (
             <div className="px-5 py-2.5 bg-[#EBF1EB] text-[#4A574A] border-b border-[var(--color-border-main)] text-xs flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#cc7a6d] animate-pulse" />
@@ -690,10 +745,10 @@ export default function AtemChat() {
               <input
                 id="inp-chat-message"
                 type="text"
-                placeholder="Erzählen Sie Ihre Gedanken oder sprechen Sie sie aus..."
+                placeholder={!user ? "Bitte melden Sie sich an, um zu chatten" : reachedLimit ? "Tägliches Limit erreicht..." : "Erzählen Sie Ihre Gedanken oder sprechen Sie sie aus..."}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || !user || reachedLimit}
                 className="w-full py-4 pl-6 pr-14 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-sm text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]/30 focus:border-[var(--color-accent-primary)] placeholder-[#C0BEB4] transition-all disabled:opacity-60 shadow-inner"
               />
               <span className="absolute right-4.5 top-4 text-[10px] text-[#A09E94] font-mono tracking-widest uppercase hidden sm:inline select-none">
@@ -705,8 +760,9 @@ export default function AtemChat() {
             <button
               id="btn-voice-dictation"
               type="button"
+              disabled={!user || reachedLimit}
               onClick={toggleSpeechRecognition}
-              className={`p-4 rounded-full transition-all shadow-md cursor-pointer ${
+              className={`p-4 rounded-full transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                 isListening
                   ? "bg-[#cc7a6d] text-white animate-pulse"
                   : "bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-main)] text-[var(--color-accent-primary)]"
@@ -719,7 +775,7 @@ export default function AtemChat() {
             <button
               id="btn-send-message"
               type="submit"
-              disabled={!inputValue.trim() || isLoading}
+              disabled={!inputValue.trim() || isLoading || !user || reachedLimit}
               className="p-4 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white rounded-full transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               title="Nachricht senden"
             >
