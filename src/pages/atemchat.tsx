@@ -1,75 +1,787 @@
-// Chat Route (abgesichert mit Login-Check, Paywall und Premium-Angebot)
-app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
-  const { messages } = req.body;
-  const userId = req.user.id; 
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  Wind,
+  Sparkles,
+  Send,
+  ShieldAlert,
+  X,
+  Waves,
+  Leaf,
+  Info,
+  Mic
+} from "lucide-react";
 
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: "Fehlende Chat-Daten." });
-  }
+interface Message {
+  id: string;
+  sender: "user" | "assistant";
+  text: string;
+  timestamp: string;
+  hasPremiumOffer?: boolean;
+}
 
-  try {
-    // 1. Paywall-Prüfung: Darf der Nutzer noch schreiben?
-    const user = db.prepare('SELECT is_premium, message_count FROM users WHERE id = ?').get(userId) as any;
+export default function AtemChat() {
+  // Conversational State
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "initial",
+      sender: "assistant",
+      text: "Seien Sie willkommen im Flow der Stille. Ich bin Ihr empathischer Begleiter in Momenten der Überforderung, des Stresses oder der Unruhe. Dieser Ort ist ganz für Sie da – frei von Erwartungen und Bewertungen. 🌱\n\nWie empfinden Sie den gegenwärtigen Moment? Erzählen Sie es mir oder wählen Sie eine der folgenden Empfindungen aus.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    },
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Grounding (Breathing) Cycle States
+  const [breathingIsActive, setBreathingIsActive] = useState(false);
+  const [breathingMode, setBreathingMode] = useState<"deep" | "classic" | "calm">("deep");
+  const [breathingPhase, setBreathingPhase] = useState<"ein" | "halten" | "aus">("ein");
+  const [breathingTimer, setBreathingTimer] = useState(4); // seconds left in current phase
+
+  // Crisis / Helpline Modal
+  const [showHelpline, setShowHelpline] = useState(false);
+
+  // Speech Recognition States
+  const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  // Start or stop speech recognition
+  const toggleSpeechRecognition = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
-    if (!user.is_premium && user.message_count >= 3) {
-      return res.status(403).json({ error: 'Limit reached', limitReached: true });
+    if (!SpeechRecognition) {
+      setSpeechError("Ihr Browser unterstützt leider keine Spracherkennung. Verwenden Sie Chrome, Safari oder Edge.");
+      setTimeout(() => setSpeechError(null), 5000);
+      return;
     }
 
-    // 2. Zähler hochsetzen (da eine neue Nachricht gesendet wird)
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.sender === "user") {
-        db.prepare('UPDATE users SET message_count = message_count + 1 WHERE id = ?').run(userId);
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
     }
 
-    // 3. Verbindung zu Google Gemini
-    const ai = new GoogleGenAI({ 
-      apiKey: process.env.GEMINI_API_KEY,
-      httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-    });
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = "de-DE";
 
-    const SYSTEM_INSTRUCTION = `Deine Rolle:
-Du bist der empathische Stress-Begleiter für die App "Flow der Stille". Deine Aufgabe ist es, Nutzern in Momenten von Stress, Überforderung oder Angst einen sicheren, ruhigen und bewertungsfreien Raum zu bieten.
+      recognition.onstart = () => {
+        setIsListening(true);
+        setSpeechError(null);
+      };
 
-Deine Persönlichkeit & Tonalität:
-- Ruhig & Erdend: Deine Sprache ist sanft, klar und langsam. Nutze kurze Sätze.
-- Empathisch & Validierend: Du nimmst die Gefühle des Nutzers ernst.
-- Nicht-belehrend: Du drängst keine Lösungen auf. 
-- Anrede: Du sprichst den Nutzer höflich, aber nahbar mit "Sie" an. 
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        if (event.error === "not-allowed") {
+          setSpeechError("Mikrofon-Zugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Browsereinstellungen.");
+        } else {
+          setSpeechError("Spracherkennung nicht möglich. Versuchen Sie es bitte erneut.");
+        }
+        setIsListening(false);
+      };
 
-Deine Methodik (Der Ablauf):
-1. Zuhören & Validieren: Spiegele kurz die Emotion.
-2. Erdung anbieten: Biete eine sehr kleine Achtsamkeitsübung an. 
-3. Premium-Meditation vorschlagen: Wenn es sinnvoll ist, weise einfühlsam auf die Premium-Meditation hin. Nutze in diesem Fall zwingend am Ende deiner Antwort den Text-Marker '[PREMIUM_OFFER]'.
-4. Offene Fragen: Stelle sanfte Fragen, um aus dem Gedankenkarussell zu holen.
+      recognition.onend = () => {
+        setIsListening(false);
+      };
 
-Absolute Leitplanken:
-- Du bist kein Arzt oder Therapeut. Verweise bei Krisen auf professionelle Hilfe.
-- Halte deine Antworten extrem kurz (maximal 3-4 Sätze).
-- Niemals mehr als ein Smiley oder Emoji pro Nachricht.`;
+      recognition.onresult = (event: any) => {
+        const lastResultIndex = event.results.length - 1;
+        const transcript = event.results[lastResultIndex][0].transcript;
+        if (transcript) {
+          setInputValue((prev) => {
+            const trimmed = prev.trim();
+            return trimmed ? `${trimmed} ${transcript}` : transcript;
+          });
+        }
+      };
 
-    const contents = messages.map((m: any) => ({
-      role: m.sender === "user" ? "user" : "model",
-      parts: [{ text: m.text }],
-    }));
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (e) {
+      console.error(e);
+      setSpeechError("Fehler bei der Initialisierung der Spracherkennung.");
+      setIsListening(false);
+    }
+  };
 
-    const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash", 
-      contents,
-      config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.7 },
-    });
+  // Element Refs for Auto-Scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    let replyText = response.text || "Ich bin hier, um Ihnen zuzuhören. 🌱";
-    let hasPremiumOffer = false;
+  // Starter Feelings / Prompt templates
+  const starterFeelings = [
+    { label: "Überfordert von Aufgaben 💼", prompt: "Ich fühle mich gerade von meinen Aufgaben und Terminen völlig erdrückt und überfordert. Mein Kopf ist so voll." },
+    { label: "Gedankenkreisen im Kopf 🌀", prompt: "Ich stecke in einem Gedankenkarussell fest und brauche etwas Hilfe, um meine kreisenden Gedanken zu beruhigen." },
+    { label: "Innere Unruhe & Angst 🤍", prompt: "Ich spüre eine unbestimmte innere Unruhe und leichte Angst in meinem Körper. Kannst du mir helfen, mich zu erden?" },
+    { label: "Einfach nur erschöpft 🔋", prompt: "Der Tag heute hat mich all meine Energie gekostet. Ich bin einfach nur leer und erschöpft." },
+  ];
 
-    // Filtert den geheimen Code für den UI-Button heraus
-    if (replyText.includes("[PREMIUM_OFFER]")) {
-      hasPremiumOffer = true;
-      replyText = replyText.replace("[PREMIUM_OFFER]", "").trim();
+  // Auto-scroll chat to latest message
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
+
+  // Breathing ground timer logic
+  useEffect(() => {
+    let interval: any = null;
+    if (breathingIsActive) {
+      interval = setInterval(() => {
+        setBreathingTimer((prev) => {
+          if (prev <= 1) {
+            // Transition to corresponding next phase based on breathingMode
+            let nextPhase: "ein" | "halten" | "aus" = "ein";
+            let nextDuration = 4;
+
+            if (breathingMode === "deep") {
+              // 4-7-8 Breathing Technique
+              if (breathingPhase === "ein") {
+                nextPhase = "halten";
+                nextDuration = 7;
+              } else if (breathingPhase === "halten") {
+                nextPhase = "aus";
+                nextDuration = 8;
+              } else {
+                nextPhase = "ein";
+                nextDuration = 4;
+              }
+            } else if (breathingMode === "classic") {
+              // 4-4-4 Box Breathing
+              if (breathingPhase === "ein") {
+                nextPhase = "halten";
+                nextDuration = 4;
+              } else if (breathingPhase === "halten") {
+                nextPhase = "aus";
+                nextDuration = 4;
+              } else {
+                nextPhase = "ein";
+                nextDuration = 4;
+              }
+            } else {
+              // 5-5 Calm Wave Breathing
+              if (breathingPhase === "ein") {
+                nextPhase = "aus";
+                nextDuration = 5;
+              } else {
+                nextPhase = "ein";
+                nextDuration = 5;
+              }
+            }
+
+            setBreathingPhase(nextPhase);
+            return nextDuration;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setBreathingPhase("ein");
+      setBreathingTimer(breathingMode === "deep" ? 4 : breathingMode === "classic" ? 4 : 5);
     }
 
-    res.json({ text: replyText, hasPremiumOffer });
-  } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    res.status(500).json({ error: 'Serverfehler bei der Kommunikation.' });
-  }
-});
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [breathingIsActive, breathingPhase, breathingMode]);
+
+  const toggleBreathing = () => {
+    const nextState = !breathingIsActive;
+    setBreathingIsActive(nextState);
+    if (nextState) {
+      setBreathingPhase("ein");
+      setBreathingTimer(breathingMode === "deep" ? 4 : breathingMode === "classic" ? 4 : 5);
+    }
+  };
+
+  const changeBreathingMode = (mode: "deep" | "classic" | "calm") => {
+    setBreathingMode(mode);
+    setBreathingPhase("ein");
+    setBreathingTimer(mode === "deep" ? 4 : mode === "classic" ? 4 : 5);
+  };
+
+  // Submit chat message to Backend Express
+  const handleSendMessage = async (textToSend: string) => {
+    if (!textToSend.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Math.random().toString(),
+      sender: "user",
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    setIsLoading(true);
+
+    const recentMessages = [...messages, userMessage].slice(-10);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: recentMessages,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Abrufen der Antwort.");
+      }
+
+      const data = await response.json();
+      
+      const assistantMessage: Message = {
+        id: Math.random().toString(),
+        sender: "assistant",
+        text: data.text,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        hasPremiumOffer: data.hasPremiumOffer,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMessage: Message = {
+        id: Math.random().toString(),
+        sender: "assistant",
+        text: "Ich bin im Moment eine Sekunde still – vielleicht liegt es an der Verbindung. Lassen Sie uns einen Moment gemeinsam durchatmen, bevor wir es gleich noch einmal versuchen. 🌱",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getBreathingScale = () => {
+    if (!breathingIsActive) return 1.0;
+    
+    const currentMaxScale = 1.35;
+    const currentBaseScale = 1.0;
+    
+    let duration = 4;
+    if (breathingMode === "deep") {
+      duration = breathingPhase === "ein" ? 4 : breathingPhase === "halten" ? 7 : 8;
+    } else if (breathingMode === "classic") {
+      duration = 4;
+    } else {
+      duration = 5;
+    }
+
+    const elapsedRatio = (duration - breathingTimer) / duration;
+
+    if (breathingPhase === "ein") {
+      return currentBaseScale + (currentMaxScale - currentBaseScale) * elapsedRatio;
+    } else if (breathingPhase === "halten") {
+      return currentMaxScale;
+    } else { // "aus"
+      return currentMaxScale - (currentMaxScale - currentBaseScale) * elapsedRatio;
+    }
+  };
+
+  const getPhaseText = () => {
+    if (!breathingIsActive) return "Bereit zum Durchatmen";
+    if (breathingPhase === "ein") return "Einatmen...";
+    if (breathingPhase === "halten") return "Atem anhalten...";
+    return "Sanft ausatmen...";
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F7F6F2] text-[#3D3B35] flex flex-col antialiased">
+      {/* Top Quiet Navbar */}
+      <header id="quiet-header" className="sticky top-0 bg-[#F7F6F2]/90 backdrop-blur-md border-b border-[#E3E1D9] z-30 py-4 px-6 md:px-10 transition-all">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-[#8A9A8A] flex items-center justify-center text-white float-slow">
+              <Wind className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="font-serif italic text-xl md:text-2xl font-medium tracking-wide text-[#3D3B35]">
+                Flow der Stille
+              </h1>
+              <p className="text-[10px] tracking-widest text-[#8A9A8A] uppercase font-semibold">
+                Anker für Ihre Gegenwart
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <button
+              id="btn-helpline"
+              onClick={() => setShowHelpline(true)}
+              className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#fae1de] hover:bg-[#edd6d4] text-[#cc4c3d] text-xs font-medium cursor-pointer transition-colors"
+              title="Notfall- und Beratungsnummern"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span className="hidden sm:inline">Sofortige Hilfe</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Area: Split Screen Workspace */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* Left Side: Grounding Room (Atem-Kanal & Sound-Umgebung) */}
+        <section id="grounding-room" className="lg:col-span-5 flex flex-col gap-6">
+          
+          {/* Card: Atem-Kanal */}
+          <div className="bg-white border border-[#E3E1D9] rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-sm transition-all hover:shadow-md">
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="p-2 bg-[#F7F6F2] rounded-xl text-[#8A9A8A]">
+                  <Waves className="w-4 h-4" />
+                </span>
+                <h2 className="font-serif text-lg font-medium text-[#3D3B35]">Geführter Atem-Flow</h2>
+              </div>
+              <span className="px-2.5 py-1 bg-[#F7F6F2] rounded-full text-xs text-[#8A9A8A] font-medium">
+                {breathingMode === "deep" ? "Entspannung 4-7-8" : breathingMode === "classic" ? "Klassisch 4-4-4" : "Wellen-Atmung 5-5"}
+              </span>
+            </div>
+
+            {/* Breathing Style Selector */}
+            <div className="grid grid-cols-3 gap-2 mt-4 text-xs font-sans">
+              <button
+                onClick={() => changeBreathingMode("deep")}
+                className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                  breathingMode === "deep"
+                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
+                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                }`}
+              >
+                Deep-Breath
+              </button>
+              <button
+                onClick={() => changeBreathingMode("classic")}
+                className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                  breathingMode === "classic"
+                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
+                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                }`}
+              >
+                Klassisch
+              </button>
+              <button
+                onClick={() => changeBreathingMode("calm")}
+                className={`py-2 px-1 rounded-xl border text-center transition-all cursor-pointer ${
+                  breathingMode === "calm"
+                    ? "bg-[#8A9A8A] text-white border-transparent shadow-sm"
+                    : "bg-[#F7F6F2] text-[#3D3B35] border-[#E3E1D9] hover:bg-[#eae8df]"
+                }`}
+              >
+                Ausgleich
+              </button>
+            </div>
+
+            {/* Immersive Central Breathing Bubble */}
+            <div className="my-10 flex flex-col items-center justify-center min-h-[260px] relative">
+              
+              {/* Outer wave rings */}
+              <AnimatePresence>
+                {breathingIsActive && (
+                  <motion.div
+                    key="breathing-ring-1"
+                    className="absolute w-44 h-44 top-10 rounded-full border border-[#8A9A8A]/30 pointer-events-none"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1.7, opacity: [0, 0.35, 0] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ repeat: Infinity, duration: 8, ease: "easeOut" }}
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* Dynamic Breathing Sphere Container */}
+              <div className="relative w-full flex justify-center items-center h-40">
+                <div
+                  id="breathing-bubble"
+                  style={{
+                    transform: `scale(${getBreathingScale()})`,
+                    transition: "transform 1s cubic-bezier(0.25, 1, 0.5, 1)"
+                  }}
+                  className={`w-36 h-36 rounded-full flex flex-col items-center justify-center p-4 text-center transition-colors shadow-inner duration-1000 ${
+                    breathingIsActive
+                      ? breathingPhase === "ein"
+                        ? "bg-[#EBF1EB] text-[#4A574A] shadow-[#C1D2C1]/60"
+                        : breathingPhase === "halten"
+                        ? "bg-[#F5EFE6] text-[#695C4D] shadow-[#E4D5C2]/60"
+                        : "bg-[#Ebf2f2] text-[#455A64] shadow-[#CFDCE2]/60"
+                      : "bg-[#F7F6F2] text-[#8A9A8A] shadow-[#eae7de]/50"
+                  }`}
+                >
+                  <div className="text-2xl font-serif font-medium select-none text-center">
+                    {breathingIsActive ? breathingTimer : "🌱"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Text directive */}
+              <div className="mt-12 text-center min-h-[48px] px-4 z-10">
+                <p className="font-serif italic text-base font-medium text-[#3D3B35] transition-all">
+                  {getPhaseText()}
+                </p>
+                <p className="text-[#8A9A8A] font-sans mt-1 uppercase tracking-wider font-semibold text-[10px]">
+                  {breathingIsActive ? "Ganz ruhig strömen lassen" : "Bereit für einen klaren Augenblick"}
+                </p>
+              </div>
+            </div>
+
+            {/* Instruction Box */}
+            <div className="mb-6 bg-[#F7F6F2]/60 rounded-2xl p-4 text-[#3D3B35] font-sans text-xs border border-[#E3E1D9]/50">
+              <p className="font-semibold mb-1 text-sm text-[#4A574A]">
+                {breathingMode === "deep" ? "Tiefenentspannung (4-7-8)" : breathingMode === "classic" ? "Klassische Box-Atmung (4-4-4)" : "Wellen-Atmung (5-5)"}
+              </p>
+              <p className="mb-3 text-[#695C4D] leading-relaxed">
+                {breathingMode === "deep" ? "Beruhigt das Nervensystem stark und hilft, akuten Stress abzubauen. Ideal bei Anspannung." : breathingMode === "classic" ? "Schafft durch gleichmäßige Phasen Fokus und mentale Klarheit im Alltag." : "Eine sanfte, fließende Atmung ohne Pausen. Bringt Körper und Geist in Balance."}
+              </p>
+              <div className="bg-white rounded-xl p-3.5 border border-[#E3E1D9] flex items-start gap-2.5 shadow-sm">
+                <Info className="w-4 h-4 text-[#8A9A8A] flex-shrink-0 mt-0.5" />
+                <div className="text-[#8A9A8A] leading-relaxed space-y-1.5 flex-1">
+                  <p><strong>Bewusstsein:</strong> Schließen Sie gerne sanft Ihre Augen, um sich besser auf diesen Rhythmus zu konzentrieren und jeden Atemzug ganz bewusst wahrzunehmen.</p>
+                  <p><strong>Einatmen</strong> tief durch die Nase.</p>
+                  <p><strong>Ausatmen</strong> durch den Mund, um Belastendes spürbar loszulassen. Bei einer leichten Übung einfach sanft durch die Nase ausatmen.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Control Button */}
+            <button
+              id="btn-breathing-control"
+              onClick={toggleBreathing}
+              className={`w-full py-3.5 rounded-2xl flex items-center justify-center space-x-2 font-medium tracking-wide transition-all duration-300 shadow-sm cursor-pointer ${
+                breathingIsActive
+                  ? "bg-[#cc7a6d] hover:bg-[#bf6859] text-white"
+                  : "bg-[#8A9A8A] hover:bg-[#728372] text-white"
+              }`}
+            >
+              <Wind className="w-5 h-5" />
+              <span>{breathingIsActive ? "Übung pausieren" : "Atem-Übung starten"}</span>
+            </button>
+          </div>
+        </section>
+
+        {/* Right Side: Conversation Chat Container */}
+        <section id="chat-room" className="lg:col-span-7 flex flex-col bg-white border border-[#E3E1D9] rounded-3xl overflow-hidden shadow-sm transition-all hover:shadow-md">
+          {/* Header of Chat */}
+          <div className="p-5 border-b border-[#E3E1D9] bg-white/85 backdrop-blur-sm flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <span className="flex h-3 w-3 absolute -top-0.5 -right-0.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8A9A8A] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#8A9A8A]"></span>
+                </span>
+                <div className="w-10 h-10 rounded-full bg-[#F7F6F2] flex items-center justify-center text-[#8A9A8A] font-serif font-semibold border border-[#E3E1D9]">
+                  S
+                </div>
+              </div>
+              <div>
+                <div className="font-serif text-base font-semibold text-[#3D3B35] flex items-center gap-1.5">
+                  Stress-Begleiter
+                  <span className="text-[10px] uppercase tracking-wider bg-[#F7F6F2] text-[#8A9A8A] px-2 py-0.5 rounded font-semibold font-sans border border-[#E3E1D9]">
+                    Aktiv
+                  </span>
+                </div>
+                <div className="text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold">Ganzheitlich begleitend • Ohne Urteile</div>
+              </div>
+            </div>
+
+            <span className="text-[10px] text-[#8A9A8A] uppercase tracking-wider font-semibold hidden sm:block flex items-center gap-1">
+              🔒 Ihre Privatsphäre ist geschützt
+            </span>
+          </div>
+
+          {/* Scrollable Conversation Panel */}
+          <div className="flex-1 overflow-y-auto p-5 md:p-8 space-y-6 max-h-[500px] sm:max-h-[600px] md:max-h-[640px] lg:max-h-[700px] bg-[#F7F6F2]/30">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex flex-col max-w-[85%] md:max-w-[75%] ${
+                  msg.sender === "user" ? "ml-auto items-end" : "mr-auto items-start"
+                }`}
+              >
+                {msg.sender === "assistant" && (
+                  <span className="text-[10px] uppercase tracking-widest text-[#8A9A8A] font-semibold ml-4 mb-2">
+                    Begleiter
+                  </span>
+                )}
+                {/* Bubble */}
+                <div
+                  className={`p-5 md:p-6 text-[15px] leading-relaxed whitespace-pre-wrap transition-all shadow-sm ${
+                    msg.sender === "user"
+                      ? "bg-[#8A9A8A] text-white rounded-[2rem] rounded-tr-lg border-none"
+                      : "bg-white text-[#3D3B35] rounded-[2rem] rounded-tl-lg border border-[#E3E1D9]"
+                  }`}
+                >
+                  {msg.text}
+                  {msg.hasPremiumOffer && (
+                    <div className="mt-4 pt-4 border-t border-[#E3E1D9] flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="p-1.5 bg-[#F7F6F2] rounded-lg text-[#8A9A8A] shrink-0">
+                          <Leaf className="w-4 h-4" />
+                        </span>
+                        <h4 className="font-serif text-sm font-medium text-[#3D3B35]">Geführte Premium-Meditation</h4>
+                      </div>
+                      <p className="text-xs text-[#695C4D]">
+                        Mit dieser speziell entwickelten Meditation können Sie tiefere innere Ruhe finden und die angesprochenen Themen auflösen. 
+                      </p>
+                      <button className="self-start mt-2 px-4 py-2 bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-semibold rounded-full transition-all shadow-sm">
+                        Meditation freischalten (4,99 €)
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {/* Time Indicator */}
+                <span className="text-[10px] text-[#A09E94] mt-1.5 px-3 font-mono">{msg.timestamp}</span>
+              </div>
+            ))}
+
+            {/* AI Generation State Loader */}
+            {isLoading && (
+              <div className="flex flex-col mr-auto items-start max-w-[85%] md:max-w-[75%]">
+                <span className="text-[10px] uppercase tracking-widest text-[#8A9A8A] font-semibold ml-4 mb-2">
+                  Begleiter
+                </span>
+                <div className="bg-white border border-[#E3E1D9] rounded-[2rem] rounded-tl-lg p-5 flex items-center space-x-1.5 shadow-sm">
+                  <span className="text-xs text-[#8A9A8A] font-sans mr-1 tracking-wide font-medium">Begleiter atmet nach...</span>
+                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000"></span>
+                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000 delay-150"></span>
+                  <span className="w-1.5 h-1.5 bg-[#8A9A8A] rounded-full animate-bounce duration-1000 delay-300"></span>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Prompt Presets / Selection chips */}
+          <div className="px-5 py-4 bg-[#F7F6F2]/70 border-t border-b border-[#E3E1D9]">
+            <p className="text-[10px] uppercase tracking-widest text-[#8A9A8A] mb-3.5 flex items-center gap-1.5 font-bold font-sans">
+              <Sparkles className="w-3.5 h-3.5" /> Welches Empfinden beschreibt Ihren Zustand?
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {starterFeelings.map((feel) => (
+                <button
+                  key={feel.label}
+                  onClick={() => handleSendMessage(feel.prompt)}
+                  disabled={isLoading}
+                  className="text-xs text-[#3D3B35] bg-white border border-[#E3E1D9] py-2 px-3.5 rounded-full hover:bg-[#F7F6F2] hover:text-[#8A9A8A] hover:border-[#8A9A8A] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center shadow-sm"
+                >
+                  {feel.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Speech Status Banner */}
+          {isListening && (
+            <div className="px-5 py-2.5 bg-[#EBF1EB] text-[#4A574A] border-b border-[#E3E1D9] text-xs flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#cc7a6d] animate-pulse" />
+                <span className="font-sans italic">Ich höre Ihnen zu... Sprechen Sie ganz gelassen. 🌱</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (recognitionRef.current) recognitionRef.current.stop();
+                  setIsListening(false);
+                }}
+                className="text-[10px] uppercase font-bold text-[#cc7a6d] hover:underline cursor-pointer"
+              >
+                Stoppen
+              </button>
+            </div>
+          )}
+
+          {speechError && (
+            <div className="px-5 py-2.5 bg-[#fcedeb] text-[#cc4c3d] border-b border-[#E3E1D9] text-xs flex items-center justify-between">
+              <span>{speechError}</span>
+              <button
+                type="button"
+                onClick={() => setSpeechError(null)}
+                className="text-[#cc4c3d] cursor-pointer hover:opacity-80"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+
+          {/* Input Form Box */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage(inputValue);
+            }}
+            className="p-5 bg-white flex items-center space-x-3.5"
+          >
+            <div className="flex-1 relative">
+              <input
+                id="inp-chat-message"
+                type="text"
+                placeholder="Erzählen Sie Ihre Gedanken oder sprechen Sie sie aus..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+                className="w-full py-4 pl-6 pr-14 rounded-full bg-white border border-[#E3E1D9] text-sm text-[#3D3B35] focus:outline-none focus:ring-2 focus:ring-[#8A9A8A]/30 focus:border-[#8A9A8A] placeholder-[#C0BEB4] transition-all disabled:opacity-60 shadow-inner"
+              />
+              <span className="absolute right-4.5 top-4 text-[10px] text-[#A09E94] font-mono tracking-widest uppercase hidden sm:inline select-none">
+                Send ↵
+              </span>
+            </div>
+
+            {/* Dictation triggers speech-to-text (STT) */}
+            <button
+              id="btn-voice-dictation"
+              type="button"
+              onClick={toggleSpeechRecognition}
+              className={`p-4 rounded-full transition-all shadow-md cursor-pointer ${
+                isListening
+                  ? "bg-[#cc7a6d] text-white animate-pulse"
+                  : "bg-[#F7F6F2] hover:bg-[#E3E1D9] text-[#8A9A8A]"
+              }`}
+              title={isListening ? "Spracheingabe stoppen" : "Gedanken aussprechen"}
+            >
+              <Mic className="w-4 h-4" />
+            </button>
+
+            <button
+              id="btn-send-message"
+              type="submit"
+              disabled={!inputValue.trim() || isLoading}
+              className="p-4 bg-[#8A9A8A] hover:bg-[#728372] text-white rounded-full transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              title="Nachricht senden"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+
+          {/* Embedded quiet metadata info */}
+          <div className="px-5 py-3 bg-white border-t border-[#E3E1D9] text-[10px] text-[#A09E94] uppercase tracking-widest font-semibold flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-[#8A9A8A]" /> Keine Daten werden dauerhaft gespeichert.
+            </span>
+            <span>v1.2 • Sicherer &amp; freier raum</span>
+          </div>
+        </section>
+
+      </main>
+
+      {/* Distress/Crisis Hotline Modal Info Drawer */}
+      <AnimatePresence>
+        {showHelpline && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-[#fcfbf9] border border-[#e2dfd7] rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl relative"
+            >
+              <button
+                id="btn-close-helpline"
+                onClick={() => setShowHelpline(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-[#f1efea] text-[#747a75] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center space-x-3 text-[#cc4c3d] mb-4">
+                <ShieldAlert className="w-7 h-7" />
+                <h3 className="font-serif text-xl font-bold">Sie sind nicht allein.</h3>
+              </div>
+
+              <div className="text-sm text-[#4f5651] space-y-4 leading-relaxed font-sans">
+                <p>
+                  Bitte beachten Sie: Unser automatisierter Begleiter dient ausschließlich zur Entspannung und Stressbewältigung im Alltag. Er kann und darf <strong>keine professionelle psychologische Hilfe, Therapie oder ärztliche Diagnose</strong> ersetzen.
+                </p>
+                <p>
+                  Sollten Sie sich in einer ernsten Lebenskrise befinden, an Selbstverletzung oder tiefen Traumata leiden, oder jemanden in Ihrem Umfeld wissen, der unmittelbare Unterstützung benötigt, wenden Sie sich bitte an eine der folgenden Anlaufstellen:
+                </p>
+
+                <div className="bg-[#fcf7f6] rounded-2xl p-4 border border-[#f5dedb] space-y-3.5 my-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm">TelefonSeelsorge (Deutschland)</h4>
+                      <p className="text-xs text-gray-500">24 Stunden am Tag, anonym, kostenfrei aus Fest- & Mobilnetz</p>
+                    </div>
+                    <span className="font-mono text-xs font-semibold bg-[#fadcd6]/70 text-[#b52d20] px-2.5 py-1 rounded">
+                      0800 111 0 111
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm">TelefonSeelsorge (Alternative)</h4>
+                      <p className="text-xs text-gray-500">Alternativer bundesweiter Rufkontakt</p>
+                    </div>
+                    <span className="font-mono text-xs font-semibold bg-[#fadcd6]/70 text-[#b52d20] px-2.5 py-1 rounded">
+                      0800 111 0 222
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm font-sans">Nummer gegen Kummer (Für Kinder/Jugendliche)</h4>
+                      <p className="text-xs text-gray-500">Mo – Sa von 14:00 Uhr bis 20:00 Uhr</p>
+                    </div>
+                    <span className="font-mono text-xs font-semibold bg-[#fadcd6]/70 text-[#b52d20] px-2.5 py-1 rounded">
+                      116 111
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm font-sans">Infotelefon Depression</h4>
+                      <p className="text-xs text-gray-500">Kostenfreie professionelle Erst-Hilfehilfe</p>
+                    </div>
+                    <span className="font-mono text-xs font-semibold bg-[#fadcd6]/70 text-[#b52d20] px-2.5 py-1 rounded">
+                      0800 33 44 533
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-[#737c76]">
+                  In akuten, lebensbedrohlichen Notfällen zögern Sie bitte nicht, direkt den Rettungsdienst unter der Notrufnummer <strong>112</strong> anzurufen.
+                </p>
+              </div>
+
+              <button
+                id="btn-helpline-acknowledged"
+                onClick={() => setShowHelpline(false)}
+                className="w-full mt-6 py-3 bg-[#8A9A8A] hover:bg-[#728372] text-white text-sm font-medium rounded-2xl transition-colors cursor-pointer"
+              >
+                Ich verstehe, danke
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Little warm footer */}
+      <footer className="py-6 px-6 border-t border-[#E3E1D9] bg-transparent text-center text-xs text-[#808a82]">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="flex items-center justify-center gap-1">
+            Gestaltet für die App <span className="font-serif italic font-medium">Flow der Stille</span> • In Achtsamkeit gefertigt 🌱
+          </p>
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setShowHelpline(true)} className="hover:underline hover:text-[#8A9A8A] cursor-pointer">
+              Therapeutischer Hinweis
+            </button>
+            <span>•</span>
+            <span className="font-mono text-[#8A9A8A]">100% Sicher &amp; Privat</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

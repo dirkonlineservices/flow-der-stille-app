@@ -43,12 +43,13 @@ db.exec(`
   );
 `);
 
-// Try altering the table to add GDPR and newsletter support
+// Try altering the table to add GDPR, newsletter support AND the new message_count for the Paywall
 try { db.exec("ALTER TABLE users ADD COLUMN first_name TEXT;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN last_name TEXT;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN email TEXT;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN newsletter BOOLEAN DEFAULT 0;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN dsgvo BOOLEAN DEFAULT 0;"); } catch(e){}
+try { db.exec("ALTER TABLE users ADD COLUMN message_count INTEGER DEFAULT 0;"); } catch(e){} // NEU: Zähler für die Bezahlschranke
 
 // Seed initial weekly task if empty
 const taskCount = db.prepare('SELECT count(*) as count FROM weekly_tasks').get() as { count: number };
@@ -58,7 +59,6 @@ if (taskCount.count === 0) {
   stmt.run(2, 'task.week2');
   stmt.run(3, 'task.week3');
 } else {
-  // Update existing tasks to use keys (migration for existing DB)
   const stmt = db.prepare('UPDATE weekly_tasks SET description = ? WHERE week_number = ?');
   stmt.run('task.week1', 1);
   stmt.run('task.week2', 2);
@@ -70,13 +70,11 @@ const recipeCount = db.prepare('SELECT count(*) as count FROM weekly_recipes').g
 if (recipeCount.count === 0) {
   const stmt = db.prepare('INSERT INTO weekly_recipes (week_number, translation_key_base, category_key, icon_type) VALUES (?, ?, ?, ?)');
   
-  // Week 1 (Existing)
   stmt.run(1, 'recipes.card.golden', 'category.drink', 'Coffee');
   stmt.run(1, 'recipes.card.salad', 'category.meal', 'Leaf');
   stmt.run(1, 'recipes.card.omega', 'category.meal', 'Utensils');
   stmt.run(1, 'recipes.card.tea', 'category.drink', 'Coffee');
 
-  // Week 2 (New)
   stmt.run(2, 'recipes.card.smoothie', 'category.drink', 'Coffee');
   stmt.run(2, 'recipes.card.soup', 'category.meal', 'Utensils');
   stmt.run(2, 'recipes.card.oats', 'category.meal', 'Leaf');
@@ -110,7 +108,8 @@ app.post('/api/register', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const stmt = db.prepare('INSERT INTO users (username, email, first_name, last_name, password, newsletter, dsgvo) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    // Profil wird direkt mit message_count 0 angelegt
+    const stmt = db.prepare('INSERT INTO users (username, email, first_name, last_name, password, newsletter, dsgvo, message_count) VALUES (?, ?, ?, ?, ?, ?, ?, 0)');
     const info = stmt.run(email, email, first_name, last_name, hashedPassword, newsletter ? 1 : 0, dsgvo ? 1 : 0);
     
     const token = jwt.sign({ id: info.lastInsertRowid, username: email, is_premium: 0 }, JWT_SECRET);
@@ -143,7 +142,6 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/me', authenticateToken, (req: any, res) => {
-  // Fetch fresh user data to get latest premium status and details
   const user = db.prepare('SELECT id, username, first_name, last_name, email, is_premium FROM users WHERE id = ?').get(req.user.id) as any;
   if (!user) return res.sendStatus(401);
   res.json({ user: { ...user, is_premium: !!user.is_premium } });
@@ -194,12 +192,11 @@ app.post('/api/user/upgrade', authenticateToken, (req: any, res) => {
   }
 });
 
-// Task Routes
+// Task & Recipe Routes
 app.get('/api/tasks/current', (req, res) => {
-  // Simple logic: get task based on current week of year (modulo total tasks)
   const currentWeek = Math.ceil(((new Date() as any) - (new Date(new Date().getFullYear(), 0, 1) as any)) / 86400000 / 7);
   const totalTasks = db.prepare('SELECT count(*) as count FROM weekly_tasks').get() as { count: number };
-  const taskIndex = (currentWeek % totalTasks.count) || 1; // 1-based index, fallback to 1 if 0
+  const taskIndex = (currentWeek % totalTasks.count) || 1; 
   
   const task = db.prepare('SELECT * FROM weekly_tasks WHERE id = ?').get(taskIndex);
   res.json(task);
@@ -222,69 +219,88 @@ app.post('/api/tasks/complete', authenticateToken, (req: any, res) => {
   }
 });
 
-// Recipe Routes
 app.get('/api/recipes/current', (req, res) => {
-  // Logic: get recipes based on current week (modulo 2 for now since we have 2 weeks of data)
   const currentWeek = Math.ceil(((new Date() as any) - (new Date(new Date().getFullYear(), 0, 1) as any)) / 86400000 / 7);
-  const weekIndex = (currentWeek % 2) || 1; // 1 or 2
+  const weekIndex = (currentWeek % 2) || 1; 
   
   const recipes = db.prepare('SELECT * FROM weekly_recipes WHERE week_number = ?').all(weekIndex);
   res.json(recipes);
 });
 
-// Chat Route
-app.post('/api/chat', async (req: any, res: any) => {
-  const { message, history = [] } = req.body;
-  if (!message) return res.status(400).json({ error: 'Message required' });
+// --- NEU: Abgesicherte Chat Route mit Paywall & Aura KI ---
+app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
+  const { messages } = req.body;
+  const userId = req.user.id; 
+
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: "Fehlende Chat-Daten." });
+  }
 
   try {
+    // 1. Paywall-Prüfung in der Datenbank
+    const user = db.prepare('SELECT is_premium, message_count FROM users WHERE id = ?').get(userId) as any;
+    
+    if (!user.is_premium && user.message_count >= 3) {
+      return res.status(403).json({ error: 'Limit reached', limitReached: true });
+    }
+
+    // 2. Zähler hochsetzen (wenn der Nutzer geschrieben hat)
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.sender === "user") {
+        db.prepare('UPDATE users SET message_count = message_count + 1 WHERE id = ?').run(userId);
+    }
+
+    // 3. Verbindung zur KI aufbauen
     const ai = new GoogleGenAI({ 
       apiKey: process.env.GEMINI_API_KEY,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
+      httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
     });
 
-    const SYSTEM_INSTRUCTION = `Du bist "Aura", der einfühlsame und wissenschaftlich fundierte KI-Mentor für Achtsamkeit, Stressabbau und die Darm-Hirn-Achse in der App "Flow der Stille".
+    const SYSTEM_INSTRUCTION = `Deine Rolle:
+Du bist "Aura", der empathische Stress-Begleiter für die App "Flow der Stille". Deine Aufgabe ist es, Nutzern in Momenten von Stress, Überforderung oder Angst einen sicheren, ruhigen und bewertungsfreien Raum zu bieten.
 
-Deine fachlichen Schwerpunkte umfassen:
-1. Progressive Muskelentspannung (PMR): Erkläre fundiert, wie man Muskelgruppen gezielt an- und entspannt, um das vegetative Nervensystem herunterzufahren. Biete kurze, geführte Anleitungen oder nützliche Ratschläge an.
-2. Vagusnerv-Stimulation & Parasympathikus: Erläutere, wie man den Ruhe- und Verdauungsnerv aktiviert (z.B. durch tiefe Atemübungen wie 4-7-8, bewusstes Summen, kaltes Wasser).
-3. Darm-Hirn-Achse: Erkläre verständlich, wie Stress direkt die Verdauung beeinflusst und durch welche Achtsamkeits-Tipps und beruhigenden Impulse der Magen-Darm-Trakt entlastet werden kann.
-4. Alltagstipps für Achtsamkeit: Gib sofort anwendbare, kurze und bodenständige Tipps (z. B. analoge Mahlzeiten ohne Smartphone, Achtsamkeits-Übungen, Waldbaden).
+Deine Persönlichkeit & Tonalität:
+- Ruhig & Erdend: Deine Sprache ist sanft, klar und langsam. Nutze kurze Sätze.
+- Empathisch & Validierend: Du nimmst die Gefühle des Nutzers ernst.
+- Nicht-belehrend: Du drängst keine Lösungen auf. 
+- Anrede: Du sprichst den Nutzer höflich, aber nahbar mit "Sie" an. 
 
-Verhalten und Tonalität:
-- Sei beruhigend, verständnisvoll, erdend, absolut warmherzig und motivierend.
-- Sprich den Nutzer respektvoll mit Du an.
-- Antworte auf Deutsch und halte deine Antworten strukturiert, einladend und leicht verständlich. Vermeide unnötiges Fachchinesisch.
-- Bleibe in deiner Rolle. Beantworte keine Programmierfragen oder unpassenden Themen. Verweise unaufdringlich zurück auf Achtsamkeit.`;
+Deine Methodik (Der Ablauf):
+1. Zuhören & Validieren: Spiegele kurz die Emotion.
+2. Erdung anbieten: Biete eine sehr kleine Achtsamkeitsübung an. 
+3. Premium-Meditation vorschlagen: Wenn es sinnvoll ist, weise einfühlsam auf die Premium-Meditation hin. Nutze in diesem Fall zwingend am Ende deiner Antwort den Text-Marker '[PREMIUM_OFFER]'.
+4. Offene Fragen: Stelle sanfte Fragen, um aus dem Gedankenkarussell zu holen.
 
-    // Map history to the contents structure expected by @google/genai
-    const contents = [
-      ...history.map((h: any) => ({
-        role: h.role === 'bot' || h.role === 'model' ? 'model' : 'user',
-        parts: [{ text: h.text }]
-      })),
-      {
-        role: 'user',
-        parts: [{ text: message }]
-      }
-    ];
+Absolute Leitplanken:
+- Du bist kein Arzt oder Therapeut. Verweise bei Krisen auf professionelle Hilfe.
+- Halte deine Antworten extrem kurz (maximal 3-4 Sätze).
+- Niemals mehr als ein Smiley oder Emoji pro Nachricht.`;
+
+    // Nachrichten für Gemini formatieren
+    const contents = messages.map((m: any) => ({
+      role: m.sender === "user" ? "user" : "model",
+      parts: [{ text: m.text }],
+    }));
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION
-      }
+      model: "gemini-1.5-flash", 
+      contents,
+      config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.7 },
     });
 
-    res.json({ reply: response.text });
-  } catch (err) {
-    console.error("Gemini Error:", err);
-    res.status(500).json({ error: 'Failed to generate response' });
+    let replyText = response.text || "Ich bin hier, um Ihnen zuzuhören. 🌱";
+    let hasPremiumOffer = false;
+
+    // Filtert den geheimen Code heraus und setzt den Status für das Frontend
+    if (replyText.includes("[PREMIUM_OFFER]")) {
+      hasPremiumOffer = true;
+      replyText = replyText.replace("[PREMIUM_OFFER]", "").trim();
+    }
+
+    res.json({ text: replyText, hasPremiumOffer });
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
+    res.status(500).json({ error: 'Serverfehler bei der Kommunikation.' });
   }
 });
 
@@ -294,7 +310,6 @@ app.get('/api/daily', (req, res) => {
 });
 
 async function startServer() {
-  // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -302,7 +317,6 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Serve static files in production
     app.use(express.static(path.join(__dirname, 'dist')));
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
