@@ -1,35 +1,75 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Send, User, Bot, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Send, User, Bot, AlertCircle, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../supabase';
+
+const FREE_MESSAGE_LIMIT = 3;
 
 export default function Chat() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  
+  // Echte Zustände aus der Datenbank
+  const [isPremium, setIsPremium] = useState(false); 
+  const [messageCount, setMessageCount] = useState(0);
+  const [isProfileLoaded, setIsProfileLoaded] = useState(false);
+
   const [message, setMessage] = useState('');
   const [history, setHistory] = useState<{ role: 'user' | 'bot'; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom of chat
+  // --- NEU: Profil-Daten beim Start aus Supabase laden ---
+  useEffect(() => {
+    async function loadUserProfile() {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_premium, message_count')
+        .eq('id', user.id)
+        .single();
+
+      if (data) {
+        setIsPremium(data.is_premium);
+        setMessageCount(data.message_count);
+      } else if (error) {
+        console.error("Fehler beim Laden des Profils:", error);
+      }
+      setIsProfileLoaded(true);
+    }
+
+    loadUserProfile();
+  }, [user]);
+  // -------------------------------------------------------
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [history, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || !user) return;
+
+    // --- NEU: Zähler sofort in der Datenbank hochsetzen ---
+    const newCount = messageCount + 1;
+    setMessageCount(newCount);
+    
+    await supabase
+      .from('profiles')
+      .update({ message_count: newCount })
+      .eq('id', user.id);
+    // ------------------------------------------------------
 
     const userMsg = message;
     setMessage('');
     
-    // Add user message to history
     setHistory(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
     try {
-      // Call the server-side API proxy route securely
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -37,7 +77,7 @@ export default function Chat() {
         },
         body: JSON.stringify({
           message: userMsg,
-          history: history, // Passes chat history in state for context tracking
+          history: history,
         }),
       });
 
@@ -48,7 +88,6 @@ export default function Chat() {
       const data = await response.json();
       const reply = data.reply || 'Entschuldige, ich konnte keine Antwort verarbeiten.';
 
-      // Add bot reply to history
       setHistory(prev => [...prev, { role: 'bot', text: reply }]);
     } catch (err) {
       console.error("Agent Error:", err);
@@ -68,6 +107,13 @@ export default function Chat() {
       </div>
     );
   }
+
+  // Warten, bis die Profildaten da sind, um Flackern zu vermeiden
+  if (!isProfileLoaded) {
+    return <div className="flex justify-center items-center h-64">Lade...</div>;
+  }
+
+  const canSendMessage = isPremium || messageCount < FREE_MESSAGE_LIMIT;
 
   return (
     <div className="max-w-2xl mx-auto h-[calc(100vh-12rem)] flex flex-col">
@@ -118,22 +164,46 @@ export default function Chat() {
         <span>{t('chat.disclaimer')}</span>
       </div>
 
-      <form onSubmit={handleSubmit} className="relative">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={t('chat.placeholder')}
-          className="w-full p-4 pr-12 bg-white rounded-2xl shadow-sm border border-stone-200 focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none"
-        />
-        <button 
-          type="submit" 
-          disabled={loading || !message.trim()}
-          className="absolute right-2 top-2 p-2 bg-[var(--color-accent-olive)] text-white rounded-xl hover:bg-[var(--color-accent-olive-hover)] disabled:opacity-50 transition-colors"
+      {/* --- NEU: Conditional Rendering für Eingabefeld vs. Paywall --- */}
+      {canSendMessage ? (
+        <form onSubmit={handleSubmit} className="relative">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={t('chat.placeholder')}
+            className="w-full p-4 pr-12 bg-white rounded-2xl shadow-sm border border-stone-200 focus:ring-2 focus:ring-[var(--color-accent-olive)] outline-none"
+          />
+          <button 
+            type="submit" 
+            disabled={loading || !message.trim()}
+            className="absolute right-2 top-2 p-2 bg-[var(--color-accent-olive)] text-white rounded-xl hover:bg-[var(--color-accent-olive-hover)] disabled:opacity-50 transition-colors"
+          >
+            <Send size={20} />
+          </button>
+        </form>
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[var(--color-bg-warm)] border border-stone-200 p-6 rounded-2xl text-center shadow-sm"
         >
-          <Send size={20} />
-        </button>
-      </form>
+          <div className="flex justify-center mb-3">
+            <div className="w-12 h-12 rounded-full bg-[var(--color-accent-olive)]/10 text-[var(--color-accent-olive)] flex items-center justify-center">
+              <Lock size={24} />
+            </div>
+          </div>
+          <h3 className="text-lg font-serif text-[var(--color-accent-olive)] mb-2">
+            Dein Freikontingent ist erreicht
+          </h3>
+          <p className="text-sm text-stone-600 mb-5">
+            Um diesen und alle weiteren tiefgehenden Dialoge mit deinem persönlichen Begleiter fortzusetzen, schalte jetzt Premium frei.
+          </p>
+          <button className="w-full sm:w-auto px-6 py-3 bg-[var(--color-accent-olive)] text-white rounded-xl text-sm font-medium hover:bg-opacity-90 transition-all">
+            Premium entdecken
+          </button>
+        </motion.div>
+      )}
     </div>
   );
 }
