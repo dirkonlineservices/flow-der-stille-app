@@ -49,7 +49,7 @@ try { db.exec("ALTER TABLE users ADD COLUMN last_name TEXT;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN email TEXT;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN newsletter BOOLEAN DEFAULT 0;"); } catch(e){}
 try { db.exec("ALTER TABLE users ADD COLUMN dsgvo BOOLEAN DEFAULT 0;"); } catch(e){}
-try { db.exec("ALTER TABLE users ADD COLUMN message_count INTEGER DEFAULT 0;"); } catch(e){} // NEU: Zähler für die Bezahlschranke
+try { db.exec("ALTER TABLE users ADD COLUMN message_count INTEGER DEFAULT 0;"); } catch(e){} // Zähler für die Bezahlschranke
 
 // Seed initial weekly task if empty
 const taskCount = db.prepare('SELECT count(*) as count FROM weekly_tasks').get() as { count: number };
@@ -108,7 +108,6 @@ app.post('/api/register', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Profil wird direkt mit message_count 0 angelegt
     const stmt = db.prepare('INSERT INTO users (username, email, first_name, last_name, password, newsletter, dsgvo, message_count) VALUES (?, ?, ?, ?, ?, ?, ?, 0)');
     const info = stmt.run(email, email, first_name, last_name, hashedPassword, newsletter ? 1 : 0, dsgvo ? 1 : 0);
     
@@ -227,7 +226,7 @@ app.get('/api/recipes/current', (req, res) => {
   res.json(recipes);
 });
 
-// --- NEU: Abgesicherte Chat Route mit Paywall & Aura KI ---
+// --- Chat Route mit Paywall & Aura KI ---
 app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
   const { messages } = req.body;
   const userId = req.user.id; 
@@ -237,20 +236,17 @@ app.post('/api/chat', authenticateToken, async (req: any, res: any) => {
   }
 
   try {
-    // 1. Paywall-Prüfung in der Datenbank
     const user = db.prepare('SELECT is_premium, message_count FROM users WHERE id = ?').get(userId) as any;
     
     if (!user.is_premium && user.message_count >= 3) {
       return res.status(403).json({ error: 'Limit reached', limitReached: true });
     }
 
-    // 2. Zähler hochsetzen (wenn der Nutzer geschrieben hat)
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.sender === "user") {
         db.prepare('UPDATE users SET message_count = message_count + 1 WHERE id = ?').run(userId);
     }
 
-    // 3. Verbindung zur KI aufbauen
     const ai = new GoogleGenAI({ 
       apiKey: process.env.GEMINI_API_KEY,
       httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
@@ -276,7 +272,6 @@ Absolute Leitplanken:
 - Halte deine Antworten extrem kurz (maximal 3-4 Sätze).
 - Niemals mehr als ein Smiley oder Emoji pro Nachricht.`;
 
-    // Nachrichten für Gemini formatieren
     const contents = messages.map((m: any) => ({
       role: m.sender === "user" ? "user" : "model",
       parts: [{ text: m.text }],
@@ -291,7 +286,6 @@ Absolute Leitplanken:
     let replyText = response.text || "Ich bin hier, um Ihnen zuzuhören. 🌱";
     let hasPremiumOffer = false;
 
-    // Filtert den geheimen Code heraus und setzt den Status für das Frontend
     if (replyText.includes("[PREMIUM_OFFER]")) {
       hasPremiumOffer = true;
       replyText = replyText.replace("[PREMIUM_OFFER]", "").trim();
@@ -309,6 +303,7 @@ app.get('/api/daily', (req, res) => {
   res.json({ message: "Willkommen beim Flow der Stille. Dein Parasympathikus-Impuls folgt!" });
 });
 
+// --- Überarbeitete Server-Start-Logik mit globalem Catch-All-Routing ---
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
@@ -319,10 +314,22 @@ async function startServer() {
   } else {
     const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
+
+  // Das universelle Catch-All-Routing fängt alle F5-Aktualisierungen sicher ab
+  app.get('*', (req, res, next) => {
+    // Verhindert, dass API-Anfragen fälschlicherweise die index.html zurückbekommen
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    
+    // Liefert die index.html basierend auf der aktuellen Umgebung aus
+    if (process.env.NODE_ENV !== 'production') {
+      res.sendFile(path.join(__dirname, 'index.html'));
+    } else {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    }
+  });
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
