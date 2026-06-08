@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag } from 'lucide-react';
+import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag, Share } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -21,6 +21,24 @@ export default function Layout() {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Flow der Stille',
+          text: 'Entdecke Flow der Stille für inneren Frieden.',
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link wurde in die Zwischenablage kopiert!');
+    }
   };
 
   return (
@@ -83,6 +101,14 @@ export default function Layout() {
               <span className="text-[10px] font-medium tracking-wide uppercase">{t('auth.login')}</span>
             </Link>
           )}
+
+          <button 
+            onClick={handleShare}
+            className="p-2 rounded-xl hover:bg-[var(--color-bg-border)] transition-colors text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] flex flex-col items-center gap-1"
+          >
+            <Share size={24} />
+            <span className="text-[10px] font-medium tracking-wide uppercase">Teilen</span>
+          </button>
 
           <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} />
         </div>
