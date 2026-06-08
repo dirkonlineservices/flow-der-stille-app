@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
 
+import CookieBanner from './CookieBanner';
+
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,7 +125,15 @@ export default function Layout() {
             <Outlet />
           </motion.div>
         </AnimatePresence>
+        
+        <footer className="mt-20 pt-8 border-t border-[var(--color-border-main)] text-center text-xs text-[var(--color-text-muted-light)] pb-24 md:pb-8 flex flex-col md:flex-row items-center justify-center gap-4">
+          <Link to="/impressum" className="hover:text-[var(--color-text-main)] transition-colors">Impressum</Link>
+          <span className="hidden md:inline">•</span>
+          <Link to="/datenschutz" className="hover:text-[var(--color-text-main)] transition-colors">Datenschutz</Link>
+        </footer>
       </main>
+
+      <CookieBanner />
     </div>
   );
 }

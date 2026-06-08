@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
 import Datenschutz from './pages/Datenschutz';
+import Impressum from './pages/Impressum';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
@@ -64,6 +65,7 @@ export default function App() {
                   <Route path="register" element={<Register />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
+                  <Route path="impressum" element={<Impressum />} />
                 </Route>
 
                 {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}

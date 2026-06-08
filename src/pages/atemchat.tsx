@@ -553,6 +553,11 @@ export default function AtemChat() {
               <Wind className="w-5 h-5" />
               <span>{breathingIsActive ? "Übung pausieren" : "Atem-Übung starten"}</span>
             </button>
+            {!breathingIsActive && (
+              <p className="text-center text-[10px] text-[var(--color-text-muted-light)] mt-3">
+                🎵 Bitte schalten Sie den Ton an für begleitende Gongs.
+              </p>
+            )}
           </div>
         </section>
 

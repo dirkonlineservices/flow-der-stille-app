@@ -544,6 +544,20 @@ export default function Settings() {
                   <span>Daten herunterladen (JSON)</span>
                 </button>
 
+                <button
+                  onClick={async () => {
+                    localStorage.removeItem('cookie_consent');
+                    if (user) {
+                      await supabase.auth.updateUser({ data: { cookie_consent: null } });
+                    }
+                    window.location.reload();
+                  }}
+                  className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all"
+                >
+                  <Shield size={14} />
+                  <span>Cookie-Einstellungen widerrufen</span>
+                </button>
+
                 <Link
                   to="/datenschutz"
                   className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all block text-left"
