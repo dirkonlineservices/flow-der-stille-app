@@ -48,7 +48,7 @@ export const exercises: Exercise[] = [
     translationKeyDesc: 'exercises.card.pmr.desc',
     translationKeyCategory: 'category.somatic',
     duration: '10 min',
-    image: 'https://picsum.photos/seed/relax/800/600',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [
       'instruction.pmr.1',
       'instruction.pmr.2',
