@@ -7,7 +7,6 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
 
-import CookieBanner from './CookieBanner';
 
 export default function Layout() {
   const location = useLocation();
@@ -159,7 +158,6 @@ export default function Layout() {
         </footer>
       </main>
 
-      <CookieBanner />
     </div>
   );
 }
