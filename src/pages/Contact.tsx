@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Send, User, Mail, MessageSquare, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 
 export default function Contact() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -19,12 +20,14 @@ export default function Contact() {
       // Kontaktanfragen können optional lokal oder per Supabase gespeichert werden.
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setStatus('success');
-      setName('');
-      setEmail('');
-      setMessage('');
-      setNewsletter(false);
-      setDsgvo(false);
+      // 1. Das separate Event an den Tag Manager senden
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'form_submit_flow_stille'
+      });
+
+      // 2. Den Nutzer auf die EIGENE Dankeseite weiterleiten
+      navigate('/danke');
     } catch (err) {
       setStatus('error');
     }
@@ -39,19 +42,6 @@ export default function Contact() {
       </header>
 
       <div className="bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)]">
-        {status === 'success' ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <CheckCircle className="text-emerald-500 w-16 h-16 mb-4" />
-            <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Nachricht gesendet!</h3>
-            <p className="text-[var(--color-text-muted)] mb-6">Vielen Dank für deine Nachricht. Wir melden uns in Kürze bei dir.</p>
-            <button
-              onClick={() => setStatus('idle')}
-              className="px-6 py-2 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl hover:bg-stone-200 transition-colors"
-            >
-              Neue Nachricht schreiben
-            </button>
-          </div>
-        ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -142,7 +132,6 @@ export default function Contact() {
               )}
             </button>
           </form>
-        )}
       </div>
     </div>
   );
