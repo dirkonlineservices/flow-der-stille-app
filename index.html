@@ -5,6 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flow der Stille</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <script>
+      // 1. Standard-Einstellungen (Default) festlegen - Alles blockiert
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
+      });
+
+      // 2. Funktion zum Aktualisieren der Einwilligung
+      function updateConsent(acceptAll) {
+        var consentStatus = acceptAll ? 'granted' : 'denied';
+        
+        gtag('consent', 'update', {
+          'analytics_storage': consentStatus,
+          'ad_storage': consentStatus,
+          'ad_user_data': consentStatus,
+          'ad_personalization': consentStatus
+        });
+        
+        // Entscheidung für 365 Tage merken
+        var date = new Date();
+        date.setTime(date.getTime() + (365*24*60*60*1000));
+        document.cookie = "custom_consent=" + consentStatus + "; expires=" + date.toUTCString() + "; path=/; SameSite=Lax";
+        
+        // Banner ausblenden
+        document.getElementById('cookie-banner').style.display = 'none';
+        
+        // GTM über die Änderung informieren
+        window.dataLayer.push({'event': 'consent_updated'});
+      }
+
+      // 3. Prüfen, ob der Nutzer schon mal da war
+      window.addEventListener('DOMContentLoaded', (event) => {
+        if (document.cookie.indexOf('custom_consent=granted') > -1) {
+          updateConsent(true);
+        } else if (document.cookie.indexOf('custom_consent=denied') > -1) {
+          updateConsent(false);
+        } else {
+          // Banner anzeigen, wenn keine Entscheidung vorliegt
+          document.getElementById('cookie-banner').style.display = 'block';
+        }
+      });
+    </script>
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -16,6 +64,15 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVP6G6PN"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    
+    <div id="cookie-banner" style="position:fixed; bottom:20px; left:20px; right:20px; background:#f9f9f9; border:1px solid #ccc; padding:20px; z-index:99999; display:none; border-radius:8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-family: sans-serif;">
+      <p style="margin:0 0 15px 0; font-size:14px; color:#333;">
+        <strong>Datenschutz-Einwilligung:</strong> Wir nutzen Google Analytics, um unsere Angebote auf <em>zeitfuerseelen.de</em> und <em>flow-der-stille.de</em> zu verbessern. Details findest du in unserer Datenschutzerklärung.
+      </p>
+      <button onclick="updateConsent(true)" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; margin-right:10px;">Alle akzeptieren</button>
+      <button onclick="updateConsent(false)" style="background:#6c757d; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Nur notwendige</button>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
