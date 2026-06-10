@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag, Share } from 'lucide-react';
@@ -6,7 +6,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
-
 
 export default function Layout() {
   const location = useLocation();
@@ -16,6 +15,20 @@ export default function Layout() {
   const { theme, toggleTheme } = useTheme();
   const { setCartOpen, items } = useCart();
   const cartItemCount = items.length;
+
+  // === NEU: SPA Tracking für Google Tag Manager ===
+  useEffect(() => {
+    // 1. Sicherstellen, dass der dataLayer existiert
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    
+    // 2. Das Event bei jedem Seitenwechsel an den GTM senden
+    (window as any).dataLayer.push({
+      event: 'virtual_page_view',
+      page_path: location.pathname + location.search,
+      page_title: document.title || 'Flow der Stille'
+    });
+  }, [location]); // Löst exakt dann aus, wenn sich die URL ändert
+  // =================================================
 
   const handleLogout = () => {
     logout();
