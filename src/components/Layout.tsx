@@ -130,8 +130,10 @@ export default function Layout() {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 flex justify-between items-center z-50 overflow-x-auto gap-2">
         <NavLink to="/" icon={<Home />} label={t('nav.home')} mobile />
         <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
+        <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
+        <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} mobile />
         <NavLink to="/chat" icon={<MessageCircle />} label="Chat" mobile />
-        {/* <NavLink to="/shop" icon={<ShoppingBag />} label="Shop" mobile /> */}
+        <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} mobile />
         
         {user ? (
            <button onClick={handleLogout} className="flex flex-col items-center gap-1 min-w-[50px]">

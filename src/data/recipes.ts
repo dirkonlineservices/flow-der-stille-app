@@ -7,6 +7,7 @@ export interface Recipe {
   category: string;
   icon_type: string;
   ingredients: string[];
+  premium?: boolean;
 }
 
 export const allRecipes: Recipe[] = [
@@ -80,7 +81,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Sanft anregend dank L-Theanin, ohne das Nervensystem zu überreizen.',
     category: 'Getränke',
     icon_type: 'Coffee',
-    ingredients: ['Matcha', 'Hafermilch', 'Ahornsirup']
+    ingredients: ['Matcha', 'Hafermilch', 'Ahornsirup'],
+    premium: true
   },
   {
     id: 'lentils',
@@ -88,7 +90,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Wärmend, erdend und voller B-Vitamine für dein Wohlbefinden.',
     category: 'Mahlzeiten',
     icon_type: 'Flame',
-    ingredients: ['Rote Linsen', 'Kokosmilch', 'Garam Masala', 'Koriander']
+    ingredients: ['Rote Linsen', 'Kokosmilch', 'Garam Masala', 'Koriander'],
+    premium: true
   },
   {
     id: 'berries',
@@ -96,7 +99,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Kämpft sanft gegen oxidativen Stress in deinen Zellen an.',
     category: 'Snacks',
     icon_type: 'Leaf',
-    ingredients: ['Blaubeeren', 'Himbeeren', 'Hanfsamen', 'Griechischer Joghurt']
+    ingredients: ['Blaubeeren', 'Himbeeren', 'Hanfsamen', 'Griechischer Joghurt'],
+    premium: true
   },
   {
     id: 'nuts',
@@ -104,7 +108,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Schnelle Energiequelle und wichtiger Zink- und Magnesiumlieferant.',
     category: 'Snacks',
     icon_type: 'Utensils',
-    ingredients: ['Paranüsse', 'Mandeln', 'Cashews', 'Dunkle Schokolade']
+    ingredients: ['Paranüsse', 'Mandeln', 'Cashews', 'Dunkle Schokolade'],
+    premium: true
   }
 ];
 

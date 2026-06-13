@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { Utensils, Coffee, Leaf, Droplets, Flame, Lock, Info, Calendar } from 'lucide-react';
 import { allRecipes, weeklyTips } from '../data/recipes';
 import { useAuth } from '../context/AuthContext';
@@ -105,6 +106,7 @@ export default function Recipes() {
           {monthlyRecipes.map((recipe) => (
             <RecipeCard 
               key={recipe.id}
+              id={recipe.id}
               title={recipe.title}
               category={recipe.category}
               ingredients={recipe.ingredients}
@@ -118,28 +120,29 @@ export default function Recipes() {
   );
 }
 
-function RecipeCard({ title, category, ingredients, description, icon }: { title: string; category: string; ingredients: string[]; description: string; icon: React.ReactNode }) {
+function RecipeCard({ id, title, category, ingredients, description, icon }: { id: string; title: string; category: string; ingredients: string[]; description: string; icon: React.ReactNode }) {
   return (
-    <motion.div 
-      whileHover={{ scale: 1.02 }}
-      className="bg-[var(--color-bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--color-border-main)]"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl">
-          {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
+    <Link to={`/recipe/${id}`}>
+      <motion.div 
+        whileHover={{ scale: 1.02 }}
+        className="bg-[var(--color-bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--color-border-main)] h-full"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl">
+            {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
+          </div>
+          <span className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-widest">{category}</span>
         </div>
-        <span className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-widest">{category}</span>
-      </div>
-      <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
-      <p className="text-[var(--color-text-muted)] text-sm mb-4 leading-relaxed">{description}</p>
-      
-      <div className="flex flex-wrap gap-2">
-        {ingredients.map((ing, i) => (
-          <span key={i} className="text-[11px] px-2.5 py-1 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-md text-[#4f5651]">
-            {ing}
-          </span>
-        ))}
-      </div>
-    </motion.div>
+        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
+        <p className="text-[var(--color-text-muted)] text-sm mb-4 leading-relaxed">{description}</p>
+        <div className="flex flex-wrap gap-2">
+          {ingredients.map((ing, i) => (
+            <span key={i} className="text-[11px] px-2.5 py-1 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-md text-[#4f5651]">
+              {ing}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </Link>
   );
 }

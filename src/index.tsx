@@ -20,6 +20,7 @@ import Contact from './pages/Contact';
 import Datenschutz from './pages/Datenschutz';
 import Impressum from './pages/Impressum';
 import Danke from './pages/Danke';
+import RecipeDetail from './pages/RecipeDetail';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
@@ -68,6 +69,7 @@ export default function App() {
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="impressum" element={<Impressum />} />
                   <Route path="danke" element={<Danke />} />
+                  <Route path="recipe/:id" element={<RecipeDetail />} />
                 </Route>
 
                 {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}

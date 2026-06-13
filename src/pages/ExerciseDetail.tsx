@@ -24,15 +24,26 @@ export default function ExerciseDetail() {
   const [progressSaved, setProgressSaved] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const currentStepIndexRef = useRef(currentStepIndex);
+
+  useEffect(() => {
+    currentStepIndexRef.current = currentStepIndex;
+  }, [currentStepIndex]);
 
   useEffect(() => {
     if (isActive && !isPaused && !showCelebration) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
+            const nextIndex = currentStepIndexRef.current + 1;
             // Move to next step
-            if (exercise && currentStepIndex < exercise.instructionKeys.length - 1) {
-              setCurrentStepIndex((curr) => curr + 1);
+            if (exercise && nextIndex < exercise.instructionKeys.length) {
+              setCurrentStepIndex(nextIndex);
+              
+              // Dynamic duration logic
+              if (exercise.pattern) {
+                return exercise.pattern[nextIndex].duration;
+              }
               return 15; // Reset step duration
             } else {
               // End of exercise
@@ -49,7 +60,7 @@ export default function ExerciseDetail() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isActive, isPaused, currentStepIndex, showCelebration, exercise]);
+  }, [isActive, isPaused, showCelebration, exercise]);
 
   if (!exercise) {
     return <div className="p-8 text-center text-[var(--color-text-muted)]">{t('exercise.notfound')}</div>;
@@ -57,7 +68,9 @@ export default function ExerciseDetail() {
 
   const handleStart = () => {
     setCurrentStepIndex(0);
-    setTimeLeft(15);
+    // Dynamic start duration
+    const initialDuration = exercise.pattern ? exercise.pattern[0].duration : 15;
+    setTimeLeft(initialDuration);
     setIsPaused(false);
     setShowCelebration(false);
     setProgressSaved(false);
@@ -71,7 +84,9 @@ export default function ExerciseDetail() {
   const handleSkip = () => {
     if (currentStepIndex < exercise.instructionKeys.length - 1) {
       setCurrentStepIndex((curr) => curr + 1);
-      setTimeLeft(15);
+      const nextStep = currentStepIndex + 1;
+      const duration = exercise.pattern ? exercise.pattern[nextStep].duration : 15;
+      setTimeLeft(duration);
     } else {
       setShowCelebration(true);
     }
@@ -80,7 +95,9 @@ export default function ExerciseDetail() {
   const handleBack = () => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex((curr) => curr - 1);
-      setTimeLeft(15);
+      const prevStep = currentStepIndex - 1;
+      const duration = exercise.pattern ? exercise.pattern[prevStep].duration : 15;
+      setTimeLeft(duration);
     }
   };
 
@@ -183,7 +200,7 @@ export default function ExerciseDetail() {
                   {/* Step content */}
                   <div className="min-h-40 flex flex-col justify-center">
                     <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-primary)] mb-3">
-                      Schritt {currentStepIndex + 1} von {exercise.instructionKeys.length}
+                      {exercise.pattern && exercise.pattern[currentStepIndex] ? exercise.pattern[currentStepIndex].label : `Schritt ${currentStepIndex + 1}`}
                     </span>
                     <motion.p 
                       key={currentStepIndex}
@@ -321,8 +338,21 @@ export default function ExerciseDetail() {
             {t(exercise.translationKeyDesc)}
           </p>
 
+          {exercise.translationKeyOverview && (
+            <p className="text-md text-[var(--color-text-main)] mb-8 leading-relaxed font-medium">
+              {t(exercise.translationKeyOverview)}
+            </p>
+          )}
+
           <h2 className="text-xl font-serif text-[var(--color-accent-primary)] mb-6">{t('exercise.instructions')}</h2>
           
+          <div className="bg-[var(--color-bg-body)] p-6 rounded-2xl mb-8 border border-[var(--color-border-main)]">
+            <h3 className="font-medium text-[var(--color-text-main)] mb-2">Vorbereitung</h3>
+            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+              Finde einen bequemen Platz, an dem du ungestört sitzen oder liegen kannst. Atme tief durch, erlaube dir, zur Ruhe zu kommen, und schließe sanft die Augen. Bereite dich darauf vor, dich voll und ganz deinem Atemrhythmus zu widmen.
+            </p>
+          </div>
+
           <div className="space-y-6">
             {exercise.instructionKeys.map((key, index) => (
               <div key={index} className="flex gap-4">
@@ -339,7 +369,10 @@ export default function ExerciseDetail() {
           <div className="mt-12 p-6 bg-[var(--color-bg-body)] rounded-2xl flex items-center justify-between border border-[var(--color-border-main)]">
             <div>
               <h3 className="font-medium text-[var(--color-text-main)] mb-1">{t('exercise.ready')}</h3>
-              <p className="text-sm text-[var(--color-text-muted)]">{t('exercise.begin')}</p>
+              <p className="text-sm text-[var(--color-text-muted)] mb-2">{t('exercise.begin')}</p>
+              <p className="text-xs text-[var(--color-text-muted-light)] italic">
+                Dies ist ein Beispiel für den Ablauf, damit du weißt, wie die Übung funktioniert, bevor du sie eigenständig anwendest.
+              </p>
             </div>
             <button 
               id="btn-play-exercise"

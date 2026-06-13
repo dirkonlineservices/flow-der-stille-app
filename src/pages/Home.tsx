@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -103,7 +103,7 @@ export default function Home() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[var(--color-bg-alt)] p-6 rounded-2xl border border-[var(--color-border-main)] max-w-3xl flex flex-col md:flex-row gap-6 items-center justify-between"
+              className="bg-[var(--color-bg-alt)] p-6 rounded-2xl border border-[var(--color-border-main)] flex flex-col md:flex-row gap-6 items-center justify-between"
             >
               <div className="flex-1">
                 <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Willkommen bei Flow der Stille</h3>
@@ -123,7 +123,7 @@ export default function Home() {
           )}
         </header>
 
-        <div className="max-w-3xl">
+        <div>
           <WeeklyChallenge />
         </div>
 
@@ -157,6 +157,28 @@ export default function Home() {
             to="/evening"
           />
         </div>
+
+        {/* Wochenempfehlung (Nur nicht-eingeloggt) */}
+        {!user && (
+          <section className="mt-12 p-8 bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+            <div className="flex-1 space-y-4 relative z-10">
+              <div className="inline-block px-3 py-1 bg-[var(--color-accent-primary)] text-white text-xs font-bold uppercase tracking-widest rounded-full">
+                Empfehlung der Woche
+              </div>
+              <h2 className="text-3xl font-serif text-[var(--color-text-main)]">Matcha-Linsen-Dal mit Kokosmilch</h2>
+              <p className="text-[var(--color-text-muted)] leading-relaxed">
+                Entdecke unser wöchentliches Rezept, das speziell dafür entwickelt wurde, deinen Parasympathikus zu unterstützen. Ein wärmendes, erdendes Dal voller B-Vitamine.
+              </p>
+              <Link to="/recipe/lentils" className="inline-flex px-6 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-medium hover:bg-[var(--color-accent-hover)] transition-all">
+                Zum Rezept
+              </Link>
+            </div>
+            <div className="w-full md:w-1/3 h-48 bg-[var(--color-bg-alt)] rounded-2xl flex items-center justify-center shrink-0 text-[var(--color-text-muted-light)]">
+               <Utensils size={48} />
+            </div>
+          </section>
+        )}
+
 
         <section className="mt-12 p-8 bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex-1">

@@ -1,11 +1,18 @@
+export interface PatternStep {
+  label: string;
+  duration: number;
+}
+
 export interface Exercise {
   id: string;
   translationKeyTitle: string;
   translationKeyDesc: string;
+  translationKeyOverview?: string; // New field for brief overview
   translationKeyCategory: string;
   duration: string;
   image: string;
   instructionKeys: string[];
+  pattern?: PatternStep[]; // Structured pattern with label and duration for timer and display
 }
 
 export const exercises: Exercise[] = [
@@ -13,6 +20,7 @@ export const exercises: Exercise[] = [
     id: '478-breathing',
     translationKeyTitle: 'exercises.card.478.title',
     translationKeyDesc: 'exercises.card.478.desc',
+    translationKeyOverview: 'exercise.478.overview',
     translationKeyCategory: 'category.breathwork',
     duration: '5 min',
     image: 'https://picsum.photos/seed/breath/800/600',
@@ -24,15 +32,25 @@ export const exercises: Exercise[] = [
       'instruction.478.5',
       'instruction.478.6',
       'instruction.478.7'
+    ],
+    pattern: [
+      { label: 'Vorbereitung', duration: 10 },
+      { label: 'Inhaliere', duration: 4 },
+      { label: 'Halte', duration: 7 },
+      { label: 'Exhaliere', duration: 8 },
+      { label: 'Entspanne', duration: 4 },
+      { label: 'Wiederhole', duration: 4 },
+      { label: 'Abschluss', duration: 2 }
     ]
   },
   {
     id: 'box-breathing',
     translationKeyTitle: 'exercises.card.box.title',
     translationKeyDesc: 'exercises.card.box.desc',
+    translationKeyOverview: 'exercise.box.overview',
     translationKeyCategory: 'category.breathwork',
     duration: '3 min',
-    image: 'https://picsum.photos/seed/box/800/600',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [
       'instruction.box.1',
       'instruction.box.2',
@@ -40,6 +58,14 @@ export const exercises: Exercise[] = [
       'instruction.box.4',
       'instruction.box.5',
       'instruction.box.6'
+    ],
+    pattern: [
+      { label: 'Vorbereitung', duration: 10 },
+      { label: 'Inhaliere', duration: 4 },
+      { label: 'Halte', duration: 4 },
+      { label: 'Exhaliere', duration: 4 },
+      { label: 'Halte', duration: 4 },
+      { label: 'Wiederhole', duration: 4 }
     ]
   },
   {
