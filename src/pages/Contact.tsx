@@ -21,8 +21,8 @@ export default function Contact() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // 1. Das separate Event an den Tag Manager senden
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
+      (window as any).dataLayer = (window as any).dataLayer || [];
+      (window as any).dataLayer.push({
         'event': 'form_submit_flow_stille'
       });
 

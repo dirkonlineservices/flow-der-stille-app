@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -28,7 +29,7 @@ import { CartProvider } from './context/CartContext';
 import CartSidebar from './components/CartSidebar';
 
 // NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   if (!user) {
     // Nicht eingeloggt? Ab zum Login!

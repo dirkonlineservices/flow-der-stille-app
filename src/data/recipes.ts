@@ -7,6 +7,7 @@ export interface Recipe {
   category: string;
   icon_type: string;
   ingredients: string[];
+  instructions?: string[];
   premium?: boolean;
 }
 
@@ -91,6 +92,12 @@ export const allRecipes: Recipe[] = [
     category: 'Mahlzeiten',
     icon_type: 'Flame',
     ingredients: ['Rote Linsen', 'Kokosmilch', 'Garam Masala', 'Koriander'],
+    instructions: [
+      'Linsen gründlich waschen.',
+      'In einem Topf die Linsen zusammen mit der Kokosmilch und etwas Wasser köcheln lassen, bis sie weich sind.',
+      'Garam Masala und Gewürze unterrühren.',
+      'Mit frischem Koriander servieren.'
+    ],
     premium: true
   },
   {

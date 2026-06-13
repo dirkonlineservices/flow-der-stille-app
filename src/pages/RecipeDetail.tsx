@@ -60,13 +60,25 @@ export default function RecipeDetail() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-6">
-            <h4 className="font-bold text-[var(--color-text-main)] uppercase tracking-wider text-xs">Zutaten</h4>
-            <ul className="list-disc pl-5 space-y-2 text-[var(--color-text-muted)]">
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i}>{ing}</li>
-              ))}
-            </ul>
+          <div className="space-y-8">
+            <div>
+              <h4 className="font-bold text-[var(--color-text-main)] uppercase tracking-wider text-xs mb-4">Zutaten</h4>
+              <ul className="list-disc pl-5 space-y-2 text-[var(--color-text-muted)]">
+                {recipe.ingredients.map((ing, i) => (
+                  <li key={i}>{ing}</li>
+                ))}
+              </ul>
+            </div>
+            {recipe.instructions && (
+              <div>
+                <h4 className="font-bold text-[var(--color-text-main)] uppercase tracking-wider text-xs mb-4">Zubereitung</h4>
+                <ul className="list-decimal pl-5 space-y-2 text-[var(--color-text-muted)]">
+                  {recipe.instructions.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
       </motion.div>

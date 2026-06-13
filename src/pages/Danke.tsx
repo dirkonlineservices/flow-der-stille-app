@@ -7,8 +7,8 @@ import SEO from '../components/SEO';
 export default function Danke() {
   useEffect(() => {
     // DataLayer Push für den Form-Submit Flow
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).dataLayer.push({
       'event': 'form_submit',
       'form_name': 'Flow der Stille'
     });

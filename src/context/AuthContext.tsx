@@ -23,6 +23,7 @@ interface AuthContextType {
   login: (user: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -73,6 +74,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(userData);
   };
 
+  const refreshUser = async () => {
+    // Re-fetch the user from supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      mapAndSetUser(session.user);
+    }
+  };
+
   const logout = async () => {
     // Sicherer Logout über Supabase
     await supabase.auth.signOut();
@@ -80,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
