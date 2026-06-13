@@ -1,10 +1,42 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Wind, Activity, Timer, ArrowRight } from 'lucide-react';
+import { Wind, Activity, Timer, ArrowRight, Play, Pause } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
+
+function AudioPlayButton({ src, title }: { src: string; title: string }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  return (
+    <div className="bg-[var(--color-bg-card)] rounded-2xl p-6 shadow-sm border border-[var(--color-border-main)] flex items-center justify-between">
+      <div>
+        <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">{title}</h3>
+        <p className="text-sm text-[var(--color-text-muted)]">Audio-Anleitung anhören</p>
+      </div>
+      <button 
+        onClick={togglePlay}
+        className="p-3 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-colors"
+      >
+        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+      </button>
+      <audio ref={audioRef} src={src} onEnded={() => setIsPlaying(false)} />
+    </div>
+  );
+}
 
 export default function Exercises() {
   const { t } = useLanguage();
@@ -18,6 +50,8 @@ export default function Exercises() {
           {t('exercises.subtitle')}
         </p>
       </header>
+
+      <AudioPlayButton src="/Anleitung atmen.wav" title="Geführte Atemübung" />
 
       <div className="grid gap-6">
         {exercises.map((exercise) => (
