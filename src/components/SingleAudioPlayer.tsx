@@ -5,22 +5,11 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   const [produkt, setProdukt] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [statusText, setStatusText] = useState('Anwendung starten');
   const audioRef = useRef<HTMLAudioElement>(null);
-  const fetchedUrl = useRef('');
+  const localUrlRef = useRef('');
 
   useEffect(() => {
-    async function debugBuckets() {
-      // Listet alle Buckets auf, die deine App aktuell in Supabase sehen kann
-      const { data: buckets, error } = await supabase.storage.listBuckets();
-      if (error) {
-        console.error("Fehler beim Abrufen der Buckets:", error.message);
-      } else if (buckets) {
-        console.log("--- EXAKTE BUCKET-IDS IN DEINEM STORAGE: ---");
-        buckets.forEach(b => console.log(`Bucket-Name: "${b.name}" | Interne ID für den Code: "${b.id}" | Öffentlich: ${b.public}`));
-        console.log("--------------------------------------------");
-      }
-    }
-
     async function fetchSingleProdukt() {
       if (!produktId) return;
       try {
@@ -38,39 +27,58 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         setLoading(false);
       }
     }
-
-    debugBuckets();
     fetchSingleProdukt();
+
+    // Speicherbereinigung, wenn die Komponente entladen wird
+    return () => {
+      if (localUrlRef.current) {
+        URL.revokeObjectURL(localUrlRef.current);
+      }
+    };
   }, [produktId]);
 
   const togglePlayback = async () => {
     if (!produkt || !produkt.audio_path || !audioRef.current) return;
 
     try {
-      if (!fetchedUrl.current) {
-        // Wir versuchen es standardmäßig mit 'audio-bucket'
-        const { data } = supabase.storage.from('audio-bucket').getPublicUrl(produkt.audio_path);
+      // Falls die Datei noch nicht im Browser-Speicher liegt, laden wir sie jetzt direkt herunter
+      if (!localUrlRef.current) {
+        setStatusText('Verbindung wird aufgebaut...');
         
-        if (!data || !data.publicUrl) {
-          console.error("Öffentliche URL konnte nicht generiert werden.");
+        const { data, error } = await supabase.storage
+          .from('audio-bucket')
+          .download(produkt.audio_path);
+
+        if (error) {
+          console.error("Supabase-Download-Fehler:", error.message);
+          setStatusText('Ladefehler - Datei fehlt im Storage');
           return;
         }
 
-        fetchedUrl.current = data.publicUrl;
-        audioRef.current.src = data.publicUrl;
+        // Wir erzeugen eine lokale, virtuelle Browser-URL aus den reinen Audio-Daten
+        const objectUrl = URL.createObjectURL(data);
+        localUrlRef.current = objectUrl;
+        
+        audioRef.current.src = objectUrl;
         audioRef.current.load();
+        setStatusText('');
       }
 
+      // Steuerung der Wiedergabe
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(err => console.error("Wiedergabefehler im Browser:", err.message));
+          .catch(err => {
+            console.error("Browser-Wiedergabefehler:", err.message);
+            setStatusText('Fehler beim Abspielen');
+          });
       }
     } catch (err: any) {
-      console.error("Fehler im Ablauf:", err.message);
+      console.error("Kritischer Fehler im Ablauf:", err.message);
+      setStatusText('Fehler');
     }
   };
 
@@ -78,14 +86,16 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   if (!produkt) return <span className="text-xs text-red-400">Audio nicht gefunden</span>;
 
   return (
-    <div className="flex items-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-3 justify-between w-full max-w-md mt-2">
+    <div className="flex items-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-3 justify-between w-full max-w-md mt-2 shadow-sm">
       <div className="flex-1">
         <h4 className="text-sm font-bold text-stone-800">{produkt.titel}</h4>
-        <p className="text-[11px] text-stone-500 italic">Anwendung starten</p>
+        <p className="text-[11px] text-stone-500 italic">
+          {statusText ? statusText : "Bereit zum Abspielen"}
+        </p>
       </div>
       <button 
         onClick={togglePlayback}
-        className={`w-10 h-10 rounded-full flex items-center justify-center border-none cursor-pointer transition-all ${isPlaying ? 'bg-amber-600' : 'bg-stone-600 hover:bg-stone-700'}`}
+        className={`w-10 h-10 rounded-full flex items-center justify-center border-none cursor-pointer transition-all shadow ${isPlaying ? 'bg-amber-600 hover:bg-amber-700' : 'bg-stone-600 hover:bg-stone-700'}`}
       >
         {isPlaying ? (
           <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
