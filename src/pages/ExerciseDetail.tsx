@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
 import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
+import SingleAudioPlayer from '../components/SingleAudioPlayer';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -370,6 +371,13 @@ export default function ExerciseDetail() {
             ))}
           </div>
 
+          {/* Conditional Audio Player for PMR */}
+          {exercise.id === 'pmr' && (
+            <div className="mt-8">
+              <SingleAudioPlayer produktId="f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a" />
+            </div>
+          )}
+
           <div className="mt-12 p-6 bg-[var(--color-bg-body)] rounded-2xl flex items-center justify-between border border-[var(--color-border-main)]">
             <div>
               <h3 className="font-medium text-[var(--color-text-main)] mb-1">{t('exercise.ready')}</h3>
@@ -386,39 +394,7 @@ export default function ExerciseDetail() {
               <Play size={20} className="ml-1" />
             </button>
           </div>
-          {/* Conditional Audio Player for PMR */}
-          {exercise.id === 'pmr' && (
-            <div className="bg-[var(--color-bg-body)] rounded-2xl p-6 mt-8 border border-[var(--color-border-main)]">
-              <div className="flex items-center justify-between">
-                <div className="pr-4 flex-1">
-                  <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">Geführte Audio-Anleitung</h3>
-                  <p className="text-sm text-[var(--color-text-muted)]">
-                    Für optimale Entspannungsergebnisse empfehlen wir, diese Übung regelmäßig durchzuführen. 
-                    Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
-                  </p>
-                </div>
-                <div className="flex flex-col items-center">
-                  <button 
-                    onClick={() => {
-                        const audio = document.getElementById('audio-pmr') as HTMLAudioElement;
-                        if (audio) {
-                            if (audio.paused) audio.play();
-                            else audio.pause();
-                        }
-                    }}
-                    className="p-5 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
-                  >
-                    <Play size={32} />
-                  </button>
-                  <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">Hier klicken</span>
-                </div>
-                <audio id="audio-pmr" src="/Progressive Muskelentspannung.mp3" />
-              </div>
-              <div className="text-[10px] text-[var(--color-text-muted-light)] mt-4 border-t border-[var(--color-border-main)] pt-2">
-                <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgten mit Unterstützung von KI (Suno AI).
-              </div>
-            </div>
-          )}
+
         </div>
       </motion.div>
     </div>

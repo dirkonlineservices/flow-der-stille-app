@@ -95,15 +95,6 @@ export const exercises: Exercise[] = [
     ]
   },
   {
-    id: 'heart-opening-meditation',
-    translationKeyTitle: 'exercises.card.heart.title',
-    translationKeyDesc: 'exercises.card.heart.desc',
-    translationKeyCategory: 'category.meditation',
-    duration: '10 min',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop',
-    instructionKeys: []
-  },
-  {
     id: 'neck-stretches',
     translationKeyTitle: 'exercises.card.neck.title',
     translationKeyDesc: 'exercises.card.neck.desc',

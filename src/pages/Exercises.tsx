@@ -22,11 +22,9 @@ export default function Exercises() {
 
       <div className="grid gap-6">
         {exercises.map((exercise) => {
-          if (['guided-breathing', 'pmr', 'heart-opening-meditation'].includes(exercise.id)) {
+          if (exercise.id === 'guided-breathing') {
             const produktIdMap: { [key: string]: string } = {
               'guided-breathing': 'a080ef5a-b9e3-4b2c-938e-d2787991461d',
-              'pmr': 'f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a',
-              'heart-opening-meditation': 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce'
             };
             return <AudioExerciseCard key={exercise.id} t={t} exercise={exercise} produktId={produktIdMap[exercise.id]} />;
           }

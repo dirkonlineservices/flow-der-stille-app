@@ -109,6 +109,24 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
         {produkte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
+          const isHeartOpening = produkt.id === 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce';
+
+          if (isHeartOpening && !user) {
+            return (
+              <div key={produkt.id} className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
+                <div className="flex-1">
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-stone-100 text-stone-600 uppercase mb-2 inline-block">
+                    {produkt.kategorie || 'Atemarbeit'}
+                  </span>
+                  <h2 className="text-xl font-bold text-stone-800">{produkt.titel}</h2>
+                  <p className="text-stone-500 text-sm mt-1">{produkt.beschreibung}</p>
+                </div>
+                <div className="w-full md:w-auto text-center md:text-right text-sm text-stone-600 italic font-medium">
+                  Kostenfrei nach Anmeldung
+                </div>
+              </div>
+            );
+          }
 
           return (
             <div key={produkt.id} className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
