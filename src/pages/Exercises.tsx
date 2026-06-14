@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Wind, Activity, Timer, ArrowRight, Play, Pause } from 'lucide-react';
+import { Wind, Activity, Timer, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
+import SingleAudioPlayer from '../components/SingleAudioPlayer';
 
 export default function Exercises() {
   const { t } = useLanguage();
@@ -21,8 +22,13 @@ export default function Exercises() {
 
       <div className="grid gap-6">
         {exercises.map((exercise) => {
-          if (exercise.id === 'guided-breathing') {
-            return <GuidedBreathingExercise key={exercise.id} t={t} exercise={exercise} />;
+          if (['guided-breathing', 'pmr', 'heart-opening-meditation'].includes(exercise.id)) {
+            const produktIdMap: { [key: string]: string } = {
+              'guided-breathing': 'a080ef5a-b9e3-4b2c-938e-d2787991461d',
+              'pmr': 'f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a',
+              'heart-opening-meditation': 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce'
+            };
+            return <AudioExerciseCard key={exercise.id} t={t} exercise={exercise} produktId={produktIdMap[exercise.id]} />;
           }
           return (
             <ExerciseCard 
@@ -42,37 +48,12 @@ export default function Exercises() {
   );
 }
 
-function GuidedBreathingExercise({ t, exercise }: { t: any, exercise: any }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  useEffect(() => {
-    const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
-    if (!audio) return;
-
-    const handleEnded = () => setIsPlaying(false);
-    audio.addEventListener('ended', handleEnded);
-
-    return () => audio.removeEventListener('ended', handleEnded);
-  }, []);
-
-  const togglePlay = () => {
-    const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
-      audio.play();
-      setIsPlaying(true);
-    }
-  };
-
+function AudioExerciseCard({ t, exercise, produktId }: { t: any, exercise: any, produktId: string }) {
   return (
     <motion.div 
-      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] overflow-hidden"
+      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] overflow-hidden p-6"
     >
-      <div className="flex flex-col md:flex-row p-6">
+      <div className="flex flex-col md:flex-row">
         <div className="ai-image-container w-full md:w-48 h-48 md:h-32 shrink-0 overflow-hidden rounded-xl mb-4 md:mb-0 md:mr-6">
           <img src={exercise.image} alt={t(exercise.translationKeyTitle)} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           <a href="/impressum#ki-transparenz" className="ai-label">
@@ -81,27 +62,10 @@ function GuidedBreathingExercise({ t, exercise }: { t: any, exercise: any }) {
         </div>
         <div className="flex-1 flex flex-col justify-center">
           <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-1">{t(exercise.translationKeyTitle)}</h3>
-          <p className="text-sm text-[var(--color-text-muted)] mb-2">{t(exercise.translationKeyDesc)}</p>
-          <p className="text-xs text-[var(--color-text-muted-light)] italic mb-4">
-            Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
-          </p>
-        </div>
-        <div className="flex flex-col items-center justify-center shrink-0 ml-0 md:ml-6 mt-4 md:mt-0">
-          <button 
-            onClick={togglePlay}
-            className="p-4 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
-          >
-            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-          </button>
-          <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">
-            {isPlaying ? 'Pause' : 'Hier klicken'}
-          </span>
+          <p className="text-sm text-[var(--color-text-muted)] mb-4">{t(exercise.translationKeyDesc)}</p>
+          <SingleAudioPlayer produktId={produktId} />
         </div>
       </div>
-      <div className="text-[10px] text-[var(--color-text-muted-light)] border-t border-[var(--color-border-main)] px-6 py-3 bg-gray-50">
-        <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgten mit Unterstützung von KI (Suno AI).
-      </div>
-      <audio id="audio-guided-breathwork" src="/Anleitung atmen.wav" />
     </motion.div>
   );
 }

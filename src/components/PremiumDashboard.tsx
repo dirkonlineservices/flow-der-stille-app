@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
+import { Play, Pause } from 'lucide-react';
+import SingleAudioPlayer from './SingleAudioPlayer';
 
 export default function PremiumShopDashboard({ session }: { session: any }) {
   const [produkte, setProdukte] = useState<any[]>([]);
@@ -15,7 +17,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   // 1. PayPal SDK über CDN laden
   useEffect(() => {
     // @ts-ignore
-    if (window.paypal) { setPaypalReady(true); return; }
+    if ((window as any).paypal) { setPaypalReady(true); return; }
     const script = document.createElement("script");
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`;
     script.async = true;
@@ -36,7 +38,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
       if (prodError) throw prodError;
 
       // Wenn der User eingeloggt ist, seine freigeschalteten Produkte prüfen
-      let gekaufteSet = new Set();
+      let gekaufteSet: Set<string> = new Set();
       if (user) {
         const { data: kaufData, error: kaufError } = await supabase
           .from('kaeufe')
@@ -131,7 +133,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
               <div className="w-full md:w-auto min-w-[200px] flex flex-col items-stretch md:items-end justify-center">
                 {hatZugriff ? (
                   // ZUSTAND: FREIGESCHALTET (Kostenlos oder bereits gekauft)
-                  <AudioPlayerWidget produkt={produkt} getUrl={getAudioUrl} />
+                  <SingleAudioPlayer produktId={produkt.id} />
                 ) : (
                   // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT
                   <div className="w-full">
@@ -158,86 +160,17 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: Der native Audio-Player ("Hier Klicken")
-function AudioPlayerWidget({ produkt, getUrl }: { produkt: any, getUrl: any }) {
-  const [audioUrl, setAudioUrl] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const togglePlayback = async () => {
-    if (!audioUrl) {
-      const secureUrl = await getUrl(produkt);
-      setAudioUrl(secureUrl);
-      // Timeout sorgt dafür, dass die URL geladen ist, bevor das DOM-Element abspielt
-      setTimeout(() => {
-        const audioElement = document.getElementById(`audio-player-${produkt.id}`) as HTMLAudioElement;
-        audioElement.play();
-        setIsPlaying(true);
-      }, 100);
-      return;
-    }
-
-    const audioElement = document.getElementById(`audio-player-${produkt.id}`) as HTMLAudioElement;
-    if (isPlaying) {
-      audioElement.pause();
-      setIsPlaying(false);
-    } else {
-      audioElement.play();
-      setIsPlaying(true);
-    }
-  };
-
-  return (
-    <div className="flex flex-col items-center md:items-end gap-2 w-full">
-      <div className="flex items-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-3 w-full justify-between md:justify-end">
-        <span className="text-xs text-stone-500 font-medium hidden sm:inline">Bereit zum Anhören</span>
-        
-        {/* Der runde, grüne Play-Button im Stil deines Layouts */}
-        <button 
-          onClick={togglePlayback}
-          className={`w-12 h-12 rounded-full flex items-center justify-center border-none cursor-pointer transition-all ${isPlaying ? 'bg-amber-600 shadow-inner' : 'bg-stone-600 hover:bg-stone-700 shadow-sm'}`}
-        >
-          {isPlaying ? (
-            // Pause Icon
-            <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          ) : (
-            // Play Icon
-            <svg className="w-5 h-5 fill-white translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          )}
-        </button>
-      </div>
-      
-      {/* Verstecktes HTML5 Audio Element */}
-      {audioUrl && (
-        <audio 
-          id={`audio-player-${produkt.id}`} 
-          src={audioUrl} 
-          onEnded={() => setIsPlaying(false)}
-          className="hidden"
-          controlsList="nodownload"
-        />
-      )}
-      
-      {/* Offline Download Option */}
-      {audioUrl && (
-        <a href={audioUrl} download={`${produkt.titel}.mp3`} className="text-[11px] text-stone-400 hover:text-stone-600 underline">
-          Für offline herunterladen (.mp3)
-        </a>
-      )}
-    </div>
-  );
-}
-
 // SUB-KOMPONENTE: Der PayPal Smart Button mit Gast-Weiche
 function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSuccess }: { produkt: any, user: any, gastEmail: any, validateEmail: any, onSuccess: any }) {
   useEffect(() => {
-    if (!window.paypal) return;
+    if (!(window as any).paypal) return;
     
     // Verhindert doppeltes Rendern des PayPal-Containers im DOM
     const container = document.getElementById(`paypal-btn-${produkt.id}`);
     if (container) container.innerHTML = '';
 
     // @ts-ignore
-    window.paypal.Buttons({
+    (window as any).paypal.Buttons({
       style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
       
       onClick: (data: any, actions: any) => {
@@ -364,9 +297,9 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
 function PayPalRenderButton({ produkt, onSuccess }: { produkt: any, onSuccess: any }) {
   useEffect(() => {
     // @ts-ignore
-    if (!window.paypal) return;
+    if (!(window as any).paypal) return;
     // @ts-ignore
-    window.paypal.Buttons({
+    (window as any).paypal.Buttons({
       style: { layout: 'vertical', shape: 'pill', label: 'checkout' },
       createOrder: (data: any, actions: any) => {
         return actions.order.create({
