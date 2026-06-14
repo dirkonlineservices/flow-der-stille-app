@@ -17,6 +17,16 @@ export interface Exercise {
 
 export const exercises: Exercise[] = [
   {
+    id: 'guided-breathing',
+    translationKeyTitle: 'exercises.card.audio-breath.title',
+    translationKeyDesc: 'exercises.card.audio-breath.desc',
+    translationKeyOverview: 'exercises.card.audio-breath.overview',
+    translationKeyCategory: 'category.breathwork',
+    duration: '10 min',
+    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop',
+    instructionKeys: []
+  },
+  {
     id: '478-breathing',
     translationKeyTitle: 'exercises.card.478.title',
     translationKeyDesc: 'exercises.card.478.desc',

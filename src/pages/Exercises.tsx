@@ -1,42 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Wind, Activity, Timer, ArrowRight, Play, Pause } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
-
-function AudioPlayButton({ src, title }: { src: string; title: string }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  return (
-    <div className="bg-[var(--color-bg-card)] rounded-2xl p-6 shadow-sm border border-[var(--color-border-main)] flex items-center justify-between">
-      <div>
-        <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">{title}</h3>
-        <p className="text-sm text-[var(--color-text-muted)]">Audio-Anleitung anhören</p>
-      </div>
-      <button 
-        onClick={togglePlay}
-        className="p-3 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-colors"
-      >
-        {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-      </button>
-      <audio ref={audioRef} src={src} onEnded={() => setIsPlaying(false)} />
-    </div>
-  );
-}
 
 export default function Exercises() {
   const { t } = useLanguage();
@@ -51,21 +19,53 @@ export default function Exercises() {
         </p>
       </header>
 
-      <AudioPlayButton src="/Anleitung atmen.wav" title="Geführte Atemübung" />
-
       <div className="grid gap-6">
-        {exercises.map((exercise) => (
-          <ExerciseCard 
-            key={exercise.id}
-            id={exercise.id}
-            title={t(exercise.translationKeyTitle)}
-            category={t(exercise.translationKeyCategory)}
-            duration={exercise.duration}
-            description={t(exercise.translationKeyDesc)}
-            image={exercise.image}
-            icon={<Wind className="text-blue-400" />} // Default icon, can be dynamic
-          />
-        ))}
+        {exercises.map((exercise) => {
+          if (exercise.id === 'guided-breathing') {
+            return (
+              <div key={exercise.id} className="bg-[var(--color-bg-card)] rounded-2xl p-6 shadow-sm border border-[var(--color-border-main)] flex items-center justify-between">
+                <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl mr-6">
+                   <img src={exercise.image} alt={t(exercise.translationKeyTitle)} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                </div>
+                <div className="pr-4 flex-1">
+                  <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">{t(exercise.translationKeyTitle)}</h3>
+                  <p className="text-sm text-[var(--color-text-muted)]">{t(exercise.translationKeyDesc)}</p>
+                  <p className="text-xs text-[var(--color-text-muted-light)] mt-1 italic">
+                    Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <button 
+                    onClick={() => {
+                        const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
+                        if (audio) {
+                            if (audio.paused) audio.play();
+                            else audio.pause();
+                        }
+                    }}
+                    className="p-5 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
+                  >
+                    <Play size={32} />
+                  </button>
+                  <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">Hier klicken</span>
+                </div>
+                <audio id="audio-guided-breathwork" src="/Anleitung atmen.wav" />
+              </div>
+            );
+          }
+          return (
+            <ExerciseCard 
+              key={exercise.id}
+              id={exercise.id}
+              title={t(exercise.translationKeyTitle)}
+              category={t(exercise.translationKeyCategory)}
+              duration={exercise.duration}
+              description={t(exercise.translationKeyDesc)}
+              image={exercise.image}
+              icon={<Wind className="text-blue-400" />} // Default icon, can be dynamic
+            />
+          );
+        })}
       </div>
     </div>
   );

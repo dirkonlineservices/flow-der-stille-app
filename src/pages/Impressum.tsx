@@ -53,6 +53,13 @@ export default function Impressum() {
             Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
           </p>
         </section>
+
+        <section>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Rückgaberichtlinie</h2>
+          <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
+            Weitere Informationen finden Sie in unserer <Link to="/rueckgaberichtlinie" className="text-[var(--color-accent-primary)] hover:underline">Rückgaberichtlinie</Link>.
+          </p>
+        </section>
       </div>
     </div>
   );

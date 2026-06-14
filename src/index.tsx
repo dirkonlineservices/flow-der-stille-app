@@ -20,6 +20,7 @@ import Register from './pages/Register';
 import Contact from './pages/Contact';
 import Datenschutz from './pages/Datenschutz';
 import Impressum from './pages/Impressum';
+import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
 import Danke from './pages/Danke';
 import RecipeDetail from './pages/RecipeDetail';
 import { LanguageProvider } from './context/LanguageContext';
@@ -69,6 +70,7 @@ export default function App() {
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="impressum" element={<Impressum />} />
+                  <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
                 </Route>

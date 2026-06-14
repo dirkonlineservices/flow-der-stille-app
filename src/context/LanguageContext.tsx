@@ -44,6 +44,10 @@ const translations: Translations = {
     'exercises.card.pmr.desc': 'Tense and release muscle groups to release physical tension.',
     'exercises.card.neck.title': 'Gentle Neck Stretches',
     'exercises.card.neck.desc': 'Release tension in the neck and shoulders where stress often accumulates.',
+    'exercises.card.audio-breath.title': 'Guided Breathing Exercise',
+    'exercises.card.audio-breath.desc': 'Listen to a guided breathing session to calm your nervous system.',
+    'exercises.card.audio-breath.overview': 'Follow along with this guided audio session to help ground yourself and bring your nervous system back into equilibrium.',
+
     'category.breathwork': 'Breathwork',
     'category.somatic': 'Somatic',
     'category.movement': 'Movement',
@@ -237,6 +241,9 @@ const translations: Translations = {
     'exercises.card.pmr.desc': 'Muskelgruppen anspannen und loslassen, um körperliche Anspannung zu lösen.',
     'exercises.card.neck.title': 'Sanfte Nackendehnungen',
     'exercises.card.neck.desc': 'Löse Spannungen in Nacken und Schultern, wo sich Stress oft ansammelt.',
+    'exercises.card.audio-breath.title': 'Geführte Atemübung',
+    'exercises.card.audio-breath.desc': 'Höre eine geführte Atemübung zur Beruhigung deines Nervensystems.',
+    'exercises.card.audio-breath.overview': 'Folge dieser geführten Audio-Sitzung, um dich zu erden und dein Nervensystem wieder ins Gleichgewicht zu bringen.',
     'category.breathwork': 'Atemarbeit',
     'category.somatic': 'Somatisch',
     'category.movement': 'Bewegung',
@@ -387,7 +394,7 @@ const translations: Translations = {
     'instruction.pmr.4': 'Gehe zu den Waden über, spanne 5 Sekunden an und lasse dann los.',
     'instruction.pmr.5': 'Setze dieses Muster fort durch Oberschenkel, Hüften, Bauch, Brust, Hände, Arme, Schultern, Nacken und Gesicht.',
     'instruction.pmr.6': 'Beende die Übung, indem du den ganzen Körper auf einmal anspannst und dann alles in tiefe Entspannung loslässt.',
-
+    
     'instruction.neck.1': 'Sitze oder stehe mit gerader Wirbelsäule.',
     'instruction.neck.2': 'Neige langsam dein rechtes Ohr zur rechten Schulter. Halte für 5 Atemzüge.',
     'instruction.neck.3': 'Komme zur Mitte zurück und neige dann dein linkes Ohr zur linken Schulter. Halte für 5 Atemzüge.',
