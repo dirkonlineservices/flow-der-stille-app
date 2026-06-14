@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 
 export default function Register() {
@@ -32,6 +32,7 @@ export default function Register() {
     setLoading(true);
 
     try {
+      const supabase = getSupabase();
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: email,
         password: password,

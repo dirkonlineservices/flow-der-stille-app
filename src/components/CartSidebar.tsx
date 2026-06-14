@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, ShoppingBag, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 
 export default function CartSidebar() {
   const { isCartOpen, setCartOpen, items, removeFromCart, totalPrice, clearCart } = useCart();
@@ -53,6 +53,7 @@ export default function CartSidebar() {
       
       if (uniqueNew.length > 0) {
         const updatedProducts = [...currentPurchased, ...uniqueNew];
+        const supabase = getSupabase();
         await supabase.auth.updateUser({
           data: {
             purchased_products: updatedProducts

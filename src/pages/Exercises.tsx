@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Wind, Activity, Timer, ArrowRight, Play, Pause } from 'lucide-react';
@@ -22,36 +22,7 @@ export default function Exercises() {
       <div className="grid gap-6">
         {exercises.map((exercise) => {
           if (exercise.id === 'guided-breathing') {
-            return (
-              <div key={exercise.id} className="bg-[var(--color-bg-card)] rounded-2xl p-6 shadow-sm border border-[var(--color-border-main)] flex items-center justify-between">
-                <div className="w-24 h-24 shrink-0 overflow-hidden rounded-xl mr-6">
-                   <img src={exercise.image} alt={t(exercise.translationKeyTitle)} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                </div>
-                <div className="pr-4 flex-1">
-                  <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">{t(exercise.translationKeyTitle)}</h3>
-                  <p className="text-sm text-[var(--color-text-muted)]">{t(exercise.translationKeyDesc)}</p>
-                  <p className="text-xs text-[var(--color-text-muted-light)] mt-1 italic">
-                    Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
-                  </p>
-                </div>
-                <div className="flex flex-col items-center">
-                  <button 
-                    onClick={() => {
-                        const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
-                        if (audio) {
-                            if (audio.paused) audio.play();
-                            else audio.pause();
-                        }
-                    }}
-                    className="p-5 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
-                  >
-                    <Play size={32} />
-                  </button>
-                  <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">Hier klicken</span>
-                </div>
-                <audio id="audio-guided-breathwork" src="/Anleitung atmen.wav" />
-              </div>
-            );
+            return <GuidedBreathingExercise key={exercise.id} t={t} exercise={exercise} />;
           }
           return (
             <ExerciseCard 
@@ -71,6 +42,70 @@ export default function Exercises() {
   );
 }
 
+function GuidedBreathingExercise({ t, exercise }: { t: any, exercise: any }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
+    if (!audio) return;
+
+    const handleEnded = () => setIsPlaying(false);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => audio.removeEventListener('ended', handleEnded);
+  }, []);
+
+  const togglePlay = () => {
+    const audio = document.getElementById('audio-guided-breathwork') as HTMLAudioElement;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      audio.play();
+      setIsPlaying(true);
+    }
+  };
+
+  return (
+    <motion.div 
+      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] overflow-hidden"
+    >
+      <div className="flex flex-col md:flex-row p-6">
+        <div className="ai-image-container w-full md:w-48 h-48 md:h-32 shrink-0 overflow-hidden rounded-xl mb-4 md:mb-0 md:mr-6">
+          <img src={exercise.image} alt={t(exercise.translationKeyTitle)} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <a href="/impressum#ki-transparenz" className="ai-label">
+            <span className="ai-text">[KI]</span>
+          </a>
+        </div>
+        <div className="flex-1 flex flex-col justify-center">
+          <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-1">{t(exercise.translationKeyTitle)}</h3>
+          <p className="text-sm text-[var(--color-text-muted)] mb-2">{t(exercise.translationKeyDesc)}</p>
+          <p className="text-xs text-[var(--color-text-muted-light)] italic mb-4">
+            Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
+          </p>
+        </div>
+        <div className="flex flex-col items-center justify-center shrink-0 ml-0 md:ml-6 mt-4 md:mt-0">
+          <button 
+            onClick={togglePlay}
+            className="p-4 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
+          >
+            {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+          </button>
+          <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">
+            {isPlaying ? 'Pause' : 'Hier klicken'}
+          </span>
+        </div>
+      </div>
+      <div className="text-[10px] text-[var(--color-text-muted-light)] border-t border-[var(--color-border-main)] px-6 py-3 bg-gray-50">
+        <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgten mit Unterstützung von KI (Suno AI).
+      </div>
+      <audio id="audio-guided-breathwork" src="/Anleitung atmen.wav" />
+    </motion.div>
+  );
+}
+
 function ExerciseCard({ id, title, category, duration, description, icon, image }: { id: string; title: string; category: string; duration: string; description: string; icon: React.ReactNode; image: string }) {
   const { t } = useLanguage();
   return (
@@ -79,13 +114,19 @@ function ExerciseCard({ id, title, category, duration, description, icon, image 
         whileHover={{ y: -2 }}
         className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
       >
-        <div className="w-full md:w-48 h-48 md:h-auto shrink-0 relative overflow-hidden">
+        <div className="ai-image-container w-full md:w-48 h-48 md:h-auto shrink-0 relative overflow-hidden">
           <img 
             src={image} 
             alt={title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             referrerPolicy="no-referrer"
           />
+          <span onClick={(e) => {
+            e.stopPropagation();
+            window.location.href = '/impressum#ki-transparenz';
+          }} className="ai-label cursor-pointer">
+            <span className="ai-text">[KI]</span>
+          </span>
           <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
         </div>
         
@@ -110,4 +151,5 @@ function ExerciseCard({ id, title, category, duration, description, icon, image 
     </Link>
   );
 }
+
 

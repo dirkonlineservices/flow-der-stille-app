@@ -5,7 +5,7 @@ import { ArrowLeft, Timer, Play, Pause, X, Check, SkipForward, ArrowLeft as Back
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 
 export default function ExerciseDetail() {
@@ -111,6 +111,7 @@ export default function ExerciseDetail() {
     setSavingProgress(true);
 
     try {
+      const supabase = getSupabase();
       const dateStr = new Date().toISOString().split('T')[0];
       const completedKey = `exercise_${exercise.id}_${dateStr}`;
       const currentCompleted = user.completed_tasks || [];
@@ -310,13 +311,16 @@ export default function ExerciseDetail() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] overflow-hidden"
       >
-        <div className="relative h-64 md:h-80">
+        <div className="ai-image-container relative h-64 md:h-80">
           <img 
             src={exercise.image || 'https://picsum.photos/seed/gentle/800/600'} 
             alt={t(exercise.translationKeyTitle)} 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
+          <a href="/impressum#ki-transparenz" className="ai-label">
+            <span className="ai-text">[KI]</span>
+          </a>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
             <div>
               <span className="inline-block px-3 py-1 bg-[var(--color-bg-card)]/20 backdrop-blur-md text-white text-xs font-medium rounded-full mb-3 uppercase tracking-wider">
@@ -382,6 +386,39 @@ export default function ExerciseDetail() {
               <Play size={20} className="ml-1" />
             </button>
           </div>
+          {/* Conditional Audio Player for PMR */}
+          {exercise.id === 'pmr' && (
+            <div className="bg-[var(--color-bg-body)] rounded-2xl p-6 mt-8 border border-[var(--color-border-main)]">
+              <div className="flex items-center justify-between">
+                <div className="pr-4 flex-1">
+                  <h3 className="text-lg font-serif text-[var(--color-text-main)] mb-1">Geführte Audio-Anleitung</h3>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    Für optimale Entspannungsergebnisse empfehlen wir, diese Übung regelmäßig durchzuführen. 
+                    Stelle sicher, dass deine Gerätelautstärke eingeschaltet ist.
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <button 
+                    onClick={() => {
+                        const audio = document.getElementById('audio-pmr') as HTMLAudioElement;
+                        if (audio) {
+                            if (audio.paused) audio.play();
+                            else audio.pause();
+                        }
+                    }}
+                    className="p-5 bg-[var(--color-accent-primary)] text-white rounded-full hover:bg-[var(--color-accent-hover)] transition-all shadow-md transform hover:scale-105"
+                  >
+                    <Play size={32} />
+                  </button>
+                  <span className="text-xs font-bold text-[var(--color-accent-primary)] mt-2 uppercase">Hier klicken</span>
+                </div>
+                <audio id="audio-pmr" src="/Progressive Muskelentspannung.mp3" />
+              </div>
+              <div className="text-[10px] text-[var(--color-text-muted-light)] mt-4 border-t border-[var(--color-border-main)] pt-2">
+                <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgten mit Unterstützung von KI (Suno AI).
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

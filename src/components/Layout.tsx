@@ -172,6 +172,8 @@ export default function Layout() {
           <Link to="/datenschutz" className="hover:text-[var(--color-text-main)] transition-colors">Datenschutz</Link>
           <span className="hidden md:inline">•</span>
           <Link to="/agb" className="hover:text-[var(--color-text-main)] transition-colors">AGB</Link>
+          <span className="hidden md:inline">•</span>
+          <Link to="/rechtliches" className="hover:text-[var(--color-text-main)] transition-colors">Rechtliches</Link>
         </footer>
       </main>
 

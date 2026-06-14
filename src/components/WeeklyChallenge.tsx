@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle, Circle, Trophy, ArrowRight, Lightbulb } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 import { progressiveTasks } from '../data/tasks';
 
 export default function WeeklyChallenge() {
@@ -38,6 +38,7 @@ export default function WeeklyChallenge() {
       const currentCompletedTasks = user.completed_tasks || [];
       const nextCompletedTasks = [...currentCompletedTasks, historyKey];
 
+      const supabase = getSupabase();
       const { data, error } = await supabase.auth.updateUser({
         data: {
           task_progress: newTaskProgress,
@@ -69,6 +70,7 @@ export default function WeeklyChallenge() {
         current_task: taskProgress.current_task + 1
       };
 
+      const supabase = getSupabase();
       const { data, error } = await supabase.auth.updateUser({
         data: {
           task_progress: newTaskProgress

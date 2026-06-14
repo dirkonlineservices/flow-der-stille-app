@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '../supabase'; // Unsere neue Datenbank-Brücke
+import { getSupabase } from '../lib/supabaseClient'; 
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -32,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    const supabase = getSupabase();
     // 1. Beim ersten Laden schauen, ob jemand eingeloggt ist
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
@@ -75,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshUser = async () => {
+    const supabase = getSupabase();
     // Re-fetch the user from supabase
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
@@ -83,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    const supabase = getSupabase();
     // Sicherer Logout über Supabase
     await supabase.auth.signOut();
     setUser(null);

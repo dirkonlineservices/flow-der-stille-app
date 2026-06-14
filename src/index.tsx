@@ -18,7 +18,9 @@ import Shop from './pages/Shop';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AGB from './pages/AGB';
-import Contact from './pages/Contact';
+import Rechtliches from './pages/Rechtliches';
+import Premium from './pages/Premium';
+import Contact from './pages/Contact';                
 import Datenschutz from './pages/Datenschutz';
 import Impressum from './pages/Impressum';
 import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
@@ -72,6 +74,8 @@ export default function App() {
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="impressum" element={<Impressum />} />
                   <Route path="agb" element={<AGB />} />
+                  <Route path="rechtliches" element={<Rechtliches />} />
+                  <Route path="premium" element={<Premium />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />

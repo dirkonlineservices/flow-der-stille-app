@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 import { Eye, EyeOff } from 'lucide-react';
 import SEO from '../components/SEO';
 
@@ -17,6 +17,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
+      const supabase = getSupabase();
       // Direkter Abgleich mit der Supabase-Datenbank
       const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
         email: username,

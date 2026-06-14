@@ -86,3 +86,47 @@ p, span, div, a, button, input, textarea {
   border-radius: 32px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
 }
+
+/* AI Labels */
+.ai-image-container {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.ai-image-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.ai-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(26, 32, 44, 0.85);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 9px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.2;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.ai-image-container:hover .ai-label {
+  opacity: 1;
+  transform: scale(1.1);
+  background: rgba(26, 32, 44, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ai-text {
+  white-space: nowrap;
+}

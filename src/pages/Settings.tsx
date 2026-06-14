@@ -8,7 +8,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 import { PRODUCTS } from '../data/store';
 
@@ -55,6 +55,7 @@ export default function Settings() {
     setProfileLoading(true);
 
     try {
+      const supabase = getSupabase();
       const { data, error } = await supabase.auth.updateUser({
         data: {
           first_name: firstName,
@@ -95,6 +96,7 @@ export default function Settings() {
     setPasswordLoading(true);
 
     try {
+      const supabase = getSupabase();
       const { error } = await supabase.auth.updateUser({ password: password });
       if (error) {
         setPasswordError(error.message);

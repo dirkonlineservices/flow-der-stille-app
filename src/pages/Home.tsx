@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import HomeChatWidget from '../components/HomeChatWidget';
 import SEO from '../components/SEO';
-import { supabase } from '../supabase';
+import { getSupabase } from '../lib/supabaseClient';
 
 const dailyWisdoms = [
   { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
@@ -56,6 +56,7 @@ export default function Home() {
         const nextCompleted = [...currentCompleted, completedKey];
 
         // Save progress securely to Supabase user_metadata
+        const supabase = getSupabase();
         const { data, error } = await supabase.auth.updateUser({
           data: {
             completed_tasks: nextCompleted
