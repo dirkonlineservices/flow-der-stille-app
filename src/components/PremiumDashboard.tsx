@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Play, Pause } from 'lucide-react';
 
 export default function PremiumShopDashboard({ session }: { session: any }) {
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [paypalReady, setPaypalReady] = useState(false);
+  const [gastEmail, setGastEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   
   const user = session?.user;
   const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
-  // PayPal SDK laden
+  // 1. PayPal SDK über CDN laden
   useEffect(() => {
     // @ts-ignore
     if (window.paypal) { setPaypalReady(true); return; }
@@ -20,90 +21,280 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
     script.async = true;
     script.onload = () => setPaypalReady(true);
     document.body.appendChild(script);
-  }, []);
+  }, [PAYPAL_CLIENT_ID]);
 
-  // Daten laden
+  // 2. Produktdaten und bestehende Käufe laden
   useEffect(() => {
-    if (!user) return;
     loadShopData();
   }, [user]);
 
   async function loadShopData() {
     try {
       const supabase = getSupabase();
+      // Alle aktiven Produkte aus Supabase holen
       const { data: prodData, error: prodError } = await supabase.from('produkte').select('*');
       if (prodError) throw prodError;
 
-      const { data: kaufData, error: kaufError } = await supabase.from('kaeufe').select('produkt_id');
-      if (kaufError) throw kaufError;
-
-      const gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
+      // Wenn der User eingeloggt ist, seine freigeschalteten Produkte prüfen
+      let gekaufteSet = new Set();
+      if (user) {
+        const { data: kaufData, error: kaufError } = await supabase
+          .from('kaeufe')
+          .select('produkt_id')
+          .eq('user_id', user.id);
+        if (kaufError) throw kaufError;
+        // @ts-ignore
+        gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
+      }
+      
       setProdukte(prodData);
       setGekauftIds(gekaufteSet);
     } catch (error: any) {
-      console.error("Daten-Ladefehler:", error.message);
+      console.error("Fehler beim Laden des Dashboards:", error.message);
     } finally {
       setLoading(false);
     }
   }
 
-  // Intelligente URL-Weiche: Kostenlos vs. Kauf-Inhalt
+  // Generiert die passende Audio-URL (Public für Kostenlos, Signed für Premium)
   const getAudioUrl = async (produkt: any) => {
     const supabase = getSupabase();
-    // Wenn das Produkt 0 € kostet oder als 'kostenlos' deklariert ist, public streamen
-    if (parseFloat(produkt.preis) === 0 || produkt.kategorie === 'kostenlos') {
+    if (parseFloat(produkt.preis) === 0) {
       const { data } = supabase.storage.from('audio-bucket').getPublicUrl(produkt.audio_path);
       return data.publicUrl;
     }
-    // Für Kauf-Inhalte: Sichere Signed URL generieren
     const { data } = await supabase.storage.from('audio-bucket').createSignedUrl(produkt.audio_path, 3600);
     return data?.signedUrl;
   };
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Lädt Übungen...</div>;
+  // E-Mail Validierung für den Gast-Checkout
+  const validateEmail = (email: string) => {
+    const re = /\S+@\S+\.\S+/;
+    if (!email || !re.test(email)) {
+      setEmailError('Bitte gib eine gültige E-Mail-Adresse für die Freischaltung an.');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  if (loading) return <div className="p-10 text-center text-gray-500">Premium-Bereich wird geladen...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 font-sans">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {produkte.map((produkt) => {
-          // Eine Übung ist freigeschaltet, wenn sie gekauft wurde ODER kostenlos ist (Preis = 0)
+    <div className="max-w-4xl mx-auto p-6 font-sans bg-stone-50 min-h-screen">
+      <header className="mb-10 text-center">
+        <h1 className="text-3xl font-serif text-stone-800">Übungen & Meditationen</h1>
+        <p className="text-stone-600 mt-2 text-sm italic">Sanfte Bewegungen und Atemmuster, um deinem Körper Sicherheit zu signalisieren.</p>
+      </header>
+
+      {/* GAST-HINWEIS: Wenn nicht eingeloggt, zeigen wir das E-Mail-Feld zentral an */}
+      {!user && (
+        <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-xl max-w-md mx-auto">
+          <h3 className="text-sm font-bold text-amber-900 mb-1">Als Gast bestellen / Einloggen</h3>
+          <p className="text-xs text-amber-700 mb-3">Gib deine E-Mail ein, damit wir dir deine Zugangsdaten nach dem Kauf sofort zusenden können.</p>
+          <input 
+            type="email" 
+            placeholder="deine-email@beispiel.de" 
+            value={gastEmail}
+            onChange={(e) => { setGastEmail(e.target.value); setEmailError(''); }}
+            className="w-full p-2.5 text-sm rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          {emailError && <p className="text-red-600 text-xs mt-1 font-semibold">{emailError}</p>}
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {produkte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
 
           return (
-            <div key={produkt.id} className="border border-gray-200 p-6 rounded-2xl bg-white shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded bg-gray-100 text-gray-600 uppercase">
-                    {produkt.kategorie}
+            <div key={produkt.id} className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
+              
+              {/* Linke Seite: Produkt-Metadaten */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-stone-100 text-stone-600 uppercase">
+                    {produkt.kategorie || 'Atemarbeit'}
                   </span>
-                  <span className="text-sm font-bold text-gray-700">
-                    {istKostenlos ? "Kostenlos" : `${produkt.preis} €`}
-                  </span>
-                </div>
-                <h2 className="text-xl font-bold mb-2">{produkt.titel}</h2>
-                <p className="text-gray-600 text-sm mb-4">{produkt.beschreibung}</p>
-              </div>
-
-              {hatZugriff ? (
-                <div className="mt-4 p-4 bg-purple-50 rounded-xl">
-                  <AudioPlayerButton produkt={produkt} getUrl={getAudioUrl} />
-                </div>
-              ) : (
-                <div className="mt-4">
-                  {paypalReady ? (
-                    <PayPalRenderButton produkt={produkt} onSuccess={loadShopData} />
-                  ) : (
-                    <div className="text-sm text-gray-400">PayPal lädt...</div>
+                  {!istKostenlos && !hatZugriff && (
+                    <span className="text-sm font-mono font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
+                      {produkt.preis} €
+                    </span>
                   )}
                 </div>
-              )}
+                <h2 className="text-xl font-bold text-stone-800">{produkt.titel}</h2>
+                <p className="text-stone-500 text-sm mt-1 leading-relaxed">{produkt.beschreibung}</p>
+              </div>
+
+              {/* Rechte Seite: Dynamisches Interface (Player oder PayPal) */}
+              <div className="w-full md:w-auto min-w-[200px] flex flex-col items-stretch md:items-end justify-center">
+                {hatZugriff ? (
+                  // ZUSTAND: FREIGESCHALTET (Kostenlos oder bereits gekauft)
+                  <AudioPlayerWidget produkt={produkt} getUrl={getAudioUrl} />
+                ) : (
+                  // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT
+                  <div className="w-full">
+                    {paypalReady ? (
+                      <PayPalCheckoutButton 
+                        produkt={produkt} 
+                        user={user} 
+                        gastEmail={gastEmail} 
+                        validateEmail={() => validateEmail(gastEmail)}
+                        onSuccess={loadShopData} 
+                      />
+                    ) : (
+                      <div className="text-center text-xs text-stone-400 italic">Zahlungsdienst lädt...</div>
+                    )}
+                  </div>
+                )}
+              </div>
+
             </div>
           );
         })}
       </div>
     </div>
   );
+}
+
+// SUB-KOMPONENTE: Der native Audio-Player ("Hier Klicken")
+function AudioPlayerWidget({ produkt, getUrl }: { produkt: any, getUrl: any }) {
+  const [audioUrl, setAudioUrl] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlayback = async () => {
+    if (!audioUrl) {
+      const secureUrl = await getUrl(produkt);
+      setAudioUrl(secureUrl);
+      // Timeout sorgt dafür, dass die URL geladen ist, bevor das DOM-Element abspielt
+      setTimeout(() => {
+        const audioElement = document.getElementById(`audio-player-${produkt.id}`) as HTMLAudioElement;
+        audioElement.play();
+        setIsPlaying(true);
+      }, 100);
+      return;
+    }
+
+    const audioElement = document.getElementById(`audio-player-${produkt.id}`) as HTMLAudioElement;
+    if (isPlaying) {
+      audioElement.pause();
+      setIsPlaying(false);
+    } else {
+      audioElement.play();
+      setIsPlaying(true);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center md:items-end gap-2 w-full">
+      <div className="flex items-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-3 w-full justify-between md:justify-end">
+        <span className="text-xs text-stone-500 font-medium hidden sm:inline">Bereit zum Anhören</span>
+        
+        {/* Der runde, grüne Play-Button im Stil deines Layouts */}
+        <button 
+          onClick={togglePlayback}
+          className={`w-12 h-12 rounded-full flex items-center justify-center border-none cursor-pointer transition-all ${isPlaying ? 'bg-amber-600 shadow-inner' : 'bg-stone-600 hover:bg-stone-700 shadow-sm'}`}
+        >
+          {isPlaying ? (
+            // Pause Icon
+            <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          ) : (
+            // Play Icon
+            <svg className="w-5 h-5 fill-white translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          )}
+        </button>
+      </div>
+      
+      {/* Verstecktes HTML5 Audio Element */}
+      {audioUrl && (
+        <audio 
+          id={`audio-player-${produkt.id}`} 
+          src={audioUrl} 
+          onEnded={() => setIsPlaying(false)}
+          className="hidden"
+          controlsList="nodownload"
+        />
+      )}
+      
+      {/* Offline Download Option */}
+      {audioUrl && (
+        <a href={audioUrl} download={`${produkt.titel}.mp3`} className="text-[11px] text-stone-400 hover:text-stone-600 underline">
+          Für offline herunterladen (.mp3)
+        </a>
+      )}
+    </div>
+  );
+}
+
+// SUB-KOMPONENTE: Der PayPal Smart Button mit Gast-Weiche
+function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSuccess }: { produkt: any, user: any, gastEmail: any, validateEmail: any, onSuccess: any }) {
+  useEffect(() => {
+    if (!window.paypal) return;
+    
+    // Verhindert doppeltes Rendern des PayPal-Containers im DOM
+    const container = document.getElementById(`paypal-btn-${produkt.id}`);
+    if (container) container.innerHTML = '';
+
+    // @ts-ignore
+    window.paypal.Buttons({
+      style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
+      
+      onClick: (data: any, actions: any) => {
+        // Wenn kein User eingeloggt ist, MUSS die Gast-E-Mail ausgefüllt sein
+        if (!user && !validateEmail()) {
+          return actions.reject();
+        }
+        return actions.resolve();
+      },
+
+      createOrder: (data: any, actions: any) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: produkt.preis.toString(), currency_code: "EUR" },
+            description: produkt.titel
+          }]
+        });
+      },
+
+      onApprove: (data: any, actions: any) => {
+        return actions.order.capture().then(async (details: any) => {
+          const supabase = getSupabase();
+          let activeUserId = user?.id;
+
+          // GAST-LOGIK: Wenn kein User eingeloggt ist, legen wir ein Profil in Supabase an
+          if (!activeUserId) {
+            // Wir rufen eine Supabase Edge Function oder ein sicheres Insert auf, 
+            // um den Gast über seine Mail zu erfassen. Hier simulieren wir den DB-Eintrag:
+            const { data: gastUser, error: gastError } = await supabase.rpc('create_or_get_guest_user', {
+              email_param: gastEmail
+            });
+            
+            if (gastError) {
+              console.error("Gast-Registrierungsfehler:", gastError.message);
+              alert("Zahlung erfolgreich, aber Registrierung fehlgeschlagen. Bitte Support kontaktieren.");
+              return;
+            }
+            activeUserId = gastUser;
+          }
+
+          // Kauf in der Tabelle registrieren
+          await supabase.from('kaeufe').insert([{
+            user_id: activeUserId,
+            produkt_id: produkt.id,
+            paypal_order_id: details.id,
+            preis: parseFloat(details.purchase_units[0].amount.value),
+            waehrung: 'EUR'
+          }]);
+
+          alert("Kauf erfolgreich! Die Meditation wurde sofort freigeschaltet.");
+          onSuccess();
+        });
+      }
+    }).render(`#paypal-btn-${produkt.id}`);
+  }, [produkt, user, gastEmail]);
+
+  return <div id={`paypal-btn-${produkt.id}`} className="w-full"></div>;
 }
 
 // Sub-Komponente: Audio Player mit integriertem GTM-Tracking

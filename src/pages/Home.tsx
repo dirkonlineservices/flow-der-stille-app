@@ -126,6 +126,13 @@ export default function Home() {
 
         <div>
           <WeeklyChallenge />
+          
+          <div className="mt-6">
+             <Link to="/premium" className="block p-6 bg-purple-50 rounded-2xl border border-purple-100 hover:shadow-md transition">
+                <h3 className="font-bold text-purple-900">Premium-Bereich: Übungen & Meditationen</h3>
+                <p className="text-purple-700 text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Hypnosen.</p>
+             </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

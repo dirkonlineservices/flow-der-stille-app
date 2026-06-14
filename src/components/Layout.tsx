@@ -91,7 +91,7 @@ export default function Layout() {
           <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} />
           <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} />
           <NavLink to="/chat" icon={<MessageCircle />} label="Chat" />
-          {/* <NavLink to="/shop" icon={<ShoppingBag />} label="Shop" /> */}
+          <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" />
         </div>
 
         <div className="mt-auto pt-6 flex flex-col gap-6 items-center w-full">
@@ -133,6 +133,7 @@ export default function Layout() {
         <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
         <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} mobile />
         <NavLink to="/chat" icon={<MessageCircle />} label="Chat" mobile />
+        <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" mobile />
         <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} mobile />
         
         {user ? (
