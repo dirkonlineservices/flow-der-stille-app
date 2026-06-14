@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 
 export default function SingleAudioPlayer({ produktTitel }: { produktTitel: string }) {
@@ -6,6 +6,7 @@ export default function SingleAudioPlayer({ produktTitel }: { produktTitel: stri
   const [audioUrl, setAudioUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     async function fetchSingleProdukt() {
@@ -29,6 +30,16 @@ export default function SingleAudioPlayer({ produktTitel }: { produktTitel: stri
     fetchSingleProdukt();
   }, [produktTitel]);
 
+  useEffect(() => {
+    if (audioUrl && audioRef.current) {
+        audioRef.current.load();
+        audioRef.current.onloadeddata = () => {
+             audioRef.current?.play();
+             setIsPlaying(true);
+        };
+    }
+  }, [audioUrl]);
+
   const togglePlayback = async () => {
     if (!produkt) return;
 
@@ -43,18 +54,10 @@ export default function SingleAudioPlayer({ produktTitel }: { produktTitel: stri
         url = data?.signedUrl || '';
       }
       setAudioUrl(url);
-
-      setTimeout(() => {
-        const audio = document.getElementById(`audio-single-${produkt.id}`) as HTMLAudioElement;
-        if (audio) {
-          audio.play();
-          setIsPlaying(true);
-        }
-      }, 100);
       return;
     }
 
-    const audio = document.getElementById(`audio-single-${produkt.id}`) as HTMLAudioElement;
+    const audio = audioRef.current;
     if (audio) {
         if (isPlaying) {
           audio.pause();
@@ -90,7 +93,7 @@ export default function SingleAudioPlayer({ produktTitel }: { produktTitel: stri
 
       {audioUrl && (
         <audio 
-            id={`audio-single-${produkt.id}`} 
+            ref={audioRef}
             src={audioUrl} 
             onEnded={() => setIsPlaying(false)} 
             className="hidden" 
