@@ -1,24 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from './supabaseClient';
 
-export default function SingleAudioPlayer({ produktId }) {
-  const [produkt, setProdukt] = useState(null);
+export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
+  const [produkt, setProdukt] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const fetchedUrl = useRef('');
 
   useEffect(() => {
-    async function debugStorageFiles() {
-      // Listet alle echten Dateinamen im Ordner "audio" in der Browser-Konsole auf
-      const { data: files } = await supabase.storage.from('audio-bucket').list('audio');
-      if (files) {
-        console.log("--- ECHTE DATEINAMEN IM STORAGE-ORDNER 'audio': ---");
-        files.forEach(f => console.log("Datei gefunden:", `audio/${f.name}`));
-        console.log("--------------------------------------------------");
+    async function debugBuckets() {
+      // Listet alle Buckets auf, die deine App aktuell in Supabase sehen kann
+      const { data: buckets, error } = await supabase.storage.listBuckets();
+      if (error) {
+        console.error("Fehler beim Abrufen der Buckets:", error.message);
+      } else if (buckets) {
+        console.log("--- EXAKTE BUCKET-IDS IN DEINEM STORAGE: ---");
+        buckets.forEach(b => console.log(`Bucket-Name: "${b.name}" | Interne ID für den Code: "${b.id}" | Öffentlich: ${b.public}`));
+        console.log("--------------------------------------------");
       }
     }
-    
+
     async function fetchSingleProdukt() {
       if (!produktId) return;
       try {
@@ -36,8 +38,8 @@ export default function SingleAudioPlayer({ produktId }) {
         setLoading(false);
       }
     }
-    
-    debugStorageFiles();
+
+    debugBuckets();
     fetchSingleProdukt();
   }, [produktId]);
 
@@ -46,6 +48,7 @@ export default function SingleAudioPlayer({ produktId }) {
 
     try {
       if (!fetchedUrl.current) {
+        // Wir versuchen es standardmäßig mit 'audio-bucket'
         const { data } = supabase.storage.from('audio-bucket').getPublicUrl(produkt.audio_path);
         
         if (!data || !data.publicUrl) {
@@ -53,7 +56,6 @@ export default function SingleAudioPlayer({ produktId }) {
           return;
         }
 
-        console.log("Versuche abzuspielen von URL:", data.publicUrl);
         fetchedUrl.current = data.publicUrl;
         audioRef.current.src = data.publicUrl;
         audioRef.current.load();
@@ -95,4 +97,3 @@ export default function SingleAudioPlayer({ produktId }) {
     </div>
   );
 }
-
