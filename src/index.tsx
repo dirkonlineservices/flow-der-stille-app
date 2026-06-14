@@ -17,6 +17,7 @@ import AtemChat from './pages/atemchat';
 import Shop from './pages/Shop';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AGB from './pages/AGB';
 import Contact from './pages/Contact';
 import Datenschutz from './pages/Datenschutz';
 import Impressum from './pages/Impressum';
@@ -70,6 +71,7 @@ export default function App() {
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="impressum" element={<Impressum />} />
+                  <Route path="agb" element={<AGB />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
