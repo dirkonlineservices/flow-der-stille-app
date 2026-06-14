@@ -1,85 +1,105 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 
-export default function SingleAudioPlayer({ produktTitel }: { produktTitel: string }) {
+export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
   const [produkt, setProdukt] = useState<any>(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     async function fetchSingleProdukt() {
+      if (!produktId) return;
       try {
         const supabase = getSupabase();
-        // Holt genau das Produkt aus Supabase, dessen Titel wir übergeben
         const { data, error } = await supabase
           .from('produkte')
           .select('*')
-          .eq('titel', produktTitel)
+          .eq('id', produktId)
           .single();
 
         if (error) throw error;
         setProdukt(data);
       } catch (error: any) {
-        console.error("Fehler beim Laden der Audio-Datei:", error.message);
+        console.error("Fehler beim Laden des Audios:", error.message);
       } finally {
         setLoading(false);
       }
     }
     fetchSingleProdukt();
-  }, [produktTitel]);
-
-  useEffect(() => {
-    if (audioUrl && audioRef.current) {
-        audioRef.current.load();
-        audioRef.current.onloadeddata = () => {
-             audioRef.current?.play();
-             setIsPlaying(true);
-        };
-    }
-  }, [audioUrl]);
+  }, [produktId]);
 
   const togglePlayback = async () => {
-    if (!produkt) return;
+    if (!produkt || !produkt.audio_path) return;
 
-    if (!audioUrl) {
+    try {
       const supabase = getSupabase();
-      let url = '';
-      if (parseFloat(produkt.preis) === 0) {
-        const { data } = supabase.storage.from('audio-bucket').getPublicUrl(produkt.audio_path);
-        url = data.publicUrl;
-      } else {
-        const { data } = await supabase.storage.from('audio-bucket').createSignedUrl(produkt.audio_path, 3600);
+      if (!audioUrl) {
+        let url = '';
+        console.log("Versuche Audio zu laden von Pfad:", produkt.audio_path);
+        
+        // Always use signed URL for consistency in case the bucket is private
+        const { data, error } = await supabase.storage.from('audio-bucket').createSignedUrl(produkt.audio_path, 3600);
+        if (error) {
+            console.error("Supabase Storage Error:", error);
+            throw error;
+        }
         url = data?.signedUrl || '';
-      }
-      setAudioUrl(url);
-      return;
-    }
 
-    const audio = audioRef.current;
-    if (audio) {
+        console.log("Generierte URL für Pfad:", url);
+        
+        if (!url) throw new Error("URL konnte nicht generiert werden.");
+        setAudioUrl(url);
+
+        // Debug: check if the URL is actually accessible
+        fetch(url, { method: 'HEAD' })
+            .then(res => console.log("URL HEAD request status:", res.status))
+            .catch(err => console.error("URL HEAD request failed:", err));
+
+        // Ensure the audio element is updated before playing
+        setTimeout(() => {
+          const audio = document.getElementById(`audio-single-${produkt.id}`) as HTMLAudioElement;
+          if (audio) {
+            console.log("Audio element src before setting:", audio.src);
+            audio.src = url; // Explicitly set the src
+            console.log("Audio element src after setting:", audio.src);
+            audio.load(); 
+            audio.play()
+              .then(() => setIsPlaying(true))
+              .catch(err => console.error("Wiedergabefehler:", err.message));
+          } else {
+              console.error("Audio element not found in DOM!");
+          }
+        }, 500);
+        return;
+      }
+
+      const audio = document.getElementById(`audio-single-${produkt.id}`) as HTMLAudioElement;
+      if (audio) {
         if (isPlaying) {
           audio.pause();
           setIsPlaying(false);
         } else {
-          audio.play();
-          setIsPlaying(true);
+          audio.play()
+            .then(() => setIsPlaying(true))
+            .catch(err => console.error("Wiedergabefehler:", err.message));
         }
+      }
+    } catch (err: any) {
+      console.error("Fehler im Player-Ablauf:", err.message);
     }
   };
 
-  if (loading) return <span className="text-xs text-stone-400">Audio lädt...</span>;
+  if (loading) return <span className="text-xs text-stone-400">Lädt...</span>;
   if (!produkt) return <span className="text-xs text-red-400">Audio nicht gefunden</span>;
 
   return (
     <div className="flex items-center gap-4 bg-stone-50 border border-stone-200 rounded-xl p-3 justify-between w-full max-w-md">
       <div className="flex-1">
         <h4 className="text-sm font-bold text-stone-800">{produkt.titel}</h4>
-        <p className="text-[11px] text-stone-500 italic">Kostenlose Anwendung</p>
+        <p className="text-[11px] text-stone-500 italic">Anwendung starten</p>
       </div>
 
-      {/* Der runde, grüne/graue Playbutton passend zu deinem Design */}
       <button 
         onClick={togglePlayback}
         className={`w-10 h-10 rounded-full flex items-center justify-center border-none cursor-pointer transition-all ${isPlaying ? 'bg-amber-600' : 'bg-stone-600 hover:bg-stone-700'}`}
@@ -92,13 +112,7 @@ export default function SingleAudioPlayer({ produktTitel }: { produktTitel: stri
       </button>
 
       {audioUrl && (
-        <audio 
-            ref={audioRef}
-            src={audioUrl} 
-            onEnded={() => setIsPlaying(false)} 
-            className="hidden" 
-            controlsList="nodownload" 
-        />
+        <audio id={`audio-single-${produkt.id}`} src={audioUrl} onEnded={() => setIsPlaying(false)} className="hidden" controlsList="nodownload" />
       )}
     </div>
   );
