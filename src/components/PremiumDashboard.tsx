@@ -2,28 +2,17 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { Play, Pause } from 'lucide-react';
 import SingleAudioPlayer from './SingleAudioPlayer';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 export default function PremiumShopDashboard({ session }: { session: any }) {
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
-  const [paypalReady, setPaypalReady] = useState(false);
   const [gastEmail, setGastEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   
   const user = session?.user;
   const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
-
-  // 1. PayPal SDK über CDN laden
-  useEffect(() => {
-    // @ts-ignore
-    if ((window as any).paypal) { setPaypalReady(true); return; }
-    const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=EUR`;
-    script.async = true;
-    script.onload = () => setPaypalReady(true);
-    document.body.appendChild(script);
-  }, [PAYPAL_CLIENT_ID]);
 
   // 2. Produktdaten und bestehende Käufe laden
   useEffect(() => {
@@ -155,7 +144,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                 ) : (
                   // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT
                   <div className="w-full">
-                    {paypalReady ? (
+                    <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID, currency: "EUR" }}>
                       <PayPalCheckoutButton 
                         produkt={produkt} 
                         user={user} 
@@ -163,9 +152,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                         validateEmail={() => validateEmail(gastEmail)}
                         onSuccess={loadShopData} 
                       />
-                    ) : (
-                      <div className="text-center text-xs text-stone-400 italic">Zahlungsdienst lädt...</div>
-                    )}
+                    </PayPalScriptProvider>
                   </div>
                 )}
               </div>
@@ -180,72 +167,82 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
 // SUB-KOMPONENTE: Der PayPal Smart Button mit Gast-Weiche
 function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSuccess }: { produkt: any, user: any, gastEmail: any, validateEmail: any, onSuccess: any }) {
+  const [isSdkReady, setIsSdkReady] = useState(false);
+
   useEffect(() => {
-    if (!(window as any).paypal) return;
-    
-    // Verhindert doppeltes Rendern des PayPal-Containers im DOM
-    const container = document.getElementById(`paypal-btn-${produkt.id}`);
-    if (container) container.innerHTML = '';
+    const timer = setTimeout(() => setIsSdkReady(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
-    // @ts-ignore
-    (window as any).paypal.Buttons({
-      style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
-      
-      onClick: (data: any, actions: any) => {
-        // Wenn kein User eingeloggt ist, MUSS die Gast-E-Mail ausgefüllt sein
-        if (!user && !validateEmail()) {
-          return actions.reject();
-        }
-        return actions.resolve();
-      },
-
-      createOrder: (data: any, actions: any) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: { value: produkt.preis.toString(), currency_code: "EUR" },
-            description: produkt.titel
-          }]
-        });
-      },
-
-      onApprove: (data: any, actions: any) => {
-        return actions.order.capture().then(async (details: any) => {
-          const supabase = getSupabase();
-          let activeUserId = user?.id;
-
-          // GAST-LOGIK: Wenn kein User eingeloggt ist, legen wir ein Profil in Supabase an
-          if (!activeUserId) {
-            // Wir rufen eine Supabase Edge Function oder ein sicheres Insert auf, 
-            // um den Gast über seine Mail zu erfassen. Hier simulieren wir den DB-Eintrag:
-            const { data: gastUser, error: gastError } = await supabase.rpc('create_or_get_guest_user', {
-              email_param: gastEmail
-            });
-            
-            if (gastError) {
-              console.error("Gast-Registrierungsfehler:", gastError.message);
-              alert("Zahlung erfolgreich, aber Registrierung fehlgeschlagen. Bitte Support kontaktieren.");
-              return;
+  return (
+    <div id={`paypal-button-container-${produkt.id}`} key={`stable-paypal-key-${produkt.id}`} style={{ minHeight: "100px", width: "100%" }}>
+      {isSdkReady ? (
+        <PayPalButtons 
+          forceReRender={[produkt.id]}
+          style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
+          
+          onClick={(data, actions) => {
+            // Wenn kein User eingeloggt ist, MUSS die Gast-E-Mail ausgefüllt sein
+            if (!user && !validateEmail()) {
+              return actions.reject();
             }
-            activeUserId = gastUser;
-          }
+            return actions.resolve();
+          }}
 
-          // Kauf in der Tabelle registrieren
-          await supabase.from('kaeufe').insert([{
-            user_id: activeUserId,
-            produkt_id: produkt.id,
-            paypal_order_id: details.id,
-            preis: parseFloat(details.purchase_units[0].amount.value),
-            waehrung: 'EUR'
-          }]);
+          createOrder={(data, actions) => {
+            return actions.order.create({
+              purchase_units: [{
+                amount: { value: produkt.preis.toString(), currency_code: "EUR" },
+                description: produkt.titel
+              }]
+            });
+          }}
 
-          alert("Kauf erfolgreich! Die Meditation wurde sofort freigeschaltet.");
-          onSuccess();
-        });
-      }
-    }).render(`#paypal-btn-${produkt.id}`);
-  }, [produkt, user, gastEmail]);
+          onApprove={async (data, actions) => {
+            if (actions.order) {
+              const details = await actions.order.capture();
+              const supabase = getSupabase();
+              let activeUserId = user?.id;
 
-  return <div id={`paypal-btn-${produkt.id}`} className="w-full"></div>;
+              // GAST-LOGIK: Wenn kein User eingeloggt ist, legen wir ein Profil in Supabase an
+              if (!activeUserId) {
+                // Wir rufen eine Supabase Edge Function oder ein sicheres Insert auf, 
+                // um den Gast über seine Mail zu erfassen. Hier simulieren wir den DB-Eintrag:
+                // Note: Assuming create_or_get_guest_user exists as per previous code rpc call
+                const { data: gastUser, error: gastError } = await supabase.rpc('create_or_get_guest_user', {
+                  email_param: gastEmail
+                });
+                
+                if (gastError) {
+                  console.error("Gast-Registrierungsfehler:", gastError.message);
+                  alert("Zahlung erfolgreich, aber Registrierung fehlgeschlagen. Bitte Support kontaktieren.");
+                  return;
+                }
+                activeUserId = gastUser;
+              }
+
+              // Kauf in der Tabelle registrieren
+              await supabase.from('kaeufe').insert([{
+                user_id: activeUserId,
+                produkt_id: produkt.id,
+                paypal_order_id: details.id,
+                preis: parseFloat(details.purchase_units[0].amount.value),
+                waehrung: 'EUR'
+              }]);
+
+              alert("Kauf erfolgreich! Die Meditation wurde sofort freigeschaltet.");
+              onSuccess();
+            }
+          }}
+          onError={(err: any) => {
+            console.error("PayPal Render- oder Verarbeitungsfehler:", err);
+          }}
+        />
+      ) : (
+        <p className="text-xs text-stone-400">PayPal-Zahlungsmethode wird initialisiert...</p>
+      )}
+    </div>
+  );
 }
 
 // Sub-Komponente: Audio Player mit integriertem GTM-Tracking

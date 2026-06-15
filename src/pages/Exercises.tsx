@@ -22,22 +22,42 @@ export default function Exercises() {
 
       <div className="grid gap-6">
         {exercises.map((exercise) => {
+          // 1. Typo-Korrektur: "Box-Armung" wird live zu "Box-Atmung"
+          const rawTitle = t(exercise.translationKeyTitle);
+          const safeTitle = rawTitle.includes('Box-Armung') ? rawTitle.replace('Box-Armung', 'Box-Atmung') : rawTitle;
+
+          // 2. GLOBALER BILD-FALLBACK (Die Lösung für dein Problem!)
+          // Wenn in den Daten kein Bild existiert (wie bei der Nackendehnung), greift dieses Ersatzbild:
+          const fallbackImage = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop';
+          const finalImage = exercise.image ? exercise.image : fallbackImage;
+
+          // 3. AUSNAHME: Nur die Geführte Atemübung bekommt den Player direkt auf dieser Seite
           if (exercise.id === 'guided-breathing') {
             const produktIdMap: { [key: string]: string } = {
               'guided-breathing': 'a080ef5a-b9e3-4b2c-938e-d2787991461d',
             };
-            return <AudioExerciseCard key={exercise.id} t={t} exercise={exercise} produktId={produktIdMap[exercise.id]} />;
+            return (
+              <AudioExerciseCard 
+                key={exercise.id} 
+                t={t} 
+                exercise={exercise} 
+                title={safeTitle}
+                image={finalImage}
+                produktId={produktIdMap[exercise.id]} 
+              />
+            );
           }
+
+          // 4. STANDARD-KACHEL: Alle anderen verlinken sauber weiter mit den intakten Bildern!
           return (
             <ExerciseCard 
               key={exercise.id}
               id={exercise.id}
-              title={t(exercise.translationKeyTitle)}
+              title={safeTitle}
               category={t(exercise.translationKeyCategory)}
               duration={exercise.duration}
               description={t(exercise.translationKeyDesc)}
-              image={exercise.image}
-              icon={<Wind className="text-blue-400" />} // Default icon, can be dynamic
+              image={finalImage}
             />
           );
         })}
@@ -46,21 +66,31 @@ export default function Exercises() {
   );
 }
 
-function AudioExerciseCard({ t, exercise, produktId }: { t: any, exercise: any, produktId: string }) {
+// === KACHEL 1: GEFÜHRTE ATEMÜBUNG ===
+function AudioExerciseCard({ t, exercise, title, image, produktId }: { t: any, exercise: any, title: string, image: string, produktId: string }) {
   return (
     <motion.div 
-      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] overflow-hidden p-6"
+      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden min-h-[220px]"
     >
-      <div className="flex flex-col md:flex-row">
-        <div className="ai-image-container w-full md:w-48 h-48 md:h-32 shrink-0 overflow-hidden rounded-xl mb-4 md:mb-0 md:mr-6">
-          <img src={exercise.image} alt={t(exercise.translationKeyTitle)} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-          <a href="/impressum#ki-transparenz" className="ai-label">
-            <span className="ai-text">[KI]</span>
-          </a>
-        </div>
-        <div className="flex-1 flex flex-col justify-center">
-          <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-1">{t(exercise.translationKeyTitle)}</h3>
-          <p className="text-sm text-[var(--color-text-muted)] mb-4">{t(exercise.translationKeyDesc)}</p>
+      <div className="w-full md:w-64 h-56 md:h-auto shrink-0 relative bg-stone-100 overflow-hidden">
+        <img 
+          src={image} 
+          alt={title} 
+          className="absolute inset-0 w-full h-full object-cover" 
+          referrerPolicy="no-referrer"
+          onError={(e) => { 
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop'; 
+          }}
+        />
+        <a href="/impressum#ki-transparenz" className="absolute bottom-3 right-3 z-10">
+          <span className="bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">[KI]</span>
+        </a>
+      </div>
+
+      <div className="p-6 flex-1 flex flex-col justify-center">
+        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
+        <p className="text-sm text-[var(--color-text-muted)] mb-6">{t(exercise.translationKeyDesc)}</p>
+        <div className="mt-auto">
           <SingleAudioPlayer produktId={produktId} />
         </div>
       </div>
@@ -68,50 +98,61 @@ function AudioExerciseCard({ t, exercise, produktId }: { t: any, exercise: any, 
   );
 }
 
-function ExerciseCard({ id, title, category, duration, description, icon, image }: { id: string; title: string; category: string; duration: string; description: string; icon: React.ReactNode; image: string }) {
+// === KACHEL 2: ALLE ANDEREN ÜBUNGEN ===
+function ExerciseCard({ id, title, category, duration, description, image }: { id: string; title: string; category: string; duration: string; description: string; image: string }) {
   const { t } = useLanguage();
   return (
-    <Link to={`/exercises/${id}`}>
+    <Link to={`/exercises/${id}`} className="block">
       <motion.div 
         whileHover={{ y: -2 }}
-        className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+        className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-all cursor-pointer group min-h-[220px]"
       >
-        <div className="ai-image-container w-full md:w-48 h-48 md:h-auto shrink-0 relative overflow-hidden">
+        <div className="w-full md:w-64 h-56 md:h-auto shrink-0 relative bg-stone-100 overflow-hidden">
           <img 
             src={image} 
             alt={title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             referrerPolicy="no-referrer"
+            onError={(e) => { 
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop'; 
+            }}
           />
           <span onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             window.location.href = '/impressum#ki-transparenz';
-          }} className="ai-label cursor-pointer">
-            <span className="ai-text">[KI]</span>
+          }} className="absolute bottom-3 right-3 z-10 cursor-pointer">
+            <span className="bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">[KI]</span>
           </span>
-          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 z-0" />
         </div>
         
-        <div className="p-6 flex-1 flex flex-col justify-center">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs px-2 py-1 bg-[var(--color-bg-border)] rounded-full text-[var(--color-text-muted)] uppercase tracking-wider font-medium">{category}</span>
-            <div className="flex items-center gap-1 text-xs text-[var(--color-text-muted-light)]">
-              <Timer size={12} />
-              <span>{duration}</span>
+        <div className="p-6 flex-1 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs px-2.5 py-1 bg-[var(--color-bg-border)] rounded-md text-[var(--color-text-muted)] uppercase tracking-wider font-semibold">
+                {category}
+              </span>
+              <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted-light)] font-medium">
+                <Timer size={14} />
+                <span>{duration}</span>
+              </div>
             </div>
+            
+            <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2 group-hover:text-[var(--color-accent-primary)] transition-colors">
+              {title}
+            </h3>
+            <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-4 line-clamp-2">
+              {description}
+            </p>
           </div>
           
-          <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2 group-hover:text-[var(--color-accent-primary)] transition-colors">{title}</h3>
-          <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-4 line-clamp-2">{description}</p>
-          
-          <div className="mt-auto flex items-center text-[var(--color-accent-primary)] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+          <div className="mt-auto flex items-center text-[var(--color-accent-primary)] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity -translate-x-4 group-hover:translate-x-0 duration-300">
             <span>{t('exercise.view')}</span>
-            <ArrowRight size={16} className="ml-1" />
+            <ArrowRight size={16} className="ml-1.5" />
           </div>
         </div>
       </motion.div>
     </Link>
   );
 }
-
-

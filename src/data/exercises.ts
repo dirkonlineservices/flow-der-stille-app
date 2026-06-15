@@ -23,7 +23,7 @@ export const exercises: Exercise[] = [
     translationKeyOverview: 'exercises.card.audio-breath.overview',
     translationKeyCategory: 'category.breathwork',
     duration: '10 min',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop',
     instructionKeys: []
   },
   {
@@ -33,7 +33,7 @@ export const exercises: Exercise[] = [
     translationKeyOverview: 'exercise.478.overview',
     translationKeyCategory: 'category.breathwork',
     duration: '5 min',
-    image: 'https://picsum.photos/seed/breath/800/600',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [
       'instruction.478.1',
       'instruction.478.2',
@@ -60,7 +60,7 @@ export const exercises: Exercise[] = [
     translationKeyOverview: 'exercise.box.overview',
     translationKeyCategory: 'category.breathwork',
     duration: '3 min',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1549421263-5045437754f9?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [
       'instruction.box.1',
       'instruction.box.2',
@@ -100,7 +100,7 @@ export const exercises: Exercise[] = [
     translationKeyDesc: 'exercises.card.neck.desc',
     translationKeyCategory: 'category.movement',
     duration: '2 min',
-    image: 'https://picsum.photos/seed/neck/800/600',
+    image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [
       'instruction.neck.1',
       'instruction.neck.2',

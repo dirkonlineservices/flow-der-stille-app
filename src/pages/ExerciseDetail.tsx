@@ -312,15 +312,18 @@ export default function ExerciseDetail() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] overflow-hidden"
       >
-        <div className="ai-image-container relative h-64 md:h-80">
+        <div className="w-full h-64 md:h-80 relative overflow-hidden rounded-2xl mb-8 bg-stone-100">
           <img 
-            src={exercise.image || 'https://picsum.photos/seed/gentle/800/600'} 
+            src={exercise.image || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop'} 
             alt={t(exercise.translationKeyTitle)} 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
+            onError={(e) => { 
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop'; 
+            }}
           />
-          <a href="/impressum#ki-transparenz" className="ai-label">
-            <span className="ai-text">[KI]</span>
+          <a href="/impressum#ki-transparenz" className="absolute bottom-4 right-4 z-10 bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">
+            <span>[KI]</span>
           </a>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
             <div>
