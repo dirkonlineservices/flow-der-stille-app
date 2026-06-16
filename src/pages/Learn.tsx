@@ -18,6 +18,14 @@ export default function Learn() {
       </header>
 
       <Section 
+        title="Unser Nervensystem"
+        subtitle="Wie alles zusammenhängt"
+        icon={<Brain className="text-violet-500" />}
+        content="Das Nervensystem steuert alle Funktionen unseres Körpers und reagiert empfindlich auf Stress und Entspannung. Der Sympathikus bereitet uns als 'Gaspedal' auf Aktivität vor (Kampf/Flucht), während der Parasympathikus als 'Bremse' für Ruhe und Regeneration sorgt. Ein gesundes Nervensystem kann flexibel zwischen diesen Zuständen wechseln. Unsere Übungen helfen dir dabei, diese Regulation bewusst zu stärken."
+        color="bg-violet-50"
+      />
+
+      <Section 
         title={t('learn.sympathetic.title')}
         subtitle={t('learn.sympathetic.subtitle')}
         icon={<Zap className="text-amber-500" />}

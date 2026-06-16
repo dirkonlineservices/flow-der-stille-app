@@ -32,14 +32,43 @@ export default function Settings() {
   const [passwordError, setPasswordError] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // Purchased products state
+  const [purchases, setPurchases] = useState<any[]>([]);
+  const [totalSpent, setTotalSpent] = useState(0);
+
   // Sync profile fields from user context once loaded
   useEffect(() => {
     if (user) {
       setFirstName(user.first_name || '');
       setLastName(user.last_name || '');
       setNewsletter(!!user.newsletter_optin);
+      
+      // Fetch purchases
+      fetchPurchases();
     }
   }, [user]);
+
+  const fetchPurchases = async () => {
+    if (!user) return;
+    const supabase = getSupabase();
+    
+    // Join with produkt table to get product info
+    const { data: kaeufe, error } = await supabase
+      .from('kaeufe')
+      .select('*, produkt:produkt_id(*)')
+      .eq('user_id', user.id);
+      
+    if (error) {
+      console.error('Fehler beim Laden der Käufe:', error);
+      return;
+    }
+    
+    setPurchases(kaeufe || []);
+    
+    // Calculate total
+    const total = (kaeufe || []).reduce((sum, k) => sum + (parseFloat(k.preis) || 0), 0);
+    setTotalSpent(total);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -441,46 +470,49 @@ export default function Settings() {
               </p>
 
               <div className="space-y-4">
-                {PRODUCTS.map(course => {
-                  const isPurchased = (user.purchased_products || []).includes(course.id);
-                  if (!isPurchased) return null; // Only show purchased!
-                  return (
-                    <div 
-                      key={course.id}
-                      className="p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
-                        <div>
-                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                            Aktiviert & Freigeschaltet
-                          </span>
-                          <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course.title}</h3>
+                {purchases.length > 0 ? (
+                  purchases.map((kauf: any) => {
+                    const course = kauf.produkt;
+                    return (
+                      <div 
+                        key={kauf.id}
+                        className="p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                          <div>
+                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                              Aktiviert & Freigeschaltet
+                            </span>
+                            <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course?.titel || 'Unbekanntes Produkt'}</h3>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-sm font-semibold text-[var(--color-text-main)] block">{kauf.preis} €</span>
+                            <span className="text-xs text-[var(--color-text-muted-light)] block">{new Date(kauf.created_at).toLocaleDateString()}</span>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span className="text-sm font-semibold text-[var(--color-text-main)] block">{course.duration}</span>
-                          <span className="text-xs text-[var(--color-text-muted-light)] block">{course.price}</span>
+
+                        <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course?.beschreibung}</p>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-main)]">
+                           <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
+                             <CheckCircle2 size={14} /> Bereit zum Lernen
+                           </span>
+                           <button className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
+                             <Eye size={12} /> Kurs öffnen
+                           </button>
                         </div>
                       </div>
-
-                      <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course.description}</p>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-main)]">
-                         <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
-                           <CheckCircle2 size={14} /> Bereit zum Lernen
-                         </span>
-                         <button className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
-                           <Eye size={12} /> Kurs öffnen
-                         </button>
-                      </div>
-                    </div>
-                  );
-                })}
-                {(!user.purchased_products || user.purchased_products.length === 0) && (
+                    );
+                  })
+                ) : (
                   <div className="text-[var(--color-text-muted)] text-center p-6 border border-dashed border-[var(--color-border-main)] rounded-2xl">
                     <p className="mb-4">Noch keine Premium-Kurse erworben.</p>
-                    {/* <Link to="/shop" className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border-main)] text-[var(--color-text-main)] hover:text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)]">
-                       Zum Premium Shop
-                    </Link> */}
+                  </div>
+                )}
+                
+                {purchases.length > 0 && (
+                  <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] font-semibold text-sm text-right">
+                    Gesamtausgaben: <span className="text-[var(--color-accent-primary)]">{totalSpent.toFixed(2)} €</span>
                   </div>
                 )}
               </div>

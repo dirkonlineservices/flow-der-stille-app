@@ -322,6 +322,9 @@ export default function ExerciseDetail() {
                 e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop'; 
             }}
           />
+          <div className="absolute top-4 left-4 md:hidden bg-black/50 text-white text-[10px] font-medium px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm">
+            Tippe zum Starten
+          </div>
           <a href="/impressum#ki-transparenz" className="absolute bottom-4 right-4 z-10 bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">
             <span>[KI]</span>
           </a>

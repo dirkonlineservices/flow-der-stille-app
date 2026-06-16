@@ -100,11 +100,23 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
           
+          <div className="bg-stone-50 p-6 rounded-3xl border border-stone-100 mt-8">
+            <h3 className="text-xl font-serif text-stone-800 mb-4">Für kurze Momente der Stille</h3>
+            <p className="text-stone-600 text-sm leading-relaxed mb-4">
+              Unsere Übungen sind perfekt für deinen Alltag konzipiert:
+            </p>
+            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-stone-600">
+              <li className="flex items-center gap-2"><Sun className="text-amber-500" size={18} /> Für ein kurzes Morgenritual</li>
+              <li className="flex items-center gap-2"><Coffee className="text-emerald-600" size={18} /> In deiner Mittagspause</li>
+              <li className="flex items-center gap-2"><Moon className="text-indigo-400" size={18} /> Abends zum Abschalten</li>
+            </ul>
+          </div>
+          
           {!user && (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[var(--color-bg-alt)] p-6 rounded-2xl border border-[var(--color-border-main)] flex flex-col md:flex-row gap-6 items-center justify-between"
+              className="bg-[var(--color-bg-alt)] p-6 rounded-2xl border border-[var(--color-border-main)] flex flex-col md:flex-row gap-6 items-center justify-between mt-8"
             >
               <div className="flex-1">
                 <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Willkommen bei Flow der Stille</h3>

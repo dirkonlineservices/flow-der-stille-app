@@ -1,15 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, Search } from 'lucide-react';
 import SingleAudioPlayer from './SingleAudioPlayer';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { Link } from 'react-router-dom';
+import UnlockBanner from './UnlockBanner';
 
 export default function PremiumShopDashboard({ session }: { session: any }) {
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
+  const [kaufMap, setKaufMap] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
-  const [gastEmail, setGastEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [showUnlockBanner, setShowUnlockBanner] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('Alle');
+  const [sortBy, setSortBy] = useState('Standard');
   
   const user = session?.user;
   const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
@@ -28,18 +34,23 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
       // Wenn der User eingeloggt ist, seine freigeschalteten Produkte prüfen
       let gekaufteSet: Set<string> = new Set();
+      let kaufMap: Map<string, string> = new Map();
+
       if (user) {
         const { data: kaufData, error: kaufError } = await supabase
           .from('kaeufe')
-          .select('produkt_id')
+          .select('produkt_id, created_at')
           .eq('user_id', user.id);
         if (kaufError) throw kaufError;
         // @ts-ignore
         gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
+        // @ts-ignore
+        kaufData.forEach(k => kaufMap.set(k.produkt_id, k.created_at));
       }
       
       setProdukte(prodData);
       setGekauftIds(gekaufteSet);
+      setKaufMap(kaufMap);
     } catch (error: any) {
       console.error("Fehler beim Laden des Dashboards:", error.message);
     } finally {
@@ -47,27 +58,54 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
     }
   }
 
-  // Generiert die passende Audio-URL (Public für Kostenlos, Signed für Premium)
-  const getAudioUrl = async (produkt: any) => {
-    const supabase = getSupabase();
-    if (parseFloat(produkt.preis) === 0) {
-      const { data } = supabase.storage.from('audio-bucket').getPublicUrl(produkt.audio_path);
-      return data.publicUrl;
-    }
-    const { data } = await supabase.storage.from('audio-bucket').createSignedUrl(produkt.audio_path, 3600);
-    return data?.signedUrl;
+  const baseCategories = ['Alle', 'Kostenfrei', 'Atemübung', 'Meditation', 'Kurz & Schnell', 'Selbsthypnose'];
+  const categories = user ? [...baseCategories, 'Meine Käufe'] : baseCategories;
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // E-Mail Validierung für den Gast-Checkout
-  const validateEmail = (email: string) => {
-    const re = /\S+@\S+\.\S+/;
-    if (!email || !re.test(email)) {
-      setEmailError('Bitte gib eine gültige E-Mail-Adresse für die Freischaltung an.');
-      return false;
+  const filteredProdukte = produkte.filter(prod => {
+    const matchesSearch = prod.titel.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          prod.beschreibung.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    let matchesCategory = true;
+    const catLower = prod.kategorie?.toLowerCase() || '';
+    const titleLower = prod.titel.toLowerCase();
+
+    if (activeFilter === 'Kostenfrei') {
+        matchesCategory = parseFloat(prod.preis) === 0;
+    } else if (activeFilter === 'Atemübung') {
+        matchesCategory = catLower.includes('atem') || titleLower.includes('atem') || titleLower.includes('muskelentspannung');
+    } else if (activeFilter === 'Meditation') {
+        matchesCategory = catLower.includes('meditation') || titleLower.includes('meditation') || titleLower.includes('herzöffnung') || titleLower.includes('loslassen');
+    } else if (activeFilter === 'Selbsthypnose') {
+       matchesCategory = catLower.includes('hypnose') || titleLower.includes('selbsthypnose') || titleLower.includes('hypnose');
+    } else if (activeFilter === 'Kurz & Schnell') {
+       matchesCategory = typeof prod.dauer === 'number' && prod.dauer >= 120 && prod.dauer <= 300;
+    } else if (activeFilter === 'Meine Käufe') {
+       matchesCategory = gekauftIds.has(prod.id);
     }
-    setEmailError('');
-    return true;
-  };
+    
+    return matchesSearch && matchesCategory;
+  }).sort((a, b) => {
+      if (sortBy === 'Neueste') {
+          const dateA = new Date(a.created_at || '1970-01-01').getTime();
+          const dateB = new Date(b.created_at || '1970-01-01').getTime();
+          return dateB - dateA;
+      } else if (sortBy === 'Älteste') {
+          const dateA = new Date(a.created_at || '1970-01-01').getTime();
+          const dateB = new Date(b.created_at || '1970-01-01').getTime();
+          return dateA - dateB;
+      } else if (sortBy === 'Teuerste') {
+          return parseFloat(b.preis) - parseFloat(a.preis);
+      } else if (sortBy === 'Günstigste') {
+          return parseFloat(a.preis) - parseFloat(b.preis);
+      }
+      return 0;
+  });
 
   if (loading) return <div className="p-10 text-center text-gray-500">Premium-Bereich wird geladen...</div>;
 
@@ -78,27 +116,66 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
         <p className="text-stone-600 mt-2 text-sm italic">Sanfte Bewegungen und Atemmuster, um deinem Körper Sicherheit zu signalisieren.</p>
       </header>
 
-      {/* GAST-HINWEIS: Wenn nicht eingeloggt, zeigen wir das E-Mail-Feld zentral an */}
-      {!user && (
-        <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-xl max-w-md mx-auto">
-          <h3 className="text-sm font-bold text-amber-900 mb-1">Als Gast bestellen / Einloggen</h3>
-          <p className="text-xs text-amber-700 mb-3">Gib deine E-Mail ein, damit wir dir deine Zugangsdaten nach dem Kauf sofort zusenden können.</p>
-          <input 
+      {/* QA Backdoor: Test Email */}
+      <div className="mb-6 p-4 bg-stone-100 rounded-xl max-w-sm mx-auto">
+        <input 
             type="email" 
-            placeholder="deine-email@beispiel.de" 
-            value={gastEmail}
-            onChange={(e) => { setGastEmail(e.target.value); setEmailError(''); }}
-            className="w-full p-2.5 text-sm rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            placeholder="QA-Test-E-Mail eingeben..." 
+            value={testEmail}
+            onChange={(e) => setTestEmail(e.target.value)}
+            className="w-full p-2 text-sm rounded border border-stone-300"
+        />
+      </div>
+
+      {/* Search and Filter */}
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
+          <input 
+            type="text"
+            placeholder="Suche nach Meditation, Herzöffnung, Loslassen..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-300"
           />
-          {emailError && <p className="text-red-600 text-xs mt-1 font-semibold">{emailError}</p>}
         </div>
-      )}
+        <div className="flex flex-wrap items-center gap-2">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeFilter === cat 
+                  ? 'bg-stone-800 text-white' 
+                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+          <div className="ml-auto">
+             <select 
+               value={sortBy} 
+               onChange={(e) => setSortBy(e.target.value)}
+               className="bg-white text-stone-600 border border-stone-200 rounded-full px-4 py-2 text-sm focus:outline-none"
+             >
+               <option value="Standard">Standard Sortierung</option>
+               <option value="Neueste">Neueste</option>
+               <option value="Teuerste">Teuerste</option>
+               <option value="Günstigste">Günstigste</option>
+               <option value="Älteste">Älteste</option>
+             </select>
+          </div>
+        </div>
+      </div>
 
       <div className="space-y-6">
-        {produkte.map((produkt: any) => {
+        {showUnlockBanner && <UnlockBanner />}
+        {filteredProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
           const isHeartOpening = produkt.id === 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce';
+          const isTestEmail = testEmail === 'tester@flow-der-stille.de';
 
           if (isHeartOpening && !user) {
             return (
@@ -131,25 +208,56 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                       {produkt.preis} €
                     </span>
                   )}
+                  {produkt.dauer && (
+                    <span className="text-xs font-medium text-stone-500 flex items-center gap-1">
+                      {formatDuration(produkt.dauer)} min
+                    </span>
+                  )}
                 </div>
                 <h2 className="text-xl font-bold text-stone-800">{produkt.titel}</h2>
                 <p className="text-stone-500 text-sm mt-1 leading-relaxed">{produkt.beschreibung}</p>
               </div>
 
-              {/* Rechte Seite: Dynamisches Interface (Player oder PayPal) */}
+              {/* Rechte Seite: Dynamisches Interface */}
               <div className="w-full md:w-auto min-w-[200px] flex flex-col items-stretch md:items-end justify-center">
                 {hatZugriff ? (
                   // ZUSTAND: FREIGESCHALTET (Kostenlos oder bereits gekauft)
                   <SingleAudioPlayer produktId={produkt.id} />
+                ) : !user ? (
+                  // ZUSTAND: NICHT EINGELOGGT -> Registrieren/Login
+                  <div className="text-center p-3 text-sm font-medium text-stone-700 bg-stone-100 rounded-xl">
+                    Bitte <Link to="/login" className="text-[var(--color-accent-primary)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--color-accent-primary)] underline">registrieren</Link>, um zu kaufen.
+                  </div>
+                ) : isTestEmail ? (
+                  <button 
+                    onClick={async () => {
+                        const supabase = getSupabase();
+                        await supabase.from('kaeufe').insert([{
+                          user_id: user.id,
+                          produkt_id: produkt.id,
+                          paypal_order_id: 'TEST_KAUF_' + Date.now(),
+                          preis: parseFloat(produkt.preis),
+                          waehrung: 'EUR'
+                        }]);
+                        alert("Kauf erfolgreich (Test-Modus)!");
+                        setShowUnlockBanner(true);
+                        setTimeout(() => {
+                            loadShopData();
+                            setShowUnlockBanner(false);
+                        }, 2000); // 2-second delay
+                    }}
+                    className="w-full py-2 bg-stone-600 text-white rounded-xl text-sm font-bold hover:bg-stone-700 transition"
+                  >
+                    Kostenlos Freischalten (Test-Modus)
+                  </button>
                 ) : (
-                  // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT
+                  // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT & EINGELOGGT
                   <div className="w-full">
                     <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID, currency: "EUR" }}>
                       <PayPalCheckoutButton 
                         produkt={produkt} 
                         user={user} 
-                        gastEmail={gastEmail} 
-                        validateEmail={() => validateEmail(gastEmail)}
+                        setShowUnlockBanner={setShowUnlockBanner}
                         onSuccess={loadShopData} 
                       />
                     </PayPalScriptProvider>
@@ -165,8 +273,8 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: Der PayPal Smart Button mit Gast-Weiche
-function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSuccess }: { produkt: any, user: any, gastEmail: any, validateEmail: any, onSuccess: any }) {
+// SUB-KOMPONENTE: Der PayPal Smart Button
+function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
 
   useEffect(() => {
@@ -181,14 +289,6 @@ function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSucce
           forceReRender={[produkt.id]}
           style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
           
-          onClick={(data, actions) => {
-            // Wenn kein User eingeloggt ist, MUSS die Gast-E-Mail ausgefüllt sein
-            if (!user && !validateEmail()) {
-              return actions.reject();
-            }
-            return actions.resolve();
-          }}
-
           createOrder={(data, actions) => {
             return actions.order.create({
               purchase_units: [{
@@ -199,39 +299,27 @@ function PayPalCheckoutButton({ produkt, user, gastEmail, validateEmail, onSucce
           }}
 
           onApprove={async (data, actions) => {
-            if (actions.order) {
+            if (actions.order && user) {
               const details = await actions.order.capture();
               const supabase = getSupabase();
-              let activeUserId = user?.id;
-
-              // GAST-LOGIK: Wenn kein User eingeloggt ist, legen wir ein Profil in Supabase an
-              if (!activeUserId) {
-                // Wir rufen eine Supabase Edge Function oder ein sicheres Insert auf, 
-                // um den Gast über seine Mail zu erfassen. Hier simulieren wir den DB-Eintrag:
-                // Note: Assuming create_or_get_guest_user exists as per previous code rpc call
-                const { data: gastUser, error: gastError } = await supabase.rpc('create_or_get_guest_user', {
-                  email_param: gastEmail
-                });
-                
-                if (gastError) {
-                  console.error("Gast-Registrierungsfehler:", gastError.message);
-                  alert("Zahlung erfolgreich, aber Registrierung fehlgeschlagen. Bitte Support kontaktieren.");
-                  return;
-                }
-                activeUserId = gastUser;
-              }
 
               // Kauf in der Tabelle registrieren
               await supabase.from('kaeufe').insert([{
-                user_id: activeUserId,
+                user_id: user.id,
                 produkt_id: produkt.id,
                 paypal_order_id: details.id,
                 preis: parseFloat(details.purchase_units[0].amount.value),
                 waehrung: 'EUR'
               }]);
 
-              alert("Kauf erfolgreich! Die Meditation wurde sofort freigeschaltet.");
-              onSuccess();
+              alert("Kauf erfolgreich! Die Meditation wird freigeschaltet...");
+              setShowUnlockBanner(true);
+              setTimeout(() => {
+                onSuccess(); // Load fresh data, unlocking the UI
+                setShowUnlockBanner(false);
+              }, 2000); // 2-second delay
+            } else {
+              alert("Ein Fehler ist aufgetreten. Bitte stellen Sie sicher, dass Sie eingeloggt sind.");
             }
           }}
           onError={(err: any) => {

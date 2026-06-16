@@ -55,9 +55,9 @@ export default function HomeChatWidget() {
     return (
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-8 text-center shadow-sm relative overflow-hidden">
         <MessageSquare className="w-12 h-12 text-[var(--color-text-muted-light)] mx-auto mb-4 opacity-50" />
-        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Entspannungsassistent</h3>
+        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Empathische KI-Begleitung</h3>
         <p className="text-[var(--color-text-muted)] text-sm mb-6 max-w-sm mx-auto">
-          Melde dich an, um mit unserem Entspannungsassistenten zu sprechen.
+          Melde dich an, um mit unserer Empathischen KI-Begleitung zu sprechen.
         </p>
         <Lock className="w-8 h-8 text-[var(--color-text-muted-light)] absolute top-4 right-4 opacity-20" />
       </div>
@@ -69,7 +69,7 @@ export default function HomeChatWidget() {
       <div className="bg-[var(--color-bg-alt)] border-b border-[var(--color-border-main)] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare size={20} className="text-[var(--color-accent-primary)]" />
-          <h3 className="font-serif text-[var(--color-text-main)] text-lg">Entspannungsassistent</h3>
+          <h3 className="font-serif text-[var(--color-text-main)] text-lg">Empathische KI-Begleitung</h3>
         </div>
         {!isPremium && (
           <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-text-muted)] bg-stone-200/50 px-2.5 py-1 rounded-full border border-stone-200">

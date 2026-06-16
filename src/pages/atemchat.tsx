@@ -434,9 +434,9 @@ export default function AtemChat() {
               </div>
               <div>
                 <div className="font-serif text-base font-semibold text-[var(--color-text-main)] flex items-center gap-1.5">
-                  Stress-Begleiter
+                  Empathische KI-Begleitung
                   <span className="text-[10px] uppercase tracking-wider bg-[var(--color-bg-alt)] text-[var(--color-accent-primary)] px-2 py-0.5 rounded font-semibold font-sans border border-[var(--color-border-main)]">
-                    Aktiv
+                    KI-Assistent
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
