@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
-import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { PRODUCTS } from "../data/store";
@@ -71,7 +70,6 @@ interface Message {
 }
 
 export default function AtemChat() {
-  const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const { addToCart } = useCart();
 
@@ -395,13 +393,6 @@ export default function AtemChat() {
           </div>
 
           <div className="flex items-center space-x-2 md:space-x-4">
-            <button 
-              onClick={toggleTheme}
-              className="p-2 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
             <button
               id="btn-helpline"
               onClick={() => setShowHelpline(true)}

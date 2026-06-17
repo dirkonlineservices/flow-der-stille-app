@@ -19,9 +19,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AGB from './pages/AGB';
 import Rechtliches from './pages/Rechtliches';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import UpdatePassword from './pages/UpdatePassword';
 import Premium from './pages/Premium';
 import Contact from './pages/Contact';                
 import Datenschutz from './pages/Datenschutz';
+import DataDeletion from './pages/DataDeletion';
 import Impressum from './pages/Impressum';
 import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
 import Danke from './pages/Danke';
@@ -69,9 +73,13 @@ export default function App() {
                   <Route path="shop" element={<Shop />} />
                   <Route path="chat" element={<ChatRoute />} />
                   <Route path="login" element={<Login />} />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="reset-password" element={<ResetPassword />} />
+                  <Route path="update-password" element={<UpdatePassword />} />
                   <Route path="register" element={<Register />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
+                  <Route path="konto-loeschen" element={<DataDeletion />} />
                   <Route path="impressum" element={<Impressum />} />
                   <Route path="agb" element={<AGB />} />
                   <Route path="rechtliches" element={<Rechtliches />} />

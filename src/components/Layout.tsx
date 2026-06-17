@@ -56,33 +56,10 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--color-bg-body)] text-[var(--color-text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300">
       
-      {/* Top Right Floating Actions */}
-      <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
-        {/* <button 
-          onClick={() => setCartOpen(true)}
-          className="relative p-3 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
-          aria-label="Open Cart"
-        >
-          <ShoppingBag size={20} />
-          {cartItemCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm">
-              {cartItemCount}
-            </span>
-          )}
-        </button> */}
-        <button 
-          onClick={toggleTheme}
-          className="p-3 bg-[var(--color-bg-card)] rounded-full shadow-sm border border-[var(--color-border-main)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] transition-all"
-          aria-label="Toggle dark mode"
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
-      </div>
-
       {/* Desktop Sidebar */}
       <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--color-bg-card)]/50 backdrop-blur-sm border-r border-[var(--color-border-main)] z-50 overflow-y-auto">
         <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--color-bg-border)] transition-colors shrink-0">
-          <Leaf className="w-8 h-8 text-[var(--color-accent-primary)]" />
+          <img src="/favicon.svg" alt="Logo" className="w-8 h-8" />
         </Link>
         
         <div className="flex flex-col gap-6 w-full">
@@ -127,7 +104,7 @@ export default function Layout() {
       </nav>
 
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 flex justify-between items-center z-50 overflow-x-auto gap-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-between items-center z-50 overflow-x-auto gap-2">
         <NavLink to="/" icon={<Home />} label={t('nav.home')} mobile />
         <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
         <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
@@ -175,6 +152,8 @@ export default function Layout() {
           <Link to="/agb" className="hover:text-[var(--color-text-main)] transition-colors">AGB</Link>
           <span className="hidden md:inline">•</span>
           <Link to="/rechtliches" className="hover:text-[var(--color-text-main)] transition-colors">Rechtliches</Link>
+          <span className="hidden md:inline">•</span>
+          <Link to="/konto-loeschen" className="hover:text-[var(--color-text-main)] transition-colors">Konto löschen</Link>
         </footer>
       </main>
 

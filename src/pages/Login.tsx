@@ -78,10 +78,15 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-[var(--color-accent-primary)] text-white rounded-xl font-medium hover:bg-[var(--color-accent-hover)] transition-colors"
+            className="w-full py-3 flex items-center justify-center bg-[var(--color-accent-primary)] text-white rounded-xl font-medium hover:bg-[var(--color-accent-hover)] transition-colors"
           >
             {t('auth.submit')}
           </button>
+          <div className="text-center mt-2">
+            <Link to="/forgot-password" className="text-sm text-[var(--color-accent-primary)] hover:underline">
+              Passwort vergessen?
+            </Link>
+          </div>
         </form>
         <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
           Noch keinen Account? <Link to="/register" className="text-[var(--color-accent-primary)] hover:underline">Hier registrieren</Link>

@@ -53,6 +53,21 @@ export default function Register() {
       // Wenn die Anfrage durchging, schalten wir auf die Erfolgsmeldung um,
       // leiten aber NICHT sofort auf die Startseite weiter!
       if (data?.user) {
+        if (newsletter) {
+          try {
+             const { error: insertError } = await supabase
+                .from('newsletter_leads')
+                .insert([{ user_id: data.user.id, email: email }]);
+             
+             if (!insertError) {
+               (window as any).dataLayer = (window as any).dataLayer || [];
+               (window as any).dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
+             }
+          } catch (e) {
+             console.error("Newsletter error", e);
+             // We don't want to stop the signup if newsletter fails
+          }
+        }
         setIsSubmitted(true);
       }
     } catch (err) {
@@ -206,10 +221,10 @@ export default function Register() {
                 type="checkbox"
                 checked={newsletter}
                 onChange={(e) => setNewsletter(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
+                className="mt-0.5 w-5 h-5 rounded border-[var(--color-border-main)] text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
               />
-              <span className="text-xs text-[var(--color-text-muted)] leading-relaxed select-none group-hover:text-[var(--color-text-main)] transition-colors">
-                Ja, ich möchte mich für den kostenlosen Newsletter von <strong className="text-[var(--color-accent-primary)]">Flow der Stille</strong> anmelden. Ich erhalte einmal im Monat wertvolle, exklusive Tipps zum Stressabbau, Achtsamkeitsimpulse und Angebote. (Jederzeit abbestellbar)
+              <span className="text-sm text-[var(--color-text-muted)] leading-relaxed select-none group-hover:text-[var(--color-text-main)] transition-colors">
+                Ja, ich möchte gelegentlich Impulse für mehr innere Ruhe per E-Mail erhalten.
               </span>
             </label>
 
@@ -220,7 +235,7 @@ export default function Register() {
                   type="checkbox"
                   checked={dsgvo}
                   onChange={(e) => setDsgvo(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
+                  className="mt-0.5 w-5 h-5 rounded border-[var(--color-border-main)] text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
                   required
                 />
                 <span className="text-xs text-[var(--color-text-muted)] leading-relaxed select-none group-hover:text-[var(--color-text-main)] transition-colors">
@@ -233,7 +248,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading || !dsgvo}
-            className="w-full py-4 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white rounded-full font-medium transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            className="w-full py-4 flex items-center justify-center bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white rounded-full font-medium transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
             {loading ? 'Bitte warten...' : 'Anmelden'}
           </button>

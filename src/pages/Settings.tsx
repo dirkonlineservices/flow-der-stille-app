@@ -3,10 +3,11 @@ import { motion } from 'motion/react';
 import { 
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
-  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award 
+  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
@@ -15,6 +16,7 @@ import { PRODUCTS } from '../data/store';
 export default function Settings() {
   const { t } = useLanguage();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   // Profile Form States
@@ -24,6 +26,9 @@ export default function Settings() {
   const [profileSuccess, setProfileSuccess] = useState('');
   const [profileError, setProfileError] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [securityAnswer, setSecurityAnswer] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Password Form States
   const [password, setPassword] = useState('');
@@ -161,8 +166,88 @@ export default function Settings() {
     a.click();
   };
 
+  const handleDeleteAccount = async () => {
+     if (securityAnswer.toLowerCase() !== 'flow der stille') {
+        alert('Die Antwort ist inkorrekt.');
+        return;
+     }
+
+     setDeleteLoading(true);
+     try {
+        const supabase = getSupabase();
+        // 1. Delete purchases from Supabase
+        const { error: purchaseError } = await supabase
+           .from('kaeufe')
+           .delete()
+           .eq('user_id', user!.id);
+        
+        if (purchaseError) {
+           throw new Error('Fehler beim Löschen der Käufe.');
+        }
+
+        // 2. Call server API for local SQLite deletion
+        const response = await fetch('/api/user/delete', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+           throw new Error('Fehler beim Löschen des lokalen Profils.');
+        }
+
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({ event: 'account_deleted', user_id: user.id });
+
+        // 3. Optional: Sign user out of Supabase
+        await logout();
+        navigate('/login');
+     } catch (err: any) {
+        alert(err.message || 'Netzwerkfehler beim Löschen des Accounts.');
+     } finally {
+        setDeleteLoading(false);
+        setShowDeleteModal(false);
+     }
+  };
+
   return (
     <div className="space-y-12 max-w-4xl mx-auto py-8 px-4">
+      
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-[var(--color-border-main)]">
+              <h3 className="text-xl font-serif text-red-700 mb-4">Account permanent löschen?</h3>
+              <p className="text-sm text-stone-600 mb-6 leading-relaxed">
+                 Dies ist ein unwiderruflicher Vorgang. Alle Ihre Daten, Käufe und Fortschritte werden dauerhaft entfernt. Dies entspricht unseren DSGVO-Richtlinien zur Datenlöschung.
+                 <br/><br/>
+                 Bitte geben Sie zur Bestätigung den Namen der App ein: <span className="font-bold">Flow der Stille</span>
+              </p>
+              
+              <input
+                 type="text"
+                 value={securityAnswer}
+                 onChange={(e) => setSecurityAnswer(e.target.value)}
+                 className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border border-[var(--color-border-main)] focus:ring-2 focus:ring-red-500 outline-none text-sm mb-6"
+                 placeholder="Name eingeben..."
+              />
+              
+              <div className="flex gap-3">
+                 <button 
+                    onClick={() => setShowDeleteModal(false)}
+                    className="flex-1 px-4 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium rounded-xl text-sm transition-all"
+                 >
+                    Abbrechen
+                 </button>
+                 <button 
+                    onClick={handleDeleteAccount}
+                    disabled={deleteLoading}
+                    className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl text-sm transition-all"
+                 >
+                    {deleteLoading ? 'Lösche...' : 'Jetzt löschen'}
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
+      
       <SEO title="Einstellungen" description="Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort und betrachten Sie Ihre Einkäufe." />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -432,9 +517,9 @@ export default function Settings() {
                     return (
                       <div 
                         key={key} 
-                        className="flex items-center justify-between p-4 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-2xl"
+                        className="p-4 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-2xl"
                       >
-                        <div className="flex items-center justify-between gap-3 w-full">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full">
                           <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl shrink-0 ${isWeekly ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
                               <CheckCircle2 size={16} />
@@ -444,7 +529,7 @@ export default function Settings() {
                               <h4 className="text-sm font-medium text-[var(--color-text-main)]">{title}</h4>
                             </div>
                           </div>
-                          <span className="text-xs text-[var(--color-text-muted)] italic shrink-0 text-right">{desc}</span>
+                          <span className="text-xs text-[var(--color-text-muted)] italic shrink-0 sm:text-right">{desc}</span>
                         </div>
                       </div>
                     );
@@ -518,11 +603,45 @@ export default function Settings() {
               </div>
             </section>
 
+            {/* 5. Danger Zone */}
+            <section className="bg-red-50/50 rounded-3xl shadow-sm border border-red-100 p-6 md:p-8">
+              <h2 className="text-2xl font-serif text-red-900 mb-6 flex items-center gap-2">
+                <Trash2 size={22} className="text-red-600" />
+                Gefahrenbereich: Account löschen
+              </h2>
+              <p className="text-red-800 text-sm mb-6 leading-relaxed">
+                Wenn Sie Ihr Konto und alle damit verbundenen Daten unwiderruflich löschen möchten, klicken Sie bitte auf die Schaltfläche unten. Dieser Vorgang kann nicht rückgängig gemacht werden.
+              </p>
+              <button
+                onClick={() => {
+                  (window as any).dataLayer = (window as any).dataLayer || [];
+                  (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
+                  setShowDeleteModal(true);
+                }}
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
+              >
+                Konto permanent löschen
+              </button>
+            </section>
+
           </div>
 
           {/* Sidebar Area with session, GDPR, logout */}
           <div className="space-y-6">
             
+             {/* Theme Toggle */}
+            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm">
+                <button
+                   onClick={toggleTheme}
+                   className="w-full flex items-center justify-between p-4 bg-[var(--color-bg-alt)] rounded-xl hover:bg-[var(--color-bg-border)] transition-all"
+                >
+                   <span className="font-semibold text-sm">Design-Modus</span>
+                   <div className="p-2 rounded-lg bg-[var(--color-bg-body)]">
+                     {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+                   </div>
+                </button>
+            </div>
+
             {/* Quick Profile Overview Badge */}
             <div className="bg-[var(--color-bg-body)] rounded-3xl p-6 border border-[var(--color-border-main)]/60 text-center">
               <div className="w-20 h-20 rounded-full bg-[var(--color-accent-primary)] text-white flex items-center justify-center text-3xl font-serif mx-auto mb-4 shadow-sm">
