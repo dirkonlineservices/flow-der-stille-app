@@ -32,6 +32,7 @@ export default function Register() {
     setLoading(true);
 
     try {
+      // 1. Sign Up
       const supabase = getSupabase();
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: email,
@@ -50,26 +51,33 @@ export default function Register() {
         return;
       }
 
-      // Wenn die Anfrage durchging, schalten wir auf die Erfolgsmeldung um,
-      // leiten aber NICHT sofort auf die Startseite weiter!
-      if (data?.user) {
-        if (newsletter) {
-          try {
-             const { error: insertError } = await supabase
-                .from('newsletter_leads')
-                .insert([{ user_id: data.user.id, email: email }]);
-             
-             if (!insertError) {
-               (window as any).dataLayer = (window as any).dataLayer || [];
-               (window as any).dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
-             }
-          } catch (e) {
-             console.error("Newsletter error", e);
-             // We don't want to stop the signup if newsletter fails
+      // If signup successful, handle newsletter
+      if (data?.user && newsletter) {
+        // 2. Newsletter (Non-blocking)
+        try {
+          const { data: newsletterData, error: insertError } = await supabase
+            .from('newsletter_leads')
+            .insert([{ 
+                email: email,
+                source: 'app_registration' 
+                // status und confirm_token werden durch die DB-Defaults automatisch gesetzt!
+            }])
+            .select();
+
+          if (!insertError && newsletterData && newsletterData.length > 0) {
+            (window as any).dataLayer = (window as any).dataLayer || [];
+            (window as any).dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
+          } else {
+            console.error("Newsletter error:", insertError);
           }
+        } catch (newsletterErr) {
+          // Log, but do not stop signup
+          console.error("Newsletter exception:", newsletterErr);
         }
-        setIsSubmitted(true);
       }
+
+      // Success
+      setIsSubmitted(true);
     } catch (err) {
       setError('Ein unerwarteter Fehler ist aufgetreten.');
     } finally {

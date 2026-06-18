@@ -22,6 +22,7 @@ import Rechtliches from './pages/Rechtliches';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import UpdatePassword from './pages/UpdatePassword';
+import NewsletterConfirmation from './pages/NewsletterConfirmation';
 import Premium from './pages/Premium';
 import Contact from './pages/Contact';                
 import Datenschutz from './pages/Datenschutz';
@@ -76,6 +77,7 @@ export default function App() {
                   <Route path="forgot-password" element={<ForgotPassword />} />
                   <Route path="reset-password" element={<ResetPassword />} />
                   <Route path="update-password" element={<UpdatePassword />} />
+                  <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
                   <Route path="register" element={<Register />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />

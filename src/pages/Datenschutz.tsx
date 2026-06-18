@@ -33,67 +33,58 @@ export default function Datenschutz() {
         <div className="space-y-6 text-[var(--color-text-muted)] text-sm leading-relaxed">
           
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">1. Allgemeine Hinweise</h2>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">1. Verantwortlicher</h2>
             <p>
-              Der Schutz Ihrer persönlichen Daten ist uns ein wichtiges Anliegen. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften der Europäischen Datenschutz-Grundverordnung (DSGVO) sowie dieser Datenschutzerklärung.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Verantwortliche Stelle</h2>
-            <p>
-              Verantwortlich für die Datenverarbeitung im Sinne der DSGVO für die Anwendung <strong>Flow der Stille</strong> ist:<br />
-              <strong>DS Online Services</strong><br />
-              Inhaber: <strong>Dirk Schmetzer</strong><br />
+              Verantwortlich für die Datenverarbeitung im Sinne der DSGVO ist:<br />
+              <strong>Dirk Schmetzer</strong><br />
               Riedgrasweg 30, 70599 Stuttgart<br />
-              E-Mail: <a href="mailto:info@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">info@flow-der-stille.de</a><br />
-              Telefon: 015906122744
+              E-Mail: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">3. Hosting & Infrastruktur</h2>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Datenschutz auf der Webseite</h2>
+            <h3 className="font-semibold text-[var(--color-text-main)]">Google Tag Manager (GTM) & Analytics (GA4)</h3>
             <p>
-              Unsere Website wird bei der Hostinger International Ltd. in einer Node.js-Umgebung gehostet. Beim Besuch unserer Webseite werden standardmäßig Server-Logfiles erhoben, die Ihre IP-Adresse, Datum und Zeit der Anfrage, übertragene Datenmengen und den Browser-Typ enthalten können. Dies dient der Gewährleistung der Systemsicherheit und Stabilität des Webangebots.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Kontaktformular und Datenbank (Supabase)</h2>
-            <p>
-              Die Website enthält ein Kontaktformular. Wenn Sie unser Kontaktformular nutzen, werden Ihre Angaben verschlüsselt an unsere Datenbank beim Cloud-Dienstanbieter Supabase übertragen und dort zwecks Bearbeitung der Anfrage gespeichert.
-            </p>
-            <p className="mt-2 text-sm italic font-medium">
-              Wichtiger Hinweis: Unser Supabase-Projekt läuft exklusiv innerhalb der EU in der Region Frankfurt (Deutschland). Die Speicherung Ihrer Daten erfolgt komplett innerhalb der EU; es findet kein Transfer in Drittländer statt.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">5. Analyse-Tools & Tracking</h2>
-            <p>
-              Wir setzen folgende Google-Dienste ein, die <strong>nur</strong> nach Ihrer ausdrücklichen Einwilligung über unser Consent-Banner aktiviert werden:
-            </p>
-            <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li><strong>Google Tag Manager:</strong> Wir verwenden den Tag Manager zur datenschutzkonformen Verwaltung und Einbindung von Skripten.</li>
-              <li><strong>Google Analytics:</strong> Wir nutzen Google Analytics zur anonymisierten Analyse des Nutzerverhaltens. Die IP-Anonymisierung ist aktiv.</li>
-              <li><strong>Google Search Console:</strong> Das Tool ist mit Google Analytics verknüpft, um Suchanfragen und den technischen Status unserer Website zu optimieren und Fehler zu beheben.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">6. Social Media & Teilen-Funktion</h2>
-            <p>
-              Unsere Website ermöglicht es Ihnen, Inhalte über Teilen-Buttons zu verbreiten. Die Einbindung dieser Buttons erfolgt datenschutzkonform durch statische HTML-Links (ähnlich dem Shariff-Prinzip). Das bedeutet, dass beim Laden unserer Webseite keinerlei Daten an die Betreiber der Social-Media-Plattformen (wie Instagram oder YouTube) übertragen werden. Eine Datenübermittlung findet erst statt, wenn Sie aktiv auf den jeweiligen Teilen-Button klicken.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">7. Ihre Rechte</h2>
-            <p>
-              Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten. Sie haben zudem ein Recht auf Berichtigung, Sperrung oder Löschung dieser Daten. Für diese Anliegen oder bei weiteren Fragen zum Thema Datenschutz wenden Sie sich bitte an die oben angegebene Verantwortliche Stelle. Zusätzlich steht Ihnen ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu.
+              Wir setzen den Google Tag Manager ein, um Tags auf unserer Webseite zu verwalten. Der Tag Manager selbst speichert keine personenbezogenen Daten. Er dient lediglich als technisches Hilfsmittel zur Aussteuerung anderer Tools.
             </p>
             <p className="mt-2">
-              Sie können jederzeit erteilte Einwilligungen (z.B. für Tracking oder Cookies) mit Wirkung für die Zukunft widerrufen.
+              Zur Analyse der Webseitennutzung setzen wir Google Analytics 4 (GA4) ein. Dies geschieht in einer datenschutzkonformen Konfiguration unter Verwendung der IP-Anonymisierung.
+            </p>
+            
+            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Newsletter (Supabase)</h3>
+            <p>
+              Falls Sie sich für unseren Newsletter anmelden, speichern wir Ihre E-Mail-Adresse in unserer Datenbank beim Cloud-Dienstanbieter Supabase, welcher seine Dienste innerhalb der EU hostet. Die Anmeldung erfolgt über ein "Double Opt-In"-Verfahren, bei dem Sie die Newsletter-Anmeldung nach der Registrierung durch einen Klick auf einen Aktivierungslink bestätigen müssen.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">3. Datenschutz in der mobilen App</h2>
+            <h3 className="font-semibold text-[var(--color-text-main)]">Nutzer-Authentifizierung (Supabase)</h3>
+            <p>
+              Für die Anmeldung (Login/Registrierung) nutzen wir Supabase Auth. Ihre E-Mail-Adresse und Passwortdaten (gespeichert als kryptographischer Hash) werden sicher auf unseren Servern innerhalb der EU verarbeitet.
+            </p>
+            
+            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Applikations-Stabilität & Firebase Crashlytics</h3>
+            <p>
+              Zur Verbesserung der App-Stabilität setzen wir Firebase Crashlytics ein. Hierbei werden anonymisierte Absturzdaten (Device-Daten, Stacktraces) erfasst, die uns helfen, technische Fehler zu beheben. Dies geschieht auf Basis unseres berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO.
+            </p>
+
+            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Google Analytics for Firebase</h3>
+            <p>
+              Zur Analyse der App-Nutzung nutzen wir Google Analytics for Firebase. Diese Daten werden mit der Google Play Console verknüpft, um Akquisitionskennzahlen und Stabilitätsdaten gesammelt auszuwerten. Eine persönliche Identifizierung findet hierbei nicht statt.
+            </p>
+
+            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Kontolöschung</h3>
+            <p>
+              Sie haben das Recht auf jederzeitige, unwiderrufliche Löschung Ihres Benutzerkontos und der damit verbundenen persönlichen Daten direkt in den Einstellungen der App. Mit der Löschung werden auch Ihre gespeicherten Daten (z. B. Fortschritt, E-Mail-Adresse) zeitnah aus unserer Datenbank entfernt.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Ihre Rechte</h2>
+            <p>
+              Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung Ihrer Daten. Bitte wenden Sie sich hierzu an die oben genannte Verantwortliche Stelle unter: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
             </p>
           </section>
 

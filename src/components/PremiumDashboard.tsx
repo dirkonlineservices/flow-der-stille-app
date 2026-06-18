@@ -175,7 +175,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
           const isHeartOpening = produkt.id === 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce';
-          const isTestEmail = testEmail === 'tester@flow-der-stille.de';
+          const isTestEmail = testEmail.toLowerCase() === 'tester@flow-der-stille.de';
 
           if (isHeartOpening && !user) {
             return (
