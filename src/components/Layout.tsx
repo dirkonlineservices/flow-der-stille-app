@@ -153,6 +153,8 @@ export default function Layout() {
           <span className="hidden md:inline">•</span>
           <Link to="/rechtliches" className="hover:text-[var(--color-text-main)] transition-colors">Rechtliches</Link>
           <span className="hidden md:inline">•</span>
+          <Link to="/online-widerruf" className="hover:text-[var(--color-text-main)] transition-colors">Hier zum Online-Widerruf</Link>
+          <span className="hidden md:inline">•</span>
           <Link to="/konto-loeschen" className="hover:text-[var(--color-text-main)] transition-colors">Konto löschen</Link>
         </footer>
       </main>

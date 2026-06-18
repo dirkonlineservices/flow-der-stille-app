@@ -195,37 +195,48 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
           }
 
           return (
-            <div key={produkt.id} className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
+            <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-8 flex flex-col md:flex-row items-stretch gap-8 transition hover:shadow-lg">
               
-              {/* Linke Seite: Produkt-Metadaten */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-stone-100 text-stone-600 uppercase">
+              {/* Linke Spalte: Produkt-Informationen (60%) */}
+              <div className="flex-1 flex flex-col">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase">
                     {produkt.kategorie || 'Atemarbeit'}
                   </span>
-                  {!istKostenlos && !hatZugriff && (
-                    <span className="text-sm font-mono font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">
-                      {produkt.preis} €
-                    </span>
-                  )}
                   {produkt.dauer && (
-                    <span className="text-xs font-medium text-stone-500 flex items-center gap-1">
+                    <span className="text-xs font-medium text-[var(--color-text-muted)]">
                       {formatDuration(produkt.dauer)} min
                     </span>
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-stone-800">{produkt.titel}</h2>
-                <p className="text-stone-500 text-sm mt-1 leading-relaxed">{produkt.beschreibung}</p>
+                <h3 className="text-2xl font-semibold text-[var(--color-text-main)] mb-1">{produkt.titel}</h3>
+                {!hatZugriff && !istKostenlos && (
+                    <div className="text-[1.35rem] font-bold text-[var(--color-text-main)] mb-3">
+                        {produkt.preis} €
+                    </div>
+                )}
+                <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
+                {produkt.highlights && Array.isArray(produkt.highlights) && (
+                  <ul className="space-y-2 mt-4 ml-1">
+                    {produkt.highlights.map((highlight: string, index: number) => (
+                      <li key={index} className="flex items-start text-[0.9rem] text-[var(--color-text-main)] leading-tight">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-1.5 mr-3 flex-shrink-0" />
+                        {highlight}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
-              {/* Rechte Seite: Dynamisches Interface */}
-              <div className="w-full md:w-auto min-w-[200px] flex flex-col items-stretch md:items-end justify-center">
-                {hatZugriff ? (
-                  // ZUSTAND: FREIGESCHALTET (Kostenlos oder bereits gekauft)
+              {/* Rechte Spalte: Checkout-Zone (35%) */}
+              <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--color-border-main)]">
+                <div className="h-full w-full flex flex-col justify-center items-center p-6 md:p-8">
+                  <div className="w-full max-w-[280px] flex flex-col gap-3">
+                    {hatZugriff ? (
+                  // ZUSTAND: FREIGESCHALTET
                   <SingleAudioPlayer produktId={produkt.id} />
                 ) : !user ? (
-                  // ZUSTAND: NICHT EINGELOGGT -> Registrieren/Login
-                  <div className="text-center p-3 text-sm font-medium text-stone-700 bg-stone-100 rounded-xl">
+                  <div className="text-center p-4 text-sm font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-alt)] rounded-xl">
                     Bitte <Link to="/login" className="text-[var(--color-accent-primary)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--color-accent-primary)] underline">registrieren</Link>, um zu kaufen.
                   </div>
                 ) : isTestEmail ? (
@@ -244,27 +255,24 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                         setTimeout(() => {
                             loadShopData();
                             setShowUnlockBanner(false);
-                        }, 2000); // 2-second delay
+                        }, 2000); 
                     }}
-                    className="w-full py-2 bg-stone-600 text-white rounded-xl text-sm font-bold hover:bg-stone-700 transition"
+                    className="w-full py-3 bg-[var(--color-accent-primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--color-accent-hover)] transition"
                   >
                     Kostenlos Freischalten (Test-Modus)
                   </button>
                 ) : (
-                  // ZUSTAND: KOSTENPFLICHTIG & NICHT GEKAUFT & EINGELOGGT
-                  <div className="w-full">
-                    <PayPalScriptProvider options={{ "client-id": PAYPAL_CLIENT_ID, currency: "EUR" }}>
-                      <PayPalCheckoutButton 
-                        produkt={produkt} 
-                        user={user} 
-                        setShowUnlockBanner={setShowUnlockBanner}
-                        onSuccess={loadShopData} 
-                      />
-                    </PayPalScriptProvider>
-                  </div>
+                  <PayPalCheckoutButton 
+                    produkt={produkt} 
+                    user={user} 
+                    setShowUnlockBanner={setShowUnlockBanner}
+                    onSuccess={loadShopData} 
+                    paypalClientId={PAYPAL_CLIENT_ID}
+                  />
                 )}
+                </div>
+                </div>
               </div>
-
             </div>
           );
         })}
@@ -274,8 +282,26 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 }
 
 // SUB-KOMPONENTE: Der PayPal Smart Button
-function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
+function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  useEffect(() => {
+    // 1. Trigged 'begin_checkout' when mounted
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+       (window as any).dataLayer.push({ event: 'begin_checkout' });
+    }
+  }, []);
+
+  useEffect(() => {
+    // 2. Track waiver acceptance toggle
+     if (acceptedTerms && typeof window !== 'undefined' && (window as any).dataLayer) {
+       (window as any).dataLayer.push({ 
+        event: 'checkout_waiver_toggle',
+        waiver_accepted: true 
+      });
+     }
+  }, [acceptedTerms]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsSdkReady(true), 300);
@@ -285,47 +311,69 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }:
   return (
     <div id={`paypal-button-container-${produkt.id}`} key={`stable-paypal-key-${produkt.id}`} style={{ minHeight: "100px", width: "100%" }}>
       {isSdkReady ? (
-        <PayPalButtons 
-          forceReRender={[produkt.id]}
-          style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
+        <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "EUR" }}>
+          <div className="mb-3">
+            <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--color-text-muted)] cursor-pointer">
+              <input 
+                  type="checkbox" 
+                  checked={acceptedTerms}
+                  onChange={(e) => {
+                    setAcceptedTerms(e.target.checked);
+                  }}
+                  className="mt-0.5"
+              />
+              <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. Das Recht auf Tonaufnahmen/Audios im Streaming wird sofort bereitgestellt. Mir ist bekannt, dass ich mein Widerrufsrecht mit Beginn der Ausführung des Vertrags verliere.</span>
+            </label>
+            {!acceptedTerms && (
+              <p className="text-[0.78rem] text-[#ef4444] mt-2 text-center font-medium">Bitte bestätige die Bedingungen, um die Zahlung freizuschalten.</p>
+            )}
+          </div>
           
-          createOrder={(data, actions) => {
-            return actions.order.create({
-              purchase_units: [{
-                amount: { value: produkt.preis.toString(), currency_code: "EUR" },
-                description: produkt.titel
-              }]
-            });
-          }}
-
-          onApprove={async (data, actions) => {
-            if (actions.order && user) {
-              const details = await actions.order.capture();
-              const supabase = getSupabase();
-
-              // Kauf in der Tabelle registrieren
-              await supabase.from('kaeufe').insert([{
-                user_id: user.id,
-                produkt_id: produkt.id,
-                paypal_order_id: details.id,
-                preis: parseFloat(details.purchase_units[0].amount.value),
-                waehrung: 'EUR'
-              }]);
-
-              alert("Kauf erfolgreich! Die Meditation wird freigeschaltet...");
-              setShowUnlockBanner(true);
-              setTimeout(() => {
-                onSuccess(); // Load fresh data, unlocking the UI
-                setShowUnlockBanner(false);
-              }, 2000); // 2-second delay
-            } else {
-              alert("Ein Fehler ist aufgetreten. Bitte stellen Sie sicher, dass Sie eingeloggt sind.");
-            }
-          }}
-          onError={(err: any) => {
-            console.error("PayPal Render- oder Verarbeitungsfehler:", err);
-          }}
-        />
+          <div className={`transition-opacity duration-200 w-full max-w-[260px] mx-auto ${acceptedTerms ? 'opacity-100' : 'opacity-40 pointer-events-none grayscale'}`}>
+            <PayPalButtons 
+              forceReRender={[produkt.id]}
+              style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
+              
+              createOrder={(data, actions) => {
+                return actions.order.create({
+                  purchase_units: [{
+                    amount: { value: produkt.preis.toString(), currency_code: "EUR" },
+                    description: produkt.titel
+                  }]
+                });
+              }}
+    
+              onApprove={async (data, actions) => {
+                if (actions.order && user) {
+                  const details = await actions.order.capture();
+                  const supabase = getSupabase();
+    
+                  // Kauf in der Tabelle registrieren mit Widerruf-Verzicht
+                  await supabase.from('kaeufe').insert([{
+                    user_id: user.id,
+                    produkt_id: produkt.id,
+                    paypal_order_id: details.id,
+                    preis: parseFloat(details.purchase_units[0].amount.value),
+                    waehrung: 'EUR',
+                    widerruf_verzicht_akzeptiert: true
+                  }]);
+    
+                  alert("Kauf erfolgreich! Die Meditation wird freigeschaltet...");
+                  setShowUnlockBanner(true);
+                  setTimeout(() => {
+                    onSuccess(); // Load fresh data, unlocking the UI
+                    setShowUnlockBanner(false);
+                  }, 2000); // 2-second delay
+                } else {
+                  alert("Ein Fehler ist aufgetreten. Bitte stellen Sie sicher, dass Sie eingeloggt sind.");
+                }
+              }}
+              onError={(err: any) => {
+                console.error("PayPal Render- oder Verarbeitungsfehler:", err);
+              }}
+            />
+          </div>
+        </PayPalScriptProvider>
       ) : (
         <p className="text-xs text-stone-400">PayPal-Zahlungsmethode wird initialisiert...</p>
       )}
