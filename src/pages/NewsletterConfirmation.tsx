@@ -23,7 +23,11 @@ export default function NewsletterConfirmation() {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from('newsletter_leads')
-        .update({ status: 'confirmed', confirm_token: null }) // Token invalidieren für Sicherheit
+        .update({ 
+          status: 'confirmed', 
+          confirm_token: null,
+          confirmed_at: new Date().toISOString()
+        }) // Token invalidieren für Sicherheit
         .eq('confirm_token', token)
         .select();
 
