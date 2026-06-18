@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 
 export default function NewsletterConfirmation() {
   const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
+  const hasFired = useRef(false);
 
   useEffect(() => {
+    if (hasFired.current) return;
+    hasFired.current = true;
+
     const confirmNewsletter = async () => {
       // 1. Token aus URL holen
       const params = new URLSearchParams(window.location.search);
