@@ -13,6 +13,7 @@ export interface Exercise {
   image: string;
   instructionKeys: string[];
   pattern?: PatternStep[]; // Structured pattern with label and duration for timer and display
+  audioId?: string; // Added audioId
 }
 
 export const exercises: Exercise[] = [
@@ -22,9 +23,10 @@ export const exercises: Exercise[] = [
     translationKeyDesc: 'exercises.card.audio-breath.desc',
     translationKeyOverview: 'exercises.card.audio-breath.overview',
     translationKeyCategory: 'category.breathwork',
-    duration: '10 min',
+    duration: '1:49',
     image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop',
-    instructionKeys: []
+    instructionKeys: [],
+    audioId: 'a080ef5a-b9e3-4b2c-938e-d2787991461d'
   },
   {
     id: '478-breathing',
@@ -92,7 +94,8 @@ export const exercises: Exercise[] = [
       'instruction.pmr.4',
       'instruction.pmr.5',
       'instruction.pmr.6'
-    ]
+    ],
+    audioId: 'f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a'
   },
   {
     id: 'neck-stretches',

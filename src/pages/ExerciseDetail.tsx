@@ -377,29 +377,12 @@ export default function ExerciseDetail() {
             ))}
           </div>
 
-          {/* Conditional Audio Player for PMR */}
-          {exercise.id === 'pmr' && (
+          {/* Audio Player for this exercise */}
+          {exercise.audioId && (
             <div className="mt-8">
-              <SingleAudioPlayer produktId="f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a" />
+              <SingleAudioPlayer produktId={exercise.audioId} />
             </div>
           )}
-
-          <div className="mt-12 p-6 bg-[var(--color-bg-body)] rounded-2xl flex items-center justify-between border border-[var(--color-border-main)]">
-            <div>
-              <h3 className="font-medium text-[var(--color-text-main)] mb-1">{t('exercise.ready')}</h3>
-              <p className="text-sm text-[var(--color-text-muted)] mb-2">{t('exercise.begin')}</p>
-              <p className="text-xs text-[var(--color-text-muted-light)] italic">
-                Dies ist ein Beispiel für den Ablauf, damit du weißt, wie die Übung funktioniert, bevor du sie eigenständig anwendest.
-              </p>
-            </div>
-            <button 
-              id="btn-play-exercise"
-              onClick={handleStart}
-              className="w-12 h-12 rounded-full bg-[var(--color-accent-primary)] text-white flex items-center justify-center hover:bg-[var(--color-accent-hover)] transition-all shadow-md active:scale-95"
-            >
-              <Play size={20} className="ml-1" />
-            </button>
-          </div>
 
         </div>
       </motion.div>

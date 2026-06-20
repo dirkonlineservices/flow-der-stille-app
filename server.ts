@@ -191,6 +191,20 @@ app.post('/api/user/upgrade', authenticateToken, (req: any, res) => {
   }
 });
 
+app.post('/api/newsletter/unsubscribe', authenticateToken, (req: any, res) => {
+  try {
+    const stmt = db.prepare('UPDATE users SET newsletter = 0 WHERE id = ?');
+    stmt.run(req.user.id);
+    
+    // Simulate email sending (Logging for now)
+    console.log(`[EMAIL SEND] Newsletter subscription cancelled for user ID: ${req.user.id}`);
+    
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to unsubscribe' });
+  }
+});
+
 // Task & Recipe Routes
 app.get('/api/tasks/current', (req, res) => {
   const currentWeek = Math.ceil(((new Date() as any) - (new Date(new Date().getFullYear(), 0, 1) as any)) / 86400000 / 7);

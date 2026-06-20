@@ -7,8 +7,10 @@ export interface Recipe {
   category: string;
   icon_type: string;
   ingredients: string[];
+  quantity?: string;
   instructions?: string[];
   premium?: boolean;
+  isNew?: boolean;
 }
 
 export const allRecipes: Recipe[] = [
@@ -18,7 +20,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Entzündungshemmendes warmes Getränk, perfekt zum Entspannen am Abend.',
     category: 'Getränke',
     icon_type: 'Coffee',
-    ingredients: ['Kurkuma', 'Ingwer', 'Schwarzer Pfeffer', 'Mandelmilch', 'Honig']
+    ingredients: ['Kurkuma', 'Ingwer', 'Schwarzer Pfeffer', 'Mandelmilch', 'Honig'],
+    quantity: '1 Tasse'
   },
   {
     id: 'salad',
@@ -26,7 +29,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Magnesium ist entscheidend für die Regulierung des Nervensystems.',
     category: 'Mahlzeiten',
     icon_type: 'Leaf',
-    ingredients: ['Spinat', 'Kürbiskerne', 'Avocado', 'Quinoa']
+    ingredients: ['Spinat', 'Kürbiskerne', 'Avocado', 'Quinoa'],
+    quantity: '1 Person'
   },
   {
     id: 'omega',
@@ -34,7 +38,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Gesunde Fette unterstützen die Gehirngesundheit und reduzieren Cortisol.',
     category: 'Mahlzeiten',
     icon_type: 'Utensils',
-    ingredients: ['Lachs', 'Walnüsse', 'Chiasamen', 'Brauner Reis']
+    ingredients: ['Lachs', 'Walnüsse', 'Chiasamen', 'Brauner Reis'],
+    quantity: '1 Person'
   },
   {
     id: 'tea',
@@ -42,7 +47,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Klassische beruhigende Kräuter zur Besänftigung des Nervensystems.',
     category: 'Getränke',
     icon_type: 'Coffee',
-    ingredients: ['Kamille', 'Lavendel', 'Heißes Wasser']
+    ingredients: ['Kamille', 'Lavendel', 'Heißes Wasser'],
+    quantity: '1 Tasse'
   },
   {
     id: 'smoothie',
@@ -50,7 +56,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Vollgepackt mit Magnesium und B-Vitaminen für starke Nerven.',
     category: 'Getränke',
     icon_type: 'Leaf',
-    ingredients: ['Spinat', 'Banane', 'Avocado', 'Mandelmus']
+    ingredients: ['Spinat', 'Banane', 'Avocado', 'Mandelmus'],
+    quantity: '1 Glas'
   },
   {
     id: 'soup',
@@ -58,7 +65,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Reich an Kollagen und Aminosäuren für einen gesunden Darm.',
     category: 'Mahlzeiten',
     icon_type: 'Flame',
-    ingredients: ['Knochenbrühe', 'Karotten', 'Sellerie', 'Kräuter']
+    ingredients: ['Knochenbrühe', 'Karotten', 'Sellerie', 'Kräuter'],
+    quantity: '1 Schüssel'
   },
   {
     id: 'oats',
@@ -66,7 +74,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Stetige Energiefreisetzung für eine stabile Stimmung den ganzen Tag.',
     category: 'Mahlzeiten',
     icon_type: 'Utensils',
-    ingredients: ['Haferflocken', 'Pflanzenmilch', 'Beeren', 'Leinsamen']
+    ingredients: ['Haferflocken', 'Pflanzenmilch', 'Beeren', 'Leinsamen'],
+    quantity: '1 Portion'
   },
   {
     id: 'water',
@@ -74,7 +83,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Hydratation ist der Schlüssel für die optimale Nervenfunktion.',
     category: 'Getränke',
     icon_type: 'Droplets',
-    ingredients: ['Wasser', 'Zitrone', 'Gurke', 'Minze']
+    ingredients: ['Wasser', 'Zitrone', 'Gurke', 'Minze'],
+    quantity: '1 Glas'
   },
   {
     id: 'matcha',
@@ -83,6 +93,7 @@ export const allRecipes: Recipe[] = [
     category: 'Getränke',
     icon_type: 'Coffee',
     ingredients: ['Matcha', 'Hafermilch', 'Ahornsirup'],
+    quantity: '1 Tasse',
     premium: true
   },
   {
@@ -91,7 +102,8 @@ export const allRecipes: Recipe[] = [
     desc: 'Wärmend, erdend und voller B-Vitamine für dein Wohlbefinden.',
     category: 'Mahlzeiten',
     icon_type: 'Flame',
-    ingredients: ['Rote Linsen', 'Kokosmilch', 'Garam Masala', 'Koriander'],
+    ingredients: ['100g Rote Linsen', '200ml Kokosmilch', '1 TL Garam Masala', 'Einige Zweige frischer Koriander'],
+    quantity: '1 Person',
     instructions: [
       'Linsen gründlich waschen.',
       'In einem Topf die Linsen zusammen mit der Kokosmilch und etwas Wasser köcheln lassen, bis sie weich sind.',
@@ -107,6 +119,7 @@ export const allRecipes: Recipe[] = [
     category: 'Snacks',
     icon_type: 'Leaf',
     ingredients: ['Blaubeeren', 'Himbeeren', 'Hanfsamen', 'Griechischer Joghurt'],
+    quantity: '1 Portion',
     premium: true
   },
   {
@@ -116,6 +129,7 @@ export const allRecipes: Recipe[] = [
     category: 'Snacks',
     icon_type: 'Utensils',
     ingredients: ['Paranüsse', 'Mandeln', 'Cashews', 'Dunkle Schokolade'],
+    quantity: '1 kleine Handvoll',
     premium: true
   }
 ];

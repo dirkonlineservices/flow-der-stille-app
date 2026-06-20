@@ -22,10 +22,14 @@ export default function Recipes() {
     }
   }, [currentMonthIndex]);
 
+  // Neue Rezepte
+  const newRecipes = useMemo(() => allRecipes.filter(r => r.isNew), []);
+
   // 2. Weekly Tip for User (using task_progress to align with weekly challenge progress)
   const taskProgress = user?.task_progress || { current_task: 0, completions: {} };
   const currentTipIndex = Math.min(taskProgress.current_task, weeklyTips.length - 1);
   const currentTip = weeklyTips[currentTipIndex];
+
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -93,6 +97,33 @@ export default function Recipes() {
         )}
       </section>
 
+      {/* Neue Rezepte */}
+      {newRecipes.length > 0 && (
+        <section>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-accent-primary)] bg-[var(--color-bg-alt)] px-3 py-1 rounded-full border border-[var(--color-border-main)]">
+              Neu
+            </div>
+            <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Neue Mahlzeiten</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {newRecipes.map((recipe) => (
+              <RecipeCard 
+                key={recipe.id}
+                id={recipe.id}
+                title={recipe.title}
+                category={recipe.category}
+                ingredients={recipe.ingredients}
+                quantity={recipe.quantity}
+                description={recipe.desc}
+                icon={getIcon(recipe.icon_type)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Monatliche Rezept-Picks */}
       <section>
         <div className="flex items-center gap-2 mb-6">
@@ -110,6 +141,7 @@ export default function Recipes() {
               title={recipe.title}
               category={recipe.category}
               ingredients={recipe.ingredients}
+              quantity={recipe.quantity}
               description={recipe.desc}
               icon={getIcon(recipe.icon_type)}
             />
@@ -120,7 +152,7 @@ export default function Recipes() {
   );
 }
 
-function RecipeCard({ id, title, category, ingredients, description, icon }: { id: string; title: string; category: string; ingredients: string[]; description: string; icon: React.ReactNode }) {
+function RecipeCard({ id, title, category, ingredients, quantity, description, icon }: { id: string; title: string; category: string; ingredients: string[]; quantity?: string; description: string; icon: React.ReactNode }) {
   return (
     <Link to={`/recipe/${id}`}>
       <motion.div 
@@ -131,7 +163,12 @@ function RecipeCard({ id, title, category, ingredients, description, icon }: { i
           <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl">
             {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
           </div>
-          <span className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-widest">{category}</span>
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] font-bold text-[var(--color-accent-primary)] uppercase tracking-widest">{category}</span>
+            {quantity && (
+              <span className="text-[10px] text-[var(--color-text-muted)]">{quantity}</span>
+            )}
+          </div>
         </div>
         <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
         <p className="text-[var(--color-text-muted)] text-sm mb-4 leading-relaxed">{description}</p>

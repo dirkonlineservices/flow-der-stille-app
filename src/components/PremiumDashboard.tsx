@@ -58,7 +58,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
     }
   }
 
-  const baseCategories = ['Alle', 'Kostenfrei', 'Atemübung', 'Meditation', 'Kurz & Schnell', 'Selbsthypnose'];
+  const baseCategories = ['Alle', 'Kostenfrei', 'Meditation', 'Entspannungsübungen', 'Selbsthypnose'];
   const categories = user ? [...baseCategories, 'Meine Käufe'] : baseCategories;
 
   const formatDuration = (seconds: number) => {
@@ -77,14 +77,12 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
     if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
-    } else if (activeFilter === 'Atemübung') {
-        matchesCategory = catLower.includes('atem') || titleLower.includes('atem') || titleLower.includes('muskelentspannung');
     } else if (activeFilter === 'Meditation') {
         matchesCategory = catLower.includes('meditation') || titleLower.includes('meditation') || titleLower.includes('herzöffnung') || titleLower.includes('loslassen');
+    } else if (activeFilter === 'Entspannungsübungen') {
+        matchesCategory = catLower.includes('entspannung') || titleLower.includes('entspannung') || titleLower.includes('muskelentspannung');
     } else if (activeFilter === 'Selbsthypnose') {
-       matchesCategory = catLower.includes('hypnose') || titleLower.includes('selbsthypnose') || titleLower.includes('hypnose');
-    } else if (activeFilter === 'Kurz & Schnell') {
-       matchesCategory = typeof prod.dauer === 'number' && prod.dauer >= 120 && prod.dauer <= 300;
+       matchesCategory = catLower.includes('selbsthypnose') || titleLower.includes('selbsthypnose');
     } else if (activeFilter === 'Meine Käufe') {
        matchesCategory = gekauftIds.has(prod.id);
     }
@@ -110,33 +108,33 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   if (loading) return <div className="p-10 text-center text-gray-500">Premium-Bereich wird geladen...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 font-sans bg-stone-50 min-h-screen">
+    <div className="max-w-4xl mx-auto p-6 font-sans bg-[var(--color-bg-body)] min-h-screen">
       <header className="mb-10 text-center">
-        <h1 className="text-3xl font-serif text-stone-800">Übungen & Meditationen</h1>
-        <p className="text-stone-600 mt-2 text-sm italic">Sanfte Bewegungen und Atemmuster, um deinem Körper Sicherheit zu signalisieren.</p>
+        <h1 className="text-3xl font-serif text-[var(--color-text-main)]">Premium-Inhalte</h1>
+        <p className="text-[var(--color-text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Premium-Inhalte: Meditation, Entspannungsübungen und Selbsthypnose, um dein Wohlbefinden zu stärken.</p>
       </header>
 
       {/* QA Backdoor: Test Email */}
-      <div className="mb-6 p-4 bg-stone-100 rounded-xl max-w-sm mx-auto">
+      <div className="mb-6 p-4 bg-[var(--color-bg-card)] rounded-xl max-w-sm mx-auto border border-[var(--color-border-main)]">
         <input 
             type="email" 
             placeholder="QA-Test-E-Mail eingeben..." 
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
-            className="w-full p-2 text-sm rounded border border-stone-300"
+            className="w-full p-2 text-sm rounded border border-[var(--color-border-main)] bg-[var(--color-bg-body)] text-[var(--color-text-main)]"
         />
       </div>
 
       {/* Search and Filter */}
       <div className="mb-8 flex flex-col gap-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
           <input 
             type="text"
             placeholder="Suche nach Meditation, Herzöffnung, Loslassen..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-300"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -146,8 +144,8 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
               onClick={() => setActiveFilter(cat)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
                 activeFilter === cat 
-                  ? 'bg-stone-800 text-white' 
-                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+                  ? 'bg-[var(--color-accent-primary)] text-white' 
+                  : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)]'
               }`}
             >
               {cat}
@@ -157,7 +155,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
              <select 
                value={sortBy} 
                onChange={(e) => setSortBy(e.target.value)}
-               className="bg-white text-stone-600 border border-stone-200 rounded-full px-4 py-2 text-sm focus:outline-none"
+               className="bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-main)] rounded-full px-4 py-2 text-sm focus:outline-none"
              >
                <option value="Standard">Standard Sortierung</option>
                <option value="Neueste">Neueste</option>
@@ -179,15 +177,15 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
           if (isHeartOpening && !user) {
             return (
-              <div key={produkt.id} className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
+              <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
                 <div className="flex-1">
-                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-stone-100 text-stone-600 uppercase mb-2 inline-block">
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase mb-2 inline-block">
                     {produkt.kategorie || 'Atemarbeit'}
                   </span>
-                  <h2 className="text-xl font-bold text-stone-800">{produkt.titel}</h2>
-                  <p className="text-stone-500 text-sm mt-1">{produkt.beschreibung}</p>
+                  <h2 className="text-xl font-bold text-[var(--color-text-main)]">{produkt.titel}</h2>
+                  <p className="text-[var(--color-text-muted)] text-sm mt-1">{produkt.beschreibung}</p>
                 </div>
-                <div className="w-full md:w-auto text-center md:text-right text-sm text-stone-600 italic font-medium">
+                <div className="w-full md:w-auto text-center md:text-right text-sm text-[var(--color-text-muted)] italic font-medium">
                   Kostenfrei nach Anmeldung
                 </div>
               </div>
@@ -195,84 +193,92 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
           }
 
           return (
-            <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-8 flex flex-col md:flex-row items-stretch gap-8 transition hover:shadow-lg">
+            <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-8 flex flex-col transition hover:shadow-lg">
               
-              {/* Linke Spalte: Produkt-Informationen (60%) */}
-              <div className="flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase">
-                    {produkt.kategorie || 'Atemarbeit'}
-                  </span>
-                  {produkt.dauer && (
-                    <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                      {formatDuration(produkt.dauer)} min
+              <div className="flex flex-col md:flex-row items-stretch gap-8">
+                {/* Linke Spalte: Produkt-Informationen (60%) */}
+                <div className="flex-1 flex flex-col">
+                    <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase">
+                        {produkt.kategorie || 'Atemarbeit'}
                     </span>
-                  )}
-                </div>
-                <h3 className="text-2xl font-semibold text-[var(--color-text-main)] mb-1">{produkt.titel}</h3>
-                {!hatZugriff && !istKostenlos && (
-                    <div className="text-[1.35rem] font-bold text-[var(--color-text-main)] mb-3">
-                        {produkt.preis} €
+                    {produkt.dauer && (
+                        <span className="text-xs font-medium text-[var(--color-text-muted)]">
+                        {formatDuration(produkt.dauer)} min
+                        </span>
+                    )}
                     </div>
-                )}
-                <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
-                {produkt.highlights && Array.isArray(produkt.highlights) && (
-                  <ul className="space-y-2 mt-4 ml-1">
-                    {produkt.highlights.map((highlight: string, index: number) => (
-                      <li key={index} className="flex items-start text-[0.9rem] text-[var(--color-text-main)] leading-tight">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-1.5 mr-3 flex-shrink-0" />
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
+                    <h3 className="text-2xl font-semibold text-[var(--color-text-main)] mb-1">{produkt.titel}</h3>
+                    {!hatZugriff && !istKostenlos && (
+                        <div className="text-[1.35rem] font-bold text-[var(--color-text-main)] mb-3">
+                            {produkt.preis} €
+                        </div>
+                    )}
+                    <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
+                    {produkt.highlights && Array.isArray(produkt.highlights) && (
+                    <ul className="space-y-2 mt-4 ml-1">
+                        {produkt.highlights.map((highlight: string, index: number) => (
+                        <li key={index} className="flex items-start text-[0.9rem] text-[var(--color-text-main)] leading-tight">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-1.5 mr-3 flex-shrink-0" />
+                            {highlight}
+                        </li>
+                        ))}
+                    </ul>
+                    )}
+                </div>
+
+                {/* Checkout-Zone (Nur wenn noch nicht gekauft) */}
+                {!hatZugriff && (
+                    <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--color-border-main)]">
+                        <div className="h-full w-full flex flex-col justify-center items-center p-6 md:p-8">
+                            <div className="w-full max-w-[280px] flex flex-col gap-3">
+                            {!user ? (
+                                <div className="text-center p-4 text-sm font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-alt)] rounded-xl">
+                                Please <Link to="/login" className="text-[var(--color-accent-primary)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--color-accent-primary)] underline">registrieren</Link>, um zu kaufen.
+                                </div>
+                            ) : isTestEmail ? (
+                                <button 
+                                onClick={async () => {
+                                    const supabase = getSupabase();
+                                    await supabase.from('kaeufe').insert([{
+                                    user_id: user.id,
+                                    produkt_id: produkt.id,
+                                    paypal_order_id: 'TEST_KAUF_' + Date.now(),
+                                    preis: parseFloat(produkt.preis),
+                                    waehrung: 'EUR'
+                                    }]);
+                                    alert("Kauf erfolgreich (Test-Modus)!");
+                                    setShowUnlockBanner(true);
+                                    setTimeout(() => {
+                                        loadShopData();
+                                        setShowUnlockBanner(false);
+                                    }, 2000); 
+                                }}
+                                className="w-full py-3 bg-[var(--color-accent-primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--color-accent-hover)] transition"
+                                >
+                                Kostenlos Freischalten (Test-Modus)
+                                </button>
+                            ) : (
+                                <PayPalCheckoutButton 
+                                produkt={produkt} 
+                                user={user} 
+                                setShowUnlockBanner={setShowUnlockBanner}
+                                onSuccess={loadShopData} 
+                                paypalClientId={PAYPAL_CLIENT_ID}
+                                />
+                            )}
+                            </div>
+                        </div>
+                    </div>
                 )}
               </div>
 
-              {/* Rechte Spalte: Checkout-Zone (35%) */}
-              <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--color-border-main)]">
-                <div className="h-full w-full flex flex-col justify-center items-center p-6 md:p-8">
-                  <div className="w-full max-w-[280px] flex flex-col gap-3">
-                    {hatZugriff ? (
-                  // ZUSTAND: FREIGESCHALTET
-                  <SingleAudioPlayer produktId={produkt.id} />
-                ) : !user ? (
-                  <div className="text-center p-4 text-sm font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-alt)] rounded-xl">
-                    Bitte <Link to="/login" className="text-[var(--color-accent-primary)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--color-accent-primary)] underline">registrieren</Link>, um zu kaufen.
-                  </div>
-                ) : isTestEmail ? (
-                  <button 
-                    onClick={async () => {
-                        const supabase = getSupabase();
-                        await supabase.from('kaeufe').insert([{
-                          user_id: user.id,
-                          produkt_id: produkt.id,
-                          paypal_order_id: 'TEST_KAUF_' + Date.now(),
-                          preis: parseFloat(produkt.preis),
-                          waehrung: 'EUR'
-                        }]);
-                        alert("Kauf erfolgreich (Test-Modus)!");
-                        setShowUnlockBanner(true);
-                        setTimeout(() => {
-                            loadShopData();
-                            setShowUnlockBanner(false);
-                        }, 2000); 
-                    }}
-                    className="w-full py-3 bg-[var(--color-accent-primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--color-accent-hover)] transition"
-                  >
-                    Kostenlos Freischalten (Test-Modus)
-                  </button>
-                ) : (
-                  <PayPalCheckoutButton 
-                    produkt={produkt} 
-                    user={user} 
-                    setShowUnlockBanner={setShowUnlockBanner}
-                    onSuccess={loadShopData} 
-                    paypalClientId={PAYPAL_CLIENT_ID}
-                  />
-                )}
+              {/* Audio-Zone (Nur wenn Zugriff besteht) */}
+              {hatZugriff && (
+                <div className="mt-8 pt-6 border-t border-[var(--color-border-main)]">
+                    <SingleAudioPlayer produktId={produkt.id} />
                 </div>
-                </div>
-              </div>
+              )}
             </div>
           );
         })}
@@ -311,7 +317,7 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   return (
     <div id={`paypal-button-container-${produkt.id}`} key={`stable-paypal-key-${produkt.id}`} style={{ minHeight: "100px", width: "100%" }}>
       {isSdkReady ? (
-        <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "EUR" }}>
+        <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "EUR" }}>
           <div className="mb-3">
             <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--color-text-muted)] cursor-pointer">
               <input 
@@ -336,6 +342,7 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
               
               createOrder={(data, actions) => {
                 return actions.order.create({
+                  intent: "CAPTURE",
                   purchase_units: [{
                     amount: { value: produkt.preis.toString(), currency_code: "EUR" },
                     description: produkt.titel

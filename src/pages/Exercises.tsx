@@ -31,23 +31,6 @@ export default function Exercises() {
           const fallbackImage = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop';
           const finalImage = exercise.image ? exercise.image : fallbackImage;
 
-          // 3. AUSNAHME: Nur die Geführte Atemübung bekommt den Player direkt auf dieser Seite
-          if (exercise.id === 'guided-breathing') {
-            const produktIdMap: { [key: string]: string } = {
-              'guided-breathing': 'a080ef5a-b9e3-4b2c-938e-d2787991461d',
-            };
-            return (
-              <AudioExerciseCard 
-                key={exercise.id} 
-                t={t} 
-                exercise={exercise} 
-                title={safeTitle}
-                image={finalImage}
-                produktId={produktIdMap[exercise.id]} 
-              />
-            );
-          }
-
           // 4. STANDARD-KACHEL: Alle anderen verlinken sauber weiter mit den intakten Bildern!
           return (
             <ExerciseCard 
@@ -63,38 +46,6 @@ export default function Exercises() {
         })}
       </div>
     </div>
-  );
-}
-
-// === KACHEL 1: GEFÜHRTE ATEMÜBUNG ===
-function AudioExerciseCard({ t, exercise, title, image, produktId }: { t: any, exercise: any, title: string, image: string, produktId: string }) {
-  return (
-    <motion.div 
-      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden min-h-[220px]"
-    >
-      <div className="w-full md:w-64 h-56 md:h-auto shrink-0 relative bg-stone-100 overflow-hidden">
-        <img 
-          src={image} 
-          alt={title} 
-          className="absolute inset-0 w-full h-full object-cover" 
-          referrerPolicy="no-referrer"
-          onError={(e) => { 
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop'; 
-          }}
-        />
-        <a href="/impressum#ki-transparenz" className="absolute bottom-3 right-3 z-10">
-          <span className="bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">[KI]</span>
-        </a>
-      </div>
-
-      <div className="p-6 flex-1 flex flex-col justify-center">
-        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
-        <p className="text-sm text-[var(--color-text-muted)] mb-6">{t(exercise.translationKeyDesc)}</p>
-        <div className="mt-auto">
-          <SingleAudioPlayer produktId={produktId} />
-        </div>
-      </div>
-    </motion.div>
   );
 }
 

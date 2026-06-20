@@ -94,18 +94,19 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4"
           >
-            {t(greetingKey)}, {getUserName()}.
+            {t(greetingKey)}, {getUserName()}
+            <img src="/favicon.svg" alt="Logo" className="inline-block h-[1.0em] ml-2 align-middle opacity-80" />
           </motion.h1>
           <p className="text-[var(--color-text-muted)] text-lg font-light mb-6">
             {t('home.subtitle')}
           </p>
           
-          <div className="bg-stone-50 p-6 rounded-3xl border border-stone-100 mt-8">
-            <h3 className="text-xl font-serif text-stone-800 mb-4">Für kurze Momente der Stille</h3>
-            <p className="text-stone-600 text-sm leading-relaxed mb-4">
+          <div className="bg-[var(--color-bg-card)] p-6 rounded-3xl border border-[var(--color-border-main)] mt-8">
+            <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-4">Für kurze Momente der Stille</h3>
+            <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-4">
               Unsere Übungen sind perfekt für deinen Alltag konzipiert:
             </p>
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-stone-600">
+            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-[var(--color-text-muted)]">
               <li className="flex items-center gap-2"><Sun className="text-amber-500" size={18} /> Für ein kurzes Morgenritual</li>
               <li className="flex items-center gap-2"><Coffee className="text-emerald-600" size={18} /> In deiner Mittagspause</li>
               <li className="flex items-center gap-2"><Moon className="text-indigo-400" size={18} /> Abends zum Abschalten</li>
@@ -140,9 +141,9 @@ export default function Home() {
           <WeeklyChallenge />
           
           <div className="mt-6">
-             <Link to="/premium" className="block p-6 bg-purple-50 rounded-2xl border border-purple-100 hover:shadow-md transition">
-                <h3 className="font-bold text-purple-900">Premium-Bereich: Übungen & Meditationen</h3>
-                <p className="text-purple-700 text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Hypnosen.</p>
+             <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:shadow-md transition">
+                <h3 className="font-bold text-[var(--color-text-main)]">Premium-Bereich: Übungen & Meditationen</h3>
+                <p className="text-[var(--color-text-muted)] text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
              </Link>
           </div>
         </div>
@@ -247,7 +248,7 @@ function QuickActionCard({ title, description, icon, delay, to }: { title: strin
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay }}
-        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-stone-50 h-full"
+        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-[var(--color-border-main)] h-full"
       >
         <div className="flex items-start justify-between mb-4">
           <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl group-hover:bg-[var(--color-bg-body)] transition-colors">

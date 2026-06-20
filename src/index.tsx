@@ -37,6 +37,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import CartSidebar from './components/CartSidebar';
+import ScrollToTop from './components/ScrollToTop';
 
 // NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -60,6 +61,7 @@ export default function App() {
         <CartProvider>
           <LanguageProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <CartSidebar />
               <Routes>
                 

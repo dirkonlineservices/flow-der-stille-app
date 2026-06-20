@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag, Share } from 'lucide-react';
+import { Home, Wind, Utensils, BookOpen, Settings, Leaf, Globe, LogIn, LogOut, MessageCircle, Moon, Sun, ShoppingBag, Share, X } from 'lucide-react';
+import HomeChatWidget from './HomeChatWidget';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -15,6 +16,7 @@ export default function Layout() {
   const { theme, toggleTheme } = useTheme();
   const { setCartOpen, items } = useCart();
   const cartItemCount = items.length;
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // === NEU: SPA Tracking für Google Tag Manager ===
   useEffect(() => {
@@ -35,6 +37,8 @@ export default function Layout() {
     navigate('/');
   };
 
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -47,9 +51,7 @@ export default function Layout() {
         console.error('Error sharing:', err);
       }
     } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link wurde in die Zwischenablage kopiert!');
+      setIsShareModalOpen(true);
     }
   };
 
@@ -67,21 +69,22 @@ export default function Layout() {
           <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} />
           <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} />
           <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} />
-          <NavLink to="/chat" icon={<MessageCircle />} label="Chat" />
           <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" />
         </div>
 
         <div className="mt-auto pt-6 flex flex-col gap-6 items-center w-full">
           
-          {user ? (
-            <button 
-              onClick={handleLogout}
+          {user && (
+            <Link 
+              to="/settings"
               className="p-2 rounded-xl hover:bg-[var(--color-bg-border)] transition-colors text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] flex flex-col items-center gap-1"
             >
-              <LogOut size={24} />
-              <span className="text-[10px] font-medium tracking-wide uppercase">{t('auth.logout')}</span>
-            </button>
-          ) : (
+              <Settings size={24} />
+              <span className="text-[10px] font-medium tracking-wide uppercase">{t('nav.settings')}</span>
+            </Link>
+          )}
+
+          {!user && (
             <Link 
               to="/login"
               className="p-2 rounded-xl hover:bg-[var(--color-bg-border)] transition-colors text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] flex flex-col items-center gap-1"
@@ -99,28 +102,21 @@ export default function Layout() {
             <span className="text-[10px] font-medium tracking-wide uppercase">Teilen</span>
           </button>
 
-          <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} />
+          {!user && <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} />}
+
         </div>
       </nav>
 
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-between items-center z-50 overflow-x-auto gap-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 overflow-x-auto gap-2">
         <NavLink to="/" icon={<Home />} label={t('nav.home')} mobile />
         <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
         <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
         <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} mobile />
-        <NavLink to="/chat" icon={<MessageCircle />} label="Chat" mobile />
         <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" mobile />
         <NavLink to="/settings" icon={<Settings />} label={t('nav.settings')} mobile />
         
-        {user ? (
-           <button onClick={handleLogout} className="flex flex-col items-center gap-1 min-w-[50px]">
-             <div className="p-2 rounded-xl text-[var(--color-text-muted-light)]">
-               <LogOut size={24} />
-             </div>
-             <span className="text-[10px] font-medium tracking-wide uppercase text-[var(--color-text-muted-light)]">{t('auth.logout')}</span>
-           </button>
-        ) : (
+        {!user && (
            <Link to="/login" className="flex flex-col items-center gap-1 min-w-[50px]">
              <div className="p-2 rounded-xl text-[var(--color-text-muted-light)]">
                <LogIn size={24} />
@@ -129,6 +125,50 @@ export default function Layout() {
            </Link>
         )}
       </nav>
+
+      {/* Floating Chat Button */}
+      {location.pathname !== '/chat' && (
+        <>
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-6 md:bottom-8 md:right-8 w-14 h-14 bg-[var(--color-accent-primary)] text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:scale-105 transition-transform"
+          >
+            {isChatOpen ? <X size={24} /> : <MessageCircle size={24} />}
+          </button>
+
+          {isChatOpen && (
+            <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+7rem)] right-4 md:bottom-24 md:right-8 w-[calc(100vw-2rem)] md:w-96 h-[60vh] md:h-[500px] z-50">
+               <HomeChatWidget onClose={() => setIsChatOpen(false)} />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Share Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsShareModalOpen(false)}>
+          <div className="bg-[var(--color-bg-card)] p-6 rounded-2xl w-full max-w-sm shadow-xl border border-[var(--color-border-main)]" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-[var(--color-text-main)]">Folgen & Teilen</h3>
+              <button className="p-2 rounded-full hover:bg-[var(--color-bg-border)]" onClick={() => setIsShareModalOpen(false)}><X size={20}/></button>
+            </div>
+            <div className="flex flex-col gap-4">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-4 rounded-xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] text-center font-bold hover:bg-[var(--color-bg-border)] transition-colors">Instagram</a>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="p-4 rounded-xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] text-center font-bold hover:bg-[var(--color-bg-border)] transition-colors">TikTok</a>
+              <button 
+                onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link in die Zwischenablage kopiert!');
+                    setIsShareModalOpen(false);
+                }}
+                className="p-4 rounded-xl bg-[var(--color-accent-primary)] text-white text-center font-bold hover:bg-[var(--color-accent-hover)] transition-colors"
+              >
+                Link kopieren
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto p-6 md:p-12 pt-20 md:pt-12">
@@ -144,18 +184,13 @@ export default function Layout() {
           </motion.div>
         </AnimatePresence>
         
-        <footer className="mt-20 pt-8 border-t border-[var(--color-border-main)] text-center text-xs text-[var(--color-text-muted-light)] pb-24 md:pb-8 flex flex-col md:flex-row items-center justify-center gap-4">
-          <Link to="/impressum" className="hover:text-[var(--color-text-main)] transition-colors">Impressum</Link>
-          <span className="hidden md:inline">•</span>
-          <Link to="/datenschutz" className="hover:text-[var(--color-text-main)] transition-colors">Datenschutz</Link>
-          <span className="hidden md:inline">•</span>
-          <Link to="/agb" className="hover:text-[var(--color-text-main)] transition-colors">AGB</Link>
-          <span className="hidden md:inline">•</span>
-          <Link to="/rechtliches" className="hover:text-[var(--color-text-main)] transition-colors">Rechtliches</Link>
-          <span className="hidden md:inline">•</span>
-          <Link to="/online-widerruf" className="hover:text-[var(--color-text-main)] transition-colors">Hier zum Online-Widerruf</Link>
-          <span className="hidden md:inline">•</span>
-          <Link to="/konto-loeschen" className="hover:text-[var(--color-text-main)] transition-colors">Konto löschen</Link>
+        <footer className="mt-20 pt-8 border-t border-[var(--color-border-main)] text-center pb-24 md:pb-8 flex flex-wrap items-center justify-center gap-2">
+          <Link to="/impressum" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Impressum</Link>
+          <Link to="/datenschutz" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Datenschutz</Link>
+          <Link to="/agb" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">AGB</Link>
+          <Link to="/rechtliches" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Rechtliches</Link>
+          <Link to="/online-widerruf" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Online-Widerruf</Link>
+          <Link to="/konto-loeschen" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Konto löschen</Link>
         </footer>
       </main>
 

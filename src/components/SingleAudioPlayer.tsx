@@ -37,17 +37,17 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   if (!url) return <span className="text-red-400 text-xs">Fehler: Audio-URL fehlt in Datenbank</span>;
 
   return (
-    <div className="mt-4 p-4 bg-stone-50 border border-stone-200 rounded-xl w-full max-w-md shadow-sm">
-      <h4 className="text-sm font-bold text-stone-800 mb-2">{titel}</h4>
+    <div className="mt-8 p-4 sm:p-6 md:p-8 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl w-full shadow-sm">
+      <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--color-text-main)] mb-4">{titel}</h4>
       <audio 
         src={url} 
         controls 
-        className="w-full text-stone-800" 
+        className="w-full" 
         preload="metadata" 
         controlsList="nodownload" 
       />
-      <div className="text-[10px] text-stone-400 mt-3 pt-2 border-t border-stone-200">
-        <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgen teilweise mit Unterstützung von KI.
+      <div className="text-xs text-[var(--color-text-muted)] mt-5 pt-3 border-t border-[var(--color-border-main)]">
+        <strong>Audio-Hinweis:</strong> Instrumental und Stimmerzeugung erfolgen teilweise oder vollständig mit Unterstützung von KI.
       </div>
     </div>
   );

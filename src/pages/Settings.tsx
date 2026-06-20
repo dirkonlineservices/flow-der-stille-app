@@ -88,14 +88,21 @@ export default function Settings() {
     setProfileError('');
     setProfileLoading(true);
 
+    let profileData: any = {
+      first_name: firstName,
+      last_name: lastName,
+      newsletter_optin: newsletter,
+    };
+
+    // If newsletter newly enabled, add timestamp
+    if (newsletter && !user.newsletter_optin) {
+        profileData.newsletter_optin_timestamp = new Date().toISOString();
+    }
+
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase.auth.updateUser({
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          newsletter_optin: newsletter
-        }
+        data: profileData
       });
 
       if (error) {
@@ -340,7 +347,7 @@ export default function Settings() {
                     disabled
                     className="w-full px-4 py-3 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl border-none outline-none text-sm cursor-not-allowed font-medium"
                   />
-                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Supabase-Konto verknüpft.</p>
+                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Flow der Stille-Konto verknüpft.</p>
                 </div>
 
                 {/* Newsletter Preference Section */}
@@ -353,14 +360,31 @@ export default function Settings() {
                       className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)]"
                     />
                     <div>
-                      <span className="text-sm font-medium text-[var(--color-text-main)] leading-tight block group-hover:text-stone-900 transition-colors">
-                        Sicherstellung des monatlichen Newsletters
+                      <span className="text-sm font-medium text-[var(--color-text-main)]">
+                        Newsletter abonnieren
                       </span>
-                      <span className="text-xs text-[var(--color-text-muted-light)] block mt-0.5 leading-relaxed">
-                        Ich möchte weiterhin einmal im Monat wertvolle, kuratierte Ratschläge, wissenschaftliche Hintergründe der Darm-Hirn-Achse und Tipps zur Parasympathikus-Aktivierung per E-Mail erhalten. (Abbestellbar per Form-Opt-out).
-                      </span>
+                      <p className="text-xs text-[var(--color-text-muted-light)] mt-1 italic">
+                        Erhalten Sie einmal im Monat wertvolle, kuratierte Ratschläge zum Thema Darm-Hirn-Achse.
+                      </p>
                     </div>
                   </label>
+
+                  {newsletter && (
+                    <button
+                      onClick={async () => {
+                        const res = await fetch('/api/newsletter/unsubscribe', { method: 'POST' });
+                        if (res.ok) {
+                          setNewsletter(false);
+                          alert('Sie wurden erfolgreich abgemeldet.');
+                        } else {
+                          alert('Fehler beim Abmelden.');
+                        }
+                      }}
+                      className="mt-4 px-4 py-2 text-xs font-semibold bg-red-50 text-red-700 rounded-full hover:bg-red-100 transition-colors border border-red-200"
+                    >
+                      Newsletter jetzt abbestellen
+                    </button>
+                  )}
                 </div>
 
                 <div className="pt-4 text-right">
