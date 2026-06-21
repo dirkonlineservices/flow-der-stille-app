@@ -59,7 +59,7 @@ export default function Layout() {
     <div className="min-h-screen bg-[var(--color-bg-body)] text-[var(--color-text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300">
       
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--color-bg-card)]/50 backdrop-blur-sm border-r border-[var(--color-border-main)] z-50 overflow-y-auto">
+      <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--color-bg-card)]/50 backdrop-blur-sm border-r border-[var(--color-border-main)] z-50 overflow-y-auto">
         <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--color-bg-border)] transition-colors shrink-0">
           <img src="/favicon.svg" alt="Logo" className="w-8 h-8" />
         </Link>
@@ -108,7 +108,7 @@ export default function Layout() {
       </nav>
 
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 overflow-x-auto gap-2">
+      <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--color-bg-card)]/80 backdrop-blur-md border-t border-[var(--color-border-main)] px-2 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 overflow-x-auto gap-2">
         <NavLink to="/" icon={<Home />} label={t('nav.home')} mobile />
         <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
         <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
@@ -130,6 +130,7 @@ export default function Layout() {
       {location.pathname !== '/chat' && (
         <>
           <button
+            aria-label={isChatOpen ? "Chat schließen" : "Chat öffnen"}
             onClick={() => setIsChatOpen(!isChatOpen)}
             className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-6 md:bottom-8 md:right-8 w-14 h-14 bg-[var(--color-accent-primary)] text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:scale-105 transition-transform"
           >
@@ -146,11 +147,17 @@ export default function Layout() {
 
       {/* Share Modal */}
       {isShareModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsShareModalOpen(false)}>
+        <div 
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" 
+          onClick={() => setIsShareModalOpen(false)}
+        >
           <div className="bg-[var(--color-bg-card)] p-6 rounded-2xl w-full max-w-sm shadow-xl border border-[var(--color-border-main)]" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-[var(--color-text-main)]">Folgen & Teilen</h3>
-              <button className="p-2 rounded-full hover:bg-[var(--color-bg-border)]" onClick={() => setIsShareModalOpen(false)}><X size={20}/></button>
+              <h3 id="modal-title" className="text-xl font-bold text-[var(--color-text-main)]">Folgen & Teilen</h3>
+              <button aria-label="Teilen-Modus schließen" className="p-2 rounded-full hover:bg-[var(--color-bg-border)]" onClick={() => setIsShareModalOpen(false)}><X size={20}/></button>
             </div>
             <div className="flex flex-col gap-4">
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-4 rounded-xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] text-center font-bold hover:bg-[var(--color-bg-border)] transition-colors">Instagram</a>
@@ -183,16 +190,16 @@ export default function Layout() {
             <Outlet />
           </motion.div>
         </AnimatePresence>
-        
-        <footer className="mt-20 pt-8 border-t border-[var(--color-border-main)] text-center pb-24 md:pb-8 flex flex-wrap items-center justify-center gap-2">
-          <Link to="/impressum" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Impressum</Link>
-          <Link to="/datenschutz" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Datenschutz</Link>
-          <Link to="/agb" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">AGB</Link>
-          <Link to="/rechtliches" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Rechtliches</Link>
-          <Link to="/online-widerruf" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Online-Widerruf</Link>
-          <Link to="/konto-loeschen" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Konto löschen</Link>
-        </footer>
       </main>
+
+      <footer className="max-w-5xl mx-auto p-6 md:p-12 mt-20 pt-8 border-t border-[var(--color-border-main)] text-center pb-24 md:pb-8 flex flex-wrap items-center justify-center gap-2">
+        <Link to="/impressum" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Impressum</Link>
+        <Link to="/datenschutz" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Datenschutz</Link>
+        <Link to="/agb" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">AGB</Link>
+        <Link to="/rechtliches" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Rechtliches</Link>
+        <Link to="/online-widerruf" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Online-Widerruf</Link>
+        <Link to="/konto-loeschen" className="px-3 py-1.5 bg-[var(--color-bg-alt)] rounded-full text-[10px] uppercase tracking-wide font-medium text-[var(--color-text-main)] hover:bg-[var(--color-border-main)] transition-colors whitespace-nowrap">Konto löschen</Link>
+      </footer>
 
     </div>
   );
