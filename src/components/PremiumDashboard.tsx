@@ -281,7 +281,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: PayPal Smart Button
+// 🛡️ SUB-KOMPONENTE: PayPal Smart Button (Kollisions-Schutz integriert)
 function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
   const [error, setError] = useState(false);
@@ -304,7 +304,19 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
       return;
     }
 
+    // ⚡ FIX: Verhindert, dass das Skript 5x gleichzeitig geladen wird!
+    if (document.getElementById('paypal-js-sdk')) {
+      const checkInterval = setInterval(() => {
+        if ((window as any).paypal) {
+          clearInterval(checkInterval);
+          setIsSdkReady(true);
+        }
+      }, 200);
+      return;
+    }
+
     const script = document.createElement("script");
+    script.id = "paypal-js-sdk";
     script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId.trim()}&currency=EUR&intent=capture`;
     script.async = true;
     script.onload = () => setIsSdkReady(true);
@@ -373,7 +385,7 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   );
 }
 
-// 🎯 SUB-KOMPONENTE: DAUMENFREUNDLICHER AUDIO-PLAYER (KONTRAST-OPTIMIERT)
+// 🎯 SUB-KOMPONENTE: DAUMENFREUNDLICHER AUDIO-PLAYER (AUDIO-FREEZE BEHOBEN)
 function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
   const [url, setUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -411,31 +423,47 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
   }, [url, produkt.titel, produkt.kategorie]);
 
   const togglePlay = async () => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+    
+    // ⚡ FIX: URL asynchron laden und sofort in den Player zwingen
     if (!url) {
       const activeUrl = await getUrl(produkt);
+      if (!activeUrl) {
+          console.error("Keine gültige Audio-URL gefunden.");
+          return;
+      }
       setUrl(activeUrl);
-      audioRef.current.onloadeddata = () => {
-        audioRef.current?.play().catch(err => console.error(err));
+      audio.src = activeUrl; 
+      audio.load();
+      
+      audio.oncanplay = () => {
+        audio.play().catch(err => console.error("Autoplay geblockt:", err));
         setIsPlaying(true);
+        audio.oncanplay = null; // cleanup
       };
+      
       if ((window as any).dataLayer) {
         (window as any).dataLayer.push({ event: "audio_play", audio_title: produkt.titel, audio_category: produkt.kategorie });
       }
       return;
     }
+    
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().catch(err => console.error(err));
+      if (!audio.src || audio.src === "" || audio.src === window.location.href) {
+        console.error("Keine gültige Audio-Quelle gesetzt.");
+        return;
+      }
+      audio.play().catch(err => console.error("Playback Fehler:", err));
       setIsPlaying(true);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm">
-      {/* 🟢 SICHTBARER BUTTON: CI-konforme Hintergrundfarbe statt Transparenz */}
       <button 
         onClick={togglePlay}
         className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] ${
@@ -457,7 +485,9 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
         </div>
         <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] truncate">{produkt.titel}</div>
       </div>
-      {url && <audio ref={audioRef} src={url} className="hidden" preload="metadata" />}
+      
+      {/* ⚡ FIX: Das Audio-Element MUSS immer gerendert werden, auch ohne URL */}
+      <audio ref={audioRef} src={url || undefined} className="hidden" preload="metadata" />
     </div>
   );
 }
