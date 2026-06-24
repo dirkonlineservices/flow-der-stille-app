@@ -261,18 +261,25 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
               </div>
 
               {/* 🎯 NEUER MOBILE-FIRST AUDIO-PLAYER */}
-              {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--border)]">
-                    <AudioPlayerButton 
-                      produkt={produkt} 
-                      getUrl={async (p) => {
-                        const supabase = getSupabase();
-                        const { data } = await supabase.storage.from('audios').getPublicUrl(p.audio_url || `${p.id}.mp3`);
-                        return data.publicUrl;
-                      }} 
-                    />
-                </div>
-              )}
+{hatZugriff && (
+  <div className="mt-8 pt-6 border-t border-[var(--border)]">
+      <AudioPlayerButton 
+        produkt={produkt} 
+        getUrl={async (p) => {
+          // Da du den kompletten, fertigen Link bereits in der Spalte 'audio_path' hast, 
+          // geben wir diesen direkt an den Player weiter!
+          if (p.audio_path && p.audio_path.startsWith('http')) {
+            return p.audio_path;
+          }
+          
+          // Notfall-Fallback, falls mal ein Link fehlt (mit deinem echten Bucket-Namen)
+          const supabase = getSupabase();
+          const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+          return data.publicUrl;
+        }} 
+      />
+  </div>
+)}
             </div>
           );
         })}
