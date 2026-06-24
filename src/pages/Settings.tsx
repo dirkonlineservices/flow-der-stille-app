@@ -627,27 +627,6 @@ export default function Settings() {
               </div>
             </section>
 
-            {/* 5. Danger Zone */}
-            <section className="bg-red-50/50 rounded-3xl shadow-sm border border-red-100 p-6 md:p-8">
-              <h2 className="text-2xl font-serif text-red-900 mb-6 flex items-center gap-2">
-                <Trash2 size={22} className="text-red-600" />
-                Gefahrenbereich: Account löschen
-              </h2>
-              <p className="text-red-800 text-sm mb-6 leading-relaxed">
-                Wenn Sie Ihr Konto und alle damit verbundenen Daten unwiderruflich löschen möchten, klicken Sie bitte auf die Schaltfläche unten. Dieser Vorgang kann nicht rückgängig gemacht werden.
-              </p>
-              <button
-                onClick={() => {
-                  (window as any).dataLayer = (window as any).dataLayer || [];
-                  (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
-                  setShowDeleteModal(true);
-                }}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
-              >
-                Konto permanent löschen
-              </button>
-            </section>
-
           </div>
 
           {/* Sidebar Area with session, GDPR, logout */}
@@ -728,6 +707,18 @@ export default function Settings() {
                   <FileText size={14} />
                   <span>Datenschutzerklärung einsehen</span>
                 </Link>
+
+                <button
+                  onClick={() => {
+                    (window as any).dataLayer = (window as any).dataLayer || [];
+                    (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
+                    setShowDeleteModal(true);
+                  }}
+                  className="w-full py-2 px-3 text-[var(--color-text-muted)] hover:text-red-600 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1 mt-4"
+                >
+                  <Trash2 size={12} />
+                  <span>Account löschen</span>
+                </button>
               </div>
             </div>
 

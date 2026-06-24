@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { Play, Pause, Search } from 'lucide-react';
 import SingleAudioPlayer from './SingleAudioPlayer';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+
 import { Link } from 'react-router-dom';
 import UnlockBanner from './UnlockBanner';
 
@@ -287,103 +287,111 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: Der PayPal Smart Button
+// SUB-KOMPONENTE: Der PayPal Smart Button (ROBUST & MANUELL)
 function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
+  const [error, setError] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isRendering, setIsRendering] = useState(false);
 
   useEffect(() => {
-    // 1. Trigged 'begin_checkout' when mounted
+    // 1. GTM Tracking: begin_checkout
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
        (window as any).dataLayer.push({ event: 'begin_checkout' });
     }
-  }, []);
+    
+    // 2. Load SDK Manually
+    if ((window as any).paypal) {
+      setIsSdkReady(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=EUR&intent=capture`;
+    script.async = true;
+    
+    script.onload = () => {
+      setIsSdkReady(true);
+    };
+    
+    script.onerror = () => {
+      setError(true);
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({ event: 'checkout_error', error_type: 'paypal_sdk_load_failed' });
+      }
+    };
+    
+    document.body.appendChild(script);
+  }, [paypalClientId]);
 
   useEffect(() => {
-    // 2. Track waiver acceptance toggle
-     if (acceptedTerms && typeof window !== 'undefined' && (window as any).dataLayer) {
-       (window as any).dataLayer.push({ 
-        event: 'checkout_waiver_toggle',
-        waiver_accepted: true 
-      });
-     }
-  }, [acceptedTerms]);
+    // 3. Render Buttons Guard
+    if (isSdkReady && (window as any).paypal && acceptedTerms && !isRendering) {
+      setIsRendering(true);
+      const paypal = (window as any).paypal;
+      
+      const containerId = `#paypal-btn-${produkt.id}`;
+      // Clean up previous button if exists
+      const container = document.querySelector(containerId);
+      if (container) container.innerHTML = '';
+      
+      paypal.Buttons({
+        style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
+        createOrder: (data: any, actions: any) => {
+          return actions.order.create({
+            intent: "CAPTURE",
+            purchase_units: [{
+              amount: { value: produkt.preis.toString(), currency_code: "EUR" },
+              description: produkt.titel
+            }]
+          });
+        },
+        onApprove: async (data: any, actions: any) => {
+          if (actions.order && user) {
+            const details = await actions.order.capture();
+            const supabase = getSupabase();
+            await supabase.from('kaeufe').insert([{
+              user_id: user.id,
+              produkt_id: produkt.id,
+              paypal_order_id: details.id,
+              preis: parseFloat(details.purchase_units[0].amount.value),
+              waehrung: 'EUR',
+              widerruf_verzicht_akzeptiert: true
+            }]);
+            setShowUnlockBanner(true);
+            setTimeout(() => {
+              onSuccess();
+              setShowUnlockBanner(false);
+            }, 2000);
+          }
+        },
+        onError: (err: any) => {
+          console.error("PayPal Render- oder Verarbeitungsfehler:", err);
+        }
+      }).render(containerId);
+    }
+  }, [isSdkReady, acceptedTerms, produkt, user, setShowUnlockBanner, onSuccess, isRendering]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsSdkReady(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+  if (error) return <p className="text-xs text-[#ef4444]">Zahlung konnte nicht geladen werden.</p>;
+  if (!isSdkReady) return <p className="text-xs text-[var(--color-text-muted)]">PayPal wird geladen...</p>;
 
   return (
-    <div id={`paypal-button-container-${produkt.id}`} key={`stable-paypal-key-${produkt.id}`} style={{ minHeight: "100px", width: "100%" }}>
-      {isSdkReady ? (
-        <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "EUR" }}>
-          <div className="mb-3">
-            <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--color-text-muted)] cursor-pointer">
-              <input 
-                  type="checkbox" 
-                  checked={acceptedTerms}
-                  onChange={(e) => {
-                    setAcceptedTerms(e.target.checked);
-                  }}
-                  className="mt-0.5"
-              />
-              <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. Das Recht auf Tonaufnahmen/Audios im Streaming wird sofort bereitgestellt. Mir ist bekannt, dass ich mein Widerrufsrecht mit Beginn der Ausführung des Vertrags verliere.</span>
-            </label>
-            {!acceptedTerms && (
-              <p className="text-[0.78rem] text-[#ef4444] mt-2 text-center font-medium">Bitte bestätige die Bedingungen, um die Zahlung freizuschalten.</p>
-            )}
-          </div>
-          
-          <div className={`transition-opacity duration-200 w-full max-w-[260px] mx-auto ${acceptedTerms ? 'opacity-100' : 'opacity-40 pointer-events-none grayscale'}`}>
-            <PayPalButtons 
-              forceReRender={[produkt.id]}
-              style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
-              
-              createOrder={(data, actions) => {
-                return actions.order.create({
-                  intent: "CAPTURE",
-                  purchase_units: [{
-                    amount: { value: produkt.preis.toString(), currency_code: "EUR" },
-                    description: produkt.titel
-                  }]
-                });
-              }}
-    
-              onApprove={async (data, actions) => {
-                if (actions.order && user) {
-                  const details = await actions.order.capture();
-                  const supabase = getSupabase();
-    
-                  // Kauf in der Tabelle registrieren mit Widerruf-Verzicht
-                  await supabase.from('kaeufe').insert([{
-                    user_id: user.id,
-                    produkt_id: produkt.id,
-                    paypal_order_id: details.id,
-                    preis: parseFloat(details.purchase_units[0].amount.value),
-                    waehrung: 'EUR',
-                    widerruf_verzicht_akzeptiert: true
-                  }]);
-    
-                  alert("Kauf erfolgreich! Die Meditation wird freigeschaltet...");
-                  setShowUnlockBanner(true);
-                  setTimeout(() => {
-                    onSuccess(); // Load fresh data, unlocking the UI
-                    setShowUnlockBanner(false);
-                  }, 2000); // 2-second delay
-                } else {
-                  alert("Ein Fehler ist aufgetreten. Bitte stellen Sie sicher, dass Sie eingeloggt sind.");
-                }
-              }}
-              onError={(err: any) => {
-                console.error("PayPal Render- oder Verarbeitungsfehler:", err);
-              }}
-            />
-          </div>
-        </PayPalScriptProvider>
-      ) : (
-        <p className="text-xs text-stone-400">PayPal-Zahlungsmethode wird initialisiert...</p>
-      )}
+    <div className="w-full">
+      <div className="mb-3">
+        <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--color-text-muted)] cursor-pointer">
+          <input 
+              type="checkbox" 
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-0.5"
+          />
+          <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. Das Recht auf Tonaufnahmen/Audios im Streaming wird sofort bereitgestellt.</span>
+        </label>
+      </div>
+      
+      <div className={`transition-opacity duration-200 ${acceptedTerms ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+        <div id={`paypal-btn-${produkt.id}`}></div>
+      </div>
     </div>
   );
 }
@@ -451,36 +459,4 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
   );
 }
 
-// Sub-Komponente: PayPal Button
-function PayPalRenderButton({ produkt, onSuccess }: { produkt: any, onSuccess: any }) {
-  useEffect(() => {
-    // @ts-ignore
-    if (!(window as any).paypal) return;
-    // @ts-ignore
-    (window as any).paypal.Buttons({
-      style: { layout: 'vertical', shape: 'pill', label: 'checkout' },
-      createOrder: (data: any, actions: any) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: { value: produkt.preis.toString(), currency_code: "EUR" },
-            description: produkt.titel
-          }]
-        });
-      },
-      onApprove: (data: any, actions: any) => {
-        return actions.order.capture().then(async (details: any) => {
-          const supabase = getSupabase();
-          await supabase.from('kaeufe').insert([{
-            user_id: (await supabase.auth.getUser()).data.user?.id,
-            produkt_id: produkt.id,
-            paypal_order_id: details.id,
-            preis: parseFloat(details.purchase_units[0].amount.value)
-          }]);
-          onSuccess();
-        });
-      }
-    }).render(`#paypal-btn-${produkt.id}`);
-  }, [produkt]);
 
-  return <div id={`paypal-btn-${produkt.id}`}></div>;
-}

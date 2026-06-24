@@ -4,6 +4,7 @@ import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils } from
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import NewsletterBanner from '../components/NewsletterBanner';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import HomeChatWidget from '../components/HomeChatWidget';
 import SEO from '../components/SEO';
@@ -140,6 +141,10 @@ export default function Home() {
         <div>
           <WeeklyChallenge />
           
+          <div className="mt-12">
+            <NewsletterBanner variant="prominent" />
+          </div>
+
           <div className="mt-6">
              <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:shadow-md transition">
                 <h3 className="font-bold text-[var(--color-text-main)]">Premium-Bereich: Übungen & Meditationen</h3>
