@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { Play, Pause, Search } from 'lucide-react';
-import SingleAudioPlayer from './SingleAudioPlayer';
 
 import { Link } from 'react-router-dom';
 import UnlockBanner from './UnlockBanner';
@@ -19,11 +18,9 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   
   const user = session?.user;
 
-  // ⚡ SICHERER RESOLVER FÜR CLOUD-SECRETS & LOCAL ENV (Verhindert client-id=undefined)
-  // @ts-ignore
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
+  // ⚡ UNZERSTÖRBARER PAYPAL-FALLBACK AUS DEINEM DASHBOARD
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Abr2A6ISXpGoTN5xMfwAtTAKmgOr6Lj_H5znAiY8K8vLfpudiUcU9V7xfv32m_lVMSELyAoNe3i2s55-";
 
-  // 2. Produktdaten und bestehende Käufe laden
   useEffect(() => {
     loadShopData();
   }, [user]);
@@ -31,11 +28,9 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   async function loadShopData() {
     try {
       const supabase = getSupabase();
-      // Alle aktiven Produkte aus Supabase holen
       const { data: prodData, error: prodError } = await supabase.from('produkte').select('*');
       if (prodError) throw prodError;
 
-      // Wenn der User eingeloggt ist, seine freigeschalteten Produkte prüfen
       let gekaufteSet: Set<string> = new Set();
       let kaufMap: Map<string, string> = new Map();
 
@@ -111,33 +106,33 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   if (loading) return <div className="p-10 text-center text-gray-500">Premium-Bereich wird geladen...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 font-sans bg-[var(--color-bg-body)] min-h-screen">
+    <div className="max-w-4xl mx-auto p-6 font-sans bg-[var(--bg-main)] min-h-screen">
       <header className="mb-10 text-center">
-        <h1 className="text-3xl font-serif text-[var(--color-text-main)]">Premium-Inhalte</h1>
-        <p className="text-[var(--color-text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Premium-Inhalte: Meditation, Entspannungsübungen und Selbsthypnose, um dein Wohlbefinden zu stärken.</p>
+        <h1 className="text-3xl font-serif text-[var(--text-main)]">Premium-Inhalte</h1>
+        <p className="text-[var(--text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Premium-Inhalte: Meditation, Entspannungsübungen und Selbsthypnose, um dein Wohlbefinden zu stärken.</p>
       </header>
 
       {/* QA Backdoor: Test Email */}
-      <div className="mb-6 p-4 bg-[var(--color-bg-card)] rounded-xl max-w-sm mx-auto border border-[var(--color-border-main)]">
+      <div className="mb-6 p-4 bg-[var(--bg-card)] rounded-xl max-w-sm mx-auto border border-[var(--border)]">
         <input 
             type="email" 
             placeholder="QA-Test-E-Mail eingeben..." 
             value={testEmail}
             onChange={(e) => setTestEmail(e.target.value)}
-            className="w-full p-2 text-sm rounded border border-[var(--color-border-main)] bg-[var(--color-bg-body)] text-[var(--color-text-main)]"
+            className="w-full p-2 text-sm rounded border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-main)]"
         />
       </div>
 
       {/* Search and Filter */}
       <div className="mb-8 flex flex-col gap-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
           <input 
             type="text"
             placeholder="Suche nach Meditation, Herzöffnung, Loslassen..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] text-[var(--color-text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -147,8 +142,8 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
               onClick={() => setActiveFilter(cat)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition ${
                 activeFilter === cat 
-                  ? 'bg-[var(--color-accent-primary)] text-white' 
-                  : 'bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)]'
+                  ? 'bg-[var(--accent)] text-white' 
+                  : 'bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
               }`}
             >
               {cat}
@@ -158,7 +153,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
              <select 
                value={sortBy} 
                onChange={(e) => setSortBy(e.target.value)}
-               className="bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-main)] rounded-full px-4 py-2 text-sm focus:outline-none"
+               className="bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] rounded-full px-4 py-2 text-sm focus:outline-none"
              >
                <option value="Standard">Standard Sortierung</option>
                <option value="Neueste">Neueste</option>
@@ -180,15 +175,15 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
           if (isHeartOpening && !user) {
             return (
-              <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
+              <div key={produkt.id} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition hover:shadow-md">
                 <div className="flex-1">
-                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase mb-2 inline-block">
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-wider rounded bg-[var(--bg-alt)] text-[var(--text-muted)] uppercase mb-2 inline-block">
                     {produkt.kategorie || 'Atemarbeit'}
                   </span>
-                  <h2 className="text-xl font-bold text-[var(--color-text-main)]">{produkt.titel}</h2>
-                  <p className="text-[var(--color-text-muted)] text-sm mt-1">{produkt.beschreibung}</p>
+                  <h2 className="text-xl font-bold text-[var(--text-main)]">{produkt.titel}</h2>
+                  <p className="text-[var(--text-muted)] text-sm mt-1">{produkt.beschreibung}</p>
                 </div>
-                <div className="w-full md:w-auto text-center md:text-right text-sm text-[var(--color-text-muted)] italic font-medium">
+                <div className="w-full md:w-auto text-center md:text-right text-sm text-[var(--text-muted)] italic font-medium">
                   Kostenfrei nach Anmeldung
                 </div>
               </div>
@@ -196,48 +191,37 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
           }
 
           return (
-            <div key={produkt.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-8 flex flex-col transition hover:shadow-lg">
+            <div key={produkt.id} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-8 flex flex-col transition hover:shadow-lg">
               
               <div className="flex flex-col md:flex-row items-stretch gap-8">
-                {/* Linke Spalte: Produkt-Informationen (60%) */}
                 <div className="flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-4">
-                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] uppercase">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--bg-alt)] text-[var(--text-muted)] uppercase">
                         {produkt.kategorie || 'Atemarbeit'}
                     </span>
                     {produkt.dauer && (
-                        <span className="text-xs font-medium text-[var(--color-text-muted)]">
+                        <span className="text-xs font-medium text-[var(--text-muted)]">
                         {formatDuration(produkt.dauer)} min
                         </span>
                     )}
                     </div>
-                    <h3 className="text-2xl font-semibold text-[var(--color-text-main)] mb-1">{produkt.titel}</h3>
+                    <h3 className="text-2xl font-semibold text-[var(--text-main)] mb-1">{produkt.titel}</h3>
                     {!hatZugriff && !istKostenlos && (
-                        <div className="text-[1.35rem] font-bold text-[var(--color-text-main)] mb-3">
+                        <div className="text-[1.35rem] font-bold text-[var(--text-main)] mb-3">
                             {produkt.preis} €
                         </div>
                     )}
-                    <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
-                    {produkt.highlights && Array.isArray(produkt.highlights) && (
-                    <ul className="space-y-2 mt-4 ml-1">
-                        {produkt.highlights.map((highlight: string, index: number) => (
-                        <li key={index} className="flex items-start text-[0.9rem] text-[var(--color-text-main)] leading-tight">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-1.5 mr-3 flex-shrink-0" />
-                            {highlight}
-                        </li>
-                        ))}
-                    </ul>
-                    )}
+                    <p className="text-[var(--text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
                 </div>
 
-                {/* Checkout-Zone (Nur wenn noch nicht gekauft) */}
+                {/* Checkout-Zone */}
                 {!hatZugriff && (
-                    <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--color-border-main)]">
+                    <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--border)]">
                         <div className="h-full w-full flex flex-col justify-center items-center p-6 md:p-8">
                             <div className="w-full max-w-[280px] flex flex-col gap-3">
                             {!user ? (
-                                <div className="text-center p-4 text-sm font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-alt)] rounded-xl">
-                                Please <Link to="/login" className="text-[var(--color-accent-primary)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--color-accent-primary)] underline">registrieren</Link>, um zu kaufen.
+                                <div className="text-center p-4 text-sm font-medium text-[var(--text-muted)] bg-[var(--bg-alt)] rounded-xl">
+                                Please <Link to="/login" className="text-[var(--accent)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline">registrieren</Link>, um zu kaufen.
                                 </div>
                             ) : isTestEmail ? (
                                 <button 
@@ -257,7 +241,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                                         setShowUnlockBanner(false);
                                     }, 2000); 
                                 }}
-                                className="w-full py-3 bg-[var(--color-accent-primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--color-accent-hover)] transition"
+                                className="w-full py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-bold hover:bg-[var(--accent-hover)] transition"
                                 >
                                 Kostenlos Freischalten (Test-Modus)
                                 </button>
@@ -276,10 +260,17 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                 )}
               </div>
 
-              {/* Audio-Zone (Nur wenn Zugriff besteht) */}
+              {/* 🎯 NEUER MOBILE-FIRST AUDIO-PLAYER */}
               {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--color-border-main)]">
-                    <SingleAudioPlayer produktId={produkt.id} />
+                <div className="mt-8 pt-6 border-t border-[var(--border)]">
+                    <AudioPlayerButton 
+                      produkt={produkt} 
+                      getUrl={async (p) => {
+                        const supabase = getSupabase();
+                        const { data } = await supabase.storage.from('audios').getPublicUrl(p.audio_url || `${p.id}.mp3`);
+                        return data.publicUrl;
+                      }} 
+                    />
                 </div>
               )}
             </div>
@@ -290,7 +281,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: Der PayPal Smart Button (ROBUST & SECURITY-GUARDED)
+// SUB-KOMPONENTE: PayPal Smart Button
 function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
   const [error, setError] = useState(false);
@@ -299,18 +290,12 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   const [missingIdError, setMissingIdError] = useState(false);
 
   useEffect(() => {
-    // GTM Tracking: begin_checkout
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
        (window as any).dataLayer.push({ event: 'begin_checkout' });
     }
     
-    // ⚡ GUARD-STRUKTUR: Verhindert den 400 Bad Request bei fehlender/leerer ID
     if (!paypalClientId || paypalClientId === 'undefined' || paypalClientId.trim() === '') {
-      console.error("PayPal-Fehler: Keine gültige paypalClientId übergeben.");
       setMissingIdError(true);
-      if ((window as any).dataLayer) {
-        (window as any).dataLayer.push({ event: 'checkout_error', error_type: 'missing_client_id' });
-      }
       return;
     }
 
@@ -322,18 +307,8 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
     const script = document.createElement("script");
     script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId.trim()}&currency=EUR&intent=capture`;
     script.async = true;
-    
-    script.onload = () => {
-      setIsSdkReady(true);
-    };
-    
-    script.onerror = () => {
-      setError(true);
-      if ((window as any).dataLayer) {
-        (window as any).dataLayer.push({ event: 'checkout_error', error_type: 'paypal_sdk_load_failed' });
-      }
-    };
-    
+    script.onload = () => setIsSdkReady(true);
+    script.onerror = () => setError(true);
     document.body.appendChild(script);
   }, [paypalClientId]);
 
@@ -341,7 +316,6 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
     if (isSdkReady && (window as any).paypal && acceptedTerms && !isRendering) {
       setIsRendering(true);
       const paypal = (window as any).paypal;
-      
       const containerId = `#paypal-btn-${produkt.id}`;
       const container = document.querySelector(containerId);
       if (container) container.innerHTML = '';
@@ -375,33 +349,23 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
               setShowUnlockBanner(false);
             }, 2000);
           }
-        },
-        onError: (err: any) => {
-          console.error("PayPal Render- oder Verarbeitungsfehler:", err);
         }
       }).render(containerId);
     }
   }, [isSdkReady, acceptedTerms, produkt, user, setShowUnlockBanner, onSuccess, isRendering]);
 
-  // ⚡ Benutzerfreundliche Fehlermeldungen im UI ausgeben
-  if (missingIdError) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--color-bg-alt)] rounded-lg">Zahlungsdienst temporär nicht verfügbar (ID fehlt).</p>;
-  if (error) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--color-bg-alt)] rounded-lg">Zahlung konnte nicht geladen werden.</p>;
-  if (!isSdkReady) return <p className="text-xs text-[var(--color-text-muted)] animate-pulse">PayPal-Schnittstelle wird initialisiert...</p>;
+  if (missingIdError) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--bg-alt)] rounded-lg">Zahlungsdienst temporär nicht verfügbar.</p>;
+  if (error) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--bg-alt)] rounded-lg">Zahlung konnte nicht geladen werden.</p>;
+  if (!isSdkReady) return <p className="text-xs text-[var(--text-muted)] animate-pulse">PayPal wird geladen...</p>;
 
   return (
     <div className="w-full">
       <div className="mb-3">
-        <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--color-text-muted)] cursor-pointer">
-          <input 
-              type="checkbox" 
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              className="mt-0.5"
-          />
-          <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. Das Recht auf Tonaufnahmen/Audios im Streaming wird sofort bereitgestellt.</span>
+        <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--text-muted)] cursor-pointer">
+          <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-0.5" />
+          <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird.</span>
         </label>
       </div>
-      
       <div className={`transition-opacity duration-200 ${acceptedTerms ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
         <div id={`paypal-btn-${produkt.id}`}></div>
       </div>
@@ -409,61 +373,91 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   );
 }
 
-// Sub-Komponente: Audio Player mit integriertem GTM-Tracking
+// 🎯 SUB-KOMPONENTE: DAUMENFREUNDLICHER AUDIO-PLAYER (KONTRAST-OPTIMIERT)
 function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
   const [url, setUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs)) return "0:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({ event: "audio_complete", audio_title: produkt.titel, audio_category: produkt.kategorie });
+      }
+    };
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [url, produkt.titel, produkt.kategorie]);
 
   const togglePlay = async () => {
     if (!audioRef.current) return;
-
     if (!url) {
       const activeUrl = await getUrl(produkt);
       setUrl(activeUrl);
       audioRef.current.onloadeddata = () => {
-        audioRef.current?.play();
+        audioRef.current?.play().catch(err => console.error(err));
         setIsPlaying(true);
       };
-      
       if ((window as any).dataLayer) {
-        (window as any).dataLayer.push({
-          event: "audio_play",
-          audio_title: produkt.titel,
-          audio_category: produkt.kategorie,
-          audio_type: parseFloat(produkt.preis) === 0 ? "kostenlos" : "premium"
-        });
+        (window as any).dataLayer.push({ event: "audio_play", audio_title: produkt.titel, audio_category: produkt.kategorie });
       }
       return;
     }
-
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play();
+      audioRef.current.play().catch(err => console.error(err));
       setIsPlaying(true);
     }
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col items-center justify-center p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm">
+      {/* 🟢 SICHTBARER BUTTON: CI-konforme Hintergrundfarbe statt Transparenz */}
       <button 
         onClick={togglePlay}
-        className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full transition"
+        className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] ${
+          isPlaying 
+            ? 'bg-[#ef4444] hover:bg-[#dc2626] hover:ring-4 hover:ring-red-200' 
+            : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] hover:ring-4 hover:ring-emerald-100'
+        }`}
+        aria-label={isPlaying ? "Pause" : "Abspielen"}
       >
-        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+        {isPlaying ? (
+          <Pause size={32} fill="white" stroke="none" />
+        ) : (
+          <Play size={32} className="ml-1" fill="white" stroke="none" />
+        )}
       </button>
-      <audio 
-        ref={audioRef} 
-        src={url} 
-        onPlay={() => setIsPlaying(true)} 
-        onPause={() => setIsPlaying(false)}
-        className="hidden" 
-      />
-      <div className="text-sm font-medium text-purple-900 truncate flex-1">
-        {produkt.titel}
+      <div className="mt-4 text-center select-none">
+        <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
+          {formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration || produkt.dauer || 0)}</span>
+        </div>
+        <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] truncate">{produkt.titel}</div>
       </div>
+      {url && <audio ref={audioRef} src={url} className="hidden" preload="metadata" />}
     </div>
   );
 }
