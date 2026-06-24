@@ -18,7 +18,10 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   const [sortBy, setSortBy] = useState('Standard');
   
   const user = session?.user;
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
+  // ⚡ SICHERER RESOLVER FÜR CLOUD-SECRETS & LOCAL ENV (Verhindert client-id=undefined)
+  // @ts-ignore
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || (typeof process !== 'undefined' ? process.env?.PAYPAL_CLIENT_ID || process.env?.VITE_PAYPAL_CLIENT_ID : '') || '';
 
   // 2. Produktdaten und bestehende Käufe laden
   useEffect(() => {
@@ -287,27 +290,37 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// SUB-KOMPONENTE: Der PayPal Smart Button (ROBUST & MANUELL)
+// SUB-KOMPONENTE: Der PayPal Smart Button (ROBUST & SECURITY-GUARDED)
 function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
   const [error, setError] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isRendering, setIsRendering] = useState(false);
+  const [missingIdError, setMissingIdError] = useState(false);
 
   useEffect(() => {
-    // 1. GTM Tracking: begin_checkout
+    // GTM Tracking: begin_checkout
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
        (window as any).dataLayer.push({ event: 'begin_checkout' });
     }
     
-    // 2. Load SDK Manually
+    // ⚡ GUARD-STRUKTUR: Verhindert den 400 Bad Request bei fehlender/leerer ID
+    if (!paypalClientId || paypalClientId === 'undefined' || paypalClientId.trim() === '') {
+      console.error("PayPal-Fehler: Keine gültige paypalClientId übergeben.");
+      setMissingIdError(true);
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({ event: 'checkout_error', error_type: 'missing_client_id' });
+      }
+      return;
+    }
+
     if ((window as any).paypal) {
       setIsSdkReady(true);
       return;
     }
 
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=EUR&intent=capture`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId.trim()}&currency=EUR&intent=capture`;
     script.async = true;
     
     script.onload = () => {
@@ -325,13 +338,11 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   }, [paypalClientId]);
 
   useEffect(() => {
-    // 3. Render Buttons Guard
     if (isSdkReady && (window as any).paypal && acceptedTerms && !isRendering) {
       setIsRendering(true);
       const paypal = (window as any).paypal;
       
       const containerId = `#paypal-btn-${produkt.id}`;
-      // Clean up previous button if exists
       const container = document.querySelector(containerId);
       if (container) container.innerHTML = '';
       
@@ -372,8 +383,10 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
     }
   }, [isSdkReady, acceptedTerms, produkt, user, setShowUnlockBanner, onSuccess, isRendering]);
 
-  if (error) return <p className="text-xs text-[#ef4444]">Zahlung konnte nicht geladen werden.</p>;
-  if (!isSdkReady) return <p className="text-xs text-[var(--color-text-muted)]">PayPal wird geladen...</p>;
+  // ⚡ Benutzerfreundliche Fehlermeldungen im UI ausgeben
+  if (missingIdError) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--color-bg-alt)] rounded-lg">Zahlungsdienst temporär nicht verfügbar (ID fehlt).</p>;
+  if (error) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--color-bg-alt)] rounded-lg">Zahlung konnte nicht geladen werden.</p>;
+  if (!isSdkReady) return <p className="text-xs text-[var(--color-text-muted)] animate-pulse">PayPal-Schnittstelle wird initialisiert...</p>;
 
   return (
     <div className="w-full">
@@ -408,17 +421,13 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
     if (!url) {
       const activeUrl = await getUrl(produkt);
       setUrl(activeUrl);
-      // Wait for audio to load before playing
       audioRef.current.onloadeddata = () => {
         audioRef.current?.play();
         setIsPlaying(true);
       };
       
-      // TRACKING: GA4 / GTM Event beim Klick auf Play
-      // @ts-ignore
-      if (window.dataLayer) {
-        // @ts-ignore
-        window.dataLayer.push({
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({
           event: "audio_play",
           audio_title: produkt.titel,
           audio_category: produkt.kategorie,
@@ -458,5 +467,3 @@ function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
     </div>
   );
 }
-
-
