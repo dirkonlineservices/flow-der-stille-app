@@ -21,7 +21,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
   // ⚡ SICHERER RESOLVER FÜR CLOUD-SECRETS & LOCAL ENV (Verhindert client-id=undefined)
   // @ts-ignore
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || (typeof process !== 'undefined' ? process.env?.PAYPAL_CLIENT_ID || process.env?.VITE_PAYPAL_CLIENT_ID : '') || '';
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Abr2A6ISXpGoTN5xMfwAtTAKmgOr6Lj_H5znAiY8K8vLfpudiUcU9V7xfv32m_lVMSELyAoNe3i2s55-";
 
   // 2. Produktdaten und bestehende Käufe laden
   useEffect(() => {
