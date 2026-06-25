@@ -21,18 +21,23 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
-  // NEU: Wir merken uns, ob die Registrierung erfolgreich war, 
-  // aber die E-Mail noch bestätigt werden muss.
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || !dsgvo) return;
+
     setError('');
     setLoading(true);
 
+    // GTM DataLayer-Initialisierung & Initialer Klick-Push (Conversion-Trichter)
+    const dataLayer = (window as any).dataLayer || [];
+    dataLayer.push({ 
+      event: 'registration_attempt',
+      newsletter_optin: newsletter 
+    });
+
     try {
-      // 1. Sign Up
       const supabase = getSupabase();
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: email,
@@ -48,66 +53,79 @@ export default function Register() {
 
       if (supabaseError) {
         setError(supabaseError.message);
+        // Tracking: Registrierungsfehler erfassen für Looker Studio
+        dataLayer.push({
+          event: 'registration_status',
+          status: 'error',
+          error_message: supabaseError.message
+        });
         return;
       }
 
-      // If signup successful, handle newsletter
+      // Newsletter Lead Generierung (Non-blocking)
       if (data?.user && newsletter) {
-        // 2. Newsletter (Non-blocking)
         try {
           const { data: newsletterData, error: insertError } = await supabase
             .from('newsletter_leads')
             .insert([{ 
                 email: email,
                 source: 'app_registration' 
-                // status und confirm_token werden durch die DB-Defaults automatisch gesetzt!
             }])
             .select();
 
           if (!insertError && newsletterData && newsletterData.length > 0) {
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            (window as any).dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
+            dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
           } else {
             console.error("Newsletter error:", insertError);
           }
         } catch (newsletterErr) {
-          // Log, but do not stop signup
           console.error("Newsletter exception:", newsletterErr);
         }
       }
 
-      // Success
+      // Tracking: Erfolgreiche Registrierung senden
+      dataLayer.push({
+        event: 'registration_status',
+        status: 'success',
+        user_id: data?.user?.id || 'unknown'
+      });
+
       setIsSubmitted(true);
     } catch (err) {
-      setError('Ein unerwarteter Fehler ist aufgetreten.');
+      const fallbackMsg = 'Ein unerwarteter Fehler ist aufgetreten.';
+      setError(fallbackMsg);
+      dataLayer.push({
+        event: 'registration_status',
+        status: 'error',
+        error_message: fallbackMsg
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Wenn die Daten gesendet wurden, zeigen wir nur noch diesen Hinweis:
   if (isSubmitted) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
         <SEO title="Registrieren" description="Erstellen Sie einen kostenlosen Account bei Flow der Stille." />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-lg bg-[var(--color-bg-card)] p-8 md:p-10 rounded-3xl shadow-lg border border-[var(--color-border-main)] text-center"
+          className="w-full max-w-lg bg-[var(--bg-card)] p-8 md:p-10 rounded-3xl shadow-md border border-[var(--border)] text-center"
         >
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-600">
+            <div className="w-16 h-16 bg-[var(--bg-main)] rounded-full flex items-center justify-center text-[var(--accent)]">
               <Mail size={32} />
             </div>
           </div>
-          <h2 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-4">Fast geschafft!</h2>
-          <p className="text-[var(--color-text-muted)] mb-6 leading-relaxed">
-            Wir haben eine Bestätigungsmail an <strong className="text-[var(--color-text-main)]">{email}</strong> gesendet. 
+          <h2 className="text-3xl font-serif text-[var(--text-main)] mb-4">Fast geschafft!</h2>
+          <p className="text-[var(--text-muted)] mb-6 leading-relaxed">
+            Wir haben eine Bestätigungsmail an <strong className="text-[var(--text-main)]">{email}</strong> gesendet. 
             Bitte klicken Sie auf den Link in dieser E-Mail, um Ihren Account zu aktivieren und sich einzuloggen.
           </p>
-          <div className="pt-6 border-t border-[var(--color-border-main)]">
-            <p className="text-sm text-[var(--color-text-muted)] mb-4">E-Mail nicht gefunden? Prüfen Sie auch Ihren Spam-Ordner.</p>
-            <Link to="/login" className="inline-block py-3 px-6 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] rounded-xl font-medium transition-colors">
+          <div className="pt-6 border-t border-[var(--border)]">
+            <p className="text-sm text-[var(--text-muted)] mb-4">E-Mail nicht gefunden? Prüfen Sie auch Ihren Spam-Ordner.</p>
+            <Link to="/login" className="inline-block py-3 px-6 bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] rounded-xl font-medium transition-colors">
               Zurück zum Login
             </Link>
           </div>
@@ -116,19 +134,18 @@ export default function Register() {
     );
   }
 
-  // Hier kommt das ganz normale Formular (wird nur angezeigt, solange isSubmitted = false ist)
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4">
+    <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
       <SEO title="Registrieren" description="Erstellen Sie einen kostenlosen Account bei Flow der Stille." />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-lg bg-[var(--color-bg-card)] p-8 md:p-10 rounded-3xl shadow-lg border border-[var(--color-border-main)]"
+        className="w-full max-w-lg bg-[var(--bg-card)] p-8 md:p-10 rounded-3xl shadow-md border border-[var(--border)]"
       >
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-2">Account erstellen</h2>
-          <p className="text-[var(--color-text-muted)] text-sm">Registrieren Sie sich für Ihren persönlichen Ruhebereich.</p>
+          <h2 className="text-3xl font-serif text-[var(--text-main)] mb-2">Account erstellen</h2>
+          <p className="text-[var(--text-muted)] text-sm">Registrieren Sie sich für Ihren persönlichen Ruhebereich.</p>
         </div>
 
         {error && (
@@ -145,9 +162,9 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Vorname *</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">Vorname *</label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--color-text-muted-light)]">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
                   <User size={16} />
                 </span>
                 <input
@@ -155,16 +172,16 @@ export default function Register() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Max"
-                  className="w-full pl-11 pr-4 py-3.5 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Zuname *</label>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">Zuname *</label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--color-text-muted-light)]">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
                   <User size={16} />
                 </span>
                 <input
@@ -172,7 +189,7 @@ export default function Register() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="Mustermann"
-                  className="w-full pl-11 pr-4 py-3.5 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
                   required
                 />
               </div>
@@ -180,9 +197,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">E-Mail-Adresse *</label>
+            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">E-Mail-Adresse *</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--color-text-muted-light)]">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
                 <Mail size={16} />
               </span>
               <input
@@ -190,16 +207,16 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="beispiel@domain.de"
-                className="w-full pl-11 pr-4 py-3.5 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all text-sm"
+                className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">Sicheres Passwort *</label>
+            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">Sicheres Passwort *</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--color-text-muted-light)]">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
                 <Lock size={16} />
               </span>
               <input
@@ -207,47 +224,45 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-12 py-3.5 bg-[var(--color-bg-alt)] rounded-2xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none transition-all text-sm"
+                className="w-full pl-11 pr-12 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--color-text-muted-light)] hover:text-[var(--color-text-muted)] focus:outline-none focus:ring-0"
+                className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--text-muted)] opacity-60 hover:opacity-100 focus:outline-none"
                 tabIndex={-1}
-                aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
-          {/* DSGVO & Newsletter Checkboxen */}
           <div className="space-y-4 pt-2">
             <label className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={newsletter}
                 onChange={(e) => setNewsletter(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-[var(--color-border-main)] text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
+                className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25"
               />
-              <span className="text-sm text-[var(--color-text-muted)] leading-relaxed select-none group-hover:text-[var(--color-text-main)] transition-colors">
+              <span className="text-sm text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
                 Ja, ich möchte gelegentlich Impulse für mehr innere Ruhe per E-Mail erhalten.
               </span>
             </label>
 
-            <div className="bg-[var(--color-bg-alt)] p-4 rounded-xl border border-[var(--color-border-main)]">
-              <div className="text-sm font-medium text-[var(--color-text-main)] mb-2">DSGVO-konforme Verarbeitung</div>
+            <div className="bg-[var(--bg-alt)] p-4 rounded-xl border border-[var(--border)]">
+              <div className="text-sm font-medium text-[var(--text-main)] mb-2">DSGVO-konforme Verarbeitung</div>
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={dsgvo}
                   onChange={(e) => setDsgvo(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 rounded border-[var(--color-border-main)] text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] focus:ring-opacity-25"
+                  className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25"
                   required
                 />
-                <span className="text-xs text-[var(--color-text-muted)] leading-relaxed select-none group-hover:text-[var(--color-text-main)] transition-colors">
-                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung und zur Bereitstellung der App-Funktionen elektronisch erhoben, verarbeitet und in einer sicheren Datenbank gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--color-accent-primary)] underline font-medium hover:text-[var(--color-accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert. *
+                <span className="text-xs text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
+                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung elektronisch erhoben und gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert. *
                 </span>
               </label>
             </div>
@@ -256,15 +271,15 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading || !dsgvo}
-            className="w-full py-4 flex items-center justify-center bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white rounded-full font-medium transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            className="w-full py-4 flex items-center justify-center bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-full font-medium transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
           >
-            {loading ? 'Bitte warten...' : 'Anmelden'}
+            {loading ? 'Bitte warten...' : 'Registrieren'}
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-[var(--color-border-main)] text-center text-sm text-[var(--color-text-muted)]">
+        <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
           Haben Sie bereits ein Konto?{' '}
-          <Link to="/login" className="text-[var(--color-accent-primary)] font-medium hover:underline">
+          <Link to="/login" className="text-[var(--accent)] font-medium hover:underline">
             Hier einloggen
           </Link>
         </div>
