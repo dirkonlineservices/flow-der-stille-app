@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --color-bg-body: var(--bg-body);
+  --color-bg-alt: var(--bg-alt);
+  --color-bg-alt-darker: var(--bg-alt-darker);
+  --color-bg-card: var(--bg-card);
+  --color-bg-border: var(--bg-border);
+  --color-border-main: var(--border-main);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-muted-light: var(--text-muted-light);
+  
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+}
+
+:root {
+  --bg-body: #f5f5f0;
+  --bg-alt: #F7F6F2;
+  --bg-alt-darker: #ECEBE4;
+  --bg-card: #FFFFFF;
+  --bg-border: #f5f5f0;
+  --border-main: #E3E1D9;
+  
+  --text-main: #3D3B35;
+  --text-muted: #695C4D;
+  --text-muted-light: #A09E94;
+  
+  --accent-primary: #8A9A8A;
+  --accent-hover: #728372;
+}
+
+.dark {
+  --bg-body: #1c1917;
+  --bg-alt: #171717;
+  --bg-alt-darker: #0c0a09;
+  --bg-card: #292524;
+  --bg-border: #292524;
+  --border-main: #44403c;
+  
+  --text-main: #e7e5e4;
+  --text-muted: #a8a29e;
+  --text-muted-light: #78716c;
+  
+  --accent-primary: #8A9A8A;
+  --accent-hover: #728372;
+}
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--color-bg-body);
+  color: var(--color-text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
+
+p, span, div, a, button, input, textarea {
+  font-family: var(--font-sans);
+}
+
+/* Custom Utility Classes */
+.olive-button {
+  background-color: var(--color-accent-primary);
+  color: white;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease;
+}
+
+.olive-button:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: 32px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* AI Labels */
+.ai-image-container {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.ai-image-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.ai-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(26, 32, 44, 0.85);
+  color: #ffffff;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 9px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.2;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.ai-image-container:hover .ai-label {
+  opacity: 1;
+  transform: scale(1.1);
+  background: rgba(26, 32, 44, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ai-text {
+  white-space: nowrap;
+}

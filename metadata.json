@@ -1,0 +1,6 @@
+{
+  "name": "Flow der Stille",
+  "description": "Eine ganzheitliche Anwendung zur Stimulierung des parasympathischen Nervensystems durch Übungen, Rezepte und Lebensgewohnheiten.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
