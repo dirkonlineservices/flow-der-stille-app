@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
 import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
-import SingleAudioPlayer from '../components/SingleAudioPlayer';
+import { AudioPlayerButton } from '../components/AudioPlayerButton';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -62,6 +62,27 @@ export default function ExerciseDetail() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isActive, isPaused, showCelebration, exercise]);
+
+  const [audioHinweis, setAudioHinweis] = useState('');
+  const [audioPath, setAudioPath] = useState('');
+
+  useEffect(() => {
+    async function fetchAudioData() {
+        if (exercise?.audioId) {
+            const supabase = getSupabase();
+            const { data } = await supabase
+                .from('produkte')
+                .select('audio_hinweis, audio_path')
+                .eq('id', exercise.audioId)
+                .single();
+            if (data) {
+                setAudioHinweis(data.audio_hinweis || '');
+                setAudioPath(data.audio_path || '');
+            }
+        }
+    }
+    fetchAudioData();
+  }, [exercise?.audioId]);
 
   if (!exercise) {
     return <div className="p-8 text-center text-[var(--color-text-muted)]">{t('exercise.notfound')}</div>;
@@ -380,7 +401,24 @@ export default function ExerciseDetail() {
           {/* Audio Player for this exercise */}
           {exercise.audioId && (
             <div className="mt-8">
-              <SingleAudioPlayer produktId={exercise.audioId} />
+              <AudioPlayerButton 
+                produkt={{
+                  id: exercise.audioId,
+                  titel: t(exercise.translationKeyTitle),
+                  kategorie: t(exercise.translationKeyCategory),
+                  dauer: parseInt(exercise.duration) || 0,
+                  audio_hinweis: audioHinweis,
+                  audio_path: audioPath
+                }}
+                getUrl={async (p: any) => {
+                  if (p.audio_path && p.audio_path.startsWith('http')) {
+                    return p.audio_path;
+                  }
+                  const supabase = getSupabase();
+                  const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                  return data.publicUrl;
+                }}
+              />
             </div>
           )}
 
