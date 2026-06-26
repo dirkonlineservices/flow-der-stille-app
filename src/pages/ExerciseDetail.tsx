@@ -406,7 +406,16 @@ export default function ExerciseDetail() {
                   id: exercise.audioId,
                   titel: t(exercise.translationKeyTitle),
                   kategorie: t(exercise.translationKeyCategory),
-                  dauer: parseInt(exercise.duration) || 0,
+                  // Parse duration string like "1:49" or "5 min" to seconds
+                  dauer: (() => {
+                    const colonMatch = exercise.duration.match(/(\d+):(\d+)/);
+                    if (colonMatch) {
+                      return parseInt(colonMatch[1]) * 60 + parseInt(colonMatch[2]);
+                    }
+                    const minMatch = exercise.duration.match(/(\d+)\s*min/);
+                    if (minMatch) return parseInt(minMatch[1]) * 60;
+                    return parseInt(exercise.duration) || 0;
+                  })(),
                   audio_hinweis: audioHinweis,
                   audio_path: audioPath
                 }}

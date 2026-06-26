@@ -33,7 +33,9 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     if (!audio) return;
 
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
     
     // ⚡ FIX: Globale Pause-Logik! Stoppt alle anderen Player auf der Webseite.
     const handlePlay = () => {
@@ -127,7 +129,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       </button>
       <div className="mt-4 text-center select-none">
         <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
-          {formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration || produkt.dauer || 0)}</span>
+          {formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration > 0 && isFinite(duration) ? duration : (produkt.dauer || 0))}</span>
         </div>
         <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] truncate">{produkt.titel}</div>
       </div>

@@ -19,7 +19,24 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   const [titel, setTitel] = useState('');
   const [audioHinweis, setAudioHinweis] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs)) return "0:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
+  };
+  
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) setDuration(audioRef.current.duration);
+  };
 
   useEffect(() => {
     async function loadAudio() {
@@ -73,8 +90,15 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         className="w-full" 
         preload="metadata" 
         controlsList="nodownload"
-        onPlay={handlePlay} 
+        onPlay={handlePlay}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
       />
+      
+      {/* Zeit-Anzeige */}
+      <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </div>
       
       {/* KI-Label dezent integriert */}
       {audioHinweis && (
