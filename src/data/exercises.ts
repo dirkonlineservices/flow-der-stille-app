@@ -26,7 +26,7 @@ export const exercises: Exercise[] = [
     duration: '1:49',
     image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop',
     instructionKeys: [],
-    audioId: 'a080ef5a-b9e3-4b2c-938e-d2787991461d'
+    audioId: 'gefuehrte_atemuebung'
   },
   {
     id: '478-breathing',
@@ -95,7 +95,7 @@ export const exercises: Exercise[] = [
       'instruction.pmr.5',
       'instruction.pmr.6'
     ],
-    audioId: 'f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a'
+    audioId: 'pmr_basis'
   },
   {
     id: 'neck-stretches',

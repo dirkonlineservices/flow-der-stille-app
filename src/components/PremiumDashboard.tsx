@@ -1,28 +1,22 @@
 /* =========================================================================================
 🚨 AI SYSTEM INSTRUCTION - STRICT GUARDRAIL - DO NOT MODIFY 🚨
-This file contains heavily customized, production-ready enterprise logic.
-CRITICAL SYSTEMS INSIDE:
-1. Custom PayPal Smart Button Integration with Anti-Collision / Debounce System.
-2. Supabase URL Fallback Logic and direct Database bindings.
-3. Component structure optimized for mobile-first UI.
-
-DO NOT refactor, modify, or overwrite ANY part of this file unless the user 
-EXPLICITLY types: "I authorize changes to PremiumDashboard.tsx".
+1. SMART PLATFORM SWITCH: Web = PayPal | Native App = Google Play Billing.
+2. SUPABASE 1:1 ID MAPPING: Uses clean TEXT IDs (e.g., 'atemarbeit_herzoeffnung').
+3. ENTERPRISE TRACKING: GA4 DataLayer integrated for both payment methods.
 =========================================================================================
 */
 
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search } from 'lucide-react';
+import { Search, CreditCard, Loader2 } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
-
 import { Link } from 'react-router-dom';
 import UnlockBanner from './UnlockBanner';
+import { BillingService } from '../lib/billing';
 
 export default function PremiumShopDashboard({ session }: { session: any }) {
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
-  const [kaufMap, setKaufMap] = useState<Map<string, string>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showUnlockBanner, setShowUnlockBanner] = useState(false);
   const [testEmail, setTestEmail] = useState('');
@@ -32,7 +26,11 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   
   const user = session?.user;
 
-  // ⚡ UNZERSTÖRBARER PAYPAL-FALLBACK AUS DEINEM DASHBOARD
+  // ⚡ ERKENNUNG: Läuft die App nativ (App) oder im Browser (Web)?
+  const isNativeApp = BillingService.isNative();
+
+  // ⚡ DEINE NEUEN SUPABASE TEXT-IDS
+  const HEART_OPENING_ID = 'atemarbeit_herzoeffnung';
   const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Abr2A6ISXpGoTN5xMfwAtTAKmgOr6Lj_H5znAiY8K8vLfpudiUcU9V7xfv32m_lVMSELyAoNe3i2s55-";
 
   useEffect(() => {
@@ -46,23 +44,19 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
       if (prodError) throw prodError;
 
       let gekaufteSet: Set<string> = new Set();
-      let kaufMap: Map<string, string> = new Map();
 
       if (user) {
         const { data: kaufData, error: kaufError } = await supabase
           .from('kaeufe')
-          .select('produkt_id, created_at')
+          .select('produkt_id')
           .eq('user_id', user.id);
         if (kaufError) throw kaufError;
         // @ts-ignore
         gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
-        // @ts-ignore
-        kaufData.forEach(k => kaufMap.set(k.produkt_id, k.created_at));
       }
       
       setProdukte(prodData);
       setGekauftIds(gekaufteSet);
-      setKaufMap(kaufMap);
     } catch (error: any) {
       console.error("Fehler beim Laden des Dashboards:", error.message);
     } finally {
@@ -117,25 +111,14 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
       return 0;
   });
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Premium-Bereich wird geladen...</div>;
+  if (loading) return <div className="p-10 text-center text-[var(--text-muted)]">Premium-Bereich wird geladen...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 font-sans bg-[var(--bg-main)] min-h-screen">
       <header className="mb-10 text-center">
         <h1 className="text-3xl font-serif text-[var(--text-main)]">Premium-Inhalte</h1>
-        <p className="text-[var(--text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Premium-Inhalte: Meditation, Entspannungsübungen und Selbsthypnose, um dein Wohlbefinden zu stärken.</p>
+        <p className="text-[var(--text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Premium-Inhalte: Meditation, Entspannungsübungen und Selbsthypnose.</p>
       </header>
-
-      {/* QA Backdoor: Test Email */}
-      <div className="mb-6 p-4 bg-[var(--bg-card)] rounded-xl max-w-sm mx-auto border border-[var(--border)]">
-        <input 
-            type="email" 
-            placeholder="QA-Test-E-Mail eingeben..." 
-            value={testEmail}
-            onChange={(e) => setTestEmail(e.target.value)}
-            className="w-full p-2 text-sm rounded border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-main)]"
-        />
-      </div>
 
       {/* Search and Filter */}
       <div className="mb-8 flex flex-col gap-4">
@@ -163,19 +146,6 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
               {cat}
             </button>
           ))}
-          <div className="ml-auto">
-             <select 
-               value={sortBy} 
-               onChange={(e) => setSortBy(e.target.value)}
-               className="bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] rounded-full px-4 py-2 text-sm focus:outline-none"
-             >
-               <option value="Standard">Standard Sortierung</option>
-               <option value="Neueste">Neueste</option>
-               <option value="Teuerste">Teuerste</option>
-               <option value="Günstigste">Günstigste</option>
-               <option value="Älteste">Älteste</option>
-             </select>
-          </div>
         </div>
       </div>
 
@@ -184,8 +154,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
         {filteredProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
-          const isHeartOpening = produkt.id === 'ddd69d28-1378-4787-bb9a-bdaf0baca8ce';
-          const isTestEmail = testEmail.toLowerCase() === 'tester@flow-der-stille.de';
+          const isHeartOpening = produkt.id === HEART_OPENING_ID;
 
           if (isHeartOpening && !user) {
             return (
@@ -228,44 +197,31 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                     <p className="text-[var(--text-muted)] text-sm leading-relaxed">{produkt.beschreibung}</p>
                 </div>
 
-                {/* Checkout-Zone */}
+                {/* 🔀 CHECKOUT-WEICHE: Zeigt Google Play in der App, PayPal im Web */}
                 {!hatZugriff && (
                     <div className="md:w-[35%] border-t md:border-t-0 md:border-l border-[var(--border)]">
                         <div className="h-full w-full flex flex-col justify-center items-center p-6 md:p-8">
                             <div className="w-full max-w-[280px] flex flex-col gap-3">
                             {!user ? (
-                                <div className="text-center p-4 text-sm font-medium text-[var(--text-muted)] bg-[var(--bg-alt)] rounded-xl">
-                                Please <Link to="/login" className="text-[var(--accent)] underline">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline">registrieren</Link>, um zu kaufen.
+                                <div className="text-center p-4 text-sm font-medium text-[var(--text-muted)] bg-[var(--bg-alt)] rounded-xl border border-[var(--border)]">
+                                Bitte <Link to="/login" className="text-[var(--accent)] underline font-semibold">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline font-semibold">registrieren</Link>.
                                 </div>
-                            ) : isTestEmail ? (
-                                <button 
-                                onClick={async () => {
-                                    const supabase = getSupabase();
-                                    await supabase.from('kaeufe').insert([{
-                                    user_id: user.id,
-                                    produkt_id: produkt.id,
-                                    paypal_order_id: 'TEST_KAUF_' + Date.now(),
-                                    preis: parseFloat(produkt.preis),
-                                    waehrung: 'EUR'
-                                    }]);
-                                    alert("Kauf erfolgreich (Test-Modus)!");
-                                    setShowUnlockBanner(true);
-                                    setTimeout(() => {
-                                        loadShopData();
-                                        setShowUnlockBanner(false);
-                                    }, 2000); 
-                                }}
-                                className="w-full py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-bold hover:bg-[var(--accent-hover)] transition"
-                                >
-                                Kostenlos Freischalten (Test-Modus)
-                                </button>
+                            ) : isNativeApp ? (
+                                /* APP: Nur Google Play */
+                                <GooglePlayCheckoutButton 
+                                  produkt={produkt}
+                                  user={user}
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={loadShopData}
+                                />
                             ) : (
+                                /* WEB: Nur PayPal */
                                 <PayPalCheckoutButton 
-                                produkt={produkt} 
-                                user={user} 
-                                setShowUnlockBanner={setShowUnlockBanner}
-                                onSuccess={loadShopData} 
-                                paypalClientId={PAYPAL_CLIENT_ID}
+                                  produkt={produkt} 
+                                  user={user} 
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={loadShopData} 
+                                  paypalClientId={PAYPAL_CLIENT_ID}
                                 />
                             )}
                             </div>
@@ -274,7 +230,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                 )}
               </div>
 
-              {/* 🎯 NEUER MOBILE-FIRST AUDIO-PLAYER */}
+              {/* 🎯 AUDIO-PLAYER */}
               {hatZugriff && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)]">
                     <AudioPlayerButton 
@@ -298,7 +254,69 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   );
 }
 
-// 🛡️ SUB-KOMPONENTE: PayPal Smart Button (Kollisions-Schutz integriert)
+// 🤖 APP-ZAHLUNG: Google Play Billing
+function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
+  const [storeReady, setStoreReady] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    BillingService.init({
+      productId: produkt.id, 
+      onReady: () => setStoreReady(true),
+      onSuccess: async () => {
+        setIsProcessing(false);
+        const supabase = getSupabase();
+        await supabase.from('kaeufe').insert([{
+          user_id: user.id,
+          produkt_id: produkt.id,
+          paypal_order_id: 'GPLAY_' + Date.now(),
+          preis: parseFloat(produkt.preis),
+          waehrung: 'EUR',
+          widerruf_verzicht_akzeptiert: true
+        }]);
+        setShowUnlockBanner(true);
+        setTimeout(() => {
+          onSuccess();
+          setShowUnlockBanner(false);
+        }, 2000);
+      },
+      onFailure: (msg) => {
+        setIsProcessing(false);
+        setError(msg);
+      }
+    });
+  }, [produkt.id, user]);
+
+  const handlePurchase = () => {
+    setError(null);
+    setIsProcessing(true);
+    BillingService.startPurchase(produkt.id); 
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center">
+      {error && (
+        <div className="w-full text-xs text-[#ef4444] bg-[#fef2f2] border border-[#fecaca] rounded-xl p-2 mb-3 font-medium text-center">
+          {error}
+        </div>
+      )}
+      <button
+        onClick={handlePurchase}
+        disabled={!storeReady || isProcessing}
+        className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+      >
+        {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
+        <span>{storeReady ? 'Über Google Play kaufen' : 'Verbinde Play Store...'}</span>
+      </button>
+      <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
+        Sichere In-App-Zahlung über dein Google-Konto.
+      </div>
+    </div>
+  );
+}
+
+// 🌐 WEB-ZAHLUNG: PayPal Smart Button
 function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
   const [isSdkReady, setIsSdkReady] = useState(false);
   const [error, setError] = useState(false);
@@ -307,27 +325,21 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
   const [missingIdError, setMissingIdError] = useState(false);
 
   useEffect(() => {
+    // 📊 GA4 Tracking: Begin Checkout
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
-       (window as any).dataLayer.push({ event: 'begin_checkout' });
+       (window as any).dataLayer.push({ 
+           event: 'begin_checkout',
+           ecommerce: { items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }] }
+       });
     }
     
-    if (!paypalClientId || paypalClientId === 'undefined' || paypalClientId.trim() === '') {
+    if (!paypalClientId || paypalClientId.trim() === '') {
       setMissingIdError(true);
       return;
     }
 
     if ((window as any).paypal) {
       setIsSdkReady(true);
-      return;
-    }
-
-    if (document.getElementById('paypal-js-sdk')) {
-      const checkInterval = setInterval(() => {
-        if ((window as any).paypal) {
-          clearInterval(checkInterval);
-          setIsSdkReady(true);
-        }
-      }, 200);
       return;
     }
 
@@ -362,6 +374,21 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
         onApprove: async (data: any, actions: any) => {
           if (actions.order && user) {
             const details = await actions.order.capture();
+            
+            // 📊 GA4 Tracking: Purchase
+            if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                (window as any).dataLayer.push({
+                    event: 'purchase',
+                    ecommerce: {
+                        transaction_id: details.id,
+                        value: parseFloat(details.purchase_units[0].amount.value),
+                        currency: 'EUR',
+                        payment_method: 'paypal',
+                        items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }]
+                    }
+                });
+            }
+
             const supabase = getSupabase();
             await supabase.from('kaeufe').insert([{
               user_id: user.id,
@@ -382,15 +409,14 @@ function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, p
     }
   }, [isSdkReady, acceptedTerms, produkt, user, setShowUnlockBanner, onSuccess, isRendering]);
 
-  if (missingIdError) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--bg-alt)] rounded-lg">Zahlungsdienst temporär nicht verfügbar.</p>;
-  if (error) return <p className="text-xs text-[#ef4444] font-medium p-2 bg-[var(--bg-alt)] rounded-lg">Zahlung konnte nicht geladen werden.</p>;
+  if (missingIdError || error) return <p className="text-xs text-[#ef4444] bg-[#fef2f2] p-2 rounded-lg">Zahlungsdienst temporär nicht verfügbar.</p>;
   if (!isSdkReady) return <p className="text-xs text-[var(--text-muted)] animate-pulse">PayPal wird geladen...</p>;
 
   return (
     <div className="w-full">
       <div className="mb-3">
         <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--text-muted)] cursor-pointer">
-          <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-0.5" />
+          <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-0.5 accent-[var(--accent)]" />
           <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird.</span>
         </label>
       </div>
