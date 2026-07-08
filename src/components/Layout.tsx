@@ -127,6 +127,7 @@ export default function Layout() {
       </nav>
 
       {/* Floating Chat Button */}
+      {/* 
       {location.pathname !== '/chat' && (
         <>
           <button
@@ -144,6 +145,7 @@ export default function Layout() {
           )}
         </>
       )}
+      */}
 
       {/* Share Modal */}
       {isShareModalOpen && (
