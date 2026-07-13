@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -240,6 +240,18 @@ export default function Home() {
               </p>
             )}
           </div>
+        </section>
+
+        <section className="mt-0 mb-2 text-center flex justify-center">
+          <a 
+            href="https://t.me/+figVxVO_tkw4MGJi" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-sm"
+          >
+            <Send size={18} />
+            <span>Folge uns auf Telegram: Flow der Stille</span>
+          </a>
         </section>
       </div>
     </>
