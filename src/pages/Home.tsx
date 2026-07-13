@@ -89,16 +89,16 @@ export default function Home() {
         description="Finden Sie innere Ruhe bei Flow der Stille. Ihr persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
       />
       <div className="space-y-8">
-        <header className="mb-12">
+        <header className="mb-12 flex flex-col items-center">
+          <img src="/logo-transparent.png" alt="Logo" className="h-16 mb-4" />
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4"
+            className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4 text-center"
           >
             {t(greetingKey)}, {getUserName()}
-            <img src="/favicon.svg" alt="Logo" className="inline-block h-[1.0em] ml-2 align-middle opacity-80" />
           </motion.h1>
-          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6">
+          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6 text-center">
             {t('home.subtitle')}
           </p>
           

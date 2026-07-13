@@ -48,7 +48,7 @@ export default function Layout() {
         {/* Desktop Sidebar */}
         <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
           <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--bg-alt)] transition-colors shrink-0">
-            <img src="/favicon.svg" alt="Logo" className="w-8 h-8" />
+            <img src="/logo-transparent.png" alt="Logo" className="w-8 h-8" />
           </Link>
           
           <div className="flex flex-col gap-6 w-full">
