@@ -106,7 +106,8 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="beispiel@domain.de"
-                className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
+                /* Tailwind JIT Fix: Placeholder Farbe als Hex erzwungen */
+                className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[#8A9A8A] outline-none transition-all text-sm text-[var(--text-main)] placeholder-[#695C4D]"
                 required
               />
             </div>
@@ -115,7 +116,7 @@ export default function Login() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Passwort</label>
-              <Link to="/forgot-password" className="text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] hover:underline">
+              <Link to="/forgot-password" className="text-xs font-medium text-[#8A9A8A] hover:text-[#728372] hover:underline">
                 Passwort vergessen?
               </Link>
             </div>
@@ -128,7 +129,8 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-12 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all text-sm text-[var(--text-main)]"
+                /* Tailwind JIT Fix: Placeholder Farbe als Hex erzwungen */
+                className="w-full pl-11 pr-12 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl focus:ring-2 focus:ring-[#8A9A8A] outline-none transition-all text-sm text-[var(--text-main)] placeholder-[#695C4D]"
                 required
               />
               <button
@@ -143,9 +145,15 @@ export default function Login() {
           </div>
 
           <button
+            id="login_submit_btn"
             type="submit"
             disabled={loading}
-            className="w-full py-4 flex items-center justify-center bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-full font-medium transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+            onClick={() => {
+              const dataLayer = (window as any).dataLayer || [];
+              dataLayer.push({ event: 'login', method: 'email' });
+            }}
+            /* Tailwind JIT Fix: Harte Hex-Codes für bg, hover und text */
+            className="w-full py-4 flex items-center justify-center bg-[#8A9A8A] hover:bg-[#728372] text-white rounded-full font-medium transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
           >
             {loading ? (
               <span className="flex items-center gap-2">
@@ -166,7 +174,7 @@ export default function Login() {
 
         <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
           Neu bei Flow der Stille?{' '}
-          <Link to="/register" className="text-[var(--accent)] font-medium hover:underline">
+          <Link to="/register" className="text-[#8A9A8A] font-medium hover:underline">
             Konto erstellen
           </Link>
         </div>

@@ -39,13 +39,16 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
 
   async function loadShopData() {
     try {
+      console.log('DEBUG: loadShopData started, user:', user);
       const supabase = getSupabase();
       const { data: prodData, error: prodError } = await supabase.from('produkte').select('*');
+      console.log('DEBUG: prodData:', prodData);
       if (prodError) throw prodError;
 
       let gekaufteSet: Set<string> = new Set();
 
       if (user) {
+        console.log('DEBUG: fetching kaeufe for user:', user.id);
         const { data: kaufData, error: kaufError } = await supabase
           .from('kaeufe')
           .select('produkt_id')
@@ -53,6 +56,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
         if (kaufError) throw kaufError;
         // @ts-ignore
         gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
+        console.log('DEBUG: gekaufteSet:', gekaufteSet);
       }
       
       setProdukte(prodData);
@@ -60,6 +64,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
     } catch (error: any) {
       console.error("Fehler beim Laden des Dashboards:", error.message);
     } finally {
+      console.log('DEBUG: loadShopData finished');
       setLoading(false);
     }
   }
