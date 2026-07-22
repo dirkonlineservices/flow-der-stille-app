@@ -6,6 +6,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import PremiumDashboard from './components/PremiumDashboard';
+import NotFound from './components/NotFound';
 import Home from './pages/Home';
 import Exercises from './pages/Exercises';
 import ExerciseDetail from './pages/ExerciseDetail';
@@ -90,6 +92,7 @@ export default function App() {
                   <Route path="agb" element={<AGB />} />
                   <Route path="rechtliches" element={<Rechtliches />} />
                   <Route path="premium" element={<Premium />} />
+                  <Route path="premium-dashboard" element={<PremiumDashboard />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
@@ -100,6 +103,8 @@ export default function App() {
                   path="/atemchat" 
                   element={<AtemChat />} 
                 />
+
+                <Route path="*" element={<NotFound />} />
 
               </Routes>
             </BrowserRouter>
