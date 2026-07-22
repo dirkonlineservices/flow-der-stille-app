@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { Search, CreditCard, Loader2 } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
+import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
@@ -212,42 +213,22 @@ export default function PremiumShopDashboard() {
                                   Bitte <Link to="/login" className="text-[var(--accent)] underline font-semibold">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline font-semibold">registrieren</Link>.
                                 </div>
                             ) : (
-                              <button 
-                                onClick={() => {
-                                  if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                                    (window as any).dataLayer.push({ event: 'add_to_cart', item_name: produkt.titel, value: produkt.preis });
-                                  }
-                                  // Hier würde die Kauflogik kommen, je nach isNativeApp
-                                  if (isNativeApp) {
-                                      // BillingService.startPurchase(produkt.id);
-                                  } else {
-                                      // PayPal Logik
-                                  }
-                                }}
-                                className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm"
-                              >
-                                Jetzt kaufen
-                              </button>
-                            )}
-                            
-                            {/* Original Button Logik ausgeblendet für jetzt zur Übersicht */}
-                            {false && isNativeApp ? (
-                                /* APP: Nur Google Play */
-                                <GooglePlayCheckoutButton 
-                                  produkt={produkt}
-                                  user={user}
-                                  setShowUnlockBanner={setShowUnlockBanner}
-                                  onSuccess={loadShopData}
-                                />
-                            ) : false && (
-                                /* WEB: Nur PayPal */
-                                <PayPalCheckoutButton 
-                                  produkt={produkt} 
-                                  user={user} 
-                                  setShowUnlockBanner={setShowUnlockBanner}
-                                  onSuccess={loadShopData} 
-                                  paypalClientId={PAYPAL_CLIENT_ID}
-                                />
+                                /* 🔀 CHECKOUT-WEICHE: Zeigt Google Play in der App, PayPal im Web */
+                                isNativeApp ? (
+                                    /* APP: Placeholder */
+                                    <div className="text-sm text-[var(--text-muted)] text-center p-2 border rounded-xl">
+                                        Google Play Checkout nicht konfiguriert.
+                                    </div>
+                                ) : (
+                                    /* WEB: Nur PayPal */
+                                    <PayPalCheckoutButton 
+                                      produkt={produkt} 
+                                      user={user} 
+                                      setShowUnlockBanner={setShowUnlockBanner}
+                                      onSuccess={loadShopData} 
+                                      paypalClientId={import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test-client-id'}
+                                    />
+                                )
                             )}
                             </div>
                         </div>
@@ -336,117 +317,6 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       </button>
       <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
         Sichere In-App-Zahlung über dein Google-Konto.
-      </div>
-    </div>
-  );
-}
-
-// 🌐 WEB-ZAHLUNG: PayPal Smart Button
-function PayPalCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess, paypalClientId }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any, paypalClientId: string }) {
-  const [isSdkReady, setIsSdkReady] = useState(false);
-  const [error, setError] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [isRendering, setIsRendering] = useState(false);
-  const [missingIdError, setMissingIdError] = useState(false);
-
-  useEffect(() => {
-    // 📊 GA4 Tracking: Begin Checkout
-    if (typeof window !== 'undefined' && (window as any).dataLayer) {
-       (window as any).dataLayer.push({ 
-           event: 'begin_checkout',
-           ecommerce: { items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }] }
-       });
-    }
-    
-    if (!paypalClientId || paypalClientId.trim() === '') {
-      setMissingIdError(true);
-      return;
-    }
-
-    if ((window as any).paypal) {
-      setIsSdkReady(true);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = "paypal-js-sdk";
-    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId.trim()}&currency=EUR&intent=capture`;
-    script.async = true;
-    script.onload = () => setIsSdkReady(true);
-    script.onerror = () => setError(true);
-    document.body.appendChild(script);
-  }, [paypalClientId]);
-
-  useEffect(() => {
-    if (isSdkReady && (window as any).paypal && acceptedTerms && !isRendering) {
-      setIsRendering(true);
-      const paypal = (window as any).paypal;
-      const containerId = `#paypal-btn-${produkt.id}`;
-      const container = document.querySelector(containerId);
-      if (container) container.innerHTML = '';
-      
-      paypal.Buttons({
-        style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
-        createOrder: (data: any, actions: any) => {
-          return actions.order.create({
-            intent: "CAPTURE",
-            purchase_units: [{
-              amount: { value: produkt.preis.toString(), currency_code: "EUR" },
-              description: produkt.titel
-            }]
-          });
-        },
-        onApprove: async (data: any, actions: any) => {
-          if (actions.order && user) {
-            const details = await actions.order.capture();
-            
-            // 📊 GA4 Tracking: Purchase
-            if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                (window as any).dataLayer.push({
-                    event: 'purchase',
-                    ecommerce: {
-                        transaction_id: details.id,
-                        value: parseFloat(details.purchase_units[0].amount.value),
-                        currency: 'EUR',
-                        payment_method: 'paypal',
-                        items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }]
-                    }
-                });
-            }
-
-            const supabase = getSupabase();
-            await supabase.from('kaeufe').insert([{
-              user_id: user.id,
-              produkt_id: produkt.id,
-              paypal_order_id: details.id,
-              preis: parseFloat(details.purchase_units[0].amount.value),
-              waehrung: 'EUR',
-              widerruf_verzicht_akzeptiert: true
-            }]);
-            setShowUnlockBanner(true);
-            setTimeout(() => {
-              onSuccess();
-              setShowUnlockBanner(false);
-            }, 2000);
-          }
-        }
-      }).render(containerId);
-    }
-  }, [isSdkReady, acceptedTerms, produkt, user, setShowUnlockBanner, onSuccess, isRendering]);
-
-  if (missingIdError || error) return <p className="text-xs text-[#ef4444] bg-[#fef2f2] p-2 rounded-lg">Zahlungsdienst temporär nicht verfügbar.</p>;
-  if (!isSdkReady) return <p className="text-xs text-[var(--text-muted)] animate-pulse">PayPal wird geladen...</p>;
-
-  return (
-    <div className="w-full">
-      <div className="mb-3">
-        <label className="flex items-start gap-2 text-[0.72rem] leading-[1.3] text-[var(--text-muted)] cursor-pointer">
-          <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} className="mt-0.5 accent-[var(--accent)]" />
-          <span className="leading-[1.3]">Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird.</span>
-        </label>
-      </div>
-      <div className={`transition-opacity duration-200 ${acceptedTerms ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
-        <div id={`paypal-btn-${produkt.id}`}></div>
       </div>
     </div>
   );

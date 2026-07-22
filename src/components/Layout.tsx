@@ -131,10 +131,16 @@ export default function Layout() {
               <h3 className="text-lg font-bold text-[var(--text-main)]">Menü</h3>
               <button className="text-[var(--text-muted)]" onClick={() => setIsBurgerMenuOpen(false)}><X size={24}/></button>
             </div>
-            <Link to="/settings" onClick={() => setIsBurgerMenuOpen(false)} className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] text-center font-bold text-[var(--text-main)]">
-              {t('nav.settings')}
-            </Link>
-            {!user && (
+            {user ? (
+              <>
+                <Link to="/settings" onClick={() => setIsBurgerMenuOpen(false)} className="p-4 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-alt-darker)] border border-[var(--border)] text-center font-bold text-[var(--text-main)] transition-all">
+                  {t('nav.settings')}
+                </Link>
+                <button onClick={() => { logout(); setIsBurgerMenuOpen(false); }} className="p-4 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-alt-darker)] border border-[var(--border)] text-center font-bold text-[var(--text-main)] transition-all">
+                  Logout
+                </button>
+              </>
+            ) : (
               <Link to="/login" onClick={() => setIsBurgerMenuOpen(false)} className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] text-center font-bold text-[var(--text-main)]">
                 {t('auth.login')}
               </Link>
