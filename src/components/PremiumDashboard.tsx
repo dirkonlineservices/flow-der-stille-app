@@ -11,10 +11,12 @@ import { getSupabase } from '../lib/supabaseClient';
 import { Search, CreditCard, Loader2 } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService } from '../lib/billing';
 
-export default function PremiumShopDashboard({ session }: { session: any }) {
+export default function PremiumShopDashboard() {
+  const { user } = useAuth();
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -24,8 +26,6 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
   
-  const user = session?.user;
-
   // ⚡ ERKENNUNG: Läuft die App nativ (App) oder im Browser (Web)?
   const isNativeApp = BillingService.isNative();
 
@@ -209,9 +209,29 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                             <div className="w-full max-w-[280px] flex flex-col gap-3">
                             {!user ? (
                                 <div className="text-center p-4 text-sm font-medium text-[var(--text-muted)] bg-[var(--bg-alt)] rounded-xl border border-[var(--border)]">
-                                Bitte <Link to="/login" className="text-[var(--accent)] underline font-semibold">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline font-semibold">registrieren</Link>.
+                                  Bitte <Link to="/login" className="text-[var(--accent)] underline font-semibold">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline font-semibold">registrieren</Link>.
                                 </div>
-                            ) : isNativeApp ? (
+                            ) : (
+                              <button 
+                                onClick={() => {
+                                  if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                                    (window as any).dataLayer.push({ event: 'add_to_cart', item_name: produkt.titel, value: produkt.preis });
+                                  }
+                                  // Hier würde die Kauflogik kommen, je nach isNativeApp
+                                  if (isNativeApp) {
+                                      // BillingService.startPurchase(produkt.id);
+                                  } else {
+                                      // PayPal Logik
+                                  }
+                                }}
+                                className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm"
+                              >
+                                Jetzt kaufen
+                              </button>
+                            )}
+                            
+                            {/* Original Button Logik ausgeblendet für jetzt zur Übersicht */}
+                            {false && isNativeApp ? (
                                 /* APP: Nur Google Play */
                                 <GooglePlayCheckoutButton 
                                   produkt={produkt}
@@ -219,7 +239,7 @@ export default function PremiumShopDashboard({ session }: { session: any }) {
                                   setShowUnlockBanner={setShowUnlockBanner}
                                   onSuccess={loadShopData}
                                 />
-                            ) : (
+                            ) : false && (
                                 /* WEB: Nur PayPal */
                                 <PayPalCheckoutButton 
                                   produkt={produkt} 
