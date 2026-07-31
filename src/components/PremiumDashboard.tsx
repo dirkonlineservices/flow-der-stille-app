@@ -226,7 +226,7 @@ export default function PremiumShopDashboard() {
                                       user={user} 
                                       setShowUnlockBanner={setShowUnlockBanner}
                                       onSuccess={loadShopData} 
-                                      paypalClientId={import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test-client-id'}
+                                      paypalClientId={import.meta.env.VITE_PAYPAL_CLIENT_ID || PAYPAL_CLIENT_ID}
                                     />
                                 )
                             )}

@@ -15,27 +15,67 @@ export interface BlogPost {
 }
 
 export function getAllPosts(): BlogPost[] {
-  if (!fs.existsSync(postsDirectory)) return [];
+  try {
+    if (!fs.existsSync(postsDirectory)) {
+      fs.mkdirSync(postsDirectory, { recursive: true });
+    }
 
-  const fileNames = fs.readdirSync(postsDirectory);
-  const posts = fileNames
-    .filter((file) => file.endsWith('.mdx') || file.endsWith('.md'))
-    .map((fileName) => {
-      const slug = fileName.replace(/\.mdx?$/, '');
-      const fullPath = path.join(postsDirectory, fileName);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const { data, content } = matter(fileContents);
+    const fileNames = fs.readdirSync(postsDirectory);
+    let mdFiles = fileNames.filter((file) => file.endsWith('.mdx') || file.endsWith('.md'));
 
-      return {
-        slug,
-        content,
-        title: data.title || '',
-        date: data.date || '',
-        excerpt: data.excerpt || '',
-        category: data.category || 'Meditation',
-        readTime: data.readTime || '5 Min.',
-      };
-    });
+    // If no posts exist, create a default sample post
+    if (mdFiles.length === 0) {
+      const samplePath = path.join(postsDirectory, 'innere-ruhe-im-alltag.md');
+      const sampleContent = `---
+title: "Innere Ruhe im Alltag finden"
+date: "2026-06-01"
+excerpt: "Erfahren Sie, wie Sie mit einfachen Atemübungen und bewussten Pausen mehr Gelassenheit in Ihren Tag bringen."
+category: "Herzkompass"
+readTime: "5 Min."
+---
 
-  return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+In unserer heutigen, oft hektischen Welt ist es gar nicht so einfach, bei sich selbst zu bleiben. Gedanken kreisen, Termine drängen, und der Atem wird flach.
+
+### Der erste Schritt: Bewusstes Atmen
+
+Wenn Sie merken, dass die Anspannung steigt, halten Sie kurz inne. Nehmen Sie drei tiefe Atemzüge in den Bauch. Spüren Sie, wie sich die Bauchdecke hebt und senkt.
+
+- **Einatmen:** Ruhe einladen.
+- **Ausatmen:** Anspannung loslassen.
+
+Mit diesen kleinen Momenten der Stille schaffen Sie Anker im Alltag.`;
+      fs.writeFileSync(samplePath, sampleContent, 'utf8');
+      mdFiles = ['innere-ruhe-im-alltag.md'];
+    }
+
+    const posts = mdFiles
+      .map((fileName) => {
+        try {
+          const slug = fileName.replace(/\.mdx?$/, '');
+          const fullPath = path.join(postsDirectory, fileName);
+          const fileContents = fs.readFileSync(fullPath, 'utf8');
+          const { data, content } = matter(fileContents);
+
+          return {
+            slug,
+            content,
+            title: data.title || 'Unbenannter Beitrag',
+            date: data.date || new Date().toISOString().split('T')[0],
+            excerpt: data.excerpt || '',
+            category: data.category || 'Herzkompass',
+            readTime: data.readTime || '5 Min.',
+          };
+        } catch (e) {
+          console.error(`Error reading blog post ${fileName}:`, e);
+          return null;
+        }
+      })
+      .filter((p): p is BlogPost => p !== null);
+
+    return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+  } catch (error) {
+    console.error('Error in getAllPosts:', error);
+    return [];
+  }
 }
+

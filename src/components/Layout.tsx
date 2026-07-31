@@ -57,7 +57,6 @@ export default function Layout() {
             <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} />
             <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} />
             <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} />
-            <NavLink to="/blog" icon={<Newspaper />} label="Blog" />
             <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" />
             <button 
               onClick={() => setIsBurgerMenuOpen(true)}
@@ -75,7 +74,6 @@ export default function Layout() {
           <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
           <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
           <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} mobile />
-          <NavLink to="/blog" icon={<Newspaper />} label="Blog" mobile />
           <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" mobile />
           <button 
             onClick={() => setIsBurgerMenuOpen(true)}
