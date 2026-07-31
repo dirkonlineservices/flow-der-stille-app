@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import { GoogleGenAI } from '@google/genai';
+import { getAllPosts } from './src/lib/blog';
 
 const app = express();
 const PORT = 3000;
@@ -238,6 +239,30 @@ app.get('/api/recipes/current', (req, res) => {
   
   const recipes = db.prepare('SELECT * FROM weekly_recipes WHERE week_number = ?').all(weekIndex);
   res.json(recipes);
+});
+
+// Blog API Routes
+app.get('/api/blog', (req, res) => {
+  try {
+    const posts = getAllPosts();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch blog posts' });
+  }
+});
+
+app.get('/api/blog/:slug', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const posts = getAllPosts();
+    const post = posts.find((p) => p.slug === slug);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch blog post' });
+  }
 });
 
 // --- Chat Route mit Paywall & Aura KI ---

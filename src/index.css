@@ -1,21 +1,45 @@
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    --bg-main: #f5f5f0;
+    --bg-alt: #F7F6F2;
+    --bg-card: #FFFFFF;
+    --border: #E3E1D9;
+    --text-main: #3D3B35;
+    --text-muted: #695C4D;
+    --accent: #8A9A8A;
+    --accent-hover: #728372;
+  }
+
+  [data-theme='dark'] {
+    --bg-main: #1c1917;
+    --bg-alt: #292524;
+    --bg-card: #292524;
+    --border: #44403c;
+    --text-main: #e7e5e4;
+    --text-muted: #a8a29e;
+    --accent: #8A9A8A;
+    --accent-hover: #a3b2a3;
+  }
+}
+
 @theme {
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
   
-  --color-bg-body: var(--bg-body);
+  --color-bg-body: var(--bg-main);
   --color-bg-alt: var(--bg-alt);
   --color-bg-alt-darker: var(--bg-alt-darker);
   --color-bg-card: var(--bg-card);
   --color-bg-border: var(--bg-border);
-  --color-border-main: var(--border-main);
+  --color-border-main: var(--border);
   
   --color-text-main: var(--text-main);
   --color-text-muted: var(--text-muted);
   --color-text-muted-light: var(--text-muted-light);
   
-  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary: var(--accent);
   --color-accent-hover: var(--accent-hover);
 }
 
@@ -51,7 +75,7 @@
   
   --accent-primary: #8A9A8A;
   --accent: #8A9A8A;
-  --accent-hover: #9bb09b;
+  --accent-hover: #a3b2a3;
 }
 
 body {

@@ -6,14 +6,14 @@ export interface Product {
   priceNum: number;
   price: string;
   duration: string;
-  category: 'meditation' | 'course' | 'masterclass' | 'feature';
+  category: 'meditation' | 'self_hypnosis' | 'feature';
 }
 
 export const PRODUCTS: Product[] = [
   {
     id: 'premium_chat',
-    title: 'Premium Chat',
-    description: 'Unbegrenzter Zugang zum KI-Assistenten für individuelle Unterstützung.',
+    title: 'Premium Chat & KI-Assistent',
+    description: 'Unbegrenzter Zugang zum KI-Assistenten für individuelle Unterstützung und Achtsamkeitspläne.',
     highlights: ['KI-Support rund um die Uhr', 'Individuelle Entspannungspläne', 'Daten innerhalb der EU gespeichert'],
     priceNum: 4.99,
     price: '4,99 € / Monat',
@@ -21,42 +21,12 @@ export const PRODUCTS: Product[] = [
     category: 'feature'
   },
   {
-    id: 'parasympathikus_kurs',
-    title: 'Parasympathikus-Kompaktkurs',
-    description: 'Aktivierung des Vagusnervs für sofortige innere Ruhe & Entspannung.',
-    highlights: ['Sofort-Techniken gegen Stress', 'Fundiertes Hintergrundwissen', 'Begleitende Audio-Sessions'],
-    priceNum: 49.00,
-    price: '49,00 €',
-    duration: '4 Wochen Kurs',
-    category: 'course'
-  },
-  {
-    id: 'darm_hirn_class',
-    title: 'Darm-Hirn-Achse Masterclass',
-    description: 'Ganzheitliche Wege & Ernährungstipps gegen stressbedingte Verdauungsbeschwerden.',
-    highlights: ['Analyse der Darm-Hirn-Verbindung', 'Ernährung für das Nervensystem', 'Praktische Umsetzungspläne'],
-    priceNum: 79.00,
-    price: '79,00 €',
-    duration: '6 Module Video-Content',
-    category: 'masterclass'
-  },
-  {
-    id: 'atemschule_deep',
-    title: 'Tiefenentspannung & Atemschule',
-    description: 'Atemtechniken zur Steigerung der Herzratenvariabilität (HRV) und Stressresistenz.',
-    highlights: ['Herz-Kohärenz-Training', 'Verbesserung der Stressresistenz', 'Wissenschaftlich basierte Übungen'],
-    priceNum: 35.00,
-    price: '35,00 €',
-    duration: '12 angeleitete Praxis-Sessions',
-    category: 'course'
-  },
-  {
     id: 'meditation_sleep',
     title: 'Meditation: Tiefer Schlaf',
     description: 'Geführte Meditation für tiefen und erholsamen Schlaf mit sanfter Entspannung.',
     highlights: ['Schnell zur Ruhe finden', 'Gedankenkarussell stoppen', 'Sanfte Entspannung zum Loslassen'],
-    priceNum: 9.99,
-    price: '9,99 €',
+    priceNum: 4.99,
+    price: '4,99 €',
     duration: '30 Minuten Audio',
     category: 'meditation'
   },
@@ -65,8 +35,8 @@ export const PRODUCTS: Product[] = [
     title: 'Meditation: Klarer Fokus',
     description: 'Energetisierende Kurz-Meditation für neue Konzentration und klaren Verstand.',
     highlights: ['Fokus am Morgen stärken', 'Energetisierender Start', 'Mentale Klarheit gewinnen'],
-    priceNum: 9.99,
-    price: '9,99 €',
+    priceNum: 4.99,
+    price: '4,99 €',
     duration: '15 Minuten Audio',
     category: 'meditation'
   },
@@ -75,9 +45,29 @@ export const PRODUCTS: Product[] = [
     title: 'Meditation: Angst & Sorgen loslassen',
     description: 'Spezielle Anleitung zur Beruhigung von Angstzuständen und rasenden Gedanken.',
     highlights: ['Beruhigung bei Angst', 'Techniken gegen Grübeln', 'Sichere Anker finden'],
-    priceNum: 14.99,
-    price: '14,99 €',
+    priceNum: 5.99,
+    price: '5,99 €',
     duration: '45 Minuten Audio',
     category: 'meditation'
+  },
+  {
+    id: 'selbsthypnose_entspannung',
+    title: 'Selbsthypnose: Tiefe Mentale Entspannung',
+    description: 'Tiefenwirksame Selbsthypnose zur Auflösung von Alltagsstress und tiefem mentalen Loslassen.',
+    highlights: ['Tiefenentspannung des Unterbewusstseins', 'Stress abbauen & Regeneration', 'Positive Glaubenssätze verankern'],
+    priceNum: 7.99,
+    price: '7,99 €',
+    duration: '25 Minuten Audio',
+    category: 'self_hypnosis'
+  },
+  {
+    id: 'selbsthypnose_schlaf',
+    title: 'Selbsthypnose: Einschlafen & Loslassen',
+    description: 'Sanfte Hypnose-Session, die dich sicher und geborgen in den Schlaf gleiten lässt.',
+    highlights: ['Gedankenstrom beruhigen', 'Einschlaf-Blockaden lösen', 'Tiefen Erholungsschlaf fördern'],
+    priceNum: 7.99,
+    price: '7,99 €',
+    duration: '35 Minuten Audio',
+    category: 'self_hypnosis'
   }
 ];

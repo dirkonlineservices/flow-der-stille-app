@@ -16,7 +16,7 @@ import Learn from './pages/Learn';
 import Evening from './pages/Evening';
 import Settings from './pages/Settings';
 import AtemChat from './pages/atemchat'; 
-import Shop from './pages/Shop';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AGB from './pages/AGB';
@@ -34,6 +34,9 @@ import Impressum from './pages/Impressum';
 import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
 import Danke from './pages/Danke';
 import RecipeDetail from './pages/RecipeDetail';
+import Blog from './pages/Blog';
+import BlogPostDetail from './pages/BlogPost';
+import BlogEditor from './pages/BlogEditor';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
@@ -76,7 +79,6 @@ export default function App() {
                   <Route path="learn" element={<Learn />} />
                   <Route path="evening" element={<Evening />} />
                   <Route path="settings" element={<Settings />} />
-                  <Route path="shop" element={<Shop />} />
                   <Route path="chat" element={<ChatRoute />} />
                   <Route path="login" element={<Login />} />
                   <Route path="forgot-password" element={<ForgotPassword />} />
@@ -96,6 +98,10 @@ export default function App() {
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
+                  <Route path="blog" element={<Blog />} />
+                  <Route path="blog/new" element={<BlogEditor />} />
+                  <Route path="blog/schreiben" element={<BlogEditor />} />
+                  <Route path="blog/:slug" element={<BlogPostDetail />} />
                 </Route>
 
                 {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}

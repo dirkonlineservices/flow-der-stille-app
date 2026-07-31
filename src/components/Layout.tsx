@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu } from 'lucide-react';
+import { Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, Newspaper } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { AdminTools } from './AdminTools';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -56,6 +57,7 @@ export default function Layout() {
             <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} />
             <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} />
             <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} />
+            <NavLink to="/blog" icon={<Newspaper />} label="Blog" />
             <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" />
             <button 
               onClick={() => setIsBurgerMenuOpen(true)}
@@ -73,6 +75,7 @@ export default function Layout() {
           <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} mobile />
           <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} mobile />
           <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} mobile />
+          <NavLink to="/blog" icon={<Newspaper />} label="Blog" mobile />
           <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" mobile />
           <button 
             onClick={() => setIsBurgerMenuOpen(true)}
@@ -148,6 +151,8 @@ export default function Layout() {
           </div>
         </div>
       )}
+
+      <AdminTools />
 
     </div>
   );
