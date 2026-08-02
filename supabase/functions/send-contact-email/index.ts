@@ -33,7 +33,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'Flow der Stille <kontakt@deine-verifizierte-domain.de>', // Hier deine verifizierte Absenderadresse rein
+        from: 'Flow der Stille <kontakt@flow-der-stille.de>',
         to: email,
         subject: 'Deine Nachricht ist angekommen – Flow der Stille',
         text: `Hallo ${name},\n\nvielen Dank für deine Nachricht und dein Vertrauen.\n\nWir haben dein Anliegen erhalten. Wir schauen uns deine Rückmeldung in Ruhe an und melden uns so schnell wie möglich bei dir zurück.\n\nBis dahin wünschen wir dir einen entspannten Tag.\n\nHerzliche Grüße\nDas Team von Flow der Stille\n\n---\nFlow der Stille\nhttps://flow-der-stille.de`
@@ -48,8 +48,8 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`
       },
       body: JSON.stringify({
-        from: 'Flow der Stille System <kontakt@deine-verifizierte-domain.de>',
-        to: 'deine-zieladresse@domain.de', // Wo du die Leads empfangen willst
+        from: 'Flow der Stille System <kontakt@flow-der-stille.de>',
+        to: 'info@flow-der-stille.de',
         subject: `Neue Kontaktanfrage von ${name}`,
         text: `Name: ${name}\nEmail: ${email}\n\nNachricht:\n${message}`
       })
