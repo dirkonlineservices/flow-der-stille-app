@@ -69,51 +69,76 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
       paypal.Buttons({
         style: { layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 },
         createOrder: (data: any, actions: any) => {
-          return actions.order.create({
-            intent: 'CAPTURE',
-            purchase_units: [
-              {
-                amount: { value: produkt.preis.toString(), currency_code: 'EUR' },
-                description: produkt.titel,
-              },
-            ],
-          });
+          try {
+            return actions.order.create({
+              intent: 'CAPTURE',
+              purchase_units: [
+                {
+                  amount: { value: (produkt.preis ?? '0.00').toString(), currency_code: 'EUR' },
+                  description: produkt.titel || 'Produkt',
+                },
+              ],
+            });
+          } catch (err) {
+            console.error('PayPal createOrder error:', err);
+            setError(true);
+            throw err;
+          }
         },
         onApprove: async (data: any, actions: any) => {
-          if (actions.order && user) {
-            const details = await actions.order.capture();
+          try {
+            if (actions.order && user) {
+              const details = await actions.order.capture();
+              const amountVal = details?.purchase_units?.[0]?.amount?.value || produkt.preis || '0.00';
+              const priceValue = parseFloat(amountVal);
+              const orderId = details?.id || 'PP_' + Date.now();
 
-            // 📊 GA4 Tracking: Purchase
-            if (typeof window !== 'undefined' && (window as any).dataLayer) {
-              (window as any).dataLayer.push({
-                event: 'purchase',
-                ecommerce: {
-                  transaction_id: details.id,
-                  value: parseFloat(details.purchase_units[0].amount.value),
-                  currency: 'EUR',
-                  payment_method: 'paypal',
-                  items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }],
+              // 📊 GA4 Tracking: Purchase
+              if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                (window as any).dataLayer.push({
+                  event: 'purchase',
+                  ecommerce: {
+                    transaction_id: orderId,
+                    value: priceValue,
+                    currency: 'EUR',
+                    payment_method: 'paypal',
+                    items: [{ item_id: produkt.id, item_name: produkt.titel, price: produkt.preis }],
+                  },
+                });
+              }
+
+              const supabase = getSupabase();
+              const { error: dbError } = await supabase.from('kaeufe').insert([
+                {
+                  user_id: user.id,
+                  produkt_id: produkt.id,
+                  paypal_order_id: orderId,
+                  preis: priceValue,
+                  waehrung: 'EUR',
+                  widerruf_verzicht_akzeptiert: true,
                 },
-              });
-            }
+              ]);
 
-            const supabase = getSupabase();
-            await supabase.from('kaeufe').insert([
-              {
-                user_id: user.id,
-                produkt_id: produkt.id,
-                paypal_order_id: details.id,
-                preis: parseFloat(details.purchase_units[0].amount.value),
-                waehrung: 'EUR',
-                widerruf_verzicht_akzeptiert: true,
-              },
-            ]);
-            setShowUnlockBanner(true);
-            setTimeout(() => {
-              onSuccess();
-              setShowUnlockBanner(false);
-            }, 2000);
+              if (dbError) {
+                console.error('Supabase insert error in PayPal onApprove:', dbError);
+                setError(true);
+                return;
+              }
+
+              setShowUnlockBanner(true);
+              setTimeout(() => {
+                onSuccess();
+                setShowUnlockBanner(false);
+              }, 2000);
+            }
+          } catch (err) {
+            console.error('PayPal onApprove error:', err);
+            setError(true);
           }
+        },
+        onError: (err: any) => {
+          console.error('PayPal SDK error:', err);
+          setError(true);
         },
       }).render(containerId);
     }

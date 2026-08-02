@@ -101,8 +101,9 @@ export default function Layout() {
       </div>
 
       {/* 🛠️ OPTIMIERTER FOOTER: Gleichmäßiges Padding, Flex-Wrap-Kompaktierung */}
-      <footer className="w-full max-w-5xl mx-auto px-6 md:px-12 mt-12 md:mt-16 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] flex flex-wrap justify-center gap-x-6 gap-y-3">
+      <footer className="w-full max-w-5xl mx-auto px-6 md:px-12 mt-12 md:mt-16 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
         {[
+          { to: '/contact', label: 'Kontakt', isButton: true },
           { to: '/impressum', label: 'Impressum' },
           { to: '/datenschutz', label: 'Datenschutz' },
           { to: '/agb', label: 'AGB' },
@@ -110,14 +111,25 @@ export default function Layout() {
           { to: '/online-widerruf', label: 'Online-Widerruf' },
           { to: '/konto-loeschen', label: 'Konto löschen' }
         ].map((link) => (
-          <Link 
-            key={link.to} 
-            to={link.to} 
-            onClick={() => pushNavigationClick(link.label)}
-            className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
-          >
-            {link.label}
-          </Link>
+          link.isButton ? (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => pushNavigationClick(link.label)}
+              className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
+            >
+              {link.label}
+            </Link>
+          ) : (
+            <Link 
+              key={link.to} 
+              to={link.to} 
+              onClick={() => pushNavigationClick(link.label)}
+              className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
+            >
+              {link.label}
+            </Link>
+          )
         ))}
       </footer>
 
