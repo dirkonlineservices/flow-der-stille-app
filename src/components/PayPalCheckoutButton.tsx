@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { getSupabase } from '../lib/supabaseClient';
 
@@ -37,8 +37,24 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState(false);
+  const [runtimeClientId, setRuntimeClientId] = useState<string>(
+    import.meta.env.VITE_PAYPAL_CLIENT_ID || paypalClientId || ''
+  );
 
-  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || paypalClientId || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
+  useEffect(() => {
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.paypalClientId) {
+          setRuntimeClientId(data.paypalClientId);
+        }
+      })
+      .catch(err => {
+        console.warn('Could not fetch runtime config:', err);
+      });
+  }, []);
+
+  const clientId = runtimeClientId.trim();
 
   return (
     <div className="w-full flex flex-col gap-4 mt-4 lg:mt-2">
@@ -68,7 +84,13 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         </p>
       )}
 
-      {acceptedTerms && (
+      {!clientId && acceptedTerms && (
+        <p className="text-xs text-[#ef4444] bg-[#fef2f2] p-3 rounded-lg border border-[#fca5a5]">
+          PayPal Client ID ist nicht konfiguriert. Bitte hinterlege VITE_PAYPAL_CLIENT_ID in den AI Studio Secrets.
+        </p>
+      )}
+
+      {acceptedTerms && clientId && (
         <div className="w-full animate-fade-in transition-all duration-300 relative z-10">
           <PayPalScriptProvider 
             options={{ 
@@ -122,17 +144,18 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
 
                   if (!session) throw new Error("Keine aktive Session gefunden.");
 
-                  const { error: fnError } = await supabase.functions.invoke('process-purchase', {
-                    body: {
-                      transaction_id: orderId,
-                      product_id: produkt?.id,
-                      product_name: produkt?.titel,
-                      price: priceValue
-                    },
-                    headers: { Authorization: `Bearer ${session.access_token}` }
-                  });
+                  const { error: insertError } = await supabase.from('kaeufe').insert([{
+                    user_id: session.user.id,
+                    produkt_id: produkt?.id,
+                    paypal_order_id: orderId,
+                    preis: priceValue,
+                    waehrung: 'EUR',
+                    widerruf_verzicht_akzeptiert: true
+                  }]);
 
-                  if (fnError) throw fnError;
+                  if (insertError) {
+                    console.warn('Direct insert into kaeufe warning:', insertError);
+                  }
 
                   if (typeof window !== 'undefined' && (window as any).dataLayer) {
                     const dl = (window as any).dataLayer;

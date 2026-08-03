@@ -141,6 +141,12 @@ app.post('/api/logout', (req, res) => {
   res.json({ message: 'Logged out' });
 });
 
+app.get('/api/config', (req, res) => {
+  res.json({
+    paypalClientId: process.env.VITE_PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || ''
+  });
+});
+
 app.get('/api/me', authenticateToken, (req: any, res) => {
   const user = db.prepare('SELECT id, username, first_name, last_name, email, is_premium FROM users WHERE id = ?').get(req.user.id) as any;
   if (!user) return res.sendStatus(401);
