@@ -8,41 +8,11 @@ import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService } from '../lib/billing';
 
-const defaultProdukte = [
-  {
-    id: 'atemarbeit_herzoeffnung',
-    titel: 'Herzöffnung Meditation',
-    beschreibung: 'Eine geführte Atemreise zur Öffnung des Herzraumes und tiefer emotionaler Entlastung.',
-    kategorie: 'Meditation',
-    preis: '1.99',
-    dauer: 600,
-    audio_path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-  },
-  {
-    id: 'tiefenentspannung_achtsamkeit',
-    titel: 'Tiefenentspannung & Achtsamkeit',
-    beschreibung: 'Finde innere Ruhe und Erdung durch achtsame Körperwahrnehmung und sanfte Klänge.',
-    kategorie: 'Entspannungsübungen',
-    preis: '4.99',
-    dauer: 900,
-    audio_path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
-  },
-  {
-    id: 'selbsthypnose_innerer_friede',
-    titel: 'Selbsthypnose für inneren Frieden',
-    beschreibung: 'Löse mentale Blockaden und stärke dein Vertrauen in den Moment durch sanfte Selbsthypnose.',
-    kategorie: 'Selbsthypnose',
-    preis: '9.99',
-    dauer: 1200,
-    audio_path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-  }
-];
-
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
-  const [produkte, setProdukte] = useState<any[]>(defaultProdukte);
+  const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showUnlockBanner, setShowUnlockBanner] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
@@ -53,9 +23,10 @@ export default function PremiumShopDashboard() {
   const [loadingPurchases, setLoadingPurchases] = useState(true);
 
   const isNativeApp = BillingService.isNative();
-
   const HEART_OPENING_ID = 'atemarbeit_herzoeffnung';
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
+  
+  // Zieht den Key exakt aus deinen .env Variablen
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   useEffect(() => {
     loadShopData();
@@ -98,7 +69,6 @@ export default function PremiumShopDashboard() {
             if (el) {
               el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-              // Fallback timeout: if element not found after 2.5s, clean up hash and return to premium page
               window.history.replaceState(null, '', window.location.pathname);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -107,7 +77,6 @@ export default function PremiumShopDashboard() {
           }
         }, 300);
 
-        // Safety fallback timeout: return to main premium page after 4 seconds if timeout occurs
         const fallbackTimer = setTimeout(() => {
           if (window.location.hash && window.location.hash.startsWith('#product-')) {
             window.history.replaceState(null, '', window.location.pathname);
@@ -130,7 +99,7 @@ export default function PremiumShopDashboard() {
       const supabase = getSupabase();
       const { data: prodData, error: prodError } = await supabase.from('produkte').select('*');
       
-      let finalProdukte = defaultProdukte;
+      let finalProdukte = [];
       if (!prodError && prodData && prodData.length > 0) {
         finalProdukte = prodData;
       }
@@ -141,18 +110,10 @@ export default function PremiumShopDashboard() {
       if (user) {
         try {
           const [kaufRes, vipRes] = await Promise.all([
-            supabase
-              .from('kaeufe')
-              .select('produkt_id')
-              .eq('user_id', user.id),
-            supabase
-              .from('vip_zugang')
-              .select('user_id')
-              .eq('user_id', user.id)
-              .maybeSingle()
+            supabase.from('kaeufe').select('produkt_id').eq('user_id', user.id),
+            supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
           ]);
           if (!kaufRes.error && kaufRes.data) {
-            // @ts-ignore
             gekaufteSet = new Set(kaufRes.data.map((k: any) => k.produkt_id));
           }
           if (!vipRes.error && vipRes.data) {
@@ -168,7 +129,7 @@ export default function PremiumShopDashboard() {
       setIsVip(userIsVip);
     } catch (error: any) {
       console.error("Fehler beim Laden:", error);
-      setProdukte(defaultProdukte);
+      setProdukte([]);
     } finally {
       setLoading(false);
     }
@@ -178,18 +139,19 @@ export default function PremiumShopDashboard() {
   const categories = user ? [...baseCategories, 'Meine Käufe'] : baseCategories;
 
   const formatDuration = (seconds: number) => {
+    if (!seconds) return '';
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const filteredProdukte = produkte.filter(prod => {
-    const matchesSearch = prod.titel.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          prod.beschreibung.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = prod.titel?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          prod.beschreibung?.toLowerCase().includes(searchQuery.toLowerCase());
     
     let matchesCategory = true;
     const catLower = prod.kategorie?.toLowerCase() || '';
-    const titleLower = prod.titel.toLowerCase();
+    const titleLower = prod.titel?.toLowerCase() || '';
 
     if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
@@ -221,7 +183,7 @@ export default function PremiumShopDashboard() {
       return 0;
   });
 
-  if (loading) return <div className="p-10 text-center text-[var(--text-muted)]">Inhalte werden geladen...</div>;
+  if (loading) return <div className="p-10 text-center text-[var(--text-muted)] animate-pulse">Inhalte werden aus der Datenbank geladen...</div>;
 
   return (
     <div className="max-w-5xl mx-auto p-4 pb-32 lg:p-6 lg:pb-12 font-sans bg-[var(--bg-main)] min-h-screen">
@@ -303,6 +265,14 @@ export default function PremiumShopDashboard() {
 
       <div className="space-y-6">
         {showUnlockBanner && <UnlockBanner />}
+        
+        {produkte.length === 0 && !loading && (
+          <div className="text-center p-12 border border-[var(--border)] rounded-2xl bg-[var(--bg-card)]">
+            <h3 className="text-xl font-medium text-[var(--text-main)] mb-2">Es sind noch keine Produkte verfügbar</h3>
+            <p className="text-[var(--text-muted)]">Lade neue Inhalte über dein Supabase Dashboard hoch.</p>
+          </div>
+        )}
+
         {filteredProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const hatZugriff = isVip || gekauftIds.has(produkt.id) || istKostenlos;
@@ -333,7 +303,7 @@ export default function PremiumShopDashboard() {
                 <div className="flex-1 flex flex-col">
                     <div className="flex items-center gap-3 mb-4">
                       <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--bg-alt)] text-[var(--text-muted)] uppercase">
-                          {produkt.kategorie || 'Atemarbeit'}
+                          {produkt.kategorie || 'Kategorie fehlt'}
                       </span>
                       {produkt.dauer && (
                           <span className="text-xs font-medium text-[var(--text-muted)]">
@@ -375,7 +345,7 @@ export default function PremiumShopDashboard() {
                                       user={user} 
                                       setShowUnlockBanner={setShowUnlockBanner}
                                       onSuccess={loadShopData} 
-                                      paypalClientId={import.meta.env.VITE_PAYPAL_CLIENT_ID || PAYPAL_CLIENT_ID}
+                                      paypalClientId={PAYPAL_CLIENT_ID}
                                     />
                                 )
                             )}
@@ -419,6 +389,23 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       onReady: () => setStoreReady(true),
       onSuccess: async () => {
         setIsProcessing(false);
+        
+        // UX: Tracking Event für GA4
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'purchase',
+            ecommerce: {
+              currency: 'EUR',
+              value: parseFloat(produkt.preis),
+              items: [{
+                item_id: produkt.id,
+                item_name: produkt.titel,
+                price: parseFloat(produkt.preis)
+              }]
+            }
+          });
+        }
+
         const supabase = getSupabase();
         await supabase.from('kaeufe').insert([{
           user_id: user.id,
