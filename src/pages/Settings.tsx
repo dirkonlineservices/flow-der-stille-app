@@ -590,7 +590,7 @@ export default function Settings() {
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                           <div>
                             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                              Aktiviert & Freigeschaltet
+                              Aktiviert
                             </span>
                             <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course?.titel || 'Unbekanntes Produkt'}</h3>
                           </div>
@@ -602,13 +602,13 @@ export default function Settings() {
 
                         <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course?.beschreibung}</p>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-main)]">
-                           <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
-                             <CheckCircle2 size={14} /> Bereit zum Lernen
-                           </span>
-                           <button className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
-                             <Eye size={12} /> Kurs öffnen
-                           </button>
+                        <div className="flex items-center justify-end pt-2 border-t border-[var(--color-border-main)]">
+                           <Link 
+                             to={`/premium#product-${course?.id || kauf.produkt_id}`}
+                             className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
+                           >
+                             <Eye size={12} /> Zum Produkt
+                           </Link>
                         </div>
                       </div>
                     );

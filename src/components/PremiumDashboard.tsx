@@ -82,6 +82,17 @@ export default function PremiumShopDashboard() {
     fetchMyPurchases();
   }, [user]);
 
+  useEffect(() => {
+    if (window.location.hash) {
+      const el = document.querySelector(window.location.hash);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    }
+  }, [produkte]);
+
   async function loadShopData() {
     try {
       const supabase = getSupabase();
@@ -213,15 +224,34 @@ export default function PremiumShopDashboard() {
             <p className="text-sm text-[var(--text-muted)]">Du hast noch keine Produkte erworben.</p>
           ) : (
             <div className="flex flex-col gap-3">
-              {myPurchases.map((purchase) => (
-                <div key={purchase.id || purchase.produkt_id} className="flex justify-between items-center p-3 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)]">
-                  <div>
-                    <p className="font-medium text-sm text-[var(--text-main)]">{purchase.produkt_id}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Kaufdatum: {new Date(purchase.created_at || Date.now()).toLocaleDateString('de-DE')}</p>
+              {myPurchases.map((purchase) => {
+                const prod = produkte.find(p => p.id === purchase.produkt_id);
+                return (
+                  <div key={purchase.id || purchase.produkt_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)]">
+                    <div>
+                      <p className="font-medium text-sm text-[var(--text-main)]">{prod?.titel || purchase.produkt_id}</p>
+                      <p className="text-xs text-[var(--text-muted)]">Kaufdatum: {new Date(purchase.created_at || Date.now()).toLocaleDateString('de-DE')}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">Aktiviert</span>
+                      <a 
+                        href={`#product-${purchase.produkt_id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const el = document.getElementById(`product-${purchase.produkt_id}`);
+                          if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            window.location.hash = `product-${purchase.produkt_id}`;
+                          }
+                        }}
+                        className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-main)] text-xs font-semibold rounded-lg text-[var(--text-main)] transition-all"
+                      >
+                        Zum Produkt
+                      </a>
+                    </div>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-[var(--accent)] text-white">Freigeschaltet</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -236,7 +266,7 @@ export default function PremiumShopDashboard() {
 
           if (isHeartOpening && !user) {
             return (
-              <div key={produkt.id} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition hover:shadow-md">
+              <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition hover:shadow-md">
                 <div className="flex-1">
                   <span className="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded bg-[var(--bg-alt)] text-[var(--text-muted)] uppercase mb-3 inline-block">
                     {produkt.kategorie || 'Atemarbeit'}
@@ -252,7 +282,7 @@ export default function PremiumShopDashboard() {
           }
 
           return (
-            <div key={produkt.id} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 lg:p-8 flex flex-col transition hover:shadow-md">
+            <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 lg:p-8 flex flex-col transition hover:shadow-md">
               
               <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-10">
                 
