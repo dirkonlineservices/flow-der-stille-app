@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
+import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newsletterService';
 import SEO from '../components/SEO';
 import { PRODUCTS } from '../data/store';
 
@@ -94,9 +95,22 @@ export default function Settings() {
       newsletter_optin: newsletter,
     };
 
-    // If newsletter newly enabled, add timestamp
-    if (newsletter && !user.newsletter_optin) {
+    // Sync newsletter status if changed
+    if (user.email) {
+      if (newsletter && !user.newsletter_optin) {
         profileData.newsletter_optin_timestamp = new Date().toISOString();
+        await subscribeToNewsletter({
+          email: user.email,
+          firstName,
+          userId: user.id,
+          source: 'settings'
+        });
+      } else if (!newsletter && user.newsletter_optin) {
+        await unsubscribeFromNewsletter({
+          email: user.email,
+          userId: user.id
+        });
+      }
     }
 
     try {
@@ -371,14 +385,15 @@ export default function Settings() {
 
                   {newsletter && (
                     <button
+                      type="button"
                       onClick={async () => {
-                        const res = await fetch('/api/newsletter/unsubscribe', { method: 'POST' });
-                        if (res.ok) {
-                          setNewsletter(false);
-                          alert('Sie wurden erfolgreich abgemeldet.');
-                        } else {
-                          alert('Fehler beim Abmelden.');
+                        if (user?.email) {
+                          await unsubscribeFromNewsletter({ email: user.email, userId: user.id });
+                          const supabase = getSupabase();
+                          await supabase.auth.updateUser({ data: { newsletter_optin: false } });
                         }
+                        setNewsletter(false);
+                        setProfileSuccess('Sie wurden erfolgreich vom Newsletter abgemeldet.');
                       }}
                       className="mt-4 px-4 py-2 text-xs font-semibold bg-red-50 text-red-700 rounded-full hover:bg-red-100 transition-colors border border-red-200"
                     >

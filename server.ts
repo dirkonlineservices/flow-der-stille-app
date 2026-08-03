@@ -198,14 +198,98 @@ app.post('/api/user/upgrade', authenticateToken, (req: any, res) => {
   }
 });
 
-app.post('/api/newsletter/unsubscribe', authenticateToken, (req: any, res) => {
+app.post('/api/newsletter/subscribe', async (req: any, res: any) => {
+  const { email, firstName, userId, source } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'E-Mail-Adresse erforderlich' });
+  }
+
+  // Update SQLite user if exists
   try {
-    const stmt = db.prepare('UPDATE users SET newsletter = 0 WHERE id = ?');
-    stmt.run(req.user.id);
-    
-    // Simulate email sending (Logging for now)
-    console.log(`[EMAIL SEND] Newsletter subscription cancelled for user ID: ${req.user.id}`);
-    
+    const stmt = db.prepare('UPDATE users SET newsletter = 1 WHERE email = ?');
+    stmt.run(email);
+  } catch (e) {
+    // SQLite update warning
+  }
+
+  let emailSent = false;
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  if (resendApiKey) {
+    const htmlContent = `
+      <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 32px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #E3E1D9;">
+        <h2 style="color: #8A9A8A; margin-top: 0; font-size: 24px; font-family: serif;">Willkommen bei Flow der Stille</h2>
+        <p style="font-size: 15px; line-height: 1.6;">Hallo ${firstName || 'liebe(r) Suchende(r)'},</p>
+        <p style="font-size: 15px; line-height: 1.6;">vielen Dank für deine Anmeldung zum Newsletter von <strong>Flow der Stille</strong>.</p>
+        <p style="font-size: 15px; line-height: 1.6;">Du erhältst ab sofort regelmäßig wertvolle Impulse, neue Übungen und exklusive Inhalte für deine innere Ruhe und Darm-Hirn-Balance.</p>
+        <div style="background: #FFFFFF; padding: 20px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 24px 0;">
+          <p style="margin: 0; font-size: 14px; color: #555;">Deine Newsletter-Einstellungen kannst du jederzeit direkt in der App unter deinem Konto verwalten oder abbestellen.</p>
+        </div>
+        <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 24px 0;" />
+        <p style="font-size: 12px; color: #78716c; margin: 0;">
+          Flow der Stille – Dein sicherer Raum für Klarheit und innere Ruhe.<br />
+          Kontakt: info@flow-stille.de
+        </p>
+      </div>
+    `;
+
+    try {
+      let emailRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${resendApiKey}`
+        },
+        body: JSON.stringify({
+          from: 'Flow der Stille <info@flow-stille.de>',
+          to: [email],
+          subject: 'Willkommen beim Newsletter von Flow der Stille',
+          html: htmlContent
+        })
+      });
+
+      if (!emailRes.ok) {
+        // Fallback to onboarding@resend.dev
+        emailRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`
+          },
+          body: JSON.stringify({
+            from: 'Flow der Stille <onboarding@resend.dev>',
+            to: [email],
+            subject: 'Willkommen beim Newsletter von Flow der Stille',
+            html: htmlContent
+          })
+        });
+      }
+
+      if (emailRes.ok) {
+        emailSent = true;
+      }
+    } catch (emailErr) {
+      console.error('Error sending newsletter welcome email:', emailErr);
+    }
+  }
+
+  res.json({ success: true, emailSent });
+});
+
+app.post('/api/newsletter/unsubscribe', (req: any, res: any) => {
+  const { email } = req.body || {};
+  const userId = req.user?.id;
+
+  try {
+    if (userId) {
+      const stmt = db.prepare('UPDATE users SET newsletter = 0 WHERE id = ?');
+      stmt.run(userId);
+    } else if (email) {
+      const stmt = db.prepare('UPDATE users SET newsletter = 0 WHERE email = ?');
+      stmt.run(email);
+    }
+
+    console.log(`[NEWSLETTER UNSUBSCRIBE] Cancelled for email: ${email || 'user_id:' + userId}`);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to unsubscribe' });

@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
+import { subscribeToNewsletter } from '../lib/newsletterService';
 import SEO from '../components/SEO';
 
 export default function Register() {
@@ -63,24 +64,18 @@ export default function Register() {
         return;
       }
 
-      // Newsletter Lead Generierung (Non-blocking)
-      if (data?.user && newsletter) {
+      // Direct write into Supabase 'newsletter' table + automated welcome email via Resend
+      if (newsletter) {
         try {
-          const { data: newsletterData, error: insertError } = await supabase
-            .from('newsletter_leads')
-            .insert([{ 
-                email: normalizedEmail,
-                source: 'app_registration' 
-            }])
-            .select();
-
-          if (!insertError && newsletterData && newsletterData.length > 0) {
-            dataLayer.push({ event: 'newsletter_signup_success', user_id: data.user.id });
-          } else {
-            console.error("Newsletter error:", insertError);
-          }
+          await subscribeToNewsletter({
+            email: normalizedEmail,
+            firstName,
+            userId: data?.user?.id,
+            source: 'app_registration'
+          });
+          dataLayer.push({ event: 'newsletter_signup_success', user_id: data?.user?.id });
         } catch (newsletterErr) {
-          console.error("Newsletter exception:", newsletterErr);
+          console.error("Newsletter registration exception:", newsletterErr);
         }
       }
 
