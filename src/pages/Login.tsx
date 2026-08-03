@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, ShieldAlert, Eye, EyeOff, LogIn } from 'lucide-react';
-import { getSupabase } from '../lib/supabaseClient';
+import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 
 export default function Login() {
@@ -32,7 +32,7 @@ export default function Login() {
     try {
       const supabase = getSupabase();
       const { data, error: supabaseError } = await supabase.auth.signInWithPassword({
-        email: email,
+        email: normalizeEmail(email),
         password: password,
       });
 

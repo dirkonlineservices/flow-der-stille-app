@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getSupabase } from '../lib/supabaseClient';
+import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 
 export default function ForgotPassword() {
@@ -17,7 +17,7 @@ export default function ForgotPassword() {
 
     try {
       const supabase = getSupabase();
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 

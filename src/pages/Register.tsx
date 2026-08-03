@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
-import { getSupabase } from '../lib/supabaseClient';
+import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 
 export default function Register() {
@@ -39,8 +39,9 @@ export default function Register() {
 
     try {
       const supabase = getSupabase();
+      const normalizedEmail = normalizeEmail(email);
       const { data, error: supabaseError } = await supabase.auth.signUp({
-        email: email,
+        email: normalizedEmail,
         password: password,
         options: {
           data: {
@@ -68,7 +69,7 @@ export default function Register() {
           const { data: newsletterData, error: insertError } = await supabase
             .from('newsletter_leads')
             .insert([{ 
-                email: email,
+                email: normalizedEmail,
                 source: 'app_registration' 
             }])
             .select();
