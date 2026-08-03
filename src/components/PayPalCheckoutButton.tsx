@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { getSupabase } from '../lib/supabaseClient';
+import { transactionLogger } from '../lib/transactionLogger';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -142,20 +143,75 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
 
                   const supabase = getSupabase();
                   const { data: { session } } = await supabase.auth.getSession();
+                  const currentUserId = session?.user?.id || user?.id;
 
-                  if (!session) throw new Error("Keine aktive Session gefunden.");
+                  // 1. Invoke Supabase Edge Function process-purchase (updates DB, profile, and sends Resend confirmation email)
+                  try {
+                    const fnRes = await supabase.functions.invoke('process-purchase', {
+                      body: {
+                        transaction_id: orderId,
+                        product_id: produkt?.id || 'atemarbeit_herzoeffnung',
+                        product_name: produkt?.titel || 'Flow der Stille Premium',
+                        price: priceValue
+                      }
+                    });
+                    if (fnRes.error) {
+                      transactionLogger.logWarning(
+                        'Edge Function Warning',
+                        'Supabase Edge Function process-purchase returned an error.',
+                        'edge_function',
+                        fnRes.error
+                      );
+                    } else {
+                      transactionLogger.logSuccess(
+                        'Purchase Processed',
+                        `Confirmation processed for order ${orderId}`,
+                        'edge_function',
+                        fnRes.data
+                      );
+                    }
+                  } catch (fnErr) {
+                    transactionLogger.logError(
+                      'Edge Function Failure',
+                      fnErr,
+                      'edge_function',
+                      { orderId, produktId: produkt?.id }
+                    );
+                  }
 
-                  const { error: insertError } = await supabase.from('kaeufe').insert([{
-                    user_id: session.user.id,
-                    produkt_id: produkt?.id,
-                    paypal_order_id: orderId,
-                    preis: priceValue,
-                    waehrung: 'EUR',
-                    widerruf_verzicht_akzeptiert: true
-                  }]);
+                  // 2. Direct client-side insert into kaeufe table as extra assurance
+                  if (currentUserId) {
+                    const { error: insertError } = await supabase.from('kaeufe').insert([{
+                      user_id: currentUserId,
+                      produkt_id: produkt?.id,
+                      paypal_order_id: orderId,
+                      preis: priceValue,
+                      waehrung: 'EUR',
+                      widerruf_verzicht_akzeptiert: true
+                    }]);
 
-                  if (insertError) {
-                    console.warn('Direct insert into kaeufe warning:', insertError);
+                    if (insertError) {
+                      transactionLogger.logError(
+                        'Database Insert Failure',
+                        insertError,
+                        'supabase_db',
+                        { user_id: currentUserId, produkt_id: produkt?.id, paypal_order_id: orderId }
+                      );
+                    } else {
+                      transactionLogger.logSuccess(
+                        'Purchase Saved to DB',
+                        `Kauf erfolgreich in 'kaeufe' gespeichert für User ${currentUserId}`,
+                        'supabase_db',
+                        { orderId, priceValue }
+                      );
+                    }
+                  } else {
+                    transactionLogger.logWarning(
+                      'No User ID for DB Insert',
+                      'Keine User-ID vorhanden für kaeufe-Eintrag. Bitte in der App anmelden.',
+                      'auth',
+                      { orderId }
+                    );
                   }
 
                   if (typeof window !== 'undefined' && (window as any).dataLayer) {
@@ -180,11 +236,21 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   }, 2000);
 
                 } catch (err) {
-                  console.error("Transaktionsfehler:", err);
+                  transactionLogger.logError(
+                    'Transaktionsfehler',
+                    err,
+                    'paypal',
+                    { product_id: produkt?.id }
+                  );
                   setError(true);
                 }
               }}
               onCancel={() => {
+                transactionLogger.logWarning(
+                  'Kauf abgebrochen',
+                  'Der Bezahlvorgang wurde vom Nutzer abgebrochen.',
+                  'paypal'
+                );
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({
                     event: 'checkout_abandoned',
@@ -193,7 +259,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onError={(err) => {
-                console.error("PayPal SDK Error:", err);
+                transactionLogger.logError(
+                  'PayPal SDK Fehler',
+                  err,
+                  'paypal',
+                  { product_id: produkt?.id }
+                );
                 setError(true);
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({

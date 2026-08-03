@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService } from '../lib/billing';
+import { transactionLogger } from '../lib/transactionLogger';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
