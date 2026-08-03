@@ -17,7 +17,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   onSuccess,
   paypalClientId,
 }) => {
-  // UX/Tracking: Guardrail für korrupte Produktdaten
   if (!produkt || !produkt.id || !produkt.preis) {
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
@@ -39,9 +38,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState(false);
 
-  const clientId = paypalClientId && paypalClientId.trim() !== '' && paypalClientId !== 'undefined'
-    ? paypalClientId.trim()
-    : 'test';
+  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   return (
     <div className="w-full flex flex-col gap-4 mt-4 lg:mt-2">
@@ -76,7 +73,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
           <PayPalScriptProvider 
             options={{ 
               clientId: clientId,
-              "client-id": clientId,
               currency: "EUR",
               intent: "capture"
             }}
@@ -153,11 +149,11 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     });
                   }
 
-      setShowUnlockBanner(true);
-      setTimeout(() => {
-        onSuccess();
-        setShowUnlockBanner(false);
-      }, 2000);
+                  setShowUnlockBanner(true);
+                  setTimeout(() => {
+                    onSuccess();
+                    setShowUnlockBanner(false);
+                  }, 2000);
 
                 } catch (err) {
                   console.error("Transaktionsfehler:", err);
