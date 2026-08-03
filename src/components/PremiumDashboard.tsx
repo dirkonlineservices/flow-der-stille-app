@@ -83,13 +83,41 @@ export default function PremiumShopDashboard() {
   }, [user]);
 
   useEffect(() => {
-    if (window.location.hash) {
-      const el = document.querySelector(window.location.hash);
-      if (el) {
-        setTimeout(() => {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try {
+      if (window.location.hash && window.location.hash.startsWith('#product-')) {
+        const hashRaw = window.location.hash;
+        const targetId = hashRaw.replace('#', '');
+        
+        const timer = setTimeout(() => {
+          try {
+            const el = document.getElementById(targetId);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              // Fallback timeout: if element not found after 2.5s, clean up hash and return to premium page
+              window.history.replaceState(null, '', window.location.pathname);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          } catch (err) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
         }, 300);
+
+        // Safety fallback timeout: return to main premium page after 4 seconds if timeout occurs
+        const fallbackTimer = setTimeout(() => {
+          if (window.location.hash && window.location.hash.startsWith('#product-')) {
+            window.history.replaceState(null, '', window.location.pathname);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 4000);
+
+        return () => {
+          clearTimeout(timer);
+          clearTimeout(fallbackTimer);
+        };
       }
+    } catch (e) {
+      console.error('Hash handling error:', e);
     }
   }, [produkte]);
 
