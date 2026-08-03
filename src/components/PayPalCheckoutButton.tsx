@@ -93,6 +93,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
       {acceptedTerms && clientId && (
         <div className="w-full animate-fade-in transition-all duration-300 relative z-10">
           <PayPalScriptProvider 
+            key={clientId}
             options={{ 
               clientId: clientId,
               currency: "EUR",
