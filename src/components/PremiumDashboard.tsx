@@ -48,6 +48,7 @@ export default function PremiumShopDashboard() {
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
   
+  const [isVip, setIsVip] = useState(false);
   const [myPurchases, setMyPurchases] = useState<any[]>([]);
   const [loadingPurchases, setLoadingPurchases] = useState(true);
 
@@ -68,13 +69,16 @@ export default function PremiumShopDashboard() {
       }
       const supabase = getSupabase();
       
-      const { data, error } = await supabase
-        .from('kaeufe')
-        .select('*')
-        .eq('user_id', user.id);
+      const [kaeufeRes, vipRes] = await Promise.all([
+        supabase.from('kaeufe').select('*').eq('user_id', user.id),
+        supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
+      ]);
 
-      if (!error && data) {
-        setMyPurchases(data);
+      if (!kaeufeRes.error && kaeufeRes.data) {
+        setMyPurchases(kaeufeRes.data);
+      }
+      if (!vipRes.error && vipRes.data) {
+        setIsVip(!!vipRes.data);
       }
       setLoadingPurchases(false);
     };
@@ -132,24 +136,36 @@ export default function PremiumShopDashboard() {
       }
 
       let gekaufteSet: Set<string> = new Set();
+      let userIsVip = false;
 
       if (user) {
         try {
-          const { data: kaufData, error: kaufError } = await supabase
-            .from('kaeufe')
-            .select('produkt_id')
-            .eq('user_id', user.id);
-          if (!kaufError && kaufData) {
+          const [kaufRes, vipRes] = await Promise.all([
+            supabase
+              .from('kaeufe')
+              .select('produkt_id')
+              .eq('user_id', user.id),
+            supabase
+              .from('vip_zugang')
+              .select('user_id')
+              .eq('user_id', user.id)
+              .maybeSingle()
+          ]);
+          if (!kaufRes.error && kaufRes.data) {
             // @ts-ignore
-            gekaufteSet = new Set(kaufData.map((k: any) => k.produkt_id));
+            gekaufteSet = new Set(kaufRes.data.map((k: any) => k.produkt_id));
+          }
+          if (!vipRes.error && vipRes.data) {
+            userIsVip = !!vipRes.data;
           }
         } catch (e) {
-          console.warn('Could not fetch purchases:', e);
+          console.warn('Could not fetch purchases or VIP status:', e);
         }
       }
       
       setProdukte(finalProdukte);
       setGekauftIds(gekaufteSet);
+      setIsVip(userIsVip);
     } catch (error: any) {
       console.error("Fehler beim Laden:", error);
       setProdukte(defaultProdukte);
@@ -289,7 +305,7 @@ export default function PremiumShopDashboard() {
         {showUnlockBanner && <UnlockBanner />}
         {filteredProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
-          const hatZugriff = gekauftIds.has(produkt.id) || istKostenlos;
+          const hatZugriff = isVip || gekauftIds.has(produkt.id) || istKostenlos;
           const isHeartOpening = produkt.id === HEART_OPENING_ID;
 
           if (isHeartOpening && !user) {

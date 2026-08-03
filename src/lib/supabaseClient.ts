@@ -15,7 +15,24 @@ export const getSupabase = (): SupabaseClient => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
     
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    try {
+      supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        }
+      });
+    } catch (e) {
+      console.error('Failed to create Supabase client:', e);
+      // Fallback clean local storage if token error
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    }
   }
   return supabaseClient;
 };

@@ -34,10 +34,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = getSupabase();
     // 1. Beim ersten Laden schauen, ob jemand eingeloggt ist
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.warn('Session error:', error.message);
+        if (error.message.includes('Refresh Token') || error.message.includes('Invalid Refresh Token')) {
+          Object.keys(localStorage).forEach(key => {
+            if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
+              localStorage.removeItem(key);
+            }
+          });
+          supabase.auth.signOut().catch(() => {});
+        }
+      } else if (session?.user) {
         mapAndSetUser(session.user);
       }
+    }).catch(err => {
+      console.warn('Get session exception:', err);
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
     });
 
     // 2. Echtzeit-Wächter: Reagiert sofort auf Logins oder Logouts!
