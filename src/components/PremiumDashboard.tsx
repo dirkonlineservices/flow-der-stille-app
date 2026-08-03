@@ -25,8 +25,8 @@ export default function PremiumShopDashboard() {
   const isNativeApp = BillingService.isNative();
   const HEART_OPENING_ID = 'atemarbeit_herzoeffnung';
   
-  // Zieht den Key exakt aus deinen .env Variablen
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+  // Zieht den Key aus .env oder nutzt Fallback für veröffentlichte Apps
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
 
   useEffect(() => {
     loadShopData();

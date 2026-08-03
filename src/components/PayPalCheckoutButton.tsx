@@ -38,7 +38,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState(false);
 
-  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || paypalClientId || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
 
   return (
     <div className="w-full flex flex-col gap-4 mt-4 lg:mt-2">
