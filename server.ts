@@ -143,7 +143,7 @@ app.post('/api/logout', (req, res) => {
 
 app.get('/api/config', (req, res) => {
   res.json({
-    paypalClientId: process.env.VITE_PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || ''
+    paypalClientId: process.env.VITE_PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || "BAAKqq0F1xbok5dmAg0bFJL6dvnPRzq-Pe53JEyL5nZbWvHSg5DZlFZHzwsxJZ2JkS9Q1uKJ4OtVDZsWEk"
   });
 });
 

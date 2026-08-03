@@ -26,7 +26,7 @@ export default function PremiumShopDashboard() {
   const HEART_OPENING_ID = 'atemarbeit_herzoeffnung';
   
   // Zieht den Key aus .env oder nutzt Fallback für veröffentlichte Apps
-  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "Ad5yd9tgbJfa9FIzKPdGFhlZ4Oj5nybpHBHgLoza5AikdpNwdcJx2X2FW1ZptoDK4Jx3PBGdhTQcBDF9";
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "BAAKqq0F1xbok5dmAg0bFJL6dvnPRzq-Pe53JEyL5nZbWvHSg5DZlFZHzwsxJZ2JkS9Q1uKJ4OtVDZsWEk";
 
   useEffect(() => {
     loadShopData();
