@@ -8,7 +8,11 @@ export const TransactionErrorOverlay: React.FC = () => {
 
   useEffect(() => {
     const unsubscribe = transactionLogger.subscribe((updatedLogs) => {
-      setLogs(updatedLogs);
+      // Deaktiviere SUPABASE_DB und EDGE_FUNCTION Benachrichtigungen im Produktionsmodus komplett
+      const visibleLogs = import.meta.env.DEV
+        ? updatedLogs
+        : updatedLogs.filter((item) => item.source !== 'supabase_db' && item.source !== 'edge_function');
+      setLogs(visibleLogs);
     });
     return unsubscribe;
   }, []);

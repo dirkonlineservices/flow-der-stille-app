@@ -43,16 +43,28 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   );
 
   useEffect(() => {
-    fetch('/api/config')
-      .then(res => res.json())
-      .then(data => {
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) {
+          console.warn(`Runtime config fetch failed with status: ${res.status}`);
+          return;
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.warn('Runtime config response is not JSON:', contentType);
+          return;
+        }
+        const data = await res.json();
         if (data && data.paypalClientId) {
           setRuntimeClientId(data.paypalClientId);
         }
-      })
-      .catch(err => {
+      } catch (err) {
         console.warn('Could not fetch runtime config:', err);
-      });
+      }
+    };
+
+    fetchConfig();
   }, []);
 
   const clientId = runtimeClientId.trim();
@@ -145,7 +157,11 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   const { data: { session } } = await supabase.auth.getSession();
                   const currentUserId = session?.user?.id || user?.id;
 
+                  let edgeFunctionSuccess = false;
+                  let isAlreadyCompleted = false;
+
                   // 1. Invoke Supabase Edge Function process-purchase (updates DB, profile, and sends Resend confirmation email)
+                  // Die Edge Function ist die primäre Source of Truth für den Datenbankeintrag.
                   try {
                     const fnRes = await supabase.functions.invoke('process-purchase', {
                       body: {
@@ -163,6 +179,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                         fnRes.error
                       );
                     } else {
+                      edgeFunctionSuccess = true;
                       transactionLogger.logSuccess(
                         'Purchase Processed',
                         `Confirmation processed for order ${orderId}`,
@@ -179,60 +196,62 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     );
                   }
 
-                  // 2. Direct client-side upsert into kaeufe table as extra assurance
-                  let isAlreadyCompleted = false;
+                  // 2. Fallback per Upsert:
+                  // Wenn die Edge Function den Kauf erfolgreich verarbeitet hat, startet das Frontend KEINEN eigenen DB-Schreibaufruf mehr.
+                  // Falls die Edge Function fehlschlägt (!edgeFunctionSuccess), schreibt das Frontend per .upsert() als Fallback in die Datenbank.
+                  if (!edgeFunctionSuccess) {
+                    if (currentUserId) {
+                      // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits als 'completed' verarbeitet war
+                      const { data: existingKauf } = await supabase
+                        .from('kaeufe')
+                        .select('status')
+                        .eq('paypal_order_id', orderId)
+                        .maybeSingle();
 
-                  if (currentUserId) {
-                    // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits als 'completed' verarbeitet war
-                    const { data: existingKauf } = await supabase
-                      .from('kaeufe')
-                      .select('status')
-                      .eq('paypal_order_id', orderId)
-                      .maybeSingle();
+                      if (existingKauf && existingKauf.status === 'completed') {
+                        isAlreadyCompleted = true;
+                      }
 
-                    if (existingKauf && existingKauf.status === 'completed') {
-                      isAlreadyCompleted = true;
-                    }
+                      const { error: upsertError } = await supabase
+                        .from('kaeufe')
+                        .upsert(
+                          {
+                            user_id: currentUserId,
+                            email: user?.email || '',
+                            produkt_id: produkt?.id,
+                            paypal_order_id: orderId,
+                            preis: priceValue,
+                            waehrung: 'EUR',
+                            status: 'completed',
+                            widerruf_verzicht_akzeptiert: true,
+                            updated_at: new Date().toISOString()
+                          },
+                          { onConflict: 'paypal_order_id' }
+                        );
 
-                    const { error: upsertError } = await supabase
-                      .from('kaeufe')
-                      .upsert(
-                        {
-                          user_id: currentUserId,
-                          email: user?.email || '',
-                          produkt_id: produkt?.id,
-                          paypal_order_id: orderId,
-                          preis: priceValue,
-                          waehrung: 'EUR',
-                          status: 'completed',
-                          widerruf_verzicht_akzeptiert: true,
-                          updated_at: new Date().toISOString()
-                        },
-                        { onConflict: 'paypal_order_id' }
-                      );
-
-                    if (upsertError) {
-                      transactionLogger.logError(
-                        'Database Upsert Failure',
-                        upsertError,
-                        'supabase_db',
-                        { user_id: currentUserId, produkt_id: produkt?.id, paypal_order_id: orderId }
-                      );
+                      if (upsertError) {
+                        transactionLogger.logError(
+                          'Database Upsert Failure',
+                          upsertError,
+                          'supabase_db',
+                          { user_id: currentUserId, produkt_id: produkt?.id, paypal_order_id: orderId }
+                        );
+                      } else {
+                        transactionLogger.logSuccess(
+                          'Purchase Saved to DB (Fallback Upsert)',
+                          `Kauf erfolgreich per Fallback-Upsert in 'kaeufe' gespeichert für User ${currentUserId}`,
+                          'supabase_db',
+                          { orderId, priceValue }
+                        );
+                      }
                     } else {
-                      transactionLogger.logSuccess(
-                        'Purchase Saved to DB (Upsert)',
-                        `Kauf erfolgreich in 'kaeufe' via upsert gespeichert für User ${currentUserId}`,
-                        'supabase_db',
-                        { orderId, priceValue }
+                      transactionLogger.logWarning(
+                        'No User ID for DB Insert',
+                        'Keine User-ID vorhanden für kaeufe-Eintrag. Bitte in der App anmelden.',
+                        'auth',
+                        { orderId }
                       );
                     }
-                  } else {
-                    transactionLogger.logWarning(
-                      'No User ID for DB Insert',
-                      'Keine User-ID vorhanden für kaeufe-Eintrag. Bitte in der App anmelden.',
-                      'auth',
-                      { orderId }
-                    );
                   }
 
                   // DataLayer Purchase Tracking nur ausführen, wenn die Bestellung nicht bereits verarbeitet war
