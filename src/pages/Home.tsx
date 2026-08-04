@@ -86,7 +86,7 @@ export default function Home() {
     <>
       <SEO 
         title="Persönlicher Ruhebereich" 
-        description="Finden Sie innere Ruhe bei Flow der Stille. Ihr persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
+        description="Finde innere Ruhe bei Flow der Stille. Dein persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
       />
       <div className="space-y-8">
         <header className="mb-12 flex flex-col items-center">

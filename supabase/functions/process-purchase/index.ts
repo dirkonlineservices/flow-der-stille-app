@@ -124,7 +124,7 @@ serve(async (req) => {
           </div>
           <p>Deine Inhalte stehen ab sofort direkt in der App für dich bereit.</p>
           <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 20px 0;" />
-          <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-stille.de</p>
+          <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-der-stille.de</p>
         </div>
       `;
 
@@ -136,7 +136,7 @@ serve(async (req) => {
             'Authorization': `Bearer ${resendApiKey}`
           },
           body: JSON.stringify({
-            from: 'Flow der Stille <info@flow-stille.de>',
+            from: 'Flow der Stille <info@flow-der-stille.de>',
             to: [userEmail],
             subject: `Kaufbestätigung: ${product_name || 'Flow der Stille Premium'}`,
             html: emailHtml

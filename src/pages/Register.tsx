@@ -64,18 +64,44 @@ export default function Register() {
         return;
       }
 
-      // Direct write into Supabase 'newsletter' table + automated welcome email via Resend
+      // 2. Newsletter Logik isoliert ausführen (Nur wenn Checkbox aktiv ist)
       if (newsletter) {
-        try {
-          await subscribeToNewsletter({
+        const confirmToken = typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : 'doi_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+
+        // A: Insert in die Datenbank (newsletter_leads)
+        const { error: dbError } = await supabase
+          .from('newsletter_leads')
+          .insert({
             email: normalizedEmail,
-            firstName,
-            userId: data?.user?.id,
-            source: 'app_registration'
+            status: 'pending_doi',
+            confirm_token: confirmToken,
+            source: 'registration_form',
+            updated_at: new Date().toISOString()
           });
-          dataLayer.push({ event: 'newsletter_signup_success', user_id: data?.user?.id });
-        } catch (newsletterErr) {
-          console.error("Newsletter registration exception:", newsletterErr);
+
+        if (!dbError) {
+          // B: Edge Function für DOI Mail aufrufen
+          const { error: edgeError } = await supabase.functions.invoke('send-double-opt-in-email', {
+            body: { email: normalizedEmail, confirm_token: confirmToken }
+          });
+
+          if (edgeError) {
+            console.error("Fehler beim DOI E-Mail Versand:", edgeError.message);
+          }
+
+          // C: Tracking Hit feuern
+          if (typeof window !== 'undefined' && (window as any).dataLayer) {
+            (window as any).dataLayer.push({
+              event: 'generate_lead',
+              lead_source: 'registration_form',
+              lead_status: 'pending_doi'
+            });
+            (window as any).dataLayer.push({ event: 'newsletter_signup_success', user_id: data?.user?.id });
+          }
+        } else {
+          console.error("Fehler beim Newsletter Insert:", dbError.message);
         }
       }
 
@@ -103,7 +129,7 @@ export default function Register() {
   if (isSubmitted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Registrieren" description="Erstellen Sie einen kostenlosen Account bei Flow der Stille." />
+        <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -117,10 +143,10 @@ export default function Register() {
           <h2 className="text-3xl font-serif text-[var(--text-main)] mb-4">Fast geschafft!</h2>
           <p className="text-[var(--text-muted)] mb-6 leading-relaxed">
             Wir haben eine Bestätigungsmail an <strong className="text-[var(--text-main)]">{email}</strong> gesendet. 
-            Bitte klicken Sie auf den Link in dieser E-Mail, um Ihren Account zu aktivieren und sich einzuloggen.
+            Bitte klicke auf den Link in dieser E-Mail, um deinen Account zu aktivieren und dich einzuloggen.
           </p>
           <div className="pt-6 border-t border-[var(--border)]">
-            <p className="text-sm text-[var(--text-muted)] mb-4">E-Mail nicht gefunden? Prüfen Sie auch Ihren Spam-Ordner.</p>
+            <p className="text-sm text-[var(--text-muted)] mb-4">E-Mail nicht gefunden? Prüfe auch deinen Spam-Ordner.</p>
             <Link to="/login" className="inline-block py-3 px-6 bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] rounded-xl font-medium transition-colors">
               Zurück zum Login
             </Link>
@@ -132,7 +158,7 @@ export default function Register() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-      <SEO title="Registrieren" description="Erstellen Sie einen kostenlosen Account bei Flow der Stille." />
+      <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -141,7 +167,7 @@ export default function Register() {
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif text-[var(--text-main)] mb-2">Account erstellen</h2>
-          <p className="text-[var(--text-muted)] text-sm">Registrieren Sie sich für Ihren persönlichen Ruhebereich.</p>
+          <p className="text-[var(--text-muted)] text-sm">Registriere dich für deinen persönlichen Ruhebereich.</p>
         </div>
 
         {error && (
@@ -274,7 +300,7 @@ export default function Register() {
         </form>
 
         <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
-          Haben Sie bereits ein Konto?{' '}
+          Hast du bereits ein Konto?{' '}
           <Link to="/login" className="text-[var(--accent)] font-medium hover:underline">
             Hier einloggen
           </Link>

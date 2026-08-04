@@ -54,41 +54,36 @@ export async function subscribeToNewsletter({
 
   let dbSuccess = false;
 
-  // 1. Direct write to Supabase 'newsletter' table
+  // 1. Direct write to Supabase 'newsletter_leads' table
   try {
     const { error: newsletterErr } = await supabase
-      .from('newsletter')
-      .upsert([
-        {
+      .from('newsletter_leads')
+      .upsert({
+        email: normalized,
+        status: 'pending_doi',
+        confirm_token: generatedToken,
+        source,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'email' });
+
+    if (newsletterErr) {
+      console.warn('Supabase newsletter_leads upsert warning, trying simple insert:', newsletterErr.message);
+      const { error: insertErr } = await supabase
+        .from('newsletter_leads')
+        .insert({
           email: normalized,
-          user_id: userId || null,
           status: 'pending_doi',
           confirm_token: generatedToken,
           source,
-          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        }
-      ], { onConflict: 'email' });
-
-    if (newsletterErr) {
-      console.warn('Supabase newsletter upsert warning, trying simple insert:', newsletterErr.message);
-      const { error: insertErr } = await supabase
-        .from('newsletter')
-        .insert([
-          {
-            email: normalized,
-            user_id: userId || null,
-            status: 'pending_doi',
-            confirm_token: generatedToken,
-            source
-          }
-        ]);
+        });
       if (!insertErr) dbSuccess = true;
     } else {
       dbSuccess = true;
     }
   } catch (err) {
-    console.warn('Exception during newsletter table write:', err);
+    console.warn('Exception during newsletter_leads table write:', err);
   }
 
   // 2. Secondary write to 'newsletter_leads' table as fallback
@@ -148,14 +143,14 @@ export async function unsubscribeFromNewsletter({
   const normalized = normalizeEmail(email);
   const supabase = getSupabase();
 
-  // 1. Update Supabase 'newsletter' table
+  // 1. Update Supabase 'newsletter_leads' table
   try {
     await supabase
-      .from('newsletter')
+      .from('newsletter_leads')
       .update({ status: 'unsubscribed', updated_at: new Date().toISOString() })
       .eq('email', normalized);
   } catch (e) {
-    console.warn('Supabase newsletter unsubscribe error:', e);
+    console.warn('Supabase newsletter_leads unsubscribe error:', e);
   }
 
   // 2. Update Supabase 'newsletter_leads' table

@@ -87,6 +87,9 @@ export default function App() {
                   <Route path="reset-password" element={<ResetPassword />} />
                   <Route path="update-password" element={<UpdatePassword />} />
                   <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
+                  <Route path="newsletter-bestaetigung" element={<NewsletterConfirmation />} />
+                  <Route path="newsletter-bestaetigt" element={<NewsletterConfirmation />} />
+                  <Route path="confirm-newsletter" element={<NewsletterConfirmation />} />
                   <Route path="online-widerruf" element={<OnlineWiderruf />} />
                   <Route path="register" element={<Register />} />
                   <Route path="contact" element={<Contact />} />

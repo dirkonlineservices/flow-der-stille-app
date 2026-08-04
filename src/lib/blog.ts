@@ -29,7 +29,7 @@ export function getAllPosts(): BlogPost[] {
       const sampleContent = `---
 title: "Innere Ruhe im Alltag finden"
 date: "2026-06-01"
-excerpt: "Erfahren Sie, wie Sie mit einfachen Atemübungen und bewussten Pausen mehr Gelassenheit in Ihren Tag bringen."
+excerpt: "Erfahre, wie du mit einfachen Atemübungen und bewussten Pausen mehr Gelassenheit in deinen Tag bringst."
 category: "Herzkompass"
 readTime: "5 Min."
 ---
@@ -38,12 +38,12 @@ In unserer heutigen, oft hektischen Welt ist es gar nicht so einfach, bei sich s
 
 ### Der erste Schritt: Bewusstes Atmen
 
-Wenn Sie merken, dass die Anspannung steigt, halten Sie kurz inne. Nehmen Sie drei tiefe Atemzüge in den Bauch. Spüren Sie, wie sich die Bauchdecke hebt und senkt.
+Wenn du merkst, dass die Anspannung steigt, halte kurz inne. Nimm drei tiefe Atemzüge in den Bauch. Spüre, wie sich die Bauchdecke hebt und senkt.
 
 - **Einatmen:** Ruhe einladen.
 - **Ausatmen:** Anspannung loslassen.
 
-Mit diesen kleinen Momenten der Stille schaffen Sie Anker im Alltag.`;
+Mit diesen kleinen Momenten der Stille schaffst du Anker im Alltag.`;
       fs.writeFileSync(samplePath, sampleContent, 'utf8');
       mdFiles = ['innere-ruhe-im-alltag.md'];
     }

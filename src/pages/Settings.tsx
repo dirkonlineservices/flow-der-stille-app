@@ -81,6 +81,80 @@ export default function Settings() {
     navigate('/login');
   };
 
+  // 1. Funktion: Newsletter nachträglich abonnieren (beim Klick auf Profil speichern)
+  const handleNewsletterOptIn = async (userEmail: string) => {
+    const confirmToken = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : 'doi_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+
+    // A: Upsert in die Supabase Tabelle (falls der Nutzer noch gar nicht drin stand)
+    const { error: dbError } = await getSupabase()
+      .from('newsletter_leads')
+      .upsert({ 
+        email: userEmail, 
+        status: 'pending_doi',
+        confirm_token: confirmToken,
+        source: 'account_settings',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'email' });
+
+    if (dbError) {
+      console.error("Fehler beim Datenbankupdate:", dbError.message);
+      return;
+    }
+
+    // B: Edge Function für Resend Mail aufrufen
+    const { error: edgeError } = await getSupabase().functions.invoke('send-double-opt-in-email', {
+      body: { email: userEmail, confirm_token: confirmToken }
+    });
+
+    if (edgeError) {
+      console.error("Fehler beim E-Mail Versand:", edgeError.message);
+      return;
+    }
+
+    // C: Tracking für Looker Studio
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'newsletter_optin',
+        lead_source: 'account_settings',
+        lead_status: 'pending_doi'
+      });
+    }
+
+    console.log("Bitte prüfe dein Postfach, um den Newsletter zu bestätigen.");
+  };
+
+  // 2. Funktion: Newsletter abbestellen (beim Klick auf den roten Button)
+  const handleNewsletterOptOut = async (userEmail: string) => {
+    const { error: unsubError } = await getSupabase()
+      .from('newsletter_leads')
+      .update({ 
+        status: 'unsubscribed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', userEmail);
+
+    if (unsubError) {
+      console.error("Fehler beim Abmelden:", unsubError.message);
+      setProfileError("Fehler beim Abmelden: " + unsubError.message);
+      return;
+    }
+
+    // Feuere das DataLayer-Tracking für die Abmeldung:
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'newsletter_unsubscribe',
+        lead_source: 'account_settings',
+        lead_status: 'unsubscribed'
+      });
+    }
+
+    setNewsletter(false);
+    setProfileSuccess("Du wurdest erfolgreich vom Newsletter abgemeldet.");
+    console.log("Du wurdest erfolgreich vom Newsletter abgemeldet.");
+  };
+
   // Update profile handler
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,17 +173,9 @@ export default function Settings() {
     if (user.email) {
       if (newsletter && !user.newsletter_optin) {
         profileData.newsletter_optin_timestamp = new Date().toISOString();
-        await subscribeToNewsletter({
-          email: user.email,
-          firstName,
-          userId: user.id,
-          source: 'settings'
-        });
+        await handleNewsletterOptIn(user.email);
       } else if (!newsletter && user.newsletter_optin) {
-        await unsubscribeFromNewsletter({
-          email: user.email,
-          userId: user.id
-        });
+        await handleNewsletterOptOut(user.email);
       }
     }
 
@@ -122,7 +188,7 @@ export default function Settings() {
       if (error) {
         setProfileError(error.message);
       } else {
-        setProfileSuccess('Ihr Profil wurde erfolgreich aktualisiert!');
+        setProfileSuccess('Dein Profil wurde erfolgreich aktualisiert!');
       }
     } catch (err) {
       setProfileError('Ein unerwarteter Fehler ist aufgetreten.');
@@ -156,7 +222,7 @@ export default function Settings() {
       if (error) {
         setPasswordError(error.message);
       } else {
-        setPasswordSuccess('Ihr Passwort wurde erfolgreich geändert!');
+        setPasswordSuccess('Dein Passwort wurde erfolgreich geändert!');
         setPassword('');
         setConfirmPassword('');
       }
@@ -237,9 +303,9 @@ export default function Settings() {
            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-[var(--color-border-main)]">
               <h3 className="text-xl font-serif text-red-700 mb-4">Account permanent löschen?</h3>
               <p className="text-sm text-stone-600 mb-6 leading-relaxed">
-                 Dies ist ein unwiderruflicher Vorgang. Alle Ihre Daten, Käufe und Fortschritte werden dauerhaft entfernt. Dies entspricht unseren DSGVO-Richtlinien zur Datenlöschung.
+                 Dies ist ein unwiderruflicher Vorgang. Alle deine Daten, Käufe und Fortschritte werden dauerhaft entfernt. Dies entspricht unseren DSGVO-Richtlinien zur Datenlöschung.
                  <br/><br/>
-                 Bitte geben Sie zur Bestätigung den Namen der App ein: <span className="font-bold">Flow der Stille</span>
+                 Bitte gib zur Bestätigung den Namen der App ein: <span className="font-bold">Flow der Stille</span>
               </p>
               
               <input
@@ -269,23 +335,23 @@ export default function Settings() {
         </div>
       )}
       
-      <SEO title="Einstellungen" description="Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort und betrachten Sie Ihre Einkäufe." />
+      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="text-[var(--color-accent-primary)] w-8 h-8" />
           <h1 className="text-4xl font-serif text-[var(--color-accent-primary)]">Konto & App-Einstellungen</h1>
         </div>
         <p className="text-[var(--color-text-muted)] text-base max-w-2xl">
-          Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort, werfen Sie einen Blick in Ihre erworbenen Kurse oder laden Sie Ihre gespeicherten Daten herunter.
+          Verwalte deine persönlichen Angaben, ändere dein Passwort, wirf einen Blick in deine erworbenen Kurse oder lade deine gespeicherten Daten herunter.
         </p>
       </header>
 
       {!user ? (
         <div className="bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-3xl p-8 text-center max-w-xl mx-auto">
           <User className="mx-auto w-12 h-12 text-[var(--color-text-muted-light)] mb-4" />
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Sie sind nicht eingeloggt</h2>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Du bist nicht eingeloggt</h2>
           <p className="text-[var(--color-text-muted)] text-sm mb-6 leading-relaxed">
-            Um Ihr Profil anzupassen, Ihren Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melden Sie sich bitte an oder erstellen Sie ein neues Konto.
+            Um dein Profil anzupassen, deinen Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melde dich bitte an oder erstelle ein neues Konto.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link 
@@ -337,7 +403,7 @@ export default function Settings() {
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Ihr Vorname"
+                      placeholder="Dein Vorname"
                       className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
@@ -347,7 +413,7 @@ export default function Settings() {
                       type="text"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Ihr Nachname"
+                      placeholder="Dein Nachname"
                       className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
@@ -361,7 +427,7 @@ export default function Settings() {
                     disabled
                     className="w-full px-4 py-3 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl border-none outline-none text-sm cursor-not-allowed font-medium"
                   />
-                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Flow der Stille-Konto verknüpft.</p>
+                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit deinem Flow der Stille-Konto verknüpft.</p>
                 </div>
 
                 {/* Newsletter Preference Section */}
@@ -378,7 +444,7 @@ export default function Settings() {
                         Newsletter abonnieren
                       </span>
                       <p className="text-xs text-[var(--color-text-muted-light)] mt-1 italic">
-                        Erhalten Sie einmal im Monat wertvolle, kuratierte Ratschläge zum Thema Darm-Hirn-Achse.
+                        Erhalte einmal im Monat wertvolle, kuratierte Ratschläge zum Thema Darm-Hirn-Achse.
                       </p>
                     </div>
                   </label>
@@ -388,12 +454,12 @@ export default function Settings() {
                       type="button"
                       onClick={async () => {
                         if (user?.email) {
-                          await unsubscribeFromNewsletter({ email: user.email, userId: user.id });
+                          await handleNewsletterOptOut(user.email);
                           const supabase = getSupabase();
                           await supabase.auth.updateUser({ data: { newsletter_optin: false } });
                         }
                         setNewsletter(false);
-                        setProfileSuccess('Sie wurden erfolgreich vom Newsletter abgemeldet.');
+                        setProfileSuccess('Du wurdest erfolgreich vom Newsletter abgemeldet.');
                       }}
                       className="mt-4 px-4 py-2 text-xs font-semibold bg-red-50 text-red-700 rounded-full hover:bg-red-100 transition-colors border border-red-200"
                     >
@@ -590,7 +656,7 @@ export default function Settings() {
                 <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Meine gekauften Produkte</h2>
               </div>
               <p className="text-[var(--color-text-muted-light)] text-xs mb-6">
-                Ihre verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung Ihrer Käufe.
+                Deine verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung deiner Käufe.
               </p>
 
               <div className="space-y-4">
@@ -703,7 +769,7 @@ export default function Settings() {
                 Datenschutz & DSGVO
               </h4>
               <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
-                Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Sie behalten die volle Kontrolle über Ihre Daten.
+                Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Du behältst die volle Kontrolle über deine Daten.
               </p>
               
               <div className="space-y-3">

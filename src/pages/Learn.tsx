@@ -10,7 +10,7 @@ export default function Learn() {
 
   return (
     <div className="space-y-12 max-w-3xl">
-      <SEO title="Leitfaden" description="Verstehen Sie das Nervensystem, Sympathikus und Parasympathikus." />
+      <SEO title="Leitfaden" description="Verstehe das Nervensystem, Sympathikus und Parasympathikus." />
       <header>
         <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">{t('learn.title')}</h1>
         <p className="text-[var(--color-text-muted)] text-lg">

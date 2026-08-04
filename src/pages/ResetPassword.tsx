@@ -48,7 +48,7 @@ export default function ResetPassword() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] bg-[var(--color-bg-body)] p-6">
-      <SEO title="Passwort zurücksetzen" description="Legen Sie Ihr neues Passwort fest." />
+      <SEO title="Passwort zurücksetzen" description="Lege dein neues Passwort fest." />
       <div className="w-full max-w-md bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-lg border border-[var(--color-border-main)]">
         <h2 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-6 text-center">Neues Passwort setzen</h2>
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}

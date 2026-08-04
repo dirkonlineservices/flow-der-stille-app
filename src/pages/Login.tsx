@@ -71,7 +71,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-      <SEO title="Einloggen" description="Melden Sie sich bei Ihrem Flow der Stille Account an." />
+      <SEO title="Einloggen" description="Melde dich bei deinem Flow der Stille Account an." />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ export default function Login() {
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif text-[var(--text-main)] mb-2">Willkommen zurück</h2>
-          <p className="text-[var(--text-muted)] text-sm">Treten Sie ein in Ihren Raum der Stille.</p>
+          <p className="text-[var(--text-muted)] text-sm">Tritt ein in deinen Raum der Stille.</p>
         </div>
 
         {error && (

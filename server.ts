@@ -104,7 +104,7 @@ app.post('/api/register', async (req, res) => {
     return res.status(400).json({ error: 'Vorname, Nachname, E-Mail und Passwort sind Pflichtfelder.' });
   }
   if (!dsgvo) {
-    return res.status(400).json({ error: 'Sie müssen die Datenschutzerklärung akzeptieren.' });
+    return res.status(400).json({ error: 'Du musst die Datenschutzerklärung akzeptieren.' });
   }
 
   try {
@@ -228,7 +228,7 @@ app.post('/api/newsletter/subscribe', async (req: any, res: any) => {
         <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 24px 0;" />
         <p style="font-size: 12px; color: #78716c; margin: 0;">
           Flow der Stille – Dein sicherer Raum für Klarheit und innere Ruhe.<br />
-          Kontakt: info@flow-stille.de
+          Kontakt: info@flow-der-stille.de
         </p>
       </div>
     `;
@@ -241,7 +241,7 @@ app.post('/api/newsletter/subscribe', async (req: any, res: any) => {
           'Authorization': `Bearer ${resendApiKey}`
         },
         body: JSON.stringify({
-          from: 'Flow der Stille <info@flow-stille.de>',
+          from: 'Flow der Stille <info@flow-der-stille.de>',
           to: [email],
           subject: 'Willkommen beim Newsletter von Flow der Stille',
           html: htmlContent
@@ -274,6 +274,24 @@ app.post('/api/newsletter/subscribe', async (req: any, res: any) => {
   }
 
   res.json({ success: true, emailSent });
+});
+
+app.post('/api/newsletter/confirm', async (req: any, res: any) => {
+  const { email, token } = req.body || {};
+  if (!email && !token) {
+    return res.status(400).json({ error: 'E-Mail oder Token erforderlich' });
+  }
+
+  try {
+    if (email) {
+      const stmt = db.prepare('UPDATE users SET newsletter = 1 WHERE email = ?');
+      stmt.run(email);
+    }
+    console.log(`[NEWSLETTER CONFIRMED] Local DB update for email: ${email || 'Token: ' + token}`);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Fehler bei der lokalen Bestätigung' });
+  }
 });
 
 app.post('/api/newsletter/unsubscribe', (req: any, res: any) => {
@@ -388,7 +406,7 @@ Deine Persönlichkeit & Tonalität:
 - Ruhig & Erdend: Deine Sprache ist sanft, klar und langsam. Nutze kurze Sätze.
 - Empathisch & Validierend: Du nimmst die Gefühle des Nutzers ernst.
 - Nicht-belehrend: Du drängst keine Lösungen auf. 
-- Anrede: Du sprichst den Nutzer höflich, aber nahbar mit "Sie" an. 
+- Anrede: Du sprichst den Nutzer herzlich und nahbar mit "Du" an. 
 
 Deine Methodik (Der Ablauf):
 1. Zuhören & Validieren: Spiegele kurz die Emotion.
@@ -412,7 +430,7 @@ Absolute Leitplanken:
       config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.7 },
     });
 
-    let replyText = response.text || "Ich bin hier, um Ihnen zuzuhören. 🌱";
+    let replyText = response.text || "Ich bin hier, um dir zuzuhören. 🌱";
     let hasPremiumOffer = false;
 
     if (replyText.includes("[PREMIUM_OFFER]")) {

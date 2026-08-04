@@ -25,9 +25,9 @@ export default function ForgotPassword() {
         throw resetError;
       }
 
-      setMessage('Eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts wurde gesendet.');
+      setMessage('Eine E-Mail mit Anweisungen zum Zurücksetzen deines Passworts wurde gesendet.');
     } catch (err: any) {
-      setError(err.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+      setError(err.message || 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <SEO title="Passwort vergessen" description="Setzen Sie Ihr Passwort zurück, um sich wieder anzumelden." />
+      <SEO title="Passwort vergessen" description="Setze dein Passwort zurück, um dich wieder anzumelden." />
       <div className="w-full max-w-md bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-lg border border-[var(--color-border-main)]">
         <h2 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-6 text-center">Passwort vergessen?</h2>
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
