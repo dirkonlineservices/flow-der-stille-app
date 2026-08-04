@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CheckCircle2, Sparkles, Mail, Heart, ArrowRight, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
 import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
+import { reportCriticalError } from '../lib/errorLogger';
 import SEO from '../components/SEO';
 
 export default function NewsletterConfirmation() {
@@ -49,9 +50,19 @@ export default function NewsletterConfirmation() {
 
       if (supabaseErr) {
         console.warn('Supabase confirmation warning:', supabaseErr.message);
+        await reportCriticalError({
+          context: 'Newsletter Bestätigung (Supabase)',
+          error: supabaseErr,
+          userEmail: normalized
+        });
       }
     } catch (err) {
       console.warn('Supabase confirmation caught exception:', err);
+      await reportCriticalError({
+        context: 'Newsletter Bestätigung Ausnahme',
+        error: err,
+        userEmail: normalized
+      });
     }
 
     // 2. Also notify backend API (SQLite)

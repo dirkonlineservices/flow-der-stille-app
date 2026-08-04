@@ -1,4 +1,5 @@
 import { getSupabase, normalizeEmail } from './supabaseClient';
+import { reportCriticalError } from './errorLogger';
 
 export interface NewsletterSubscriptionParams {
   email: string;
@@ -28,6 +29,11 @@ export const triggerDoiEmail = async (userEmail: string, generatedToken: string)
   } catch (err) {
     // UI Feedback: Fehler abfangen
     console.error("Fehler beim DOI Versand", err);
+    await reportCriticalError({
+      context: 'Newsletter DOI E-Mail Versand',
+      error: err,
+      userEmail
+    });
     return { success: false, error: err };
   }
 };

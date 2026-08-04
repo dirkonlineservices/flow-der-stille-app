@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
+import { reportCriticalError } from '../lib/errorLogger';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -279,6 +280,11 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   }, 2000);
 
                 } catch (err) {
+                  await reportCriticalError({
+                    context: 'Checkout Kaufabwicklung',
+                    error: err,
+                    userEmail: user?.email
+                  });
                   transactionLogger.logError(
                     'Transaktionsfehler',
                     err,
@@ -301,7 +307,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   });
                 }
               }}
-              onError={(err) => {
+              onError={async (err) => {
+                await reportCriticalError({
+                  context: 'PayPal SDK Fehler',
+                  error: err,
+                  userEmail: user?.email
+                });
                 transactionLogger.logError(
                   'PayPal SDK Fehler',
                   err,

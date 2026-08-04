@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subscribeToNewsletter } from '../lib/newsletterService';
+import { reportCriticalError } from '../lib/errorLogger';
 import { Mail, Loader2 } from 'lucide-react';
 
 interface NewsletterBannerProps {
@@ -37,6 +38,11 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
         setErrorMessage(result.message || 'Fehler bei der Anmeldung.');
       }
     } catch (err: any) {
+      await reportCriticalError({
+        context: 'Newsletter-Anmeldung Banner',
+        error: err,
+        userEmail: email
+      });
       setErrorMessage(err?.message || 'Unerwarteter Fehler bei der Anmeldung.');
     } finally {
       setLoading(false);
