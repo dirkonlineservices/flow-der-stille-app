@@ -85,20 +85,38 @@ serve(async (req) => {
       }
     }
 
-    // 1. Transaktion in DB speichern
-    const { error: dbError } = await supabaseClient
+    const paypalOrderId = transaction_id || ('PP_' + Date.now());
+    const userEmail = user.email;
+
+    // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits existierte und den Status 'completed' hatte
+    const { data: existingKauf } = await supabaseClient
       .from('kaeufe')
-      .insert([{
-        user_id: user.id,
-        produkt_id: product_id || 'atemarbeit_herzoeffnung',
-        paypal_order_id: transaction_id || ('PP_' + Date.now()),
-        preis: price || 1.99,
-        waehrung: 'EUR',
-        widerruf_verzicht_akzeptiert: true
-      }]);
+      .select('status, paypal_order_id')
+      .eq('paypal_order_id', paypalOrderId)
+      .maybeSingle();
+
+    const isAlreadyCompleted = existingKauf && existingKauf.status === 'completed';
+
+    // 1. Transaktion mit .upsert() in DB speichern (onConflict: 'paypal_order_id')
+    const { data: upsertData, error: dbError } = await supabaseClient
+      .from('kaeufe')
+      .upsert(
+        {
+          user_id: user.id,
+          produkt_id: product_id || 'atemarbeit_herzoeffnung',
+          paypal_order_id: paypalOrderId,
+          preis: price || 1.99,
+          waehrung: 'EUR',
+          status: 'completed',
+          email: userEmail,
+          widerruf_verzicht_akzeptiert: true,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: 'paypal_order_id' }
+      );
 
     if (dbError) {
-      console.warn("Database insert warning (maybe already exists):", dbError.message);
+      console.warn("Database upsert warning:", dbError.message);
     }
     
     // 2. Rollen Update
@@ -109,17 +127,18 @@ serve(async (req) => {
 
     if (roleError) console.error("Non-fatal Error Rollen Update:", roleError.message);
 
-    // 3. Transaktionsmail via Resend
+    // 3. Transaktionsmail via Resend (nur versenden, wenn die Bestellung nicht bereits verarbeitet war)
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const userEmail = user.email;
 
-    if (resendApiKey && userEmail) {
+    if (isAlreadyCompleted) {
+      console.log(`[IDEMPOTENCY] Order ${paypalOrderId} war bereits als 'completed' markiert. Mailversand wird übersprungen.`);
+    } else if (resendApiKey && userEmail) {
       const emailHtml = `
         <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">
           <h2 style="color: #8A9A8A; margin-top: 0;">Vielen Dank für dein Vertrauen</h2>
           <p>Dein Kauf von <strong>${product_name || 'Flow der Stille Premium'}</strong> war erfolgreich.</p>
           <div style="background: #FFFFFF; padding: 15px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Transaktions-ID:</strong> ${transaction_id}</p>
+            <p style="margin: 5px 0;"><strong>Transaktions-ID:</strong> ${paypalOrderId}</p>
             <p style="margin: 5px 0;"><strong>Betrag:</strong> ${price || '1.99'} EUR</p>
           </div>
           <p>Deine Inhalte stehen ab sofort direkt in der App für dich bereit.</p>

@@ -179,28 +179,49 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     );
                   }
 
-                  // 2. Direct client-side insert into kaeufe table as extra assurance
-                  if (currentUserId) {
-                    const { error: insertError } = await supabase.from('kaeufe').insert([{
-                      user_id: currentUserId,
-                      produkt_id: produkt?.id,
-                      paypal_order_id: orderId,
-                      preis: priceValue,
-                      waehrung: 'EUR',
-                      widerruf_verzicht_akzeptiert: true
-                    }]);
+                  // 2. Direct client-side upsert into kaeufe table as extra assurance
+                  let isAlreadyCompleted = false;
 
-                    if (insertError) {
+                  if (currentUserId) {
+                    // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits als 'completed' verarbeitet war
+                    const { data: existingKauf } = await supabase
+                      .from('kaeufe')
+                      .select('status')
+                      .eq('paypal_order_id', orderId)
+                      .maybeSingle();
+
+                    if (existingKauf && existingKauf.status === 'completed') {
+                      isAlreadyCompleted = true;
+                    }
+
+                    const { error: upsertError } = await supabase
+                      .from('kaeufe')
+                      .upsert(
+                        {
+                          user_id: currentUserId,
+                          email: user?.email || '',
+                          produkt_id: produkt?.id,
+                          paypal_order_id: orderId,
+                          preis: priceValue,
+                          waehrung: 'EUR',
+                          status: 'completed',
+                          widerruf_verzicht_akzeptiert: true,
+                          updated_at: new Date().toISOString()
+                        },
+                        { onConflict: 'paypal_order_id' }
+                      );
+
+                    if (upsertError) {
                       transactionLogger.logError(
-                        'Database Insert Failure',
-                        insertError,
+                        'Database Upsert Failure',
+                        upsertError,
                         'supabase_db',
                         { user_id: currentUserId, produkt_id: produkt?.id, paypal_order_id: orderId }
                       );
                     } else {
                       transactionLogger.logSuccess(
-                        'Purchase Saved to DB',
-                        `Kauf erfolgreich in 'kaeufe' gespeichert für User ${currentUserId}`,
+                        'Purchase Saved to DB (Upsert)',
+                        `Kauf erfolgreich in 'kaeufe' via upsert gespeichert für User ${currentUserId}`,
                         'supabase_db',
                         { orderId, priceValue }
                       );
@@ -214,7 +235,10 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     );
                   }
 
-                  if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                  // DataLayer Purchase Tracking nur ausführen, wenn die Bestellung nicht bereits verarbeitet war
+                  if (isAlreadyCompleted) {
+                    console.log(`[IDEMPOTENCY] Order ${orderId} war bereits 'completed'. DataLayer-Event wird übersprungen.`);
+                  } else if (typeof window !== 'undefined' && (window as any).dataLayer) {
                     const dl = (window as any).dataLayer;
                     dl.push({ ecommerce: null });
                     dl.push({

@@ -408,14 +408,21 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         }
 
         const supabase = getSupabase();
-        await supabase.from('kaeufe').insert([{
-          user_id: user.id,
-          produkt_id: produkt.id,
-          paypal_order_id: 'GPLAY_' + Date.now(),
-          preis: parseFloat(produkt.preis),
-          waehrung: 'EUR',
-          widerruf_verzicht_akzeptiert: true
-        }]);
+        const orderId = 'GPLAY_' + Date.now();
+        await supabase.from('kaeufe').upsert(
+          {
+            user_id: user.id,
+            email: user.email || '',
+            produkt_id: produkt.id,
+            paypal_order_id: orderId,
+            preis: parseFloat(produkt.preis),
+            waehrung: 'EUR',
+            status: 'completed',
+            widerruf_verzicht_akzeptiert: true,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'paypal_order_id' }
+        );
         setShowUnlockBanner(true);
         setTimeout(() => {
           onSuccess();
