@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -7,11 +7,16 @@ import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-
 import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import SEO from '../components/SEO';
+import { checkConsentForAuth } from '../components/CookieBanner';
 
 export default function Register() {
   const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    checkConsentForAuth();
+  }, []);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');

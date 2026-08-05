@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -6,11 +6,16 @@ import { motion } from 'motion/react';
 import { Mail, Lock, ShieldAlert, Eye, EyeOff, LogIn } from 'lucide-react';
 import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
+import { checkConsentForAuth } from '../components/CookieBanner';
 
 export default function Login() {
   const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    checkConsentForAuth();
+  }, []);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

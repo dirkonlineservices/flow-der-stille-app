@@ -49,9 +49,21 @@ export default function CookieBanner() {
 
   const handleChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
-    setIsVisible(false);
-    setIsAuthNotice(false);
     trackConsentUpdate(choice);
+
+    if (choice === 'rejected') {
+      const pathname = window.location.pathname;
+      if (pathname.includes('/login') || pathname.includes('/register')) {
+        setIsAuthNotice(true);
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+        setIsAuthNotice(false);
+      }
+    } else {
+      setIsVisible(false);
+      setIsAuthNotice(false);
+    }
 
     if (typeof window !== 'undefined') {
       window.dataLayer = window.dataLayer || [];
