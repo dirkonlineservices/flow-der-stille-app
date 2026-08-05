@@ -3,6 +3,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { Search, CreditCard, Loader2 } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
+import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
@@ -357,7 +358,7 @@ export default function PremiumShopDashboard() {
               </div>
 
               {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--border)]">
+                <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
                     <AudioPlayerButton 
                       produkt={produkt} 
                       getUrl={async (p: any) => {
@@ -369,6 +370,15 @@ export default function PremiumShopDashboard() {
                         return data.publicUrl;
                       }} 
                     />
+                    <div className="flex justify-end">
+                      <ProductDisclaimerTrigger />
+                    </div>
+                </div>
+              )}
+
+              {!hatZugriff && (
+                <div className="mt-4 pt-4 border-t border-[var(--border)] flex justify-end">
+                  <ProductDisclaimerTrigger />
                 </div>
               )}
             </div>

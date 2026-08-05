@@ -160,7 +160,7 @@ export default function Home() {
             description={t('home.card.morning.desc')}
             icon={<Sun className="text-amber-500" />}
             delay={0.1}
-            to="/atemchat"
+            to="/exercises"
           />
           <QuickActionCard 
             title={t('home.card.breathing.title')} 

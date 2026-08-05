@@ -13,6 +13,7 @@ DO NOT modify the asynchronous URL loading logic. Read-only permitted.
 
 import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
+import DisclaimerModal from './DisclaimerModal';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
   const [url, setUrl] = useState('');
@@ -21,6 +22,7 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const formatTime = (secs: number) => {
@@ -67,6 +69,13 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
 
   // ⚡ FIX: Multitasking-Sperre auch für diesen nativen Player
   const handlePlay = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
+    if (!accepted) {
+      e.currentTarget.pause();
+      setShowDisclaimer(true);
+      return;
+    }
+
     const allAudios = document.querySelectorAll('audio');
     allAudios.forEach((el) => {
       if (el !== e.target) {
@@ -79,33 +88,45 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   if (!url) return <span className="text-red-400 text-xs">Fehler: Audio-URL fehlt in Datenbank</span>;
 
   return (
-    <div className="mt-8 p-4 sm:p-6 md:p-8 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl w-full shadow-sm">
-      <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--color-text-main)] mb-4">{titel}</h4>
-      
-      {/* Nativer Browser-Player, aber mit globaler Pausen-Kontrolle (onPlay) */}
-      <audio 
-        ref={audioRef}
-        src={url} 
-        controls 
-        className="w-full" 
-        preload="metadata" 
-        controlsList="nodownload"
-        onPlay={handlePlay}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-      />
-      
-      {/* Zeit-Anzeige */}
-      <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
-        {formatTime(currentTime)} / {formatTime(duration)}
+    <>
+      <div className="mt-8 p-4 sm:p-6 md:p-8 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl w-full shadow-sm">
+        <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--color-text-main)] mb-4">{titel}</h4>
+        
+        {/* Nativer Browser-Player, aber mit globaler Pausen-Kontrolle (onPlay) */}
+        <audio 
+          ref={audioRef}
+          src={url} 
+          controls 
+          className="w-full" 
+          preload="metadata" 
+          controlsList="nodownload"
+          onPlay={handlePlay}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+        />
+        
+        {/* Zeit-Anzeige */}
+        <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </div>
+        
+        {/* KI-Label dezent integriert */}
+        {audioHinweis && (
+          <p className="text-[10px] text-[var(--color-text-muted)] mt-5 pt-3 border-t border-[var(--color-border-main)] italic">
+            {audioHinweis}
+          </p>
+        )}
       </div>
-      
-      {/* KI-Label dezent integriert */}
-      {audioHinweis && (
-        <p className="text-[10px] text-[var(--color-text-muted)] mt-5 pt-3 border-t border-[var(--color-border-main)] italic">
-          {audioHinweis}
-        </p>
-      )}
-    </div>
+
+      <DisclaimerModal 
+        isOpen={showDisclaimer} 
+        onAccepted={() => {
+          setShowDisclaimer(false);
+          if (audioRef.current) {
+            audioRef.current.play().catch(() => {});
+          }
+        }} 
+      />
+    </>
   );
 }

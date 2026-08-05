@@ -46,6 +46,12 @@ import CartSidebar from './components/CartSidebar';
 import ScrollToTop from './components/ScrollToTop';
 import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
 import CookieBanner from './components/CookieBanner';
+import DisclaimerModal from './components/DisclaimerModal';
+
+function DisclaimerManager() {
+  const [accepted, setAccepted] = React.useState(() => localStorage.getItem('flow_disclaimer_accepted') === 'true');
+  return <DisclaimerModal isOpen={!accepted} onAccepted={() => setAccepted(true)} />;
+}
 
 // NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -73,6 +79,7 @@ export default function App() {
               <CartSidebar />
               <TransactionErrorOverlay />
               <CookieBanner />
+              <DisclaimerManager />
               <Routes>
                 
                 {/* Dein normales Haus mit dem Standard-Menü (Layout) */}

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { AdminTools } from './AdminTools';
 import { openCookieConsentModal, AuthLink } from './CookieBanner';
+import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -142,6 +143,7 @@ export default function Layout() {
         >
           Cookie-Einstellungen
         </button>
+        <ProductDisclaimerTrigger />
       </footer>
 
       {/* Burger Menu Overlay */}
