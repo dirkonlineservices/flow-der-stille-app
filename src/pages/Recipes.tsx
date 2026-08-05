@@ -5,6 +5,7 @@ import { Utensils, Coffee, Leaf, Droplets, Flame, Lock, Info, Calendar } from 'l
 import { allRecipes, weeklyTips } from '../data/recipes';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 
 export default function Recipes() {
   const { user } = useAuth();
@@ -90,9 +91,9 @@ export default function Recipes() {
             <p className="text-sm text-[var(--color-text-muted)] max-w-md mb-6 leading-relaxed">
               Melde dich kostenlos an, um deinen persönlichen wöchentlichen Ernährungsimpuls zu erhalten. Die anderen Funktionen kommen dann erst später.
             </p>
-            <a href="/register" className="inline-flex items-center justify-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+            <AuthLink to="/register" className="inline-flex items-center justify-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
               Kostenlos registrieren
-            </a>
+            </AuthLink>
           </div>
         )}
       </section>

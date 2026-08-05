@@ -12,6 +12,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
 import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newsletterService';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
 
 export default function Settings() {
@@ -354,18 +355,18 @@ export default function Settings() {
             Um dein Profil anzupassen, deinen Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melde dich bitte an oder erstelle ein neues Konto.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link 
+            <AuthLink 
               to="/login" 
               className="px-6 py-2.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-medium rounded-xl transition-all"
             >
               Einloggen
-            </Link>
-            <Link 
+            </AuthLink>
+            <AuthLink 
               to="/register" 
               className="px-6 py-2.5 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-[var(--color-text-main)] font-medium rounded-xl hover:bg-[var(--color-bg-alt)] transition-all"
             >
               Registrieren
-            </Link>
+            </AuthLink>
           </div>
         </div>
       ) : (

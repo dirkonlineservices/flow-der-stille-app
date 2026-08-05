@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { AdminTools } from './AdminTools';
-import { openCookieConsentModal } from '../lib/tracking';
+import { openCookieConsentModal, AuthLink } from './CookieBanner';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -165,9 +165,9 @@ export default function Layout() {
                 </button>
               </>
             ) : (
-              <Link to="/login" onClick={() => setIsBurgerMenuOpen(false)} className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] text-center font-bold text-[var(--text-main)]">
+              <AuthLink to="/login" onClick={() => setIsBurgerMenuOpen(false)} className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] text-center font-bold text-[var(--text-main)]">
                 {t('auth.login')}
-              </Link>
+              </AuthLink>
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, Shield, CheckCircle2, XCircle, ArrowRight, ChevronDown, ChevronUp, Lock, HelpCircle, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { pushToDataLayer, trackConsentUpdate } from '../lib/tracking';
 
 export const COOKIE_STORAGE_KEY = 'flow_cookie_consent_status';
@@ -9,48 +9,49 @@ export function openCookieConsentModal() {
   window.dispatchEvent(new CustomEvent('open-cookie-banner'));
 }
 
+export function checkConsentForAuth(): boolean {
+  const status = localStorage.getItem(COOKIE_STORAGE_KEY);
+  if (status === 'all' || status === 'necessary') {
+    return true;
+  }
+  window.dispatchEvent(new CustomEvent('open-cookie-banner-auth'));
+  return false;
+}
+
 export default function CookieBanner() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isRejectedState, setIsRejectedState] = useState<boolean>(false);
+  const [isAuthNotice, setIsAuthNotice] = useState<boolean>(false);
   const [showAccordion, setShowAccordion] = useState<boolean>(false);
-  const [activeAccordionTab, setActiveAccordionTab] = useState<number | null>(null);
 
   useEffect(() => {
     const storedStatus = localStorage.getItem(COOKIE_STORAGE_KEY);
     if (!storedStatus) {
       setIsVisible(true);
-    } else if (storedStatus === 'rejected') {
-      setIsRejectedState(true);
-      setIsVisible(true);
     }
 
     const handleOpenModal = () => {
-      const current = localStorage.getItem(COOKIE_STORAGE_KEY);
-      if (current === 'rejected') {
-        setIsRejectedState(true);
-      } else {
-        setIsRejectedState(false);
-      }
+      setIsAuthNotice(false);
+      setIsVisible(true);
+    };
+
+    const handleOpenAuthModal = () => {
+      setIsAuthNotice(true);
       setIsVisible(true);
     };
 
     window.addEventListener('open-cookie-banner', handleOpenModal);
+    window.addEventListener('open-cookie-banner-auth', handleOpenAuthModal);
     return () => {
       window.removeEventListener('open-cookie-banner', handleOpenModal);
+      window.removeEventListener('open-cookie-banner-auth', handleOpenAuthModal);
     };
   }, []);
 
   const handleChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
+    setIsVisible(false);
+    setIsAuthNotice(false);
     trackConsentUpdate(choice);
-    
-    if (choice === 'rejected') {
-      setIsRejectedState(true);
-      setIsVisible(true); // Keep visible as access-denied lock screen
-    } else {
-      setIsRejectedState(false);
-      setIsVisible(false);
-    }
 
     if (typeof window !== 'undefined') {
       window.dataLayer = window.dataLayer || [];
@@ -58,6 +59,31 @@ export default function CookieBanner() {
         event: 'consent_update',
         consent_choice: choice
       });
+
+      if (typeof (window as any).gtag === 'function') {
+        if (choice === 'all') {
+          (window as any).gtag('consent', 'update', {
+            'ad_storage': 'granted',
+            'ad_user_data': 'granted',
+            'ad_personalization': 'granted',
+            'analytics_storage': 'granted'
+          });
+        } else if (choice === 'necessary') {
+          (window as any).gtag('consent', 'update', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'granted'
+          });
+        } else {
+          (window as any).gtag('consent', 'update', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+          });
+        }
+      }
     }
   };
 
@@ -66,12 +92,7 @@ export default function CookieBanner() {
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => {
-            const current = localStorage.getItem(COOKIE_STORAGE_KEY);
-            if (current === 'rejected') {
-              setIsRejectedState(true);
-            } else {
-              setIsRejectedState(false);
-            }
+            setIsAuthNotice(false);
             setIsVisible(true);
           }}
           className="flex items-center gap-2 bg-[var(--bg-card)] text-[var(--text-main)] px-4 py-2.5 rounded-full shadow-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all text-xs font-medium group"
@@ -97,13 +118,13 @@ export default function CookieBanner() {
         {/* Accent top bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--accent)]"></div>
 
-        {isRejectedState && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 flex items-start gap-3">
-            <Lock size={20} className="text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+        {isAuthNotice && (
+          <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-3">
+            <Lock size={20} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-1">Zugriff vorübergehend eingeschränkt</h3>
-              <p className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
-                Du hast alle Cookies und Analysedienste abgelehnt. Ohne die erforderlichen Grundfunktionen und Cookies kann „Flow der Stille“ nicht ordnungsgemäß betrieben werden. Du kannst deine Berechtigungen unten jederzeit anpassen, um den vollen Zugang freizuschalten.
+              <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">Authentifizierung &amp; Registrierung</h3>
+              <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                Für die Kontoerstellung und Nutzung des persönlichen Bereichs ist mindestens die Zustimmung für notwendige Dienste erforderlich.
               </p>
             </div>
           </div>
@@ -111,19 +132,21 @@ export default function CookieBanner() {
 
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-main)] text-[var(--accent)] shrink-0 border border-[var(--border)]">
-            {isRejectedState ? <Lock size={24} /> : <Cookie size={24} />}
+            <Cookie size={24} />
           </div>
           <div>
-            <span className="text-xs uppercase tracking-widest text-[var(--accent)] font-semibold">Consent Management & Privatsphäre</span>
+            <span className="text-xs uppercase tracking-widest text-[var(--accent)] font-semibold">Datenschutz &amp; Cookies</span>
             <h2 className="text-2xl font-serif font-bold" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-              {isRejectedState ? "Warum wir Cookies & Dienste benötigen" : "Willkommen bei Flow der Stille"}
+              Willkommen bei Flow der Stille
             </h2>
           </div>
         </div>
 
         <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif" }}>
-          Wir möchten transparent erklären, warum wir Cookies und den Google Tag Manager (GTM) einsetzen: 
-          <strong className="text-[var(--text-main)] font-medium"> Wir benötigen einige Cookies und essenzielle Dienste, um Kernfunktionen wie den sicheren Meditations-Sitzungsbereich, den Warenkorb und den fehlerfreien Seitenaufbau bereitzustellen</strong>, die ohne diese technisch nicht funktionieren können.
+          Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Inhalte zu personalisieren und Zugriffe auf unserer Website zu analysieren. Weitere Informationen findest du in unserer{' '}
+          <Link to="/datenschutz" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
+            Datenschutzerklärung
+          </Link>.
         </p>
 
         {/* Accordion for Details */}
@@ -135,7 +158,7 @@ export default function CookieBanner() {
           >
             <span className="flex items-center gap-2">
               <Info size={16} className="text-[var(--accent)]" />
-              <span>Transparenz-Details: Welche Daten & wofür?</span>
+              <span>Transparenz-Details: Welche Daten &amp; wofür?</span>
             </span>
             {showAccordion ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -144,16 +167,15 @@ export default function CookieBanner() {
             <div className="p-4 border-t text-xs space-y-3" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
               <div>
                 <strong className="text-[var(--text-main)] block mb-1">1. Notwendige Cookies (Erforderlich)</strong>
-                Sichern den Login-Status, Benutzereinstellungen, Sitzungssicherheit und den Warenkorb ab. Ohne diese Cookies bricht die Kernfunktionalität ab.
+                Sichern den Login-Status, Benutzereinstellungen, Sitzungssicherheit und den Warenkorb ab.
               </div>
               <div>
-                <strong className="text-[var(--text-main)] block mb-1">2. Analyse & Google Tag Manager (Optional)</strong>
+                <strong className="text-[var(--text-main)] block mb-1">2. Analyse &amp; Google Tag Manager (Optional)</strong>
                 Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden, um die Plattform DSGVO-konform in Europa weiterzuentwickeln.
               </div>
               <div>
-                <strong className="text-[var(--text-main)] block mb-1">3. Ihre Rechte & Kontrolle</strong>
-                Sie können Ihre Einwilligung jederzeit über das Cookie-Symbol unten rechts auf der Website ändern oder widerrufen. Weitere Details in unserer{' '}
-                <Link to="/datenschutz" className="underline text-[var(--accent)] font-medium">Datenschutzerklärung</Link>.
+                <strong className="text-[var(--text-main)] block mb-1">3. Ihre Rechte &amp; Kontrolle</strong>
+                Sie können Ihre Einwilligung jederzeit über das Cookie-Symbol unten rechts auf der Website ändern oder widerrufen.
               </div>
             </div>
           )}
@@ -166,7 +188,7 @@ export default function CookieBanner() {
             style={{ backgroundColor: 'var(--accent)', fontFamily: "'Inter', sans-serif" }}
           >
             <CheckCircle2 size={16} />
-            <span>Alle akzeptieren &amp; Zugang freigeben</span>
+            <span>Alle akzeptieren</span>
           </button>
 
           <button
@@ -180,7 +202,7 @@ export default function CookieBanner() {
             }}
           >
             <Shield size={16} />
-            <span>Nur notwendige Cookies</span>
+            <span>Nur notwendige</span>
           </button>
         </div>
 
@@ -191,7 +213,7 @@ export default function CookieBanner() {
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             <XCircle size={14} />
-            <span>Ablehnen (Zugriff einschränken)</span>
+            <span>Ablehnen</span>
           </button>
         </div>
 
@@ -208,3 +230,20 @@ export default function CookieBanner() {
   );
 }
 
+export function AuthLink({ to, children, className, onClick, ...props }: { to: string; children: React.ReactNode; className?: string; onClick?: () => void; [key: string]: any }) {
+  const handleClick = (e: React.MouseEvent) => {
+    if (to === '/login' || to === '/register') {
+      if (!checkConsentForAuth()) {
+        e.preventDefault();
+        return;
+      }
+    }
+    if (onClick) onClick();
+  };
+
+  return (
+    <Link to={to} onClick={handleClick} className={className} {...props}>
+      {children}
+    </Link>
+  );
+}

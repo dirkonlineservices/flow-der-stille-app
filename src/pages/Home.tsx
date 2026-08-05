@@ -8,6 +8,7 @@ import NewsletterBanner from '../components/NewsletterBanner';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import HomeChatWidget from '../components/HomeChatWidget';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
 
 const dailyWisdoms = [
@@ -127,12 +128,12 @@ export default function Home() {
                 </p>
               </div>
               <div className="shrink-0 flex gap-3 w-full md:w-auto">
-                <Link to="/login" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-bg-card)] text-[var(--color-text-main)] text-sm font-medium rounded-full border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] transition-colors shadow-sm">
+                <AuthLink to="/login" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-bg-card)] text-[var(--color-text-main)] text-sm font-medium rounded-full border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] transition-colors shadow-sm">
                   Anmelden
-                </Link>
-                <Link to="/register" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+                </AuthLink>
+                <AuthLink to="/register" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
                   Kostenlos registrieren
-                </Link>
+                </AuthLink>
               </div>
             </motion.div>
           )}
