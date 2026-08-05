@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { trackConsentUpdate } from '../lib/tracking';
 import { 
-  ShieldAlert, 
   Cookie, 
   ShieldCheck, 
   Check, 
   Ban, 
   ExternalLink, 
-  ArrowRight,
   Info,
   ChevronDown,
   ChevronUp,
@@ -83,11 +81,10 @@ export function CookieBanner() {
   };
 
   const showModal = consent === null || isManuallyReopened;
-  const isBlocked = consent === 'none' && !showModal;
 
   return (
     <>
-      {/* 1. Cookie Consent Banner Modal */}
+      {/* 1. Einziger Cookie Consent Banner / Modal */}
       <AnimatePresence>
         {showModal && (
           <div 
@@ -119,7 +116,7 @@ export function CookieBanner() {
 
               {/* Main Text */}
               <p className="text-sm text-[var(--text-muted,#695C4D)] leading-relaxed mb-5">
-                Wir nutzen Cookies für notwendige Online-Dienste und verarbeiten Daten DSGVO-konform in Europa. Grundfunktionen sichern den reibungslosen Betrieb der Webseite ab, während Analyse-, Cloud- und Tracking-Dienste erst mit deiner Zustimmung aktiviert werden. 
+                Wir nutzen Cookies für notwendige Online-Dienste und verarbeiten Daten DSGVO-konform in Europa. Grundfunktionen sichern den reibungslosen Betrieb der Webseite ab, während Analyse-, Cloud- und Tracking-Dienste (Google Analytics, Google Tag Manager, Firebase u. a.) erst mit deiner Zustimmung aktiviert werden. 
                 Erfahre mehr in unserer{' '}
                 <Link
                   to="/datenschutz"
@@ -235,7 +232,7 @@ export function CookieBanner() {
                     <span>Nur notwendige</span>
                   </button>
 
-                  {/* 3. Reject All: Ablehnen (Keine akzeptieren) */}
+                  {/* 3. Reject All: Ablehnen */}
                   <button
                     type="button"
                     onClick={() => handleSelectConsent('none')}
@@ -278,95 +275,7 @@ export function CookieBanner() {
         )}
       </AnimatePresence>
 
-      {/* 2. Full-Screen Blocking Screen when "Ablehnen" (none) is selected */}
-      <AnimatePresence>
-        {isBlocked && (
-          <div className="fixed inset-0 z-[9999] bg-[var(--bg-main,#F5F5F0)] overflow-y-auto flex items-center justify-center p-4 sm:p-6 text-[var(--text-main,#3D3B35)]">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-lg w-full bg-[var(--bg-card,#FFFFFF)] rounded-3xl p-6 sm:p-8 shadow-xl border border-[var(--border,#E3E1D9)] text-center my-auto relative overflow-hidden"
-            >
-              {/* Image banner illustration */}
-              <div className="mb-6 rounded-2xl overflow-hidden border border-[var(--border,#E3E1D9)] shadow-xs relative aspect-[16/9] bg-stone-100">
-                <img
-                  src="/src/assets/images/cookie_blocked_screen_1785851614958.jpg"
-                  alt="Zugriff auf die Seite ist eingeschränkt"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center p-4">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/90 text-white text-xs font-semibold backdrop-blur-xs">
-                    <ShieldAlert size={14} />
-                    Zugriff eingeschränkt
-                  </span>
-                </div>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl font-serif font-semibold mb-3 text-[var(--text-main,#3D3B35)]">
-                Zugriff auf die Seite ist eingeschränkt
-              </h1>
-
-              <p className="text-sm text-[var(--text-muted,#695C4D)] leading-relaxed mb-6 max-w-md mx-auto">
-                Diese Webseite benötigt die Speicherung von technisch notwendigen Cookies, um Grundfunktionen wie Navigation, Sicherheit und Sitzungen bereitzustellen.
-                <br /><br />
-                Da du <strong className="text-rose-600 dark:text-rose-400 font-semibold">keine Cookies akzeptiert</strong> hast, steht der Inhalt unserer Webseite in diesem Modus leider nicht zur Verfügung.
-              </p>
-
-              {/* Explanatory callout */}
-              <div className="bg-[var(--bg-alt,#F7F6F2)] p-4 rounded-2xl border border-[var(--border,#E3E1D9)] text-left mb-6 text-xs sm:text-sm text-[var(--text-muted,#695C4D)]">
-                <div className="flex items-start gap-2.5 text-[var(--text-main,#3D3B35)] font-medium">
-                  <ShieldCheck size={18} className="text-[var(--accent,#8A9A8A)] shrink-0 mt-0.5" />
-                  <span>Du kannst die Nutzung sofort freischalten, indem du mindestens die technisch notwendigen Cookies zulässt:</span>
-                </div>
-              </div>
-
-              {/* Buttons to unlock */}
-              <div className="flex flex-col sm:flex-row gap-2.5 justify-center mb-6">
-                <button
-                  type="button"
-                  onClick={() => handleSelectConsent('necessary')}
-                  className="px-5 py-3 bg-[var(--bg-alt,#F7F6F2)] hover:bg-[var(--border,#E3E1D9)] text-[var(--text-main,#3D3B35)] border border-[var(--border,#E3E1D9)] text-xs sm:text-sm font-medium rounded-xl transition-all flex items-center justify-center gap-2"
-                >
-                  <ShieldCheck size={16} className="text-[var(--accent)]" />
-                  <span>Nur notwendige zulassen</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectConsent('all')}
-                  className="px-5 py-3 bg-[var(--accent,#8A9A8A)] hover:bg-[var(--accent-hover,#728372)] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95"
-                >
-                  <Check size={16} />
-                  <span>Alle akzeptieren</span>
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-
-              {/* Legal Links Footer in Blocked view */}
-              <div className="pt-4 border-t border-[var(--border,#E3E1D9)] flex flex-wrap justify-center items-center gap-3 text-xs text-[var(--text-muted,#695C4D)]">
-                <Link
-                  to="/datenschutz"
-                  className="hover:text-[var(--text-main)] underline transition-colors"
-                >
-                  Datenschutzerklärung
-                </Link>
-                <span>•</span>
-                <Link
-                  to="/impressum"
-                  className="hover:text-[var(--text-main)] underline transition-colors"
-                >
-                  Impressum
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* 3. Floating Cookie Settings Trigger Button (Visible when banner modal is closed) */}
+      {/* 2. Floating Cookie Settings Trigger Button (Visible when banner modal is closed) */}
       {!showModal && (
         <button
           type="button"
