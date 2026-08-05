@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, Lock, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, ArrowLeft, Cookie } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { openCookieConsentModal } from '../components/CookieConsent';
 
 export default function Datenschutz() {
   return (
@@ -51,6 +52,19 @@ export default function Datenschutz() {
             <p className="mt-2">
               Zur Analyse der Webseitennutzung setzen wir Google Analytics 4 (GA4) ein. Dies geschieht in einer datenschutzkonformen Konfiguration unter Verwendung der IP-Anonymisierung.
             </p>
+            <div className="mt-4 p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-2.5 text-xs text-[var(--color-text-main)]">
+                <Cookie size={18} className="text-[var(--color-accent-primary)] shrink-0" />
+                <span>Du möchtest deine Cookie-Einwilligung einsehen oder anpassen?</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => openCookieConsentModal()}
+                className="px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover,#788878)] text-white text-xs font-semibold rounded-xl transition-all shadow-xs"
+              >
+                Cookie-Einstellungen anpassen
+              </button>
+            </div>
             
             <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Newsletter (Supabase)</h3>
             <p>
