@@ -175,11 +175,11 @@ export default function CookieBanner() {
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--accent)]"></div>
 
         {isAuthNotice && (
-          <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-3">
-            <Lock size={20} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 rounded-xl border flex items-start gap-3" style={{ backgroundColor: 'var(--bg-main)', borderColor: 'var(--border)' }}>
+            <Lock size={20} className="text-[var(--accent)] shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">Authentifizierung &amp; Registrierung</h3>
-              <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-main)' }}>Authentifizierung &amp; Registrierung</h3>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                 Für die Kontoerstellung und Nutzung des persönlichen Bereichs ist mindestens die Zustimmung für notwendige Dienste erforderlich.
               </p>
             </div>
@@ -265,7 +265,7 @@ export default function CookieBanner() {
         <div className="flex justify-center mb-2">
           <button
             onClick={() => handleChoice('rejected')}
-            className="text-xs font-medium text-red-600 dark:text-red-400 hover:underline px-3 py-1.5 transition-colors flex items-center gap-1.5"
+            className="text-xs font-medium hover:underline px-3 py-1.5 transition-colors flex items-center gap-1.5 text-red-600"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             <XCircle size={14} />
