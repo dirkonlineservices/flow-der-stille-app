@@ -37,6 +37,7 @@ import RecipeDetail from './pages/RecipeDetail';
 import Blog from './pages/Blog';
 import BlogPostDetail from './pages/BlogPost';
 import BlogEditor from './pages/BlogEditor';
+import AuthCallback from './pages/AuthCallback';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
@@ -115,6 +116,10 @@ export default function App() {
                 <Route 
                   path="/atemchat" 
                   element={<AtemChat />} 
+                />
+                <Route 
+                  path="/auth/callback" 
+                  element={<AuthCallback />} 
                 />
 
                 <Route path="*" element={<NotFound />} />

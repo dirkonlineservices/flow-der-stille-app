@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Cookie, Shield, CheckCircle2, XCircle, ArrowRight, ChevronDown, ChevronUp, Lock, HelpCircle, Info } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { pushToDataLayer, trackConsentUpdate } from '../lib/tracking';
+import { useAuth } from '../context/AuthContext';
 
 export const COOKIE_STORAGE_KEY = 'flow_cookie_consent_status';
 
@@ -14,6 +15,9 @@ export function checkConsentForAuth(): boolean {
   if (status === 'all' || status === 'necessary') {
     return true;
   }
+  if (sessionStorage.getItem('suppress_newsletter_modal') === 'true') {
+    return true;
+  }
   window.dispatchEvent(new CustomEvent('open-cookie-banner-auth'));
   return false;
 }
@@ -22,11 +26,48 @@ export default function CookieBanner() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isAuthNotice, setIsAuthNotice] = useState<boolean>(false);
   const [showAccordion, setShowAccordion] = useState<boolean>(false);
+  const hasPushedInitialConsent = useRef<boolean>(false);
 
   useEffect(() => {
     const storedStatus = localStorage.getItem(COOKIE_STORAGE_KEY);
     if (!storedStatus) {
       setIsVisible(true);
+    } else {
+      if (!hasPushedInitialConsent.current) {
+        hasPushedInitialConsent.current = true;
+        if (typeof window !== 'undefined') {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'consent_update',
+            consent_choice: storedStatus
+          });
+
+          if (typeof (window as any).gtag === 'function') {
+            if (storedStatus === 'all') {
+              (window as any).gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted'
+              });
+            } else if (storedStatus === 'necessary') {
+              (window as any).gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'granted'
+              });
+            } else {
+              (window as any).gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+              });
+            }
+          }
+        }
+      }
     }
 
     const handleOpenModal = () => {
@@ -35,6 +76,9 @@ export default function CookieBanner() {
     };
 
     const handleOpenAuthModal = () => {
+      if (sessionStorage.getItem('suppress_newsletter_modal') === 'true') {
+        return;
+      }
       setIsAuthNotice(true);
       setIsVisible(true);
     };
@@ -243,12 +287,11 @@ export default function CookieBanner() {
 }
 
 export function AuthLink({ to, children, className, onClick, ...props }: { to: string; children: React.ReactNode; className?: string; onClick?: () => void; [key: string]: any }) {
+  const { setAuthFlow } = useAuth();
   const handleClick = (e: React.MouseEvent) => {
     if (to === '/login' || to === '/register') {
-      if (!checkConsentForAuth()) {
-        e.preventDefault();
-        return;
-      }
+      setAuthFlow(true);
+      sessionStorage.setItem('suppress_newsletter_modal', 'true');
     }
     if (onClick) onClick();
   };

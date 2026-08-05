@@ -24,12 +24,15 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   refreshUser: () => Promise<void>; 
+  isAuthFlow: boolean;
+  setAuthFlow: (val: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthFlow, setAuthFlow] = useState<boolean>(false);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -109,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, refreshUser }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, refreshUser, isAuthFlow, setAuthFlow }}>
       {children}
     </AuthContext.Provider>
   );
