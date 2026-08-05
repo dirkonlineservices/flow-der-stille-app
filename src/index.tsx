@@ -44,7 +44,6 @@ import { CartProvider } from './context/CartContext';
 import CartSidebar from './components/CartSidebar';
 import ScrollToTop from './components/ScrollToTop';
 import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
-import CookieConsent from './components/CookieConsent';
 
 // NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -71,7 +70,6 @@ export default function App() {
               <ScrollToTop />
               <CartSidebar />
               <TransactionErrorOverlay />
-              <CookieConsent />
               <Routes>
                 
                 {/* Dein normales Haus mit dem Standard-Menü (Layout) */}

@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Shield, Lock, ArrowLeft, Cookie } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { openCookieConsentModal } from '../components/CookieConsent';
+import { openCookieConsentModal } from '../lib/tracking';
 
 export default function Datenschutz() {
   return (

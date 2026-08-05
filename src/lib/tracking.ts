@@ -5,18 +5,24 @@ declare global {
 }
 
 // 1. Core-Funktion: Sichert ab, dass der Code nicht beim Server-Side-Rendering crasht.
-export const pushToDataLayer = (data: any) => {
+export const pushToDataLayer = (data: Record<string, any>) => {
   if (typeof window !== 'undefined') {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(data);
   }
 };
 
-// 2. Consent Update (Wird vom Cookie-Banner gefeuert)
+// 2. Consent Update (Wird vom GTM / Banner gefeuert)
 export const trackConsentUpdate = (choice: 'all' | 'necessary' | 'rejected') => {
   pushToDataLayer({
     event: 'consent_update',
     consent_choice: choice
+  });
+};
+
+export const openCookieConsentModal = () => {
+  pushToDataLayer({
+    event: 'open_cookie_settings'
   });
 };
 
