@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2 } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -359,6 +359,35 @@ export default function PremiumShopDashboard() {
 
               {hatZugriff && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
+                    {istKostenlos && !user && (
+                      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-amber-900 dark:text-amber-200 shadow-sm mb-4">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 shrink-0">
+                            <Lock size={22} />
+                          </div>
+                          <div>
+                            <h4 className="font-serif font-bold text-base mb-1">Kostenloses Audio nach Registrierung anhören</h4>
+                            <p className="text-xs sm:text-sm opacity-90 mb-4 leading-relaxed">
+                              Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit.
+                            </p>
+                            <div className="flex flex-wrap gap-3">
+                              <Link 
+                                to="/register" 
+                                className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                              >
+                                Jetzt kostenlos registrieren
+                              </Link>
+                              <Link 
+                                to="/login" 
+                                className="px-4 py-2 bg-white dark:bg-stone-800 text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] hover:bg-[var(--bg-alt)] transition"
+                              >
+                                Anmelden
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <AudioPlayerButton 
                       produkt={produkt} 
                       getUrl={async (p: any) => {

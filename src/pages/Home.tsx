@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import NewsletterBanner from '../components/NewsletterBanner';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import HomeChatWidget from '../components/HomeChatWidget';
+import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
@@ -151,6 +152,10 @@ export default function Home() {
                 <h3 className="font-bold text-[var(--color-text-main)]">Premium-Bereich: Übungen & Meditationen</h3>
                 <p className="text-[var(--color-text-muted)] text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
              </Link>
+          </div>
+
+          <div className="mt-6">
+            <FriendInviteWidget />
           </div>
         </div>
 

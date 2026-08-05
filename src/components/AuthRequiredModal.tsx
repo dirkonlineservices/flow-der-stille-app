@@ -35,7 +35,7 @@ export default function AuthRequiredModal({ isOpen, onClose }: AuthRequiredModal
         </h3>
 
         <p className="text-sm text-[var(--text-muted)] text-center mb-6 leading-relaxed">
-          Um geführte Atemübungen, Audiomationen und exklusive Inhalte anzuhören, erstelle bitte einen kostenlosen und unverbindlichen Account bei Flow der Stille.
+          Um geführte Atemübungen, Meditationen und exklusive Audio-Inhalte anzuhören, erstelle bitte einen kostenlosen und unverbindlichen Account bei Flow der Stille.
         </p>
 
         <div className="space-y-3">

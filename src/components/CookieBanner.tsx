@@ -202,6 +202,10 @@ export default function CookieBanner() {
           Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Inhalte zu personalisieren und Zugriffe auf unserer Website zu analysieren. Weitere Informationen findest du in unserer{' '}
           <Link to="/datenschutz" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
             Datenschutzerklärung
+          </Link>{' '}
+          sowie in unserem{' '}
+          <Link to="/impressum" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
+            Impressum
           </Link>.
         </p>
 
@@ -273,12 +277,17 @@ export default function CookieBanner() {
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-xs pt-4 border-t mt-4" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+        <div className="flex items-center justify-between text-xs pt-4 border-t mt-4 flex-wrap gap-2" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
           <span>Google Tag Manager (GTM-WPRLW9H9)</span>
-          <Link to="/datenschutz" className="hover:underline flex items-center gap-1">
-            <span>Datenschutz &amp; Impressum</span>
-            <ArrowRight size={12} />
-          </Link>
+          <div className="flex items-center gap-3 font-medium">
+            <Link to="/datenschutz" className="hover:underline text-[var(--accent)]">
+              Datenschutz
+            </Link>
+            <span>•</span>
+            <Link to="/impressum" className="hover:underline text-[var(--accent)]">
+              Impressum
+            </Link>
+          </div>
         </div>
 
       </div>

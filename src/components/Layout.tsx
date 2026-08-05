@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { AdminTools } from './AdminTools';
-import { openCookieConsentModal, AuthLink } from './CookieBanner';
+import { AuthLink } from './CookieBanner';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
@@ -133,16 +133,6 @@ export default function Layout() {
             </Link>
           )
         ))}
-        <button
-          type="button"
-          onClick={() => {
-            pushNavigationClick('Cookie-Einstellungen');
-            openCookieConsentModal();
-          }}
-          className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap cursor-pointer"
-        >
-          Cookie-Einstellungen
-        </button>
         <ProductDisclaimerTrigger />
       </footer>
 
