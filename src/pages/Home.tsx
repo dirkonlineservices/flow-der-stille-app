@@ -104,16 +104,33 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
           
-          <div className="bg-[var(--color-bg-card)] p-6 rounded-3xl border border-[var(--color-border-main)] mt-8">
-            <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-4">Für kurze Momente der Stille</h3>
-            <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-4">
+          <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--color-border-main)] mt-8 max-w-4xl mx-auto w-full text-center shadow-sm">
+            <h3 className="text-2xl font-serif text-[var(--color-text-main)] mb-2 font-medium">Für kurze Momente der Stille</h3>
+            <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-6 max-w-md mx-auto">
               Unsere Übungen sind perfekt für deinen Alltag konzipiert:
             </p>
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-[var(--color-text-muted)]">
-              <li className="flex items-center gap-2"><Sun className="text-amber-500" size={18} /> Für ein kurzes Morgenritual</li>
-              <li className="flex items-center gap-2"><Coffee className="text-emerald-600" size={18} /> In deiner Mittagspause</li>
-              <li className="flex items-center gap-2"><Moon className="text-indigo-400" size={18} /> Abends zum Abschalten</li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                  <Sun size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">Für ein kurzes Morgenritual</span>
+              </div>
+              
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Coffee size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">In deiner Mittagspause</span>
+              </div>
+
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                  <Moon size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">Abends zum Abschalten</span>
+              </div>
+            </div>
           </div>
           
           {!user && (
