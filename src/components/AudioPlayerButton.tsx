@@ -14,13 +14,17 @@ DO NOT modify the asynchronous URL loading logic. Read-only permitted.
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause } from 'lucide-react';
 import DisclaimerModal from './DisclaimerModal';
+import AuthRequiredModal from './AuthRequiredModal';
+import { useAuth } from '../context/AuthContext';
 
 export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
+  const { user } = useAuth();
   const [url, setUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const formatTime = (secs: number) => {
@@ -113,6 +117,10 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
   };
 
   const handlePlayClick = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
     if (!accepted) {
       setShowDisclaimer(true);
@@ -163,6 +171,11 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
           setShowDisclaimer(false);
           togglePlay();
         }} 
+      />
+
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
       />
     </>
   );

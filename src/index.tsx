@@ -81,8 +81,7 @@ export default function App() {
               <CookieBanner />
               <DisclaimerManager />
               <Routes>
-                
-                {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
+                                {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="exercises" element={<Exercises />} />

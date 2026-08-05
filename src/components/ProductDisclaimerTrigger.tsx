@@ -1,12 +1,25 @@
 import React, { useState } from 'react';
+import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
+import { Check } from 'lucide-react';
 
 export const ProductDisclaimerTrigger: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const { acceptDisclaimer } = useDisclaimerStatus();
+
+  const handleConfirm = async () => {
+    if (!isChecked) return;
+    await acceptDisclaimer();
+    setIsOpen(false);
+  };
 
   return (
     <>
       <button 
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsChecked(false);
+          setIsOpen(true);
+        }}
         style={{
           background: 'none',
           border: 'none',
@@ -38,15 +51,48 @@ export const ProductDisclaimerTrigger: React.FC = () => {
             <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>
               Die angebotenen Meditationen und Selbsthypnosen dienen ausschließlich der Entspannung und ersetzen keine fachliche oder therapeutische Behandlung. Die Anwendung bei Epilepsie, Psychosen oder während des Autofahrens ist strikt untersagt. Nutzung auf eigene Verantwortung.
             </p>
-            <button 
-              onClick={() => setIsOpen(false)}
-              style={{
-                width: '100%', padding: '0.625rem', borderRadius: '10px', background: 'var(--accent)',
-                color: '#ffffff', border: 'none', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer'
-              }}
-            >
-              Schließen
-            </button>
+
+            <div className="space-y-4 mb-6">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-0.5 flex items-center justify-center">
+                  <input 
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => setIsChecked(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-5 h-5 rounded border border-[var(--border)] bg-[var(--bg-alt)] peer-checked:bg-[var(--accent)] peer-checked:border-[var(--accent)] transition-all flex items-center justify-center">
+                    <Check className={`w-3.5 h-3.5 text-white transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
+                  </div>
+                </div>
+                <span className="text-xs sm:text-sm text-[var(--text-main)] font-sans select-none leading-relaxed group-hover:opacity-90">
+                  Ich habe den Hinweis gelesen und stimme der Nutzung auf eigene Verantwortung zu.
+                </span>
+              </label>
+            </div>
+
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setIsOpen(false)}
+                style={{
+                  flex: 1, padding: '0.625rem', borderRadius: '10px', background: 'var(--bg-alt)',
+                  color: 'var(--text-muted)', border: '1px solid var(--border)', fontWeight: 500, fontSize: '0.8125rem', cursor: 'pointer'
+                }}
+              >
+                Abbrechen
+              </button>
+              <button 
+                onClick={handleConfirm}
+                disabled={!isChecked}
+                style={{
+                  flex: 1, padding: '0.625rem', borderRadius: '10px', background: isChecked ? 'var(--accent)' : 'var(--bg-alt)',
+                  color: isChecked ? '#ffffff' : 'var(--text-muted)', border: 'none', fontWeight: 600, fontSize: '0.8125rem', cursor: isChecked ? 'pointer' : 'not-allowed',
+                  opacity: isChecked ? 1 : 0.5
+                }}
+              >
+                Bestätigen
+              </button>
+            </div>
           </div>
         </div>
       )}

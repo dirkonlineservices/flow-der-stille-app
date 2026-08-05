@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Timer, Play, Pause, X, Check, SkipForward, ArrowLeft as BackIcon } from 'lucide-react';
+import { ArrowLeft, Timer, Play, Pause, X, Check, SkipForward, ArrowLeft as BackIcon, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
 import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 import { AudioPlayerButton } from '../components/AudioPlayerButton';
+import AuthRequiredModal from '../components/AuthRequiredModal';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -23,6 +24,7 @@ export default function ExerciseDetail() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [savingProgress, setSavingProgress] = useState(false);
   const [progressSaved, setProgressSaved] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const currentStepIndexRef = useRef(currentStepIndex);
@@ -89,6 +91,10 @@ export default function ExerciseDetail() {
   }
 
   const handleStart = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setCurrentStepIndex(0);
     // Dynamic start duration
     const initialDuration = exercise.pattern ? exercise.pattern[0].duration : 15;
@@ -400,7 +406,37 @@ export default function ExerciseDetail() {
 
           {/* Audio Player for this exercise */}
           {exercise.audioId && (
-            <div className="mt-8">
+            <div className="mt-8 space-y-4">
+              {!user && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-amber-900 dark:text-amber-200 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 shrink-0">
+                      <Lock size={22} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base mb-1">Kostenlose Registrierung für dieses Audio erforderlich</h4>
+                      <p className="text-xs sm:text-sm opacity-90 mb-4 leading-relaxed">
+                        Dieses geführte Audio (sowie alle Premium-Funktionen) steht nach einer kostenlosen und unverbindlichen Registrierung uneingeschränkt für dich bereit.
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <Link 
+                          to="/register" 
+                          className="px-4 py-2 bg-[var(--color-accent-primary)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                        >
+                          Jetzt kostenlos registrieren
+                        </Link>
+                        <Link 
+                          to="/login" 
+                          className="px-4 py-2 bg-white dark:bg-stone-800 text-[var(--color-text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--color-border-main)] hover:bg-stone-50 transition"
+                        >
+                          Anmelden
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <AudioPlayerButton 
                 produkt={{
                   id: exercise.audioId,
@@ -433,6 +469,11 @@ export default function ExerciseDetail() {
 
         </div>
       </motion.div>
+
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 }

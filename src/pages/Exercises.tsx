@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Wind, Activity, Timer, ArrowRight } from 'lucide-react';
+import { Wind, Activity, Timer, ArrowRight, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
@@ -26,12 +26,11 @@ export default function Exercises() {
           const rawTitle = t(exercise.translationKeyTitle);
           const safeTitle = rawTitle.includes('Box-Armung') ? rawTitle.replace('Box-Armung', 'Box-Atmung') : rawTitle;
 
-          // 2. GLOBALER BILD-FALLBACK (Die Lösung für dein Problem!)
-          // Wenn in den Daten kein Bild existiert (wie bei der Nackendehnung), greift dieses Ersatzbild:
+          // 2. GLOBALER BILD-FALLBACK
           const fallbackImage = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop';
           const finalImage = exercise.image ? exercise.image : fallbackImage;
+          const isAudioExercise = !!exercise.audioId;
 
-          // 4. STANDARD-KACHEL: Alle anderen verlinken sauber weiter mit den intakten Bildern!
           return (
             <ExerciseCard 
               key={exercise.id}
@@ -41,6 +40,7 @@ export default function Exercises() {
               duration={exercise.duration}
               description={t(exercise.translationKeyDesc)}
               image={finalImage}
+              isAudioExercise={isAudioExercise}
             />
           );
         })}
@@ -50,7 +50,7 @@ export default function Exercises() {
 }
 
 // === KACHEL 2: ALLE ANDEREN ÜBUNGEN ===
-function ExerciseCard({ id, title, category, duration, description, image }: { id: string; title: string; category: string; duration: string; description: string; image: string }) {
+function ExerciseCard({ id, title, category, duration, description, image, isAudioExercise }: { id: string; title: string; category: string; duration: string; description: string; image: string; isAudioExercise: boolean }) {
   const { t } = useLanguage();
   return (
     <Link to={`/exercises/${id}`} className="block">
@@ -80,13 +80,20 @@ function ExerciseCard({ id, title, category, duration, description, image }: { i
         
         <div className="p-6 flex-1 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <span className="text-xs px-2.5 py-1 bg-[var(--color-bg-border)] rounded-md text-[var(--color-text-muted)] uppercase tracking-wider font-semibold">
                 {category}
               </span>
-              <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted-light)] font-medium">
-                <Timer size={14} />
-                <span>{duration}</span>
+              <div className="flex items-center gap-3">
+                {isAudioExercise && (
+                  <span className="text-xs px-2.5 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-md font-medium border border-amber-500/20 flex items-center gap-1">
+                    <Lock size={12} /> Kostenlose Registrierung für Audio
+                  </span>
+                )}
+                <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted-light)] font-medium">
+                  <Timer size={14} />
+                  <span>{duration}</span>
+                </div>
               </div>
             </div>
             

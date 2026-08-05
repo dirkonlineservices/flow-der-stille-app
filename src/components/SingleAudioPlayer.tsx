@@ -14,8 +14,11 @@ DO NOT modify the asynchronous URL loading logic. Read-only permitted.
 import React, { useEffect, useState, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import DisclaimerModal from './DisclaimerModal';
+import AuthRequiredModal from './AuthRequiredModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
+  const { user } = useAuth();
   const [url, setUrl] = useState('');
   const [titel, setTitel] = useState('');
   const [audioHinweis, setAudioHinweis] = useState('');
@@ -23,6 +26,7 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const formatTime = (secs: number) => {
@@ -69,6 +73,12 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
 
   // ⚡ FIX: Multitasking-Sperre auch für diesen nativen Player
   const handlePlay = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    if (!user) {
+      e.currentTarget.pause();
+      setShowAuthModal(true);
+      return;
+    }
+
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
     if (!accepted) {
       e.currentTarget.pause();
@@ -126,6 +136,11 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
             audioRef.current.play().catch(() => {});
           }
         }} 
+      />
+
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
       />
     </>
   );
