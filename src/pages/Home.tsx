@@ -104,16 +104,6 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
           
-          <a 
-            href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-semibold hover:bg-emerald-500/20 transition-all mb-4 shadow-sm"
-          >
-            <Smartphone size={16} />
-            <span>Jetzt als Android App im Google Play Store erhältlich!</span>
-          </a>
-          
           <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--color-border-main)] mt-8 max-w-4xl mx-auto w-full text-center shadow-sm">
             <h3 className="text-2xl font-serif text-[var(--color-text-main)] mb-2 font-medium">Für kurze Momente der Stille</h3>
             <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-6 max-w-md mx-auto">
@@ -280,10 +270,10 @@ export default function Home() {
             href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
           >
-            <Smartphone size={18} />
-            <span>App im Google Play Store laden</span>
+            <GooglePlayIcon className="w-5 h-5 shrink-0" />
+            <span>JETZT BEI Google Play</span>
           </a>
 
           <a 

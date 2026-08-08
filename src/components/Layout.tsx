@@ -24,6 +24,17 @@ const pushVirtualPageView = (pathname: string, search: string) => {
   }
 };
 
+export function GooglePlayIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none">
+      <path d="M3.609 1.814L13.792 12 3.61 22.186a1.45 1.45 0 01-.61-1.186V3a1.45 1.45 0 01.609-1.186z" fill="#4285F4"/>
+      <path d="M17.062 8.73L13.792 12l3.27 3.27 3.659-2.091c.712-.407.712-1.951 0-2.358l-3.659-2.091z" fill="#FBBC04"/>
+      <path d="M3.609 1.814l10.183 10.186L17.062 8.73 6.136 2.486c-.752-.43-1.748-.288-2.527.328z" fill="#EA4335"/>
+      <path d="M3.609 22.186l2.527.328 10.926-6.244-3.27-3.27L3.609 22.186z" fill="#34A853"/>
+    </svg>
+  );
+}
+
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,6 +42,7 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
+  const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
 
   useEffect(() => {
     pushVirtualPageView(location.pathname, location.search);
@@ -60,6 +72,20 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
+      {/* Top Right Corner Google Play App Button */}
+      {!isNativeApp && (
+        <a
+          href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed top-4 right-4 md:right-8 z-40 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-sm"
+          title="Flow der Stille Android App im Google Play Store laden"
+        >
+          <GooglePlayIcon className="w-4 h-4 shrink-0" />
+          <span className="hidden sm:inline font-medium">Google Play App</span>
+        </a>
+      )}
+
       <div className="w-full">
         {/* Desktop Sidebar */}
         <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
