@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -100,9 +100,19 @@ export default function Home() {
           >
             {t(greetingKey)}, {getUserName()}
           </motion.h1>
-          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6 text-center">
+          <p className="text-[var(--color-text-muted)] text-lg font-light mb-4 text-center">
             {t('home.subtitle')}
           </p>
+          
+          <a 
+            href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-semibold hover:bg-emerald-500/20 transition-all mb-4 shadow-sm"
+          >
+            <Smartphone size={16} />
+            <span>Jetzt als Android App im Google Play Store erhältlich!</span>
+          </a>
           
           <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--color-border-main)] mt-8 max-w-4xl mx-auto w-full text-center shadow-sm">
             <h3 className="text-2xl font-serif text-[var(--color-text-main)] mb-2 font-medium">Für kurze Momente der Stille</h3>
@@ -265,15 +275,25 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-0 mb-2 text-center flex justify-center">
+        <section className="mt-8 mb-4 text-center flex flex-wrap justify-center items-center gap-4">
+          <a 
+            href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
+          >
+            <Smartphone size={18} />
+            <span>App im Google Play Store laden</span>
+          </a>
+
           <a 
             href="https://t.me/+figVxVO_tkw4MGJi" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-sm"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-sm text-sm"
           >
             <Send size={18} />
-            <span>Folge uns auf Telegram: Flow der Stille</span>
+            <span>Folge uns auf Telegram</span>
           </a>
         </section>
       </div>
