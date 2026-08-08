@@ -25,6 +25,34 @@ export default function CookieBanner() {
   const [step, setStep] = useState<1 | 2>(1);
   const [disclaimerChecked, setDisclaimerChecked] = useState<boolean>(false);
 
+  // Entfernt jegliche extern injizierten Drittanbieter-Cookie-Banners aus dem DOM
+  useEffect(() => {
+    const purgeExternalBanners = () => {
+      const selectors = [
+        '#usercentrics-root',
+        '#usercentrics-cmp-container',
+        '#uc-default-wall',
+        '#onetrust-consent-sdk',
+        '.cookiebot-banner',
+        '#cookiebot',
+        '#CookiebotWidget',
+        '.cc-banner',
+        'div[class*="uc-banner"]',
+        'div[id*="cmp-"]',
+        'div[id*="uc-"]',
+        'iframe[src*="usercentrics"]',
+        'iframe[src*="consent"]'
+      ];
+      selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => el.remove());
+      });
+    };
+
+    purgeExternalBanners();
+    const timer = setInterval(purgeExternalBanners, 300);
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     if (isPublicRoute) {
       setIsVisible(false);

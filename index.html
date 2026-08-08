@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="de"> <head>
+<html lang="de">
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flow der Stille</title>
@@ -10,25 +11,16 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       
-      // Setzt die Standardwerte auf "denied" (DSGVO-konform)
+      // Setzt die DSGVO Consent Standardwerte (Google Consent Mode v2)
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
-        'analytics_storage': 'denied',
-        'wait_for_update': 500 // Wartet kurz auf das Cookie-Banner
+        'analytics_storage': 'denied'
       });
     </script>
-
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NVP6G6PN');</script>
   </head>
   <body>
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NVP6G6PN"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
