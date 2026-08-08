@@ -228,10 +228,10 @@ export default function NewsletterConfirmation() {
                     type="checkbox"
                     checked={isAgreed}
                     onChange={(e) => setIsAgreed(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded accent-[var(--color-accent-primary,var(--accent,#8A9A8A))] cursor-pointer"
+                    className="mt-1 h-4 w-4 rounded accent-[var(--color-accent-primary,var(--accent,#8A9A8A))] cursor-pointer shrink-0"
                   />
-                  <span className="text-xs sm:text-sm text-[var(--color-text-main,var(--text-main,#3D3B35))] leading-relaxed">
-                    Ich bestätige, dass ich mich mit der E-Mail-Adresse <strong className="font-medium underline decoration-dotted">{email || 'meine-email@beispiel.de'}</strong> für den Newsletter anmelden möchte.
+                  <span className="text-xs sm:text-sm text-[var(--color-text-main,var(--text-main,#3D3B35))] leading-relaxed break-words">
+                    Ich bestätige, dass ich mich mit der E-Mail-Adresse <strong className="font-medium underline decoration-dotted break-all">{email || 'meine-email@beispiel.de'}</strong> für den Newsletter anmelden möchte.
                   </span>
                 </div>
 

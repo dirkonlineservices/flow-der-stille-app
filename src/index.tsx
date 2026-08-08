@@ -77,6 +77,18 @@ const ChatRoute = () => {
   return <Navigate to="/atemchat" replace />;
 };
 
+function ReferralCapture() {
+  const location = useLocation();
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      sessionStorage.setItem('referral_code', refCode);
+    }
+  }, [location]);
+  return null;
+}
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -85,6 +97,7 @@ export default function App() {
           <LanguageProvider>
             <BrowserRouter>
               <ScrollToTop />
+              <ReferralCapture />
               <CartSidebar />
               <TransactionErrorOverlay />
               <CookieBanner />

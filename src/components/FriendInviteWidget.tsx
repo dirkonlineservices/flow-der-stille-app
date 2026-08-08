@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle2, User, Mail, Heart, Sparkles, BookOpen } from 'lucide-react';
+import { Send, CheckCircle2, User, Mail, Heart, Sparkles, Lock } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface InviteItem {
   id: string;
@@ -19,6 +21,7 @@ interface RecommendationItem {
 }
 
 export const FriendInviteWidget: React.FC = () => {
+  const { user } = useAuth();
   const [inviterName, setInviterName] = useState('');
   const [recipientName, setRecipientName] = useState('');
   const [email, setEmail] = useState('');
@@ -26,12 +29,53 @@ export const FriendInviteWidget: React.FC = () => {
   const [sentInvites, setSentInvites] = useState<InviteItem[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendationItem[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const referralCode = user?.id ? user.id.substring(0, 8) : 'flow-ref';
+  const referralLink = `${window.location.origin}/register?ref=${referralCode}`;
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'share',
+        method: 'copy_link',
+        content_type: 'referral_link'
+      });
+    }
+  };
+
+  const handleWebShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Flow der Stille',
+          text: 'Entdecke innere Ruhe und geführte Atemmeditationen mit mir.',
+          url: referralLink,
+        });
+        if (typeof window !== 'undefined' && (window as any).dataLayer) {
+          (window as any).dataLayer.push({
+            event: 'share',
+            method: 'web_share_api',
+            content_type: 'referral_link'
+          });
+        }
+      } catch {}
+    } else {
+      handleCopyLink();
+    }
+  };
 
   const supabase = getSupabase();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const fetchData = async () => {
     setLoadingData(true);
@@ -134,8 +178,82 @@ export const FriendInviteWidget: React.FC = () => {
     }
   };
 
+  if (!user) {
+    return (
+      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">
+            <Lock size={20} />
+          </div>
+          <h3 className="text-xl font-serif text-[var(--color-text-main)] font-medium">
+            Freunde einladen & Empfehlungen
+          </h3>
+        </div>
+        
+        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-6">
+          Diese Funktion ist exklusiv für registrierte Mitglieder verfügbar. Bitte logge dich ein, um Freunde einzuladen und von unserem geschützten Empfehlungs-Dashboard zu profitieren. So schützen wir die Plattform vor Spam und gewährleisten höchste Datenschutzstandards.
+        </p>
+
+        <div className="flex items-center gap-4">
+          <Link
+            to="/login"
+            className="py-3 px-6 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-sm shadow-sm hover:bg-[var(--color-accent-hover)] transition-all flex items-center justify-center gap-2"
+          >
+            Anmelden & Teilnehmen
+          </Link>
+          <Link
+            to="/register"
+            className="py-3 px-6 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-alt)] text-[var(--color-text-main)] font-semibold text-sm hover:opacity-80 transition-all"
+          >
+            Konto erstellen
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
+      {/* Personal Referral Link Card */}
+      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">
+            <Sparkles size={20} />
+          </div>
+          <h3 className="text-xl font-serif text-[var(--color-text-main)] font-medium">
+            Dein persönlicher Empfehlungs-Link
+          </h3>
+        </div>
+        
+        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-4">
+          Teile deinen exklusiven Link mit Freunden. Wenn sich jemand über deinen Link registriert, wird eure Verbindung sicher festgehalten.
+        </p>
+
+        <div className="flex items-center gap-2 p-2 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] mb-4">
+          <input
+            type="text"
+            readOnly
+            value={referralLink}
+            className="w-full bg-transparent px-3 py-2 text-xs md:text-sm text-[var(--color-text-main)] font-mono outline-none select-all"
+          />
+          <button
+            onClick={handleCopyLink}
+            className="px-4 py-2.5 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-xs shrink-0 hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            {copied ? <CheckCircle2 size={14} /> : <Send size={14} />}
+            <span>{copied ? 'Kopiert!' : 'Link kopieren'}</span>
+          </button>
+        </div>
+
+        <button
+          onClick={handleWebShare}
+          className="w-full py-3 px-6 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-alt)] text-[var(--color-text-main)] font-semibold text-sm hover:opacity-80 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Sparkles size={16} />
+          <span>Teilen über Gerät / Social Media</span>
+        </button>
+      </div>
+
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">

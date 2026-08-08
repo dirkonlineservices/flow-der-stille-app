@@ -110,6 +110,29 @@ export default function Register() {
         }
       }
 
+      // Check for referral code in session storage
+      const storedRef = sessionStorage.getItem('referral_code');
+      if (storedRef) {
+        try {
+          await supabase.from('referrals').insert({
+            referrer_code: storedRef,
+            new_user_id: data?.user?.id || null,
+            email: normalizedEmail,
+            status: 'completed'
+          });
+        } catch (refErr) {
+          console.warn('Referral insert warning:', refErr);
+        }
+
+        dataLayer.push({
+          event: 'sign_up',
+          method: 'email',
+          referral_source: 'user_invite'
+        });
+
+        sessionStorage.removeItem('referral_code');
+      }
+
       // Tracking: Erfolgreiche Registrierung senden
       dataLayer.push({
         event: 'registration_status',
@@ -271,7 +294,7 @@ export default function Register() {
                 type="checkbox"
                 checked={newsletter}
                 onChange={(e) => setNewsletter(e.target.checked)}
-                className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25"
+                className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25 shrink-0"
               />
               <span className="text-sm text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
                 Ja, ich möchte gelegentlich Impulse für mehr innere Ruhe per E-Mail erhalten.
@@ -285,7 +308,7 @@ export default function Register() {
                   type="checkbox"
                   checked={dsgvo}
                   onChange={(e) => setDsgvo(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25"
+                  className="mt-0.5 w-5 h-5 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)] focus:ring-opacity-25 shrink-0"
                   required
                 />
                 <span className="text-xs text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
