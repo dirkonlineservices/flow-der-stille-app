@@ -47,6 +47,8 @@ import ScrollToTop from './components/ScrollToTop';
 import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
 import CookieBanner from './components/CookieBanner';
 import DisclaimerModal from './components/DisclaimerModal';
+import NativeOnboardingGate from './components/NativeOnboardingGate';
+import { isNativeApp } from './platformHelper';
 
 function DisclaimerManager() {
   const location = useLocation();
@@ -100,8 +102,14 @@ export default function App() {
               <ReferralCapture />
               <CartSidebar />
               <TransactionErrorOverlay />
-              <CookieBanner />
-              <DisclaimerManager />
+              {isNativeApp() ? (
+                <NativeOnboardingGate />
+              ) : (
+                <>
+                  <CookieBanner />
+                  <DisclaimerManager />
+                </>
+              )}
               <Routes>
                                 {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
                 <Route path="/" element={<Layout />}>
