@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import PremiumDashboard from './components/PremiumDashboard';
 import NotFound from './components/NotFound';
@@ -49,7 +49,16 @@ import CookieBanner from './components/CookieBanner';
 import DisclaimerModal from './components/DisclaimerModal';
 
 function DisclaimerManager() {
+  const location = useLocation();
+  const publicRoutes = ['/datenschutz', '/impressum', '/agb', '/rechtliches'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+
   const [accepted, setAccepted] = React.useState(() => localStorage.getItem('flow_disclaimer_accepted') === 'true');
+
+  if (isPublicRoute) {
+    return null;
+  }
+
   return <DisclaimerModal isOpen={!accepted} onAccepted={() => setAccepted(true)} />;
 }
 

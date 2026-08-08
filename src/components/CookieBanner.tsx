@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Cookie, Shield, CheckCircle2, XCircle, ArrowRight, ChevronDown, ChevronUp, Lock, HelpCircle, Info } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { pushToDataLayer, trackConsentUpdate } from '../lib/tracking';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,14 +23,17 @@ export function checkConsentForAuth(): boolean {
 }
 
 export default function CookieBanner() {
+  const location = useLocation();
+  const publicRoutes = ['/datenschutz', '/impressum', '/agb', '/rechtliches'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isAuthNotice, setIsAuthNotice] = useState<boolean>(false);
   const [showAccordion, setShowAccordion] = useState<boolean>(false);
   const hasPushedInitialConsent = useRef<boolean>(false);
 
   useEffect(() => {
-    const pathname = window.location.pathname;
-    if (pathname === '/datenschutz' || pathname === '/impressum') {
+    if (isPublicRoute) {
       setIsVisible(false);
       return;
     }
@@ -95,7 +98,7 @@ export default function CookieBanner() {
       window.removeEventListener('open-cookie-banner', handleOpenModal);
       window.removeEventListener('open-cookie-banner-auth', handleOpenAuthModal);
     };
-  }, []);
+  }, [location.pathname, isPublicRoute]);
 
   const handleLegalLinkClick = (type: 'impressum' | 'datenschutz') => {
     if (typeof window !== 'undefined') {
