@@ -167,6 +167,9 @@ export default function PremiumShopDashboard() {
     const title = produkt.titel ? produkt.titel.toLowerCase() : '';
     const kat = produkt.kategorie ? produkt.kategorie.toLowerCase() : '';
 
+    if (id.includes('innere_ruhe') || title.includes('innere ruhe') || title.includes('ruhe')) {
+      return '/images/products/cover_innere_ruhe.jpg';
+    }
     if (id.includes('inneres_kind') || title.includes('inneres kind') || title.includes('kind')) {
       return '/images/products/cover_inneres_kind.jpg';
     }
