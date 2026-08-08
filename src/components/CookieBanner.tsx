@@ -29,6 +29,12 @@ export default function CookieBanner() {
   const hasPushedInitialConsent = useRef<boolean>(false);
 
   useEffect(() => {
+    const pathname = window.location.pathname;
+    if (pathname === '/datenschutz' || pathname === '/impressum') {
+      setIsVisible(false);
+      return;
+    }
+
     const storedStatus = localStorage.getItem(COOKIE_STORAGE_KEY);
     if (!storedStatus) {
       setIsVisible(true);
@@ -90,6 +96,16 @@ export default function CookieBanner() {
       window.removeEventListener('open-cookie-banner-auth', handleOpenAuthModal);
     };
   }, []);
+
+  const handleLegalLinkClick = (type: 'impressum' | 'datenschutz') => {
+    if (typeof window !== 'undefined') {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'legal_link_click',
+        link_type: type
+      });
+    }
+  };
 
   const handleChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
@@ -200,11 +216,11 @@ export default function CookieBanner() {
 
         <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif" }}>
           Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Inhalte zu personalisieren und Zugriffe auf unserer Website zu analysieren. Weitere Informationen findest du in unserer{' '}
-          <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
+          <a href="/datenschutz" target="_blank" rel="noopener noreferrer" onClick={() => handleLegalLinkClick('datenschutz')} className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
             Datenschutzerklärung
           </a>{' '}
           sowie in unserem{' '}
-          <a href="/impressum" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
+          <a href="/impressum" target="_blank" rel="noopener noreferrer" onClick={() => handleLegalLinkClick('impressum')} className="underline hover:opacity-80 font-medium" style={{ color: 'var(--accent)' }}>
             Impressum
           </a>.
         </p>
@@ -280,11 +296,11 @@ export default function CookieBanner() {
         <div className="flex items-center justify-between text-xs pt-4 border-t mt-4 flex-wrap gap-2" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
           <span>Google Tag Manager (GTM-WPRLW9H9)</span>
           <div className="flex items-center gap-3 font-medium">
-            <a href="/datenschutz" target="_blank" rel="noopener noreferrer" className="hover:underline text-[var(--accent)]">
+            <a href="/datenschutz" target="_blank" rel="noopener noreferrer" onClick={() => handleLegalLinkClick('datenschutz')} className="hover:underline text-[var(--accent)]">
               Datenschutz
             </a>
             <span>•</span>
-            <a href="/impressum" target="_blank" rel="noopener noreferrer" className="hover:underline text-[var(--accent)]">
+            <a href="/impressum" target="_blank" rel="noopener noreferrer" onClick={() => handleLegalLinkClick('impressum')} className="hover:underline text-[var(--accent)]">
               Impressum
             </a>
           </div>
