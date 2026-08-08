@@ -102,7 +102,6 @@ export default function App() {
               <CartSidebar />
               <TransactionErrorOverlay />
               <CookieBanner />
-              <DisclaimerManager />
               <Routes>
                                 {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
                 <Route path="/" element={<Layout />}>

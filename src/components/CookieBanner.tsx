@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Cookie, Shield, CheckCircle2, XCircle, ChevronDown, ChevronUp, Info, Sparkles } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { CONSENT_STORAGE_KEY, setAnalyticsConsent, isAnalyticsAllowed } from '../lib/tracking';
+import { CONSENT_STORAGE_KEY, setAnalyticsConsent } from '../lib/tracking';
 import { BillingService } from '../lib/billing';
 
 export const COOKIE_STORAGE_KEY = 'flow_cookie_consent_status';
@@ -22,6 +22,8 @@ export default function CookieBanner() {
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [showAccordion, setShowAccordion] = useState<boolean>(false);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [disclaimerChecked, setDisclaimerChecked] = useState<boolean>(false);
 
   useEffect(() => {
     if (isPublicRoute) {
@@ -29,12 +31,21 @@ export default function CookieBanner() {
       return;
     }
 
-    const storedStatus = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem(COOKIE_STORAGE_KEY);
-    if (!storedStatus) {
+    const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem(COOKIE_STORAGE_KEY);
+    const disclaimerAccepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
+
+    if (!storedConsent) {
+      setStep(1);
       setIsVisible(true);
+    } else if (!disclaimerAccepted) {
+      setStep(2);
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
     }
 
     const handleOpenModal = () => {
+      setStep(1);
       setIsVisible(true);
     };
 
@@ -44,24 +55,23 @@ export default function CookieBanner() {
     };
   }, [location.pathname, isPublicRoute]);
 
-  const [mobileStep, setMobileStep] = useState<1 | 2>(1);
-  const [mobileDisclaimerChecked, setMobileDisclaimerChecked] = useState<boolean>(false);
-
+  // App Step 1 Choice -> Go to Step 2 (Haftungsausschluss)
   const handleAppChoice = (choice: 'accepted' | 'rejected') => {
     setAnalyticsConsent(choice);
-    // Nach Schritt 1 (Einwilligung/Ablehnung) geht es direkt weiter zu Schritt 2 (Haftungsausschluss)
-    setMobileStep(2);
+    setStep(2);
   };
 
-  const handleMobileDisclaimerConfirm = () => {
-    if (!mobileDisclaimerChecked) return;
-    localStorage.setItem('flow_disclaimer_accepted', 'true');
-    setIsVisible(false);
-  };
-
+  // Web Step 1 Choice -> Go to Step 2 (Haftungsausschluss)
   const handleWebChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
     setAnalyticsConsent(choice === 'rejected' ? 'rejected' : 'accepted');
+    setStep(2);
+  };
+
+  // Step 2 Disclaimer Confirmation (both Web & App)
+  const handleDisclaimerConfirm = () => {
+    if (!disclaimerChecked) return;
+    localStorage.setItem('flow_disclaimer_accepted', 'true');
     setIsVisible(false);
   };
 
@@ -71,9 +81,12 @@ export default function CookieBanner() {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <button
-          onClick={() => setIsVisible(true)}
-          className="flex items-center gap-2 bg-[var(--bg-card)] text-[var(--text-main)] px-4 py-2.5 rounded-full shadow-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all text-xs font-medium group"
-          title="Cookie-Einstellungen verwalten"
+          onClick={() => {
+            setStep(1);
+            setIsVisible(true);
+          }}
+          className="flex items-center gap-2 bg-[var(--bg-card)] text-[var(--text-main)] px-4 py-2.5 rounded-full shadow-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all text-xs font-medium group cursor-pointer"
+          title="Cookie- &amp; Datenschutz-Einstellungen"
         >
           <Cookie size={16} className="text-[var(--accent)] group-hover:rotate-12 transition-transform" />
           <span>Cookie-Einstellungen</span>
@@ -82,9 +95,9 @@ export default function CookieBanner() {
     );
   }
 
-  // -------------------------------------------------------------------------------------
-  // A) NATIVES APP GATE (2-Schritt Mobile Modal für Android)
-  // -------------------------------------------------------------------------------------
+  // =====================================================================================
+  // A) NATIVES APP GATE (2 Schritte: App-Analyse & Crashlytics -> App-Haftungsausschluss)
+  // =====================================================================================
   if (isNative) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-5 bg-black/80 backdrop-blur-lg animate-fade-in overflow-y-auto">
@@ -92,12 +105,12 @@ export default function CookieBanner() {
           {/* Top Accent bar */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[var(--accent)] to-emerald-400"></div>
 
-          {/* SCHRITT 1: Analytics, Firebase & Crashlytics Consent */}
-          {mobileStep === 1 && (
+          {/* SCHRITT 1: Firebase Analytics & Crashlytics */}
+          {step === 1 && (
             <div>
               <div className="flex items-center justify-between mb-4 pt-2">
                 <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
-                  Schritt 1 von 2: Datenschutz &amp; App-Analyse
+                  Schritt 1 von 2: App-Datenschutz
                 </span>
               </div>
 
@@ -114,9 +127,9 @@ export default function CookieBanner() {
               </div>
 
               <p className="text-xs sm:text-sm leading-relaxed mb-4 text-[var(--text-muted)]">
-                Schön, dass du da bist! Um deine Meditations- und Atemübungen kontinuierlich zu verbessern und App-Abstürze schnell zu beheben, nutzen wir anonyme Analyseverfahren (Firebase Analytics &amp; Crashlytics).
+                Schön, dass du da bist! Um deine Meditations- und Atemübungen in der App weiter zu optimieren und Abstürze zu beheben, nutzen wir anonyme Analyseverfahren (Firebase Analytics &amp; Crashlytics).
                 <br /><br />
-                <span className="text-[var(--text-main)] font-medium">Deine Entscheidung ist freiwillig:</span> Auch bei Ablehnung steht dir die App in vollem Umfang zur Verfügung.
+                <span className="text-[var(--text-main)] font-medium">Deine Wahl ist freiwillig:</span> Auch bei Ablehnung bleibt die App uneingeschränkt nutzbar.
               </p>
 
               {/* Accordion Details */}
@@ -138,7 +151,7 @@ export default function CookieBanner() {
                       <strong className="text-[var(--text-main)] block mb-0.5">1. Konto &amp; Käufe (Supabase):</strong> Notwendig für deine Profilverwaltung und die Freischaltung erworbener Audios.
                     </p>
                     <p>
-                      <strong className="text-[var(--text-main)] block mb-0.5">2. Absturzberichte &amp; Stabilität (Firebase Crashlytics):</strong> Erfasst technische Fehler zur Behebung von App-Abstürzen.
+                      <strong className="text-[var(--text-main)] block mb-0.5">2. Absturzberichte (Firebase Crashlytics):</strong> Erfasst technische Fehler zur Behebung von App-Abstürzen.
                     </p>
                     <p>
                       <strong className="text-[var(--text-main)] block mb-0.5">3. Anonyme Nutzungsanalyse (Firebase Analytics):</strong> Hilft uns, beliebte Meditationen zu erkennen.
@@ -147,7 +160,7 @@ export default function CookieBanner() {
                 )}
               </div>
 
-              {/* Die 2 mobilen Haupt-Buttons für Schritt 1 */}
+              {/* Die 2 mobilen Haupt-Buttons */}
               <div className="flex flex-col gap-3 mb-4">
                 <button
                   onClick={() => handleAppChoice('accepted')}
@@ -177,8 +190,8 @@ export default function CookieBanner() {
             </div>
           )}
 
-          {/* SCHRITT 2: Haftungsausschluss für Meditation & Selbsthypnose */}
-          {mobileStep === 2 && (
+          {/* SCHRITT 2: Haftungsausschluss */}
+          {step === 2 && (
             <div>
               <div className="flex items-center justify-between mb-3 pt-1">
                 <span className="text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
@@ -212,12 +225,12 @@ export default function CookieBanner() {
                 </div>
               </div>
 
-              {/* Checkbox zur Bestätigung */}
+              {/* Checkbox */}
               <label className="flex items-start gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] mb-5 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={mobileDisclaimerChecked}
-                  onChange={(e) => setMobileDisclaimerChecked(e.target.checked)}
+                  checked={disclaimerChecked}
+                  onChange={(e) => setDisclaimerChecked(e.target.checked)}
                   className="mt-0.5 w-4 h-4 rounded border-[var(--border)] accent-[var(--accent)] cursor-pointer shrink-0"
                 />
                 <span className="text-xs text-[var(--text-main)] leading-tight select-none">
@@ -225,12 +238,12 @@ export default function CookieBanner() {
                 </span>
               </label>
 
-              {/* Bestätigungs-Button */}
+              {/* Confirm button */}
               <button
-                onClick={handleMobileDisclaimerConfirm}
-                disabled={!mobileDisclaimerChecked}
+                onClick={handleDisclaimerConfirm}
+                disabled={!disclaimerChecked}
                 className={`w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all shadow-md active:scale-95 text-white ${
-                  mobileDisclaimerChecked 
+                  disclaimerChecked 
                     ? 'bg-[var(--accent)] hover:opacity-90 cursor-pointer' 
                     : 'bg-stone-300 dark:bg-stone-800 text-stone-500 cursor-not-allowed opacity-60'
                 }`}
@@ -245,108 +258,181 @@ export default function CookieBanner() {
     );
   }
 
-  // -------------------------------------------------------------------------------------
-  // B) WEB COOKIE BANNER (Für den regulären Webseiten-Betrieb)
-  // -------------------------------------------------------------------------------------
+  // =====================================================================================
+  // B) WEB GATE (2 Schritte: Web-Cookies & Datenschutz -> Web-Haftungsausschluss)
+  // =====================================================================================
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div 
-        className="rounded-2xl shadow-2xl max-w-2xl w-full p-8 border relative overflow-hidden transition-all my-8 bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-main)]"
-      >
+      <div className="rounded-2xl shadow-2xl max-w-2xl w-full p-8 border relative overflow-hidden transition-all my-8 bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-main)]">
         {/* Accent top bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--accent)]"></div>
 
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-main)] text-[var(--accent)] shrink-0 border border-[var(--border)]">
-            <Cookie size={24} />
-          </div>
+        {/* SCHRITT 1: WEB COOKIES & DATENSCHUTZ */}
+        {step === 1 && (
           <div>
-            <span className="text-xs uppercase tracking-widest text-[var(--accent)] font-semibold">Datenschutz &amp; Cookies</span>
-            <h2 className="text-2xl font-serif font-bold">
-              Willkommen bei Flow der Stille
-            </h2>
-          </div>
-        </div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
+                Schritt 1 von 2: Web-Cookies &amp; Datenschutz
+              </span>
+            </div>
 
-        <p className="text-sm leading-relaxed mb-5 text-[var(--text-muted)]">
-          Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Inhalte zu personalisieren und Zugriffe auf unserer Website zu analysieren. Weitere Informationen findest du in unserer{' '}
-          <Link to="/datenschutz" className="underline hover:opacity-80 font-medium text-[var(--accent)]">
-            Datenschutzerklärung
-          </Link>{' '}
-          sowie in unserem{' '}
-          <Link to="/impressum" className="underline hover:opacity-80 font-medium text-[var(--accent)]">
-            Impressum
-          </Link>.
-        </p>
-
-        {/* Accordion for Details */}
-        <div className="mb-6 border rounded-xl overflow-hidden border-[var(--border)] bg-[var(--bg-main)]">
-          <button
-            onClick={() => setShowAccordion(!showAccordion)}
-            className="w-full flex items-center justify-between p-4 text-left font-medium text-sm transition-colors hover:opacity-80 text-[var(--text-main)]"
-          >
-            <span className="flex items-center gap-2">
-              <Info size={16} className="text-[var(--accent)]" />
-              <span>Transparenz-Details: Welche Daten &amp; wofür?</span>
-            </span>
-            {showAccordion ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
-
-          {showAccordion && (
-            <div className="p-4 border-t text-xs space-y-3 border-[var(--border)] text-[var(--text-muted)]">
-              <div>
-                <strong className="text-[var(--text-main)] block mb-1">1. Notwendige Cookies (Erforderlich)</strong>
-                Sichern den Login-Status, Benutzereinstellungen, Sitzungssicherheit und den Warenkorb ab.
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-main)] text-[var(--accent)] shrink-0 border border-[var(--border)]">
+                <Cookie size={24} />
               </div>
               <div>
-                <strong className="text-[var(--text-main)] block mb-1">2. Analyse &amp; Optimierung (Optional)</strong>
-                Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden, um die Plattform DSGVO-konform weiterzuentwickeln.
+                <h2 className="text-2xl font-serif font-bold">
+                  Willkommen bei Flow der Stille
+                </h2>
+                <p className="text-xs text-[var(--text-muted)]">www.flow-der-stille.de</p>
               </div>
             </div>
-          )}
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 mb-3">
-          <button
-            onClick={() => handleWebChoice('all')}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-opacity shadow-sm hover:opacity-90 text-white bg-[var(--accent)] cursor-pointer"
-          >
-            <CheckCircle2 size={16} />
-            <span>Alle akzeptieren</span>
-          </button>
+            <p className="text-sm leading-relaxed mb-5 text-[var(--text-muted)]">
+              Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Login &amp; Warenkorb zu sichern und Zugriffe anonymisiert zu analysieren. Weitere Informationen findest du in unserer{' '}
+              <Link to="/datenschutz" className="underline hover:opacity-80 font-medium text-[var(--accent)]">
+                Datenschutzerklärung
+              </Link>{' '}
+              sowie im{' '}
+              <Link to="/impressum" className="underline hover:opacity-80 font-medium text-[var(--accent)]">
+                Impressum
+              </Link>.
+            </p>
 
-          <button
-            onClick={() => handleWebChoice('necessary')}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-colors border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-main)] hover:bg-[var(--bg-alt)] cursor-pointer"
-          >
-            <Shield size={16} />
-            <span>Nur notwendige</span>
-          </button>
-        </div>
+            {/* Accordion for Details */}
+            <div className="mb-6 border rounded-xl overflow-hidden border-[var(--border)] bg-[var(--bg-main)]">
+              <button
+                onClick={() => setShowAccordion(!showAccordion)}
+                className="w-full flex items-center justify-between p-4 text-left font-medium text-sm transition-colors hover:opacity-80 text-[var(--text-main)]"
+              >
+                <span className="flex items-center gap-2">
+                  <Info size={16} className="text-[var(--accent)]" />
+                  <span>Transparenz-Details: Welche Daten &amp; wofür?</span>
+                </span>
+                {showAccordion ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
 
-        <div className="flex justify-center mb-2">
-          <button
-            onClick={() => handleWebChoice('rejected')}
-            className="text-xs font-medium hover:underline px-3 py-1.5 transition-colors flex items-center gap-1.5 text-red-600 cursor-pointer"
-          >
-            <XCircle size={14} />
-            <span>Ablehnen</span>
-          </button>
-        </div>
+              {showAccordion && (
+                <div className="p-4 border-t text-xs space-y-3 border-[var(--border)] text-[var(--text-muted)]">
+                  <div>
+                    <strong className="text-[var(--text-main)] block mb-1">1. Notwendige Cookies (Erforderlich)</strong>
+                    Sichern den Login-Status, Benutzereinstellungen, Sitzungssicherheit und den Warenkorb ab.
+                  </div>
+                  <div>
+                    <strong className="text-[var(--text-main)] block mb-1">2. Analyse &amp; Optimierung (Optional)</strong>
+                    Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden, um die Plattform DSGVO-konform weiterzuentwickeln.
+                  </div>
+                </div>
+              )}
+            </div>
 
-        <div className="flex items-center justify-between text-xs pt-4 border-t mt-4 flex-wrap gap-2 border-[var(--border)] text-[var(--text-muted)]">
-          <span>Flow der Stille Datenschutz</span>
-          <div className="flex items-center gap-3 font-medium">
-            <Link to="/datenschutz" className="hover:underline text-[var(--accent)]">
-              Datenschutz
-            </Link>
-            <span>•</span>
-            <Link to="/impressum" className="hover:underline text-[var(--accent)]">
-              Impressum
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 mb-3">
+              <button
+                onClick={() => handleWebChoice('all')}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-opacity shadow-sm hover:opacity-90 text-white bg-[var(--accent)] cursor-pointer"
+              >
+                <CheckCircle2 size={16} />
+                <span>Alle akzeptieren &amp; Weiter →</span>
+              </button>
+
+              <button
+                onClick={() => handleWebChoice('necessary')}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-colors border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-main)] hover:bg-[var(--bg-alt)] cursor-pointer"
+              >
+                <Shield size={16} />
+                <span>Nur notwendige &amp; Weiter →</span>
+              </button>
+            </div>
+
+            <div className="flex justify-center mb-2">
+              <button
+                onClick={() => handleWebChoice('rejected')}
+                className="text-xs font-medium hover:underline px-3 py-1.5 transition-colors flex items-center gap-1.5 text-red-600 cursor-pointer"
+              >
+                <XCircle size={14} />
+                <span>Ablehnen &amp; Weiter →</span>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between text-xs pt-4 border-t mt-4 flex-wrap gap-2 border-[var(--border)] text-[var(--text-muted)]">
+              <span>Flow der Stille Datenschutz</span>
+              <div className="flex items-center gap-3 font-medium">
+                <Link to="/datenschutz" className="hover:underline text-[var(--accent)]">
+                  Datenschutz
+                </Link>
+                <span>•</span>
+                <Link to="/impressum" className="hover:underline text-[var(--accent)]">
+                  Impressum
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
+        {/* SCHRITT 2: WEB HAFTUNGSAUSSCHLUSS */}
+        {step === 2 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                Schritt 2 von 2: Haftungsausschluss
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 shrink-0 border border-amber-200 dark:border-amber-800">
+                <Shield size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-serif font-bold">
+                  Wichtiger Hinweis &amp; Haftung
+                </h2>
+                <p className="text-xs text-[var(--text-muted)]">Meditation &amp; Selbsthypnose</p>
+              </div>
+            </div>
+
+            <div className="text-xs sm:text-sm space-y-3 text-[var(--text-muted)] leading-relaxed mb-6 max-h-[45vh] overflow-y-auto pr-2">
+              <p>
+                Die auf dieser Webseite angebotenen Meditationen, Tiefenentspannungen und Selbsthypnosen dienen ausschließlich der persönlichen Entspannung, der Mentaltresor-Nutzung und der Selbsterfahrung.
+              </p>
+              <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] space-y-2 text-xs">
+                <p className="font-semibold text-[var(--text-main)]">Bitte beachte zwingend folgende Hinweise:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Sie stellen ausdrücklich keine therapeutischen oder fachlichen Behandlungen dar und ersetzen keinen Arzt, Therapeuten oder Fachberater.</li>
+                  <li>Setzt körperliche und geistige Gesundheit voraus. Nicht anwenden bei Epilepsie, schweren Herzerkrankungen oder Psychosen.</li>
+                  <li>Niemals während des Autofahrens oder bei Tätigkeiten anwenden, die volle Aufmerksamkeit erfordern.</li>
+                  <li>Die Nutzung erfolgt vollkommen auf eigene Verantwortung und Gefahr.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Checkbox */}
+            <label className="flex items-start gap-3 p-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] mb-6 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={disclaimerChecked}
+                onChange={(e) => setDisclaimerChecked(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-[var(--border)] accent-[var(--accent)] cursor-pointer shrink-0"
+              />
+              <span className="text-xs sm:text-sm text-[var(--text-main)] leading-tight select-none">
+                Ich habe den Hinweis gelesen und stimme der Nutzung auf eigene Verantwortung zu.
+              </span>
+            </label>
+
+            {/* Confirm Button */}
+            <button
+              onClick={handleDisclaimerConfirm}
+              disabled={!disclaimerChecked}
+              className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-sm transition-all shadow-md active:scale-95 text-white ${
+                disclaimerChecked 
+                  ? 'bg-[var(--accent)] hover:opacity-95 cursor-pointer' 
+                  : 'bg-stone-300 dark:bg-stone-800 text-stone-500 cursor-not-allowed opacity-60 border border-[var(--border)]'
+              }`}
+            >
+              <CheckCircle2 size={18} />
+              <span>Verstanden &amp; Webseite betreten</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
