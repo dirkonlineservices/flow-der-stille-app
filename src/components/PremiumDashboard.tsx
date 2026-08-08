@@ -164,25 +164,29 @@ export default function PremiumShopDashboard() {
   const getProductCoverImage = (produkt: any): string => {
     if (produkt.bild_url && produkt.bild_url.startsWith('http')) return produkt.bild_url;
     const id = produkt.id ? produkt.id.toLowerCase() : '';
+    const title = produkt.titel ? produkt.titel.toLowerCase() : '';
     const kat = produkt.kategorie ? produkt.kategorie.toLowerCase() : '';
 
-    if (id.includes('herz') || id.includes('kompass')) {
-      return '/images/products/cover_herz.jpg';
+    if (id.includes('herzoeffnung') || (title.includes('herz') && title.includes('öffnung'))) {
+      return '/images/products/cover_herzoeffnung.jpg';
     }
-    if (id.includes('loslassen')) {
+    if (id.includes('herzkompass') || title.includes('kompass')) {
+      return '/images/products/cover_herzkompass.jpg';
+    }
+    if (id.includes('loslassen') || title.includes('loslassen')) {
       return '/images/products/cover_loslassen.jpg';
     }
-    if (id.includes('fokus') || id.includes('klarheit')) {
+    if (id.includes('fokus') || title.includes('fokus') || title.includes('klarheit')) {
       return '/images/products/cover_fokus.jpg';
     }
-    if (id.includes('selbstbewusstsein') || id.includes('vertrauen')) {
-      return '/images/products/cover_vertrauen.jpg';
+    if (id.includes('selbstbewusstsein') || id.includes('vertrauen') || title.includes('selbstbewusstsein') || title.includes('vertrauen')) {
+      return '/images/products/cover_selbstbewusst.jpg';
     }
-    if (id.includes('ernaehrung') || id.includes('gesund')) {
+    if (id.includes('ernaehrung') || id.includes('gesund') || title.includes('ernährung') || title.includes('lebensstil')) {
       return '/images/products/cover_ernaehrung.jpg';
     }
     
-    if (kat.includes('meditation')) return '/images/products/cover_herz.jpg';
+    if (kat.includes('meditation')) return '/images/products/cover_herzoeffnung.jpg';
     if (kat.includes('hypnose')) return '/images/products/cover_fokus.jpg';
     return '/images/products/cover_loslassen.jpg';
   };
@@ -358,6 +362,9 @@ export default function PremiumShopDashboard() {
                     </span>
                   )}
                 </div>
+                <span className="absolute bottom-3 left-3 text-[10px] font-medium tracking-wide text-white/90 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 shadow-md flex items-center gap-1">
+                  ✨ KI-Visualisierung
+                </span>
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
                     ⏱ {formatDuration(produkt.dauer)} min
