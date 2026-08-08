@@ -157,8 +157,7 @@ export default function Login() {
               const dataLayer = (window as any).dataLayer || [];
               dataLayer.push({ event: 'login', method: 'email' });
             }}
-            /* Tailwind JIT Fix: Harte Hex-Codes für bg, hover und text */
-            className="w-full py-4 flex items-center justify-center bg-[#8A9A8A] hover:bg-[#728372] text-white rounded-full font-medium transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+            className="w-full py-4 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-medium transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
           >
             {loading ? (
               <span className="flex items-center gap-2">

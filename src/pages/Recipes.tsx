@@ -91,7 +91,7 @@ export default function Recipes() {
             <p className="text-sm text-[var(--color-text-muted)] max-w-md mb-6 leading-relaxed">
               Melde dich kostenlos an, um deinen persönlichen wöchentlichen Ernährungsimpuls zu erhalten. Die anderen Funktionen kommen dann erst später.
             </p>
-            <AuthLink to="/register" className="inline-flex items-center justify-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+            <AuthLink to="/register" className="inline-flex items-center justify-center px-6 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-full hover:bg-emerald-700 transition-colors shadow-md">
               Kostenlos registrieren
             </AuthLink>
           </div>

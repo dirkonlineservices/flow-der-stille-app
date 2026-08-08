@@ -44,7 +44,7 @@ export default function AuthRequiredModal({ isOpen, onClose }: AuthRequiredModal
               onClose();
               navigate('/register');
             }}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[var(--accent)] text-white font-semibold shadow-md hover:bg-[var(--accent-hover)] transition-all"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md transition-all"
           >
             <UserPlus size={18} />
             <span>Jetzt kostenlos registrieren</span>

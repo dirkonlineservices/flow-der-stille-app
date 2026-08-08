@@ -534,7 +534,7 @@ export default function AtemChat() {
           {!user && (
             <div className="bg-amber-50 border-t border-amber-200 p-4 text-center">
               <p className="text-sm text-amber-800 font-medium">Melde dich kostenlos an, um 3 Freinachrichten pro Tag im Entspannungsassistenten zu nutzen.</p>
-              <Link to="/register" className="mt-2 inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-full hover:bg-amber-700 transition">
+              <Link to="/register" className="mt-2 inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-full hover:bg-emerald-700 transition">
                 Kostenlos registrieren
               </Link>
             </div>
@@ -547,7 +547,7 @@ export default function AtemChat() {
               <button onClick={() => {
                 const feature = PRODUCTS.find(p => p.id === 'premium_chat');
                 if (feature) addToCart(feature);
-              }} className="inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-full hover:bg-amber-700 transition">
+              }} className="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-full hover:bg-emerald-700 transition">
                 Premium freischalten
               </button>
             </div>

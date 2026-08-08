@@ -140,12 +140,7 @@ export default function NativeOnboardingGate({ onCompleted }: NativeOnboardingGa
         {/* Primary Button */}
         <button
           onClick={handleStart}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent)')}
-          className="w-full py-4 px-6 rounded-2xl text-white font-semibold text-base shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
-          style={{
-            backgroundColor: 'var(--accent)'
-          }}
+          className="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
         >
           <span>App starten</span>
         </button>

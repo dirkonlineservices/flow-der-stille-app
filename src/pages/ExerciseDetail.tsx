@@ -421,13 +421,13 @@ export default function ExerciseDetail() {
                       <div className="flex flex-wrap gap-3">
                         <Link 
                           to="/register" 
-                          className="px-4 py-2 bg-[var(--color-accent-primary)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition shadow-md flex items-center justify-center"
                         >
                           Jetzt kostenlos registrieren
                         </Link>
                         <Link 
                           to="/login" 
-                          className="px-4 py-2 bg-white dark:bg-stone-800 text-[var(--color-text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--color-border-main)] hover:bg-stone-50 transition"
+                          className="px-5 py-2.5 bg-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 text-xs sm:text-sm font-semibold rounded-xl border border-stone-300 dark:border-stone-600 transition shadow-md flex items-center justify-center"
                         >
                           Anmelden
                         </Link>

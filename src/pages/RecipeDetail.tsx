@@ -56,7 +56,7 @@ export default function RecipeDetail() {
             <p className="text-sm text-[var(--color-text-muted)] mb-6 max-w-sm">
               Dieses Rezept und viele weitere Ernährungstipps sind exklusiv für registrierte Mitglieder verfügbar.
             </p>
-            <AuthLink to="/register" className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[var(--color-accent-hover)] transition-colors">
+            <AuthLink to="/register" className="px-8 py-3 bg-emerald-600 text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-emerald-700 transition-colors shadow-md">
               Jetzt kostenlos registrieren
             </AuthLink>
           </div>
