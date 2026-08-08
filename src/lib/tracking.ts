@@ -38,20 +38,21 @@ export const setAnalyticsConsent = (choice: 'accepted' | 'rejected') => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(CONSENT_STORAGE_KEY, choice);
     
+    window.dataLayer = window.dataLayer || [];
+    const gtagFn = typeof window.gtag === 'function' ? window.gtag : function(...args: any[]) { window.dataLayer.push(args); };
+
+    gtagFn('consent', 'update', {
+      'analytics_storage': choice === 'accepted' ? 'granted' : 'denied',
+      'ad_storage': choice === 'accepted' ? 'granted' : 'denied',
+      'ad_user_data': choice === 'accepted' ? 'granted' : 'denied',
+      'ad_personalization': choice === 'accepted' ? 'granted' : 'denied',
+    });
+
     pushToDataLayer({
       event: 'consent_update',
       consent_choice: choice,
       analytics_enabled: choice === 'accepted'
     });
-
-    if (typeof window.gtag === 'function') {
-      window.gtag('consent', 'update', {
-        'analytics_storage': choice === 'accepted' ? 'granted' : 'denied',
-        'ad_storage': choice === 'accepted' ? 'granted' : 'denied',
-        'ad_user_data': choice === 'accepted' ? 'granted' : 'denied',
-        'ad_personalization': choice === 'accepted' ? 'granted' : 'denied',
-      });
-    }
   }
 };
 
