@@ -161,6 +161,32 @@ export default function PremiumShopDashboard() {
     return 'bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/60';
   };
 
+  const getProductCoverImage = (produkt: any): string => {
+    if (produkt.bild_url && produkt.bild_url.startsWith('http')) return produkt.bild_url;
+    const id = produkt.id ? produkt.id.toLowerCase() : '';
+    const kat = produkt.kategorie ? produkt.kategorie.toLowerCase() : '';
+
+    if (id.includes('herz') || id.includes('kompass')) {
+      return '/images/products/cover_herz.jpg';
+    }
+    if (id.includes('loslassen')) {
+      return '/images/products/cover_loslassen.jpg';
+    }
+    if (id.includes('fokus') || id.includes('klarheit')) {
+      return '/images/products/cover_fokus.jpg';
+    }
+    if (id.includes('selbstbewusstsein') || id.includes('vertrauen')) {
+      return '/images/products/cover_vertrauen.jpg';
+    }
+    if (id.includes('ernaehrung') || id.includes('gesund')) {
+      return '/images/products/cover_ernaehrung.jpg';
+    }
+    
+    if (kat.includes('meditation')) return '/images/products/cover_herz.jpg';
+    if (kat.includes('hypnose')) return '/images/products/cover_fokus.jpg';
+    return '/images/products/cover_loslassen.jpg';
+  };
+
   const filteredProdukte = produkte.filter(prod => {
     const matchesSearch = prod.titel?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           prod.beschreibung?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -312,27 +338,36 @@ export default function PremiumShopDashboard() {
           }
 
           return (
-            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl p-6 lg:p-8 flex flex-col transition hover:shadow-md`}>
+            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden`}>
               
+              {/* Cover Image Header Banner */}
+              <div className="relative h-48 sm:h-56 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
+                <img 
+                  src={getProductCoverImage(produkt)} 
+                  alt={produkt.titel} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
+                <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                  <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md ${getCategoryBadgeStyle(produkt.kategorie)}`}>
+                    {produkt.kategorie || 'Kategorie'}
+                  </span>
+                  {hatZugriff && !istKostenlos && (
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-emerald-600 text-white uppercase shadow-md flex items-center gap-1">
+                      ✓ Freigeschaltet
+                    </span>
+                  )}
+                </div>
+                {produkt.dauer && (
+                  <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
+                    ⏱ {formatDuration(produkt.dauer)} min
+                  </span>
+                )}
+              </div>
+
               <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-10">
                 
                 <div className="flex-1 flex flex-col">
-                    <div className="flex flex-wrap items-center gap-2.5 mb-4">
-                      <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase ${getCategoryBadgeStyle(produkt.kategorie)}`}>
-                          {produkt.kategorie || 'Kategorie'}
-                      </span>
-                      {hatZugriff && !istKostenlos && (
-                        <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-emerald-600 text-white uppercase shadow-sm flex items-center gap-1">
-                          ✓ Freigeschaltet
-                        </span>
-                      )}
-                      {produkt.dauer && (
-                          <span className="text-xs font-medium text-[var(--text-muted)] ml-1">
-                          {formatDuration(produkt.dauer)} min
-                          </span>
-                      )}
-                    </div>
-                    
                     <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-2 leading-tight">{produkt.titel}</h3>
                     
                     {!hatZugriff && !istKostenlos && (
