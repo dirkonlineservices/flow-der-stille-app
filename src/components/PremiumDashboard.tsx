@@ -167,11 +167,20 @@ export default function PremiumShopDashboard() {
     const title = produkt.titel ? produkt.titel.toLowerCase() : '';
     const kat = produkt.kategorie ? produkt.kategorie.toLowerCase() : '';
 
-    if (id.includes('herzoeffnung') || (title.includes('herz') && title.includes('öffnung'))) {
-      return '/images/products/cover_herzoeffnung.jpg';
+    if (id.includes('inneres_kind') || title.includes('inneres kind') || title.includes('kind')) {
+      return '/images/products/cover_inneres_kind.jpg';
     }
     if (id.includes('herzkompass') || title.includes('kompass')) {
       return '/images/products/cover_herzkompass.jpg';
+    }
+    if (id.includes('herzoeffnung') || title.includes('herzöffnung') || title.includes('herz-öffnung')) {
+      return '/images/products/cover_herzoeffnung.jpg';
+    }
+    if (id.includes('pmr') || title.includes('muskelentspannung') || title.includes('progressive')) {
+      return '/images/products/cover_pmr.jpg';
+    }
+    if (id.includes('atem') || title.includes('atemarbeit') || title.includes('pranayama')) {
+      return '/images/products/cover_atemarbeit.jpg';
     }
     if (id.includes('loslassen') || title.includes('loslassen')) {
       return '/images/products/cover_loslassen.jpg';
@@ -362,8 +371,8 @@ export default function PremiumShopDashboard() {
                     </span>
                   )}
                 </div>
-                <span className="absolute bottom-3 left-3 text-[10px] font-medium tracking-wide text-white/90 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 shadow-md flex items-center gap-1">
-                  ✨ KI-Visualisierung
+                <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/20 shadow-md">
+                  ✨ KI
                 </span>
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
