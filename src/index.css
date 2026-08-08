@@ -199,7 +199,21 @@ p, span, div, a, button, input, textarea {
   white-space: nowrap;
 }
 
-/* Hide duplicate external CMP consent banners injected by third-party tags */
-#usercentrics-root, #onetrust-consent-sdk, .cookiebot-banner, #cookiebot, #CookiebotWidget, .cc-banner {
+/* Hide duplicate external CMP consent banners injected by GTM/Third-party scripts */
+#usercentrics-root,
+#usercentrics-cmp-container,
+[id*="usercentrics"],
+#uc-default-wall,
+#onetrust-consent-sdk,
+.cookiebot-banner,
+#cookiebot,
+#CookiebotWidget,
+.cc-banner,
+div[class*="uc-banner"],
+div[id*="cmp-"],
+div[id*="uc-"] {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
