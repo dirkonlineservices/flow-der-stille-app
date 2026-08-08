@@ -1,4 +1,21 @@
 User-agent: *
 Allow: /
 
+# 🛑 Analytics-Schutz (Verhindert Geister-Conversions durch Google-Klicks)
+Disallow: /danke
+Disallow: /newsletterconfirmation
+
+# 🛑 Auth- & Private-Seiten sperren (Google hat hier nichts zu suchen)
+Disallow: /login
+Disallow: /register
+Disallow: /forgotpassword
+Disallow: /resetpassword
+Disallow: /updatepassword
+Disallow: /settings
+Disallow: /datadeletion
+
+# 🛑 Dynamische Roh-Templates sperren
+Disallow: /exercisedetail
+Disallow: /recipedetail
+
 Sitemap: https://flow-der-stille.de/sitemap.xml

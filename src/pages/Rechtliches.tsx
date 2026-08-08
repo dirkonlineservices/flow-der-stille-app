@@ -21,7 +21,7 @@ export default function Rechtliches() {
         <section>
           <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Haftungsausschluss</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
-            Alle Nutzer nutzen diese Webseite und deren Inhalte auf eigenes Risiko. Wir übernehmen keine Haftung für gesundheitliche oder psychologische Folgen, die sich aus der Nutzung der bereitgestellten Inhalte ergeben könnten. Bei gesundheitlichen Bedenken konsultieren Sie bitte Ihren Arzt oder Therapeuten, nicht diese Webseite.
+            Alle Nutzer nutzen diese Webseite und deren Inhalte auf eigenes Risiko. Wir übernehmen keine Haftung für gesundheitliche oder psychologische Folgen, die sich aus der Nutzung der bereitgestellten Inhalte ergeben könnten. Bei gesundheitlichen Bedenken konsultiere bitte deinen Arzt oder Therapeuten, nicht diese Webseite.
           </p>
         </section>
 
@@ -45,8 +45,8 @@ export default function Rechtliches() {
         <section>
           <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Datenschutz & AGB</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
-            Informationen zum Datenschutz finden Sie <Link to="/datenschutz" className="text-[var(--color-accent-primary)] hover:underline">hier</Link>.
-            Unsere Allgemeinen Geschäftsbedingungen finden Sie <Link to="/agb" className="text-[var(--color-accent-primary)] hover:underline">hier</Link>.
+            Informationen zum Datenschutz findest du <Link to="/datenschutz" className="text-[var(--color-accent-primary)] hover:underline">hier</Link>.
+            Unsere Allgemeinen Geschäftsbedingungen findest du <Link to="/agb" className="text-[var(--color-accent-primary)] hover:underline">hier</Link>.
           </p>
         </section>
 

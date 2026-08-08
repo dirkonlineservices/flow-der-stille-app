@@ -40,14 +40,14 @@ export default function OnlineWiderruf() {
 
       setStep(3);
     } catch (err: any) {
-        setError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+        setError('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
         setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] bg-[var(--color-bg-body)] p-6">
-      <SEO title="Online-Widerruf" description="Online-Formular für Ihren Widerruf." />
+      <SEO title="Online-Widerruf" description="Online-Formular für deinen Widerruf." />
       <div className="w-full max-w-md bg-[var(--color-bg-card)] p-8 rounded-3xl shadow-lg border border-[var(--color-border-main)]">
         <h2 className="text-3xl font-serif text-[var(--color-accent-primary)] mb-6 text-center">
             {step === 1 ? 'Widerruf einreichen' : step === 2 ? 'Widerruf bestätigen' : 'Widerruf abgeschickt'}
@@ -73,7 +73,7 @@ export default function OnlineWiderruf() {
         )}
         {step === 2 && (
             <div className="space-y-4">
-                <p className="text-[var(--color-text-muted)] text-sm">Bitte bestätigen Sie Ihre Angaben:</p>
+                <p className="text-[var(--color-text-muted)] text-sm">Bitte bestätige deine Angaben:</p>
                 <div className="bg-[var(--color-bg-alt)] p-4 rounded-xl text-sm space-y-1">
                     <p><strong>Name:</strong> {formData.name}</p>
                     <p><strong>E-Mail:</strong> {formData.email}</p>
@@ -84,7 +84,7 @@ export default function OnlineWiderruf() {
             </div>
         )}
         {step === 3 && (
-            <p className="text-center text-[var(--color-text-muted)]">Vielen Dank, Ihr Widerruf wurde erfolgreich übermittelt. Eine Bestätigung erhalten Sie in Kürze per E-Mail.</p>
+            <p className="text-center text-[var(--color-text-muted)]">Vielen Dank, dein Widerruf wurde erfolgreich übermittelt. Eine Bestätigung erhältst du in Kürze per E-Mail.</p>
         )}
       </div>
     </div>

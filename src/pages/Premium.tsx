@@ -8,7 +8,7 @@ export default function Premium() {
 
   return (
     <div className="pt-20">
-      <PremiumDashboard session={session} />
+      <PremiumDashboard />
     </div>
   );
 }

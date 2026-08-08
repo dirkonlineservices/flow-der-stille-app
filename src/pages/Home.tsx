@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import NewsletterBanner from '../components/NewsletterBanner';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import HomeChatWidget from '../components/HomeChatWidget';
+import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
 
 const dailyWisdoms = [
@@ -85,32 +88,49 @@ export default function Home() {
     <>
       <SEO 
         title="Persönlicher Ruhebereich" 
-        description="Finden Sie innere Ruhe bei Flow der Stille. Ihr persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
+        description="Finde innere Ruhe bei Flow der Stille. Dein persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
       />
       <div className="space-y-8">
-        <header className="mb-12">
+        <header className="mb-12 flex flex-col items-center">
+          <img src="/logo-transparent.png" alt="Logo" className="h-16 mb-4" />
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4"
+            className="text-4xl md:text-6xl font-light text-[var(--color-accent-primary)] mb-4 text-center"
           >
             {t(greetingKey)}, {getUserName()}
-            <img src="/favicon.svg" alt="Logo" className="inline-block h-[1.0em] ml-2 align-middle opacity-80" />
           </motion.h1>
-          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6">
+          <p className="text-[var(--color-text-muted)] text-lg font-light mb-6 text-center">
             {t('home.subtitle')}
           </p>
           
-          <div className="bg-stone-50 p-6 rounded-3xl border border-stone-100 mt-8">
-            <h3 className="text-xl font-serif text-stone-800 mb-4">Für kurze Momente der Stille</h3>
-            <p className="text-stone-600 text-sm leading-relaxed mb-4">
+          <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--color-border-main)] mt-8 max-w-4xl mx-auto w-full text-center shadow-sm">
+            <h3 className="text-2xl font-serif text-[var(--color-text-main)] mb-2 font-medium">Für kurze Momente der Stille</h3>
+            <p className="text-[var(--color-text-muted)] text-sm leading-relaxed mb-6 max-w-md mx-auto">
               Unsere Übungen sind perfekt für deinen Alltag konzipiert:
             </p>
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-stone-600">
-              <li className="flex items-center gap-2"><Sun className="text-amber-500" size={18} /> Für ein kurzes Morgenritual</li>
-              <li className="flex items-center gap-2"><Coffee className="text-emerald-600" size={18} /> In deiner Mittagspause</li>
-              <li className="flex items-center gap-2"><Moon className="text-indigo-400" size={18} /> Abends zum Abschalten</li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                  <Sun size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">Für ein kurzes Morgenritual</span>
+              </div>
+              
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                  <Coffee size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">In deiner Mittagspause</span>
+              </div>
+
+              <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)]/40">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                  <Moon size={20} />
+                </div>
+                <span className="text-sm font-medium text-[var(--color-text-main)]">Abends zum Abschalten</span>
+              </div>
+            </div>
           </div>
           
           {!user && (
@@ -126,12 +146,12 @@ export default function Home() {
                 </p>
               </div>
               <div className="shrink-0 flex gap-3 w-full md:w-auto">
-                <Link to="/login" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-bg-card)] text-[var(--color-text-main)] text-sm font-medium rounded-full border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] transition-colors shadow-sm">
+                <AuthLink to="/login" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-bg-card)] text-[var(--color-text-main)] text-sm font-medium rounded-full border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] transition-colors shadow-sm">
                   Anmelden
-                </Link>
-                <Link to="/register" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+                </AuthLink>
+                <AuthLink to="/register" className="flex-1 md:flex-none flex items-center justify-center text-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
                   Kostenlos registrieren
-                </Link>
+                </AuthLink>
               </div>
             </motion.div>
           )}
@@ -140,11 +160,19 @@ export default function Home() {
         <div>
           <WeeklyChallenge />
           
+          <div className="mt-12">
+            <NewsletterBanner variant="prominent" />
+          </div>
+
           <div className="mt-6">
-             <Link to="/premium" className="block p-6 bg-purple-50 rounded-2xl border border-purple-100 hover:shadow-md transition">
-                <h3 className="font-bold text-purple-900">Premium-Bereich: Übungen & Meditationen</h3>
-                <p className="text-purple-700 text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Hypnosen.</p>
+             <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:shadow-md transition">
+                <h3 className="font-bold text-[var(--color-text-main)]">Premium-Bereich: Übungen & Meditationen</h3>
+                <p className="text-[var(--color-text-muted)] text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
              </Link>
+          </div>
+
+          <div className="mt-6">
+            <FriendInviteWidget />
           </div>
         </div>
 
@@ -154,7 +182,7 @@ export default function Home() {
             description={t('home.card.morning.desc')}
             icon={<Sun className="text-amber-500" />}
             delay={0.1}
-            to="/atemchat"
+            to="/exercises"
           />
           <QuickActionCard 
             title={t('home.card.breathing.title')} 
@@ -236,6 +264,18 @@ export default function Home() {
             )}
           </div>
         </section>
+
+        <section className="mt-0 mb-2 text-center flex justify-center">
+          <a 
+            href="https://t.me/+figVxVO_tkw4MGJi" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-sm"
+          >
+            <Send size={18} />
+            <span>Folge uns auf Telegram: Flow der Stille</span>
+          </a>
+        </section>
       </div>
     </>
   );
@@ -248,7 +288,7 @@ function QuickActionCard({ title, description, icon, delay, to }: { title: strin
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay }}
-        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-stone-50 h-full"
+        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-[var(--color-border-main)] h-full"
       >
         <div className="flex items-start justify-between mb-4">
           <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl group-hover:bg-[var(--color-bg-body)] transition-colors">

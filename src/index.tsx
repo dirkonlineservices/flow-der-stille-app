@@ -4,8 +4,10 @@
  */
 
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
+import PremiumDashboard from './components/PremiumDashboard';
+import NotFound from './components/NotFound';
 import Home from './pages/Home';
 import Exercises from './pages/Exercises';
 import ExerciseDetail from './pages/ExerciseDetail';
@@ -14,7 +16,7 @@ import Learn from './pages/Learn';
 import Evening from './pages/Evening';
 import Settings from './pages/Settings';
 import AtemChat from './pages/atemchat'; 
-import Shop from './pages/Shop';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AGB from './pages/AGB';
@@ -32,11 +34,34 @@ import Impressum from './pages/Impressum';
 import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
 import Danke from './pages/Danke';
 import RecipeDetail from './pages/RecipeDetail';
+import Blog from './pages/Blog';
+import BlogPostDetail from './pages/BlogPost';
+import BlogEditor from './pages/BlogEditor';
+import AuthCallback from './pages/AuthCallback';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import CartSidebar from './components/CartSidebar';
+import ScrollToTop from './components/ScrollToTop';
+import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
+import CookieBanner from './components/CookieBanner';
+import DisclaimerModal from './components/DisclaimerModal';
+import { BillingService } from './lib/billing';
+
+function DisclaimerManager() {
+  const location = useLocation();
+  const publicRoutes = ['/datenschutz', '/impressum', '/agb', '/rechtliches'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+
+  const [accepted, setAccepted] = React.useState(() => localStorage.getItem('flow_disclaimer_accepted') === 'true');
+
+  if (isPublicRoute || accepted || BillingService.isNative()) {
+    return null;
+  }
+
+  return <DisclaimerModal isOpen={!accepted} onAccepted={() => setAccepted(true)} />;
+}
 
 // NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -53,6 +78,18 @@ const ChatRoute = () => {
   return <Navigate to="/atemchat" replace />;
 };
 
+function ReferralCapture() {
+  const location = useLocation();
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get('ref');
+    if (refCode) {
+      sessionStorage.setItem('referral_code', refCode);
+    }
+  }, [location]);
+  return null;
+}
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -60,10 +97,14 @@ export default function App() {
         <CartProvider>
           <LanguageProvider>
             <BrowserRouter>
+              <ScrollToTop />
+              <ReferralCapture />
               <CartSidebar />
+              <TransactionErrorOverlay />
+              <CookieBanner />
+              <DisclaimerManager />
               <Routes>
-                
-                {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
+                                {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="exercises" element={<Exercises />} />
@@ -72,13 +113,15 @@ export default function App() {
                   <Route path="learn" element={<Learn />} />
                   <Route path="evening" element={<Evening />} />
                   <Route path="settings" element={<Settings />} />
-                  <Route path="shop" element={<Shop />} />
                   <Route path="chat" element={<ChatRoute />} />
                   <Route path="login" element={<Login />} />
                   <Route path="forgot-password" element={<ForgotPassword />} />
                   <Route path="reset-password" element={<ResetPassword />} />
                   <Route path="update-password" element={<UpdatePassword />} />
                   <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
+                  <Route path="newsletter-bestaetigung" element={<NewsletterConfirmation />} />
+                  <Route path="newsletter-bestaetigt" element={<NewsletterConfirmation />} />
+                  <Route path="confirm-newsletter" element={<NewsletterConfirmation />} />
                   <Route path="online-widerruf" element={<OnlineWiderruf />} />
                   <Route path="register" element={<Register />} />
                   <Route path="contact" element={<Contact />} />
@@ -88,9 +131,14 @@ export default function App() {
                   <Route path="agb" element={<AGB />} />
                   <Route path="rechtliches" element={<Rechtliches />} />
                   <Route path="premium" element={<Premium />} />
+                  <Route path="premium-dashboard" element={<PremiumDashboard />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
+                  <Route path="blog" element={<Blog />} />
+                  <Route path="blog/new" element={<BlogEditor />} />
+                  <Route path="blog/schreiben" element={<BlogEditor />} />
+                  <Route path="blog/:slug" element={<BlogPostDetail />} />
                 </Route>
 
                 {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}
@@ -98,6 +146,12 @@ export default function App() {
                   path="/atemchat" 
                   element={<AtemChat />} 
                 />
+                <Route 
+                  path="/auth/callback" 
+                  element={<AuthCallback />} 
+                />
+
+                <Route path="*" element={<NotFound />} />
 
               </Routes>
             </BrowserRouter>

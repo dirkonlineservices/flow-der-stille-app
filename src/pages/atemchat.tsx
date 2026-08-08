@@ -89,7 +89,7 @@ export default function AtemChat() {
     {
       id: "initial",
       sender: "assistant",
-      text: "Seien Sie willkommen im Flow der Stille. Ich bin Ihr empathischer Begleiter in Momenten der Überforderung, des Stresses oder der Unruhe. Dieser Ort ist ganz für Sie da – frei von Erwartungen und Bewertungen. 🌱\n\nWie empfinden Sie den gegenwärtigen Moment? Erzählen Sie es mir oder wählen Sie eine der folgenden Empfindungen aus.",
+      text: "Sei herzlich willkommen im Flow der Stille. Ich bin dein empathischer Begleiter in Momenten der Überforderung, des Stresses oder der Unruhe. Dieser Ort ist ganz für dich da – frei von Erwartungen und Bewertungen. 🌱\n\nWie empfindest du den gegenwärtigen Moment? Erzähle es mir oder wähle eine der folgenden Empfindungen aus.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -115,7 +115,7 @@ export default function AtemChat() {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-      setSpeechError("Ihr Browser unterstützt leider keine Spracherkennung. Verwenden Sie Chrome, Safari oder Edge.");
+      setSpeechError("Dein Browser unterstützt leider keine Spracherkennung. Verwende Chrome, Safari oder Edge.");
       setTimeout(() => setSpeechError(null), 5000);
       return;
     }
@@ -142,9 +142,9 @@ export default function AtemChat() {
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error);
         if (event.error === "not-allowed") {
-          setSpeechError("Mikrofon-Zugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Browsereinstellungen.");
+          setSpeechError("Mikrofon-Zugriff wurde verweigert. Bitte erlaube den Zugriff in deinen Browsereinstellungen.");
         } else {
-          setSpeechError("Spracherkennung nicht möglich. Versuchen Sie es bitte erneut.");
+          setSpeechError("Spracherkennung nicht möglich. Versuche es bitte erneut.");
         }
         setIsListening(false);
       };
@@ -327,7 +327,7 @@ export default function AtemChat() {
       const errorMessage: Message = {
         id: Math.random().toString(),
         sender: "assistant",
-        text: "Ich bin im Moment eine Sekunde still – vielleicht liegt es an der Verbindung. Lassen Sie uns einen Moment gemeinsam durchatmen, bevor wir es gleich noch einmal versuchen. 🌱",
+        text: "Ich bin im Moment eine Sekunde still – vielleicht liegt es an der Verbindung. Lass uns einen Moment gemeinsam durchatmen, bevor wir es gleich noch einmal versuchen. 🌱",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -371,7 +371,7 @@ export default function AtemChat() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-alt)] text-[var(--color-text-main)] flex flex-col antialiased">
-      <SEO title="Geführte Atemübungen" description="Beruhigen Sie Ihr Nervensystem durch sanfte Atemführung." />
+      <SEO title="Geführte Atemübungen" description="Beruhige dein Nervensystem durch sanfte Atemführung." />
       {/* Top Quiet Navbar */}
       <header id="quiet-header" className="sticky top-0 bg-[var(--color-bg-alt)]/90 backdrop-blur-md border-b border-[var(--color-border-main)] z-30 py-4 px-6 md:px-10 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -387,7 +387,7 @@ export default function AtemChat() {
                 Flow der Stille
               </h1>
               <p className="text-[10px] tracking-widest text-[var(--color-accent-primary)] uppercase font-semibold">
-                Anker für Ihre Gegenwart
+                Anker für deine Gegenwart
               </p>
             </div>
           </div>
@@ -442,7 +442,7 @@ export default function AtemChat() {
             </div>
 
             <span className="text-[10px] text-[var(--color-accent-primary)] uppercase tracking-wider font-semibold hidden sm:block flex items-center gap-1">
-              🔒 Ihre Privatsphäre ist geschützt
+              🔒 Deine Privatsphäre ist geschützt
             </span>
           </div>
 
@@ -478,7 +478,7 @@ export default function AtemChat() {
                         <h4 className="font-serif text-sm font-medium text-[var(--color-text-main)]">Geführte Premium-Meditation</h4>
                       </div>
                       <p className="text-xs text-[var(--color-text-muted)]">
-                        Mit dieser speziell entwickelten Meditation können Sie tiefere innere Ruhe finden und die angesprochenen Themen auflösen. 
+                        Mit dieser speziell entwickelten Meditation kannst du tiefere innere Ruhe finden und die angesprochenen Themen auflösen. 
                       </p>
                       <button className="self-start mt-2 px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-full transition-all shadow-sm">
                         Meditation freischalten (4,99 €)
@@ -533,7 +533,7 @@ export default function AtemChat() {
           {/* User Limits Info Banner */}
           {!user && (
             <div className="bg-amber-50 border-t border-amber-200 p-4 text-center">
-              <p className="text-sm text-amber-800 font-medium">Melden Sie sich kostenlos an, um 3 Freinachrichten pro Tag im Entspannungsassistenten zu nutzen.</p>
+              <p className="text-sm text-amber-800 font-medium">Melde dich kostenlos an, um 3 Freinachrichten pro Tag im Entspannungsassistenten zu nutzen.</p>
               <Link to="/register" className="mt-2 inline-flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-full hover:bg-amber-700 transition">
                 Kostenlos registrieren
               </Link>
@@ -543,7 +543,7 @@ export default function AtemChat() {
           {user && !isPremium && reachedLimit && (
             <div className="bg-amber-50 border-t border-amber-200 p-4 text-center">
               <p className="text-sm text-amber-800 font-medium mb-2">Tägliches Limit von 3 Nachrichten erreicht.</p>
-              <p className="text-xs text-amber-700 mb-3">Schalten Sie Premium frei, um unbegrenzt zu chatten (4,99 € / Monat).</p>
+              <p className="text-xs text-amber-700 mb-3">Schalte Premium frei, um unbegrenzt zu chatten (4,99 € / Monat).</p>
               <button onClick={() => {
                 const feature = PRODUCTS.find(p => p.id === 'premium_chat');
                 if (feature) addToCart(feature);
@@ -558,7 +558,7 @@ export default function AtemChat() {
             <div className="px-5 py-2.5 bg-[#EBF1EB] text-[#4A574A] border-b border-[var(--color-border-main)] text-xs flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#cc7a6d] animate-pulse" />
-                <span className="font-sans italic">Ich höre Ihnen zu... Sprechen Sie ganz gelassen. 🌱</span>
+                <span className="font-sans italic">Ich höre dir zu... Sprich ganz gelassen. 🌱</span>
               </span>
               <button
                 type="button"
@@ -598,7 +598,7 @@ export default function AtemChat() {
               <input
                 id="inp-chat-message"
                 type="text"
-                placeholder={!user ? "Bitte melden Sie sich an, um zu chatten" : reachedLimit ? "Tägliches Limit erreicht..." : "Erzählen Sie Ihre Gedanken oder sprechen Sie sie aus..."}
+                placeholder={!user ? "Bitte melde dich an, um zu chatten" : reachedLimit ? "Tägliches Limit erreicht..." : "Erzähle deine Gedanken oder sprich sie aus..."}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isLoading || !user || reachedLimit}
@@ -668,15 +668,15 @@ export default function AtemChat() {
 
               <div className="flex items-center space-x-3 text-[#cc4c3d] mb-4">
                 <ShieldAlert className="w-7 h-7" />
-                <h3 className="font-serif text-xl font-bold">Sie sind nicht allein.</h3>
+                <h3 className="font-serif text-xl font-bold">Du bist nicht allein.</h3>
               </div>
 
               <div className="text-sm text-[#4f5651] space-y-4 leading-relaxed font-sans">
                 <p>
-                  Bitte beachten Sie: Unser automatisierter Begleiter dient ausschließlich zur Entspannung und Stressbewältigung im Alltag. Er kann und darf <strong>keine professionelle psychologische Hilfe, Therapie oder ärztliche Diagnose</strong> ersetzen.
+                  Bitte beachte: Unser automatisierter Begleiter dient ausschließlich zur Entspannung und Stressbewältigung im Alltag. Er kann und darf <strong>keine professionelle psychologische Hilfe, Therapie oder ärztliche Diagnose</strong> ersetzen.
                 </p>
                 <p>
-                  Sollten Sie sich in einer ernsten Lebenskrise befinden, an Selbstverletzung oder tiefen Traumata leiden, oder jemanden in Ihrem Umfeld wissen, der unmittelbare Unterstützung benötigt, wenden Sie sich bitte an eine der folgenden Anlaufstellen:
+                  Solltest du dich in einer ernsten Lebenskrise befinden, an Selbstverletzung oder tiefen Traumata leiden, oder jemanden in deinem Umfeld wissen, der unmittelbare Unterstützung benötigt, wende dich bitte an eine der folgenden Anlaufstellen:
                 </p>
 
                 <div className="bg-[#fcf7f6] rounded-2xl p-4 border border-[#f5dedb] space-y-3.5 my-4">
@@ -722,7 +722,7 @@ export default function AtemChat() {
                 </div>
 
                 <p className="text-xs text-[#737c76]">
-                  In akuten, lebensbedrohlichen Notfällen zögern Sie bitte nicht, direkt den Rettungsdienst unter der Notrufnummer <strong>112</strong> anzurufen.
+                  In akuten, lebensbedrohlichen Notfällen zögere bitte nicht, direkt den Rettungsdienst unter der Notrufnummer <strong>112</strong> anzurufen.
                 </p>
               </div>
 

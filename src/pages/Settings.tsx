@@ -10,7 +10,9 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
+import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newsletterService';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
 
 export default function Settings() {
@@ -80,6 +82,80 @@ export default function Settings() {
     navigate('/login');
   };
 
+  // 1. Funktion: Newsletter nachträglich abonnieren (beim Klick auf Profil speichern)
+  const handleNewsletterOptIn = async (userEmail: string) => {
+    const confirmToken = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : 'doi_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+
+    // A: Upsert in die Supabase Tabelle (falls der Nutzer noch gar nicht drin stand)
+    const { error: dbError } = await getSupabase()
+      .from('newsletter_leads')
+      .upsert({ 
+        email: userEmail, 
+        status: 'pending_doi',
+        confirm_token: confirmToken,
+        source: 'account_settings',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'email' });
+
+    if (dbError) {
+      console.error("Fehler beim Datenbankupdate:", dbError.message);
+      return;
+    }
+
+    // B: Edge Function für Resend Mail aufrufen
+    const { error: edgeError } = await getSupabase().functions.invoke('send-double-opt-in-email', {
+      body: { email: userEmail, confirm_token: confirmToken }
+    });
+
+    if (edgeError) {
+      console.error("Fehler beim E-Mail Versand:", edgeError.message);
+      return;
+    }
+
+    // C: Tracking für Looker Studio
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'newsletter_optin',
+        lead_source: 'account_settings',
+        lead_status: 'pending_doi'
+      });
+    }
+
+    console.log("Bitte prüfe dein Postfach, um den Newsletter zu bestätigen.");
+  };
+
+  // 2. Funktion: Newsletter abbestellen (beim Klick auf den roten Button)
+  const handleNewsletterOptOut = async (userEmail: string) => {
+    const { error: unsubError } = await getSupabase()
+      .from('newsletter_leads')
+      .update({ 
+        status: 'unsubscribed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('email', userEmail);
+
+    if (unsubError) {
+      console.error("Fehler beim Abmelden:", unsubError.message);
+      setProfileError("Fehler beim Abmelden: " + unsubError.message);
+      return;
+    }
+
+    // Feuere das DataLayer-Tracking für die Abmeldung:
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'newsletter_unsubscribe',
+        lead_source: 'account_settings',
+        lead_status: 'unsubscribed'
+      });
+    }
+
+    setNewsletter(false);
+    setProfileSuccess("Du wurdest erfolgreich vom Newsletter abgemeldet.");
+    console.log("Du wurdest erfolgreich vom Newsletter abgemeldet.");
+  };
+
   // Update profile handler
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,20 +164,32 @@ export default function Settings() {
     setProfileError('');
     setProfileLoading(true);
 
+    let profileData: any = {
+      first_name: firstName,
+      last_name: lastName,
+      newsletter_optin: newsletter,
+    };
+
+    // Sync newsletter status if changed
+    if (user.email) {
+      if (newsletter && !user.newsletter_optin) {
+        profileData.newsletter_optin_timestamp = new Date().toISOString();
+        await handleNewsletterOptIn(user.email);
+      } else if (!newsletter && user.newsletter_optin) {
+        await handleNewsletterOptOut(user.email);
+      }
+    }
+
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase.auth.updateUser({
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          newsletter_optin: newsletter
-        }
+        data: profileData
       });
 
       if (error) {
         setProfileError(error.message);
       } else {
-        setProfileSuccess('Ihr Profil wurde erfolgreich aktualisiert!');
+        setProfileSuccess('Dein Profil wurde erfolgreich aktualisiert!');
       }
     } catch (err) {
       setProfileError('Ein unerwarteter Fehler ist aufgetreten.');
@@ -135,7 +223,7 @@ export default function Settings() {
       if (error) {
         setPasswordError(error.message);
       } else {
-        setPasswordSuccess('Ihr Passwort wurde erfolgreich geändert!');
+        setPasswordSuccess('Dein Passwort wurde erfolgreich geändert!');
         setPassword('');
         setConfirmPassword('');
       }
@@ -216,9 +304,9 @@ export default function Settings() {
            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-[var(--color-border-main)]">
               <h3 className="text-xl font-serif text-red-700 mb-4">Account permanent löschen?</h3>
               <p className="text-sm text-stone-600 mb-6 leading-relaxed">
-                 Dies ist ein unwiderruflicher Vorgang. Alle Ihre Daten, Käufe und Fortschritte werden dauerhaft entfernt. Dies entspricht unseren DSGVO-Richtlinien zur Datenlöschung.
+                 Dies ist ein unwiderruflicher Vorgang. Alle deine Daten, Käufe und Fortschritte werden dauerhaft entfernt. Dies entspricht unseren DSGVO-Richtlinien zur Datenlöschung.
                  <br/><br/>
-                 Bitte geben Sie zur Bestätigung den Namen der App ein: <span className="font-bold">Flow der Stille</span>
+                 Bitte gib zur Bestätigung den Namen der App ein: <span className="font-bold">Flow der Stille</span>
               </p>
               
               <input
@@ -248,37 +336,37 @@ export default function Settings() {
         </div>
       )}
       
-      <SEO title="Einstellungen" description="Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort und betrachten Sie Ihre Einkäufe." />
+      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="text-[var(--color-accent-primary)] w-8 h-8" />
           <h1 className="text-4xl font-serif text-[var(--color-accent-primary)]">Konto & App-Einstellungen</h1>
         </div>
         <p className="text-[var(--color-text-muted)] text-base max-w-2xl">
-          Verwalten Sie Ihre persönlichen Angaben, ändern Sie Ihr Passwort, werfen Sie einen Blick in Ihre erworbenen Kurse oder laden Sie Ihre gespeicherten Daten herunter.
+          Verwalte deine persönlichen Angaben, ändere dein Passwort, wirf einen Blick in deine erworbenen Kurse oder lade deine gespeicherten Daten herunter.
         </p>
       </header>
 
       {!user ? (
         <div className="bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-3xl p-8 text-center max-w-xl mx-auto">
           <User className="mx-auto w-12 h-12 text-[var(--color-text-muted-light)] mb-4" />
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Sie sind nicht eingeloggt</h2>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-2">Du bist nicht eingeloggt</h2>
           <p className="text-[var(--color-text-muted)] text-sm mb-6 leading-relaxed">
-            Um Ihr Profil anzupassen, Ihren Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melden Sie sich bitte an oder erstellen Sie ein neues Konto.
+            Um dein Profil anzupassen, deinen Vornamen zu pflegen, Passwörter zu konfigurieren oder Kurse freizuschalten, melde dich bitte an oder erstelle ein neues Konto.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link 
+            <AuthLink 
               to="/login" 
               className="px-6 py-2.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-medium rounded-xl transition-all"
             >
               Einloggen
-            </Link>
-            <Link 
+            </AuthLink>
+            <AuthLink 
               to="/register" 
               className="px-6 py-2.5 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-[var(--color-text-main)] font-medium rounded-xl hover:bg-[var(--color-bg-alt)] transition-all"
             >
               Registrieren
-            </Link>
+            </AuthLink>
           </div>
         </div>
       ) : (
@@ -316,7 +404,7 @@ export default function Settings() {
                       type="text"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="Ihr Vorname"
+                      placeholder="Dein Vorname"
                       className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
@@ -326,7 +414,7 @@ export default function Settings() {
                       type="text"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Ihr Nachname"
+                      placeholder="Dein Nachname"
                       className="w-full px-4 py-3 bg-[var(--color-bg-alt)] rounded-xl border-none focus:ring-2 focus:ring-[var(--color-accent-primary)] outline-none text-sm transition-all text-[var(--color-text-main)] font-medium"
                     />
                   </div>
@@ -340,7 +428,7 @@ export default function Settings() {
                     disabled
                     className="w-full px-4 py-3 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] rounded-xl border-none outline-none text-sm cursor-not-allowed font-medium"
                   />
-                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit Ihrem Supabase-Konto verknüpft.</p>
+                  <p className="text-[var(--color-text-muted-light)] text-[11px] mt-1">E-Mail-Adressen sind fest mit deinem Flow der Stille-Konto verknüpft.</p>
                 </div>
 
                 {/* Newsletter Preference Section */}
@@ -350,17 +438,35 @@ export default function Settings() {
                       type="checkbox"
                       checked={newsletter}
                       onChange={(e) => setNewsletter(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)]"
+                      className="mt-0.5 w-5 h-5 rounded border-stone-300 text-[var(--color-accent-primary)] focus:ring-[var(--color-accent-primary)] shrink-0"
                     />
                     <div>
-                      <span className="text-sm font-medium text-[var(--color-text-main)] leading-tight block group-hover:text-stone-900 transition-colors">
-                        Sicherstellung des monatlichen Newsletters
+                      <span className="text-sm font-medium text-[var(--color-text-main)]">
+                        Newsletter abonnieren
                       </span>
-                      <span className="text-xs text-[var(--color-text-muted-light)] block mt-0.5 leading-relaxed">
-                        Ich möchte weiterhin einmal im Monat wertvolle, kuratierte Ratschläge, wissenschaftliche Hintergründe der Darm-Hirn-Achse und Tipps zur Parasympathikus-Aktivierung per E-Mail erhalten. (Abbestellbar per Form-Opt-out).
-                      </span>
+                      <p className="text-xs text-[var(--color-text-muted-light)] mt-1 italic">
+                        Erhalte einmal im Monat wertvolle, kuratierte Ratschläge zum Thema Darm-Hirn-Achse.
+                      </p>
                     </div>
                   </label>
+
+                  {newsletter && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (user?.email) {
+                          await handleNewsletterOptOut(user.email);
+                          const supabase = getSupabase();
+                          await supabase.auth.updateUser({ data: { newsletter_optin: false } });
+                        }
+                        setNewsletter(false);
+                        setProfileSuccess('Du wurdest erfolgreich vom Newsletter abgemeldet.');
+                      }}
+                      className="mt-4 px-4 py-2 text-xs font-semibold bg-red-50 text-red-700 rounded-full hover:bg-red-100 transition-colors border border-red-200"
+                    >
+                      Newsletter jetzt abbestellen
+                    </button>
+                  )}
                 </div>
 
                 <div className="pt-4 text-right">
@@ -551,7 +657,7 @@ export default function Settings() {
                 <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Meine gekauften Produkte</h2>
               </div>
               <p className="text-[var(--color-text-muted-light)] text-xs mb-6">
-                Ihre verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung Ihrer Käufe.
+                Deine verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung deiner Käufe.
               </p>
 
               <div className="space-y-4">
@@ -566,7 +672,7 @@ export default function Settings() {
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                           <div>
                             <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                              Aktiviert & Freigeschaltet
+                              Aktiviert
                             </span>
                             <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course?.titel || 'Unbekanntes Produkt'}</h3>
                           </div>
@@ -578,13 +684,13 @@ export default function Settings() {
 
                         <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course?.beschreibung}</p>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border-main)]">
-                           <span className="text-emerald-700 font-medium text-xs flex items-center gap-1">
-                             <CheckCircle2 size={14} /> Bereit zum Lernen
-                           </span>
-                           <button className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1">
-                             <Eye size={12} /> Kurs öffnen
-                           </button>
+                        <div className="flex items-center justify-end pt-2 border-t border-[var(--color-border-main)]">
+                           <Link 
+                             to={`/premium#product-${course?.id || kauf.produkt_id}`}
+                             className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
+                           >
+                             <Eye size={12} /> Zum Produkt
+                           </Link>
                         </div>
                       </div>
                     );
@@ -601,27 +707,6 @@ export default function Settings() {
                   </div>
                 )}
               </div>
-            </section>
-
-            {/* 5. Danger Zone */}
-            <section className="bg-red-50/50 rounded-3xl shadow-sm border border-red-100 p-6 md:p-8">
-              <h2 className="text-2xl font-serif text-red-900 mb-6 flex items-center gap-2">
-                <Trash2 size={22} className="text-red-600" />
-                Gefahrenbereich: Account löschen
-              </h2>
-              <p className="text-red-800 text-sm mb-6 leading-relaxed">
-                Wenn Sie Ihr Konto und alle damit verbundenen Daten unwiderruflich löschen möchten, klicken Sie bitte auf die Schaltfläche unten. Dieser Vorgang kann nicht rückgängig gemacht werden.
-              </p>
-              <button
-                onClick={() => {
-                  (window as any).dataLayer = (window as any).dataLayer || [];
-                  (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
-                  setShowDeleteModal(true);
-                }}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl text-sm transition-all shadow-sm"
-              >
-                Konto permanent löschen
-              </button>
             </section>
 
           </div>
@@ -685,7 +770,7 @@ export default function Settings() {
                 Datenschutz & DSGVO
               </h4>
               <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
-                Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Sie behalten die volle Kontrolle über Ihre Daten.
+                Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Du behältst die volle Kontrolle über deine Daten.
               </p>
               
               <div className="space-y-3">
@@ -704,6 +789,18 @@ export default function Settings() {
                   <FileText size={14} />
                   <span>Datenschutzerklärung einsehen</span>
                 </Link>
+
+                <button
+                  onClick={() => {
+                    (window as any).dataLayer = (window as any).dataLayer || [];
+                    (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
+                    setShowDeleteModal(true);
+                  }}
+                  className="w-full py-2 px-3 text-[var(--color-text-muted)] hover:text-red-600 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1 mt-4"
+                >
+                  <Trash2 size={12} />
+                  <span>Account löschen</span>
+                </button>
               </div>
             </div>
 

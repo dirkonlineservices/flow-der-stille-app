@@ -1,22 +1,87 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
+
+/* Cormorant Garamond (Serif - Überschriften) */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-v21-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/cormorant-garamond-v21-latin-700.woff2') format('woff2');
+}
+
+/* Inter (Sans-Serif - Fließtext & UI) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-v20-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-v20-latin-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-v20-latin-700.woff2') format('woff2');
+}
+
+@layer base {
+  :root {
+    --bg-main: #f5f5f0;
+    --bg-alt: #F7F6F2;
+    --bg-card: #FFFFFF;
+    --border: #E3E1D9;
+    --text-main: #3D3B35;
+    --text-muted: #695C4D;
+    --accent: #8A9A8A;
+    --accent-hover: #728372;
+  }
+
+  [data-theme='dark'] {
+    --bg-main: #1c1917;
+    --bg-alt: #292524;
+    --bg-card: #292524;
+    --border: #44403c;
+    --text-main: #e7e5e4;
+    --text-muted: #a8a29e;
+    --accent: #8A9A8A;
+    --accent-hover: #a3b2a3;
+  }
+}
 
 @theme {
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
   
-  --color-bg-body: var(--bg-body);
+  --color-bg-body: var(--bg-main);
   --color-bg-alt: var(--bg-alt);
   --color-bg-alt-darker: var(--bg-alt-darker);
   --color-bg-card: var(--bg-card);
   --color-bg-border: var(--bg-border);
-  --color-border-main: var(--border-main);
+  --color-border-main: var(--border);
   
   --color-text-main: var(--text-main);
   --color-text-muted: var(--text-muted);
   --color-text-muted-light: var(--text-muted-light);
   
-  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary: var(--accent);
   --color-accent-hover: var(--accent-hover);
 }
 
@@ -36,20 +101,23 @@
   --accent-hover: #728372;
 }
 
-.dark {
+.dark, [data-theme='dark'] {
   --bg-body: #1c1917;
-  --bg-alt: #171717;
-  --bg-alt-darker: #0c0a09;
+  --bg-main: #1c1917;
+  --bg-alt: #3e3a38;
+  --bg-alt-darker: #2f2a28;
   --bg-card: #292524;
   --bg-border: #292524;
   --border-main: #44403c;
+  --border: #44403c;
   
   --text-main: #e7e5e4;
   --text-muted: #a8a29e;
   --text-muted-light: #78716c;
   
   --accent-primary: #8A9A8A;
-  --accent-hover: #728372;
+  --accent: #8A9A8A;
+  --accent-hover: #a3b2a3;
 }
 
 body {
@@ -129,4 +197,9 @@ p, span, div, a, button, input, textarea {
 
 .ai-text {
   white-space: nowrap;
+}
+
+/* Hide duplicate external CMP consent banners injected by third-party tags */
+#usercentrics-root, #onetrust-consent-sdk, .cookiebot-banner, #cookiebot, #CookiebotWidget, .cc-banner {
+  display: none !important;
 }

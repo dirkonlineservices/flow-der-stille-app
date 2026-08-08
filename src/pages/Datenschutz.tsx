@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Shield, Lock, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, ArrowLeft, Cookie } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { openCookieConsentModal } from '../lib/tracking';
 
 export default function Datenschutz() {
   return (
@@ -51,10 +52,23 @@ export default function Datenschutz() {
             <p className="mt-2">
               Zur Analyse der Webseitennutzung setzen wir Google Analytics 4 (GA4) ein. Dies geschieht in einer datenschutzkonformen Konfiguration unter Verwendung der IP-Anonymisierung.
             </p>
+            <div className="mt-4 p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-2.5 text-xs text-[var(--color-text-main)]">
+                <Cookie size={18} className="text-[var(--color-accent-primary)] shrink-0" />
+                <span>Du möchtest deine Cookie-Einwilligung einsehen oder anpassen?</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => openCookieConsentModal()}
+                className="px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover,#788878)] text-white text-xs font-semibold rounded-xl transition-all shadow-xs"
+              >
+                Cookie-Einstellungen anpassen
+              </button>
+            </div>
             
             <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Newsletter (Supabase)</h3>
             <p>
-              Falls Sie sich für unseren Newsletter anmelden, speichern wir Ihre E-Mail-Adresse in unserer Datenbank beim Cloud-Dienstanbieter Supabase, welcher seine Dienste innerhalb der EU hostet. Die Anmeldung erfolgt über ein "Double Opt-In"-Verfahren, bei dem Sie die Newsletter-Anmeldung nach der Registrierung durch einen Klick auf einen Aktivierungslink bestätigen müssen.
+              Falls du dich für unseren Newsletter anmeldest, speichern wir deine E-Mail-Adresse in unserer Datenbank beim Cloud-Dienstanbieter Supabase, welcher seine Dienste innerhalb der EU hostet. Die Anmeldung erfolgt über ein "Double Opt-In"-Verfahren, bei dem du die Newsletter-Anmeldung nach der Registrierung durch einen Klick auf einen Aktivierungslink bestätigen musst.
             </p>
           </section>
 
@@ -62,7 +76,7 @@ export default function Datenschutz() {
             <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">3. Datenschutz in der mobilen App</h2>
             <h3 className="font-semibold text-[var(--color-text-main)]">Nutzer-Authentifizierung (Supabase)</h3>
             <p>
-              Für die Anmeldung (Login/Registrierung) nutzen wir Supabase Auth. Ihre E-Mail-Adresse und Passwortdaten (gespeichert als kryptographischer Hash) werden sicher auf unseren Servern innerhalb der EU verarbeitet.
+              Für die Anmeldung (Login/Registrierung) nutzen wir Supabase Auth. Deine E-Mail-Adresse und Passwortdaten (gespeichert als kryptographischer Hash) werden sicher auf unseren Servern innerhalb der EU verarbeitet.
             </p>
             
             <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Applikations-Stabilität & Firebase Crashlytics</h3>
@@ -77,14 +91,14 @@ export default function Datenschutz() {
 
             <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Kontolöschung</h3>
             <p>
-              Sie haben das Recht auf jederzeitige, unwiderrufliche Löschung Ihres Benutzerkontos und der damit verbundenen persönlichen Daten direkt in den Einstellungen der App. Mit der Löschung werden auch Ihre gespeicherten Daten (z. B. Fortschritt, E-Mail-Adresse) zeitnah aus unserer Datenbank entfernt.
+              Du hast das Recht auf jederzeitige, unwiderrufliche Löschung deines Benutzerkontos und der damit verbundenen persönlichen Daten direkt in den Einstellungen der App. Mit der Löschung werden auch deine gespeicherten Daten (z. B. Fortschritt, E-Mail-Adresse) zeitnah aus unserer Datenbank entfernt.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Ihre Rechte</h2>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Deine Rechte</h2>
             <p>
-              Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung Ihrer Daten. Bitte wenden Sie sich hierzu an die oben genannte Verantwortliche Stelle unter: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
+              Du hast jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung deiner Daten. Bitte wende dich hierzu an die oben genannte Verantwortliche Stelle unter: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
             </p>
           </section>
 

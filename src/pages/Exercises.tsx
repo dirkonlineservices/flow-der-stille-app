@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Wind, Activity, Timer, ArrowRight } from 'lucide-react';
+import { Wind, Activity, Timer, ArrowRight, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
@@ -26,29 +26,11 @@ export default function Exercises() {
           const rawTitle = t(exercise.translationKeyTitle);
           const safeTitle = rawTitle.includes('Box-Armung') ? rawTitle.replace('Box-Armung', 'Box-Atmung') : rawTitle;
 
-          // 2. GLOBALER BILD-FALLBACK (Die Lösung für dein Problem!)
-          // Wenn in den Daten kein Bild existiert (wie bei der Nackendehnung), greift dieses Ersatzbild:
+          // 2. GLOBALER BILD-FALLBACK
           const fallbackImage = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop';
           const finalImage = exercise.image ? exercise.image : fallbackImage;
+          const isAudioExercise = !!exercise.audioId;
 
-          // 3. AUSNAHME: Nur die Geführte Atemübung bekommt den Player direkt auf dieser Seite
-          if (exercise.id === 'guided-breathing') {
-            const produktIdMap: { [key: string]: string } = {
-              'guided-breathing': 'a080ef5a-b9e3-4b2c-938e-d2787991461d',
-            };
-            return (
-              <AudioExerciseCard 
-                key={exercise.id} 
-                t={t} 
-                exercise={exercise} 
-                title={safeTitle}
-                image={finalImage}
-                produktId={produktIdMap[exercise.id]} 
-              />
-            );
-          }
-
-          // 4. STANDARD-KACHEL: Alle anderen verlinken sauber weiter mit den intakten Bildern!
           return (
             <ExerciseCard 
               key={exercise.id}
@@ -58,6 +40,7 @@ export default function Exercises() {
               duration={exercise.duration}
               description={t(exercise.translationKeyDesc)}
               image={finalImage}
+              isAudioExercise={isAudioExercise}
             />
           );
         })}
@@ -66,40 +49,8 @@ export default function Exercises() {
   );
 }
 
-// === KACHEL 1: GEFÜHRTE ATEMÜBUNG ===
-function AudioExerciseCard({ t, exercise, title, image, produktId }: { t: any, exercise: any, title: string, image: string, produktId: string }) {
-  return (
-    <motion.div 
-      className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden min-h-[220px]"
-    >
-      <div className="w-full md:w-64 h-56 md:h-auto shrink-0 relative bg-stone-100 overflow-hidden">
-        <img 
-          src={image} 
-          alt={title} 
-          className="absolute inset-0 w-full h-full object-cover" 
-          referrerPolicy="no-referrer"
-          onError={(e) => { 
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop'; 
-          }}
-        />
-        <a href="/impressum#ki-transparenz" className="absolute bottom-3 right-3 z-10">
-          <span className="bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">[KI]</span>
-        </a>
-      </div>
-
-      <div className="p-6 flex-1 flex flex-col justify-center">
-        <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{title}</h3>
-        <p className="text-sm text-[var(--color-text-muted)] mb-6">{t(exercise.translationKeyDesc)}</p>
-        <div className="mt-auto">
-          <SingleAudioPlayer produktId={produktId} />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 // === KACHEL 2: ALLE ANDEREN ÜBUNGEN ===
-function ExerciseCard({ id, title, category, duration, description, image }: { id: string; title: string; category: string; duration: string; description: string; image: string }) {
+function ExerciseCard({ id, title, category, duration, description, image, isAudioExercise }: { id: string; title: string; category: string; duration: string; description: string; image: string; isAudioExercise: boolean }) {
   const { t } = useLanguage();
   return (
     <Link to={`/exercises/${id}`} className="block">
@@ -129,13 +80,20 @@ function ExerciseCard({ id, title, category, duration, description, image }: { i
         
         <div className="p-6 flex-1 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <span className="text-xs px-2.5 py-1 bg-[var(--color-bg-border)] rounded-md text-[var(--color-text-muted)] uppercase tracking-wider font-semibold">
                 {category}
               </span>
-              <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted-light)] font-medium">
-                <Timer size={14} />
-                <span>{duration}</span>
+              <div className="flex items-center gap-3">
+                {isAudioExercise && (
+                  <span className="text-xs px-2.5 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-md font-medium border border-amber-500/20 flex items-center gap-1">
+                    <Lock size={12} /> Kostenlose Registrierung für Audio
+                  </span>
+                )}
+                <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted-light)] font-medium">
+                  <Timer size={14} />
+                  <span>{duration}</span>
+                </div>
               </div>
             </div>
             

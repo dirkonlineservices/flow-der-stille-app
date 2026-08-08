@@ -13,12 +13,18 @@ DO NOT modify the asynchronous URL loading logic. Read-only permitted.
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause } from 'lucide-react';
+import DisclaimerModal from './DisclaimerModal';
+import AuthRequiredModal from './AuthRequiredModal';
+import { useAuth } from '../context/AuthContext';
 
 export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
+  const { user } = useAuth();
   const [url, setUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const formatTime = (secs: number) => {
@@ -33,7 +39,9 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     if (!audio) return;
 
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
     
     // ⚡ FIX: Globale Pause-Logik! Stoppt alle anderen Player auf der Webseite.
     const handlePlay = () => {
@@ -108,39 +116,67 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     }
   };
 
+  const handlePlayClick = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
+    if (!accepted) {
+      setShowDisclaimer(true);
+      return;
+    }
+    togglePlay();
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm">
-      <button 
-        onClick={togglePlay}
-        className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] ${
-          isPlaying 
-            ? 'bg-[#ef4444] hover:bg-[#dc2626] hover:ring-4 hover:ring-red-200' 
-            : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] hover:ring-4 hover:ring-emerald-100'
-        }`}
-        aria-label={isPlaying ? "Pause" : "Abspielen"}
-      >
-        {isPlaying ? (
-          <Pause size={32} fill="white" stroke="none" />
-        ) : (
-          <Play size={32} className="ml-1" fill="white" stroke="none" />
-        )}
-      </button>
-      <div className="mt-4 text-center select-none">
-        <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
-          {formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration || produkt.dauer || 0)}</span>
+    <>
+      <div className="flex flex-col items-center justify-center p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm">
+        <button 
+          onClick={handlePlayClick}
+          className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] ${
+            isPlaying 
+              ? 'bg-[#ef4444] hover:bg-[#dc2626] hover:ring-4 hover:ring-red-200' 
+              : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] hover:ring-4 hover:ring-emerald-100'
+          }`}
+          aria-label={isPlaying ? "Pause" : "Abspielen"}
+        >
+          {isPlaying ? (
+            <Pause size={32} fill="white" stroke="none" />
+          ) : (
+            <Play size={32} className="ml-1" fill="white" stroke="none" />
+          )}
+        </button>
+        <div className="mt-4 text-center select-none">
+          <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
+            {formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration > 0 && isFinite(duration) ? duration : (produkt.dauer || 0))}</span>
+          </div>
+          <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] truncate">{produkt.titel}</div>
         </div>
-        <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] truncate">{produkt.titel}</div>
+        
+        {/* ⚡ FIX: Das Audio-Element MUSS immer gerendert werden */}
+        <audio ref={audioRef} src={url || undefined} className="hidden" preload="metadata" />
+        
+        {/* Dynamisches KI-Label */}
+        {produkt.audio_hinweis && (
+          <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal border-t border-[var(--border)] pt-2 w-full">
+            {produkt.audio_hinweis}
+          </p>
+        )}
       </div>
-      
-      {/* ⚡ FIX: Das Audio-Element MUSS immer gerendert werden */}
-      <audio ref={audioRef} src={url || undefined} className="hidden" preload="metadata" />
-      
-      {/* Dynamisches KI-Label */}
-      {produkt.audio_hinweis && (
-        <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal border-t border-[var(--border)] pt-2 w-full">
-          {produkt.audio_hinweis}
-        </p>
-      )}
-    </div>
+
+      <DisclaimerModal 
+        isOpen={showDisclaimer} 
+        onAccepted={() => {
+          setShowDisclaimer(false);
+          togglePlay();
+        }} 
+      />
+
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
+    </>
   );
 }

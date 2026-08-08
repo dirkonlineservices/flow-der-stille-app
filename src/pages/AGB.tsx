@@ -67,9 +67,9 @@ export default function AGB() {
 
         <section>
           <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">7. Wichtiger Gesundheitshinweis und Haftungsausschluss</h2>
-          <p>7.1. Die vom Anbieter angebotenen Meditationen, Audio-Inhalte und Online-Coachings dienen ausschließlich der Persönlichkeitsentwicklung, Entspannung und der Förderung des inneren Friedens. Sie stellen keine medizinische, psychotherapeutische oder psychiatrische Behandlung oder Beratung dar und können eine solche nicht ersetzen.</p>
+          <p>7.1. Die vom Anbieter angebotenen Meditationen, Audio-Inhalte und Online-Coachings dienen ausschließlich der Persönlichkeitsentwicklung, Entspannung und der Förderung des inneren Friedens. Sie stellen keine therapeutische oder fachliche Behandlung oder Beratung dar und können eine solche nicht ersetzen.</p>
           <p className="mt-2">7.2. Voraussetzung für die Teilnahme und Nutzung: Der Kunde bestätigt mit dem Kauf bzw. der Inanspruchnahme der Leistungen, dass er körperlich und psychisch gesund ist und die Teilnahme an Coachings sowie die Nutzung von Meditationen auf eigene Verantwortung und eigenes Risiko erfolgen.</p>
-          <p className="mt-2">7.3. Personen, die sich in psychotherapeutischer oder psychiatrischer Behandlung befinden oder unter schweren psychischen Erkrankungen leiden, sollten vor der Nutzung der Angebote Rücksprache mit ihrem behandelnden Arzt oder Therapeuten halten.</p>
+          <p className="mt-2">7.3. Personen, die sich in psychotherapeutischer Behandlung befinden oder unter schweren gesundheitlichen Einschränkungen leiden, sollten vor der Nutzung der Angebote Rücksprache mit einem qualifizierten Fachberater halten.</p>
           <p className="mt-2">7.4. Der Anbieter haftet unbeschränkt für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit, die auf einer vorsätzlichen oder fahrlässigen Pflichtverletzung des Anbieters oder seiner Erfüllungsgehilfen beruhen. Für sonstige Schäden haftet der Anbieter nur bei Vorsatz und grober Fahrlässigkeit. Bei leicht fahrlässiger Verletzung wesentlicher Vertragspflichten (Kardinalpflichten) ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Im Übrigen ist die Haftung ausgeschlossen.</p>
         </section>
 

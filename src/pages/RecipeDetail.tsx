@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, Utensils, Coffee, Leaf, Droplets, Flame } from 'lucide
 import { allRecipes } from '../data/recipes';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/SEO';
+import { AuthLink } from '../components/CookieBanner';
 
 export default function RecipeDetail() {
   const { id } = useParams<{ id: string }>();
@@ -55,9 +56,9 @@ export default function RecipeDetail() {
             <p className="text-sm text-[var(--color-text-muted)] mb-6 max-w-sm">
               Dieses Rezept und viele weitere Ernährungstipps sind exklusiv für registrierte Mitglieder verfügbar.
             </p>
-            <Link to="/register" className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[var(--color-accent-hover)] transition-colors">
+            <AuthLink to="/register" className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[var(--color-accent-hover)] transition-colors">
               Jetzt kostenlos registrieren
-            </Link>
+            </AuthLink>
           </div>
         ) : (
           <div className="space-y-8">

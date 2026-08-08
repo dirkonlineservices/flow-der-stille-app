@@ -3,13 +3,14 @@ import { motion } from 'motion/react';
 import { Brain, Activity, Zap, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import SEO from '../components/SEO';
+import NewsletterBanner from '../components/NewsletterBanner';
 
 export default function Learn() {
   const { t } = useLanguage();
 
   return (
     <div className="space-y-12 max-w-3xl">
-      <SEO title="Leitfaden" description="Verstehen Sie das Nervensystem, Sympathikus und Parasympathikus." />
+      <SEO title="Leitfaden" description="Verstehe das Nervensystem, Sympathikus und Parasympathikus." />
       <header>
         <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">{t('learn.title')}</h1>
         <p className="text-[var(--color-text-muted)] text-lg">
@@ -58,6 +59,7 @@ export default function Learn() {
           />
         </div>
       </div>
+      <NewsletterBanner variant="in-content" />
     </div>
   );
 }

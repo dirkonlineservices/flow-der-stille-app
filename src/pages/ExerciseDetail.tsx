@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Timer, Play, Pause, X, Check, SkipForward, ArrowLeft as BackIcon } from 'lucide-react';
+import { ArrowLeft, Timer, Play, Pause, X, Check, SkipForward, ArrowLeft as BackIcon, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
 import { getSupabase } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
-import SingleAudioPlayer from '../components/SingleAudioPlayer';
+import { AudioPlayerButton } from '../components/AudioPlayerButton';
+import AuthRequiredModal from '../components/AuthRequiredModal';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -23,6 +24,7 @@ export default function ExerciseDetail() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [savingProgress, setSavingProgress] = useState(false);
   const [progressSaved, setProgressSaved] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const currentStepIndexRef = useRef(currentStepIndex);
@@ -63,11 +65,36 @@ export default function ExerciseDetail() {
     };
   }, [isActive, isPaused, showCelebration, exercise]);
 
+  const [audioHinweis, setAudioHinweis] = useState('');
+  const [audioPath, setAudioPath] = useState('');
+
+  useEffect(() => {
+    async function fetchAudioData() {
+        if (exercise?.audioId) {
+            const supabase = getSupabase();
+            const { data } = await supabase
+                .from('produkte')
+                .select('audio_hinweis, audio_path')
+                .eq('id', exercise.audioId)
+                .single();
+            if (data) {
+                setAudioHinweis(data.audio_hinweis || '');
+                setAudioPath(data.audio_path || '');
+            }
+        }
+    }
+    fetchAudioData();
+  }, [exercise?.audioId]);
+
   if (!exercise) {
     return <div className="p-8 text-center text-[var(--color-text-muted)]">{t('exercise.notfound')}</div>;
   }
 
   const handleStart = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setCurrentStepIndex(0);
     // Dynamic start duration
     const initialDuration = exercise.pattern ? exercise.pattern[0].duration : 15;
@@ -377,32 +404,76 @@ export default function ExerciseDetail() {
             ))}
           </div>
 
-          {/* Conditional Audio Player for PMR */}
-          {exercise.id === 'pmr' && (
-            <div className="mt-8">
-              <SingleAudioPlayer produktId="f18150c6-a6a8-4f6f-a0a2-ce0b8c7edd4a" />
+          {/* Audio Player for this exercise */}
+          {exercise.audioId && (
+            <div className="mt-8 space-y-4">
+              {!user && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-amber-900 dark:text-amber-200 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 shrink-0">
+                      <Lock size={22} />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-base mb-1">Kostenlose Registrierung für dieses Audio erforderlich</h4>
+                      <p className="text-xs sm:text-sm opacity-90 mb-4 leading-relaxed">
+                        Dieses geführte Audio (sowie alle Premium-Funktionen) steht nach einer kostenlosen und unverbindlichen Registrierung uneingeschränkt für dich bereit.
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <Link 
+                          to="/register" 
+                          className="px-4 py-2 bg-[var(--color-accent-primary)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                        >
+                          Jetzt kostenlos registrieren
+                        </Link>
+                        <Link 
+                          to="/login" 
+                          className="px-4 py-2 bg-white dark:bg-stone-800 text-[var(--color-text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--color-border-main)] hover:bg-stone-50 transition"
+                        >
+                          Anmelden
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <AudioPlayerButton 
+                produkt={{
+                  id: exercise.audioId,
+                  titel: t(exercise.translationKeyTitle),
+                  kategorie: t(exercise.translationKeyCategory),
+                  // Parse duration string like "1:49" or "5 min" to seconds
+                  dauer: (() => {
+                    const colonMatch = exercise.duration.match(/(\d+):(\d+)/);
+                    if (colonMatch) {
+                      return parseInt(colonMatch[1]) * 60 + parseInt(colonMatch[2]);
+                    }
+                    const minMatch = exercise.duration.match(/(\d+)\s*min/);
+                    if (minMatch) return parseInt(minMatch[1]) * 60;
+                    return parseInt(exercise.duration) || 0;
+                  })(),
+                  audio_hinweis: audioHinweis,
+                  audio_path: audioPath
+                }}
+                getUrl={async (p: any) => {
+                  if (p.audio_path && p.audio_path.startsWith('http')) {
+                    return p.audio_path;
+                  }
+                  const supabase = getSupabase();
+                  const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                  return data.publicUrl;
+                }}
+              />
             </div>
           )}
 
-          <div className="mt-12 p-6 bg-[var(--color-bg-body)] rounded-2xl flex items-center justify-between border border-[var(--color-border-main)]">
-            <div>
-              <h3 className="font-medium text-[var(--color-text-main)] mb-1">{t('exercise.ready')}</h3>
-              <p className="text-sm text-[var(--color-text-muted)] mb-2">{t('exercise.begin')}</p>
-              <p className="text-xs text-[var(--color-text-muted-light)] italic">
-                Dies ist ein Beispiel für den Ablauf, damit du weißt, wie die Übung funktioniert, bevor du sie eigenständig anwendest.
-              </p>
-            </div>
-            <button 
-              id="btn-play-exercise"
-              onClick={handleStart}
-              className="w-12 h-12 rounded-full bg-[var(--color-accent-primary)] text-white flex items-center justify-center hover:bg-[var(--color-accent-hover)] transition-all shadow-md active:scale-95"
-            >
-              <Play size={20} className="ml-1" />
-            </button>
-          </div>
-
         </div>
       </motion.div>
+
+      <AuthRequiredModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 }

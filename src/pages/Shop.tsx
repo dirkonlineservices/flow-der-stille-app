@@ -29,7 +29,7 @@ export default function Shop() {
           <Star className="text-amber-400" /> Kurse & Masterclass
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PRODUCTS.filter(p => p.category === 'course' || p.category === 'masterclass').map(product => (
+          {PRODUCTS.filter(p => (p.category as string) === 'course' || (p.category as string) === 'masterclass' || p.category === 'feature' || p.category === 'self_hypnosis').map(product => (
             <ProductCard 
               key={product.id} 
               product={product} 

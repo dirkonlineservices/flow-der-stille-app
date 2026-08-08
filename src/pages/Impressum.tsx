@@ -50,7 +50,7 @@ export default function Impressum() {
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
             Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
             <a href="https://ec.europa.eu/consumers/odr" className="text-[var(--color-accent-primary)] hover:underline ml-1" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr</a>.<br />
-            Unsere E-Mail-Adresse finden Sie oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+            Unsere E-Mail-Adresse findest du oben im Impressum. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
           </p>
         </section>
       </div>
