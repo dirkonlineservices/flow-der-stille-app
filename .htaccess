@@ -1,0 +1,30 @@
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # 1. Bilder & Fonts (Ändern sich selten -> 1 Jahr Cache)
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+
+  # 2. CSS & JavaScript (Vite nutzt Hashes -> 1 Monat Cache)
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+
+  # 3. HTML / React Einstiegspunkt (NIEMALS cachen, sonst sehen Nutzer keine Updates!)
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Fallback für moderne Browser (Cache-Control Header erzwingen)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|woff2|png|jpg|jpeg|gif|svg|webp)$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+  
+  # Sicherheits-Header (Bonus für SEO & Trust)
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
