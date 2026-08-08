@@ -129,7 +129,7 @@ export const FriendInviteWidget: React.FC = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       // Insert into Supabase friend_invites table
-      const { error: insertError } = await supabase
+      await supabase
         .from('friend_invites')
         .insert([
           {
@@ -141,18 +141,18 @@ export const FriendInviteWidget: React.FC = () => {
           }
         ]);
 
-      if (insertError) {
-        console.warn('Supabase insert warning:', insertError.message);
-      }
+      // Call Supabase Edge Function inviteUserByEmail
+      const { data: fnData, error: fnError } = await supabase.functions.invoke('inviteUserByEmail', {
+        body: {
+          email,
+          referrerName: inviterName,
+          inviteeName: recipientName
+        }
+      });
 
-      // Also call edge function if available
-      try {
-        await fetch('/functions/v1/invite-friend', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, inviterName, recipientName })
-        });
-      } catch {}
+      if (fnError) {
+        console.warn('Edge function inviteUserByEmail warning:', fnError);
+      }
 
       setStatus('success');
       setEmail('');
@@ -161,20 +161,19 @@ export const FriendInviteWidget: React.FC = () => {
       // Refresh list
       fetchData();
 
-      // Tracking Event for GTM
-      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      // Tracking Event for GA4 (Zwingend bei erfolgreichem Response)
+      if (typeof window !== 'undefined') {
+        (window as any).dataLayer = (window as any).dataLayer || [];
         (window as any).dataLayer.push({
-          event: 'referral_invite_sent',
-          method: 'email'
+          event: 'share',
+          method: 'email_invite',
+          content_type: 'app_invitation'
         });
       }
 
     } catch (err) {
       console.error('Invite error:', err);
-      setStatus('success'); // Fallback to success for user experience
-      setEmail('');
-      setRecipientName('');
-      fetchData();
+      setStatus('error');
     }
   };
 
