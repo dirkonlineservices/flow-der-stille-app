@@ -48,3 +48,18 @@ export const verifyGooglePlayPurchase = async ({
 
   return data;
 };
+
+export interface GooglePlayPurchase {
+  purchaseToken: string;
+  productId: string;
+  price: number;
+}
+
+export const handlePurchaseSuccess = async (purchase: GooglePlayPurchase, userId: string) => {
+  return await verifyGooglePlayPurchase({
+    purchaseToken: purchase.purchaseToken,
+    productId: purchase.productId,
+    userId: userId,
+    price: purchase.price
+  });
+};

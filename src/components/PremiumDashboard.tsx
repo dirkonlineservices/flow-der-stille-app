@@ -506,12 +506,11 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
 
         try {
-          await verifyGooglePlayPurchase({
+          await handlePurchaseSuccess({
             purchaseToken,
             productId: produkt.id,
-            userId: user.id,
             price: parseFloat(produkt.preis) || 0
-          });
+          }, user.id);
         } catch (vErr) {
           console.warn('Google Play verification notice:', vErr);
         }
