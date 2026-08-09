@@ -59,7 +59,13 @@ export default function Register() {
       });
 
       if (supabaseError) {
-        setError(supabaseError.message);
+        let msg = supabaseError.message;
+        if (msg.includes('Database error saving new user') || msg.includes('unexpected_failure')) {
+          msg = 'Fehler beim Anlegen des Benutzerkontos in der Datenbank (Postgres Trigger). Bitte führe das SQL-Skript im Supabase Dashboard aus.';
+        } else if (msg.includes('User already registered')) {
+          msg = 'Diese E-Mail-Adresse ist bereits registriert. Bitte melde dich an.';
+        }
+        setError(msg);
         // Tracking: Registrierungsfehler erfassen für Looker Studio
         dataLayer.push({
           event: 'registration_status',
