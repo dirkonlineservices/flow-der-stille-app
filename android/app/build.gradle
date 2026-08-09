@@ -8,9 +8,9 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         
-        // 👇 UPDATE: Frische Versionsnummer für Google Play 👇
-        versionCode 19
-        versionName "4.2.4"
+        // 👇 UPDATE: Frische Versionsnummer für Google Play Release 👇
+        versionCode 20
+        versionName "4.2.5"
         
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
