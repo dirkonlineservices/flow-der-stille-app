@@ -1,4 +1,5 @@
 import { getSupabase } from './supabaseClient';
+import { getPlayStoreProductId } from './billing';
 
 interface VerifyPurchaseParams {
   purchaseToken: string;
@@ -14,12 +15,13 @@ export const verifyGooglePlayPurchase = async ({
   price
 }: VerifyPurchaseParams) => {
   const supabase = getSupabase();
+  const playProductId = getPlayStoreProductId(productId);
 
   // 1. Edge Function aufrufen (verify-google-play-purchase)
   const { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
     body: {
       purchaseToken,
-      productId,
+      productId: playProductId,
       userId,
       packageName: 'app.flowderstille.de'
     }
