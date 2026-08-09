@@ -130,7 +130,7 @@ export const BillingService = {
     }
   },
 
-  startPurchase: (productId: string, onFailure?: (errorMsg: string) => void) => {
+  startPurchase: async (productId: string, onFailure?: (errorMsg: string) => void) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
       
@@ -160,33 +160,49 @@ export const BillingService = {
         }
       }
 
-      if (!product) {
-        // Fallback-Bestellversuch direkt mit der Play ID
-        try {
-          store.order(playId);
-          return;
-        } catch (errFallback) {
-          console.error("Direct order fallback failed:", errFallback);
+      // Versuche 1: offer.order() falls offer-Objekt in v13 vorhanden ist
+      if (product && product.offers && product.offers.length > 0) {
+        const offer = product.offers[0];
+        if (typeof offer.order === 'function') {
+          try {
+            const res = await offer.order();
+            if (res && res.error && onFailure) {
+              onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
+            }
+            return;
+          } catch (eOffer) {
+            console.warn("offer.order notice:", eOffer);
+          }
         }
-        if (onFailure) {
-          onFailure(`Produkt "${playId}" ist im Play Store noch nicht aktiv. Bitte in Google Play Console prüfen.`);
-        }
-        return;
       }
 
-      // v13 Syntax: Bevorzuge das erste Angebot (offer), ansonsten das Produktobjekt
-      const targetOffer = (product.offers && product.offers.length > 0) ? product.offers[0] : product;
-      const orderPromise = store.order(targetOffer);
-
-      if (orderPromise && typeof orderPromise.then === 'function') {
-        orderPromise.then((res: any) => {
-          if (res && res.error) {
-            if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
+      // Versuche 2: store.order(targetOffer) oder store.order(product)
+      const targetOffer = (product && product.offers && product.offers.length > 0) ? product.offers[0] : (product || playId);
+      
+      if (typeof store.order === 'function') {
+        try {
+          const res = await store.order(targetOffer);
+          if (res && res.error && onFailure) {
+            onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
           }
-        }).catch((err: any) => {
-          console.error("store.order catch:", err);
-          if (onFailure) onFailure(`Fehler beim Bezahlstart: ${err?.message || 'Unbekannt'}`);
-        });
+          return;
+        } catch (eOrder) {
+          console.warn("store.order(targetOffer) notice:", eOrder);
+          // Versuche 3: Direct String Fallback store.order(playId)
+          try {
+            const resStr = await store.order(playId);
+            if (resStr && resStr.error && onFailure) {
+              onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
+            }
+            return;
+          } catch (eStr) {
+            console.error("store.order(playId) fallback failed:", eStr);
+          }
+        }
+      }
+
+      if (onFailure) {
+        onFailure(`Google Play Bezahl-Widget für "${playId}" konnte nicht geöffnet werden.`);
       }
       
     } catch (error: any) {
