@@ -39,7 +39,7 @@ export const BillingService = {
       
       if (!CdvPurchase || !CdvPurchase.store) {
         console.warn("Cordova Purchase Plugin nicht gefunden.");
-        setTimeout(() => onReady(), 1000);
+        setTimeout(() => onReady(), 500);
         return;
       }
 
@@ -55,11 +55,15 @@ export const BillingService = {
       };
 
       // 1. Exakte Play Store Produkt-ID registrieren
-      store.register({
-        id: playId,
-        type: CdvPurchase.ProductType.NON_CONSUMABLE,
-        platform: CdvPurchase.Platform.GOOGLE_PLAY
-      });
+      try {
+        store.register({
+          id: playId,
+          type: CdvPurchase.ProductType.NON_CONSUMABLE,
+          platform: CdvPurchase.Platform.GOOGLE_PLAY
+        });
+      } catch (e) {
+        console.warn("Register notice:", e);
+      }
 
       // Falls DB-ID anders ist, auch als Fallback registrieren
       if (playId !== productId) {
@@ -95,21 +99,34 @@ export const BillingService = {
           onFailure("Kaufvorgang wurde abgebrochen.");
         })
         .error((error: any) => {
-          console.error("Billing Error:", error);
+          console.warn("Billing Notice:", error);
           safeOnReady();
         });
 
-      // 3. Safety Fallback Timeout (max. 3 Sek.)
+      // 3. Store initialisieren (Sichere v13 Syntax mit Fallback)
+      if (store.ready) {
+        safeOnReady();
+      } else {
+        try {
+          store.initialize([{ platform: CdvPurchase.Platform.GOOGLE_PLAY }]);
+        } catch (initErr) {
+          console.warn("Store initialize array notice:", initErr);
+          try {
+            store.initialize();
+          } catch (e2) {
+            console.warn("Store initialize fallback notice:", e2);
+          }
+        }
+      }
+
+      // 4. Safety Fallback Timeout (max. 1.5 Sek.)
       setTimeout(() => {
         safeOnReady();
-      }, 3000);
-
-      // 4. Store initialisieren
-      store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
+      }, 1500);
       
     } catch (error) {
-      console.error("Fataler Fehler in Billing init:", error);
-      onFailure("Bezahlsystem konnte nicht geladen werden.");
+      console.error("Fehler in Billing init:", error);
+      onReady();
     }
   },
 
@@ -144,9 +161,15 @@ export const BillingService = {
       }
 
       if (!product) {
-        console.error("Produkt im Store nicht gefunden:", playId);
+        // Fallback-Bestellversuch direkt mit der Play ID
+        try {
+          store.order(playId);
+          return;
+        } catch (errFallback) {
+          console.error("Direct order fallback failed:", errFallback);
+        }
         if (onFailure) {
-          onFailure(`Produkt "${playId}" ist im Play Store noch nicht auf Status Aktiv. Bitte in Google Play Console prüfen.`);
+          onFailure(`Produkt "${playId}" ist im Play Store noch nicht aktiv. Bitte in Google Play Console prüfen.`);
         }
         return;
       }
