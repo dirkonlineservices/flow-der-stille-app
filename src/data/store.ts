@@ -7,6 +7,7 @@ export interface Product {
   price: string;
   duration: string;
   category: 'meditation' | 'self_hypnosis' | 'feature';
+  audioHinweis?: string;
 }
 
 export const PRODUCTS: Product[] = [
@@ -18,7 +19,8 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '20 Minuten Audio',
-    category: 'meditation'
+    category: 'meditation',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
     id: 'fds_meditation_loslassen',
@@ -28,7 +30,8 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '25 Minuten Audio',
-    category: 'meditation'
+    category: 'meditation',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
     id: 'fds_herzkompass_meditation',
@@ -38,7 +41,8 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '20 Minuten Audio',
-    category: 'meditation'
+    category: 'meditation',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
     id: 'fds_hypnose_selbstbewusstsein',
@@ -48,7 +52,8 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '30 Minuten Audio',
-    category: 'self_hypnosis'
+    category: 'self_hypnosis',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
     id: 'fds_hypnose_fokus',
@@ -58,7 +63,8 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '25 Minuten Audio',
-    category: 'self_hypnosis'
+    category: 'self_hypnosis',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
     id: 'fds_hypnose_gesunde_ernaehrung',
@@ -68,6 +74,7 @@ export const PRODUCTS: Product[] = [
     priceNum: 1.99,
     price: '1,99 €',
     duration: '35 Minuten Audio',
-    category: 'self_hypnosis'
+    category: 'self_hypnosis',
+    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   }
 ];

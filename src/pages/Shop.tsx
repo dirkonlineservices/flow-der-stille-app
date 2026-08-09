@@ -75,7 +75,13 @@ function ProductCard({ product, isPurchased, onAddToCart }: { product: any, isPu
 
       <h3 className="text-xl font-serif text-[var(--color-text-main)] mb-2">{product.title}</h3>
       <p className="text-[var(--color-text-muted-light)] text-xs mb-4">{product.duration}</p>
-      <p className="text-[var(--color-text-muted)] text-sm mb-6 flex-1">{product.description}</p>
+      <p className="text-[var(--color-text-muted)] text-sm mb-4 flex-1">{product.description}</p>
+
+      {(product.audioHinweis || product.audio_hinweis) && (
+        <div className="mb-4 text-[10px] text-[var(--color-text-muted)] bg-[var(--color-bg-alt)] p-2.5 rounded-xl border border-[var(--color-border-main)] italic">
+          {product.audioHinweis || product.audio_hinweis}
+        </div>
+      )}
       
       {isPurchased ? (
          <button disabled className="w-full py-3 bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] font-medium rounded-xl border border-[var(--color-border-main)] cursor-not-allowed">
