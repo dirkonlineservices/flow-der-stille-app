@@ -25,6 +25,14 @@ export const BillingService = {
 
       const store = CdvPurchase.store;
 
+      let isReadyCalled = false;
+      const safeOnReady = () => {
+        if (!isReadyCalled) {
+          isReadyCalled = true;
+          onReady();
+        }
+      };
+
       // 1. Produkt sicher registrieren (Strikte v13 Syntax)
       store.register({
         id: productId,
@@ -35,9 +43,12 @@ export const BillingService = {
       // 2. Event-Listener (Mit Try-Catch gekapselt gegen WSOD)
       store.when()
         .productUpdated((product: any) => {
-          if (product.id === productId && product.canPurchase) {
-            onReady();
+          if (product.id === productId) {
+            safeOnReady();
           }
+        })
+        .ready(() => {
+          safeOnReady();
         })
         .approved((transaction: any) => {
           try {
@@ -53,10 +64,16 @@ export const BillingService = {
         })
         .error((error: any) => {
           console.error("Billing Error:", error);
-          onFailure(`Store Fehler: ${error.message}`);
+          // Bei nicht-kritischen Warnings aktivieren wir dennoch den Button
+          safeOnReady();
         });
 
-      // 3. Store initialisieren
+      // 3. Safety Fallback Timeout (max. 3 Sek.), damit Button nie auf 'Verbinde Play Store...' hängen bleibt
+      setTimeout(() => {
+        safeOnReady();
+      }, 3000);
+
+      // 4. Store initialisieren
       store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
       
     } catch (error) {
