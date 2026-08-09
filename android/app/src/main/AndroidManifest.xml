@@ -28,6 +28,21 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Custom App Scheme Deep Link (app.flowderstille.de://) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="app.flowderstille.de" />
+            </intent-filter>
+            <!-- Web App Link Auto-Redirect to Native App -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/auth/callback" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/newsletter-bestaetigt" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -112,6 +112,15 @@ export default function AuthCallback() {
         <div className="w-full bg-[var(--bg-alt)] h-1 rounded-full overflow-hidden">
           <div className="bg-[var(--accent)] h-full transition-all duration-1000 animate-pulse w-3/4 mx-auto rounded-full" />
         </div>
+
+        {isSuccess && (
+          <a
+            href="app.flowderstille.de://auth/callback"
+            className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity mt-2"
+          >
+            📱 Zurück in die Flow der Stille App wechseln
+          </a>
+        )}
       </div>
     </div>
   );

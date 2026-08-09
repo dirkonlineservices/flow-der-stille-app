@@ -46,14 +46,25 @@ export default function Register() {
     try {
       const supabase = getSupabase();
       const normalizedEmail = normalizeEmail(email);
+      const isNative = typeof window !== 'undefined' && (
+        Boolean((window as any).Capacitor?.isNativePlatform?.()) ||
+        typeof (window as any).CdvPurchase !== 'undefined'
+      );
+
+      const emailRedirectTo = isNative
+        ? 'app.flowderstille.de://auth/callback'
+        : `${window.location.origin}/auth/callback`;
+
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password: password,
         options: {
+          emailRedirectTo: emailRedirectTo,
           data: {
             first_name: firstName,
             last_name: lastName,
             newsletter_optin: newsletter,
+            source: isNative ? 'app' : 'web'
           }
         }
       });
@@ -88,14 +99,18 @@ export default function Register() {
             email: normalizedEmail,
             status: 'pending_doi',
             confirm_token: confirmToken,
-            source: 'registration_form',
+            source: isNative ? 'app_registration' : 'registration_form',
             updated_at: new Date().toISOString()
           });
 
         if (!dbError) {
           // B: Edge Function für DOI Mail aufrufen
           const { error: edgeError } = await supabase.functions.invoke('send-double-opt-in-email', {
-            body: { email: normalizedEmail, confirm_token: confirmToken }
+            body: { 
+              email: normalizedEmail, 
+              confirm_token: confirmToken,
+              source: isNative ? 'app' : 'web'
+            }
           });
 
           if (edgeError) {

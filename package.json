@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@awesome-cordova-plugins/in-app-purchase-2": "^9.2.0",
+    "@capacitor/app": "^8.1.1",
     "@google/genai": "latest",
     "@google/generative-ai": "^0.24.1",
     "@paypal/react-paypal-js": "^10.0.0",

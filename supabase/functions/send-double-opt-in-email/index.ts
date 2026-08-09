@@ -15,7 +15,7 @@ serve(async (req) => {
     const bodyText = await req.text();
     if (!bodyText) throw new Error("Request Body leer");
     
-    const { email, confirm_token } = JSON.parse(bodyText);
+    const { email, confirm_token, source = 'web' } = JSON.parse(bodyText);
 
     if (!email || !confirm_token) {
       throw new Error("Daten unvollständig");
@@ -24,7 +24,10 @@ serve(async (req) => {
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) throw new Error("API Key fehlt");
 
-    const confirmUrl = `https://flow-der-stille.de/newsletter-bestaetigt?email=${encodeURIComponent(email)}&token=${confirm_token}`;
+    const isApp = source === 'app';
+    const confirmUrl = isApp
+      ? `app.flowderstille.de://newsletter-bestaetigt?email=${encodeURIComponent(email)}&token=${confirm_token}&source=app`
+      : `https://flow-der-stille.de/newsletter-bestaetigt?email=${encodeURIComponent(email)}&token=${confirm_token}`;
 
     const emailHtml = `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f5f5f0; padding: 40px 20px; color: #3D3B35;">
