@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService } from '../lib/billing';
+import { verifyGooglePlayPurchase } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 
 export default function PremiumShopDashboard() {
@@ -500,33 +501,28 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     BillingService.init({
       productId: produkt.id, 
       onReady: () => setStoreReady(true),
-      onSuccess: async () => {
+      onSuccess: async (transaction?: any) => {
         setIsProcessing(false);
-        
-        // UX: Tracking Event für GA4
-        if (typeof window !== 'undefined' && (window as any).dataLayer) {
-          (window as any).dataLayer.push({
-            event: 'purchase',
-            ecommerce: {
-              currency: 'EUR',
-              value: parseFloat(produkt.preis),
-              items: [{
-                item_id: produkt.id,
-                item_name: produkt.titel,
-                price: parseFloat(produkt.preis)
-              }]
-            }
+        const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
+
+        try {
+          await verifyGooglePlayPurchase({
+            purchaseToken,
+            productId: produkt.id,
+            userId: user.id,
+            price: parseFloat(produkt.preis) || 0
           });
+        } catch (vErr) {
+          console.warn('Google Play verification notice:', vErr);
         }
 
         const supabase = getSupabase();
-        const orderId = 'GPLAY_' + Date.now();
         await supabase.from('kaeufe').upsert(
           {
             user_id: user.id,
             email: user.email || '',
             produkt_id: produkt.id,
-            paypal_order_id: orderId,
+            paypal_order_id: purchaseToken,
             preis: parseFloat(produkt.preis),
             waehrung: 'EUR',
             status: 'completed',

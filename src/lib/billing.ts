@@ -1,7 +1,7 @@
 interface BillingInitProps {
   productId: string;
   onReady: () => void;
-  onSuccess: () => void;
+  onSuccess: (transaction?: any) => void;
   onFailure: (errorMsg: string) => void;
 }
 
@@ -53,7 +53,7 @@ export const BillingService = {
         .approved((transaction: any) => {
           try {
             transaction.finish();
-            onSuccess();
+            onSuccess(transaction);
           } catch (e) {
             console.error("Fehler beim Abschließen der Transaktion", e);
             onFailure("Fehler beim Bestätigen des Kaufs.");
