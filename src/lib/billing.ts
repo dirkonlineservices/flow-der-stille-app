@@ -65,7 +65,6 @@ export const BillingService = {
         console.warn("Register notice:", e);
       }
 
-      // Falls DB-ID anders ist, auch als Fallback registrieren
       if (playId !== productId) {
         try {
           store.register({
@@ -76,35 +75,46 @@ export const BillingService = {
         } catch (e) {}
       }
 
-      // 2. Event-Listener
-      store.when()
-        .productUpdated((product: any) => {
-          if (product.id === playId || product.id === productId) {
+      // 2. Unabhängige Event-Listener (v13 sichere Syntax ohne Method Chaining)
+      try {
+        if (store.when) {
+          store.when().productUpdated((product: any) => {
+            if (product.id === playId || product.id === productId) {
+              safeOnReady();
+            }
+          });
+
+          store.when().approved((transaction: any) => {
+            try {
+              transaction.finish();
+              onSuccess(transaction);
+            } catch (e) {
+              console.error("Fehler beim Abschließen der Transaktion", e);
+              onFailure("Fehler beim Bestätigen des Kaufs.");
+            }
+          });
+
+          store.when().cancelled(() => {
+            onFailure("Kaufvorgang wurde abgebrochen.");
+          });
+
+          store.when().error((error: any) => {
+            console.warn("Billing Notice:", error);
             safeOnReady();
-          }
-        })
-        .ready(() => {
-          safeOnReady();
-        })
-        .approved((transaction: any) => {
-          try {
-            transaction.finish();
-            onSuccess(transaction);
-          } catch (e) {
-            console.error("Fehler beim Abschließen der Transaktion", e);
-            onFailure("Fehler beim Bestätigen des Kaufs.");
-          }
-        })
-        .cancelled(() => {
-          onFailure("Kaufvorgang wurde abgebrochen.");
-        })
-        .error((error: any) => {
-          console.warn("Billing Notice:", error);
-          safeOnReady();
-        });
+          });
+        }
+      } catch (evtErr) {
+        console.warn("Listener registration notice:", evtErr);
+      }
+
+      if (typeof store.ready === 'function') {
+        try {
+          store.ready(() => safeOnReady());
+        } catch (e) {}
+      }
 
       // 3. Store initialisieren (Sichere v13 Syntax mit Fallback)
-      if (store.ready) {
+      if (store.ready === true) {
         safeOnReady();
       } else {
         try {
@@ -119,10 +129,10 @@ export const BillingService = {
         }
       }
 
-      // 4. Safety Fallback Timeout (max. 1.5 Sek.)
+      // 4. Safety Fallback Timeout (max. 1 Sek.)
       setTimeout(() => {
         safeOnReady();
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
       console.error("Fehler in Billing init:", error);
