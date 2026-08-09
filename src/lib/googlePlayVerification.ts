@@ -21,7 +21,7 @@ export const verifyGooglePlayPurchase = async ({
       purchaseToken,
       productId,
       userId,
-      packageName: 'de.flowderstille.app'
+      packageName: 'app.flowderstille.de'
     }
   });
 

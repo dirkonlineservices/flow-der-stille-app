@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { purchaseToken, productId, userId, packageName = 'de.flowderstille.app' } = await req.json();
+    const { purchaseToken, productId, userId, packageName = 'app.flowderstille.de' } = await req.json();
 
     if (!purchaseToken || !productId || !userId) {
       throw new Error('Fehlende Parameter: purchaseToken, productId oder userId erforderlich.');
