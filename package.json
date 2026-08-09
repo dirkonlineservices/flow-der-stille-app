@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=server.js",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --target=node18 --format=cjs --packages=external --sourcemap --outfile=server.js",
     "start": "node server.js",
     "preview": "vite preview",
     "clean": "rm -rf dist && rm -f server.js server.js.map",
@@ -48,7 +48,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",

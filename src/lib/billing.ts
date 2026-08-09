@@ -82,30 +82,62 @@ export const BillingService = {
     }
   },
 
-  startPurchase: (productId: string) => {
+  startPurchase: (productId: string, onFailure?: (errorMsg: string) => void) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
       
       if (!CdvPurchase || !CdvPurchase.store) {
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('mock_purchase_failed'));
-        }, 1500);
+        if (onFailure) onFailure("Google Play Store Bezahl-Plugin auf diesem Gerät nicht verfügbar.");
         return;
       }
 
       const store = CdvPurchase.store;
-      const product = store.get(productId, CdvPurchase.Platform.GOOGLE_PLAY);
+      const playProductId = productId.replace(/&/g, '_').replace(/__/g, '_');
+
+      let product = store.get(productId, CdvPurchase.Platform.GOOGLE_PLAY)
+                 || store.get(productId)
+                 || store.get(playProductId, CdvPurchase.Platform.GOOGLE_PLAY)
+                 || store.get(playProductId);
 
       if (!product) {
-        console.error("Produkt nicht gefunden:", productId);
+        try {
+          store.register({
+            id: productId,
+            type: CdvPurchase.ProductType.NON_CONSUMABLE,
+            platform: CdvPurchase.Platform.GOOGLE_PLAY
+          });
+          product = store.get(productId) || store.get(playProductId);
+        } catch (regErr) {
+          console.warn("Auto-register fallback notice:", regErr);
+        }
+      }
+
+      if (!product) {
+        console.error("Produkt im Store nicht gefunden:", productId);
+        if (onFailure) {
+          onFailure(`Produkt "${productId}" ist im Play Store noch nicht auf Status Aktiv. Bitte in Google Play Console prüfen.`);
+        }
         return;
       }
 
-      // Natives Google Play Bezahlfenster aufrufen
-      store.order(product);
+      // v13 Syntax: Bevorzuge das erste Angebot (offer), ansonsten das Produktobjekt
+      const targetOffer = (product.offers && product.offers.length > 0) ? product.offers[0] : product;
+      const orderPromise = store.order(targetOffer);
+
+      if (orderPromise && typeof orderPromise.then === 'function') {
+        orderPromise.then((res: any) => {
+          if (res && res.error) {
+            if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
+          }
+        }).catch((err: any) => {
+          console.error("store.order catch:", err);
+          if (onFailure) onFailure(`Fehler beim Bezahlstart: ${err?.message || 'Unbekannt'}`);
+        });
+      }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fataler Fehler bei startPurchase:", error);
+      if (onFailure) onFailure(`Bezahlfehler: ${error?.message || 'Unerwarteter Fehler'}`);
     }
   }
 };

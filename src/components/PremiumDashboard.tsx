@@ -546,7 +546,10 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const handlePurchase = () => {
     setError(null);
     setIsProcessing(true);
-    BillingService.startPurchase(produkt.id); 
+    BillingService.startPurchase(produkt.id, (msg) => {
+      setIsProcessing(false);
+      setError(msg);
+    }); 
   };
 
   return (

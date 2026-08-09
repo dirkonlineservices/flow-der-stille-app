@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BillingService } from '../lib/billing';
 
 // 📊 Typsicherer DataLayer-Helper für sauberes GA4/GTM-Tracking
 const pushToDataLayer = (eventName: string, payload: any = {}) => {
@@ -59,41 +60,26 @@ export const GooglePlayPaywall: React.FC<GooglePlayPaywallProps> = ({
     });
 
     try {
-      console.log(`Initiiere nativen Google Play Kauf für ID: ${productId}`);
-      
-      /* 
-        🔌 HIER KOMMT DER NATIVE CAPACITOR CALL HIN:
-        const purchase = await CapacitorInAppPurchase.purchase({ id: productId });
-      */
-      
-      // Simulierter API-Call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const purchaseSuccess = true; 
+      BillingService.init({
+        productId,
+        onReady: () => {},
+        onSuccess: () => {
+          setIsProcessing(false);
+          onSuccess();
+        },
+        onFailure: (msg) => {
+          setIsProcessing(false);
+          setErrorMsg(msg);
+        }
+      });
 
-      if (purchaseSuccess) {
-        // 📊 Conversion: Kauf erfolgreich abgeschlossen
-        pushToDataLayer('purchase', {
-          ecommerce: {
-            transaction_id: `gplay_${Date.now()}`,
-            value: price,
-            currency: 'EUR',
-            items: [{
-              item_id: productId,
-              item_name: title,
-              price: price,
-              quantity: 1
-            }]
-          }
-        });
-        
-        onSuccess();
-      } else {
-        throw new Error("Transaktion von Google Play abgelehnt.");
-      }
+      BillingService.startPurchase(productId, (msg) => {
+        setIsProcessing(false);
+        setErrorMsg(msg);
+      });
     } catch (error: any) {
       console.error('Google Play Checkout Error:', error);
       setErrorMsg(error.message || "Es gab ein Problem bei der Verarbeitung.");
-    } finally {
       setIsProcessing(false);
     }
   };
