@@ -550,13 +550,23 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     });
   }, [produkt.id, user]);
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     setError(null);
     setIsProcessing(true);
-    BillingService.startPurchase(produkt.id, (msg) => {
+
+    try {
+      await BillingService.startPurchase(produkt.id, (msg) => {
+        setIsProcessing(false);
+        setError(msg);
+      });
+    } catch (err: any) {
       setIsProcessing(false);
-      setError(msg);
-    }); 
+      setError(err?.message || 'Bezahlvorgang konnte nicht gestartet werden.');
+    } finally {
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 3500);
+    }
   };
 
   return (

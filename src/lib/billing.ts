@@ -75,61 +75,56 @@ export const BillingService = {
         } catch (e) {}
       }
 
-      // 2. Unabhängige Event-Listener (v13 sichere Syntax ohne Method Chaining)
-      try {
-        if (store.when) {
-          store.when().productUpdated((product: any) => {
-            if (product.id === playId || product.id === productId) {
-              safeOnReady();
-            }
-          });
-
-          store.when().approved((transaction: any) => {
-            try {
-              transaction.finish();
-              onSuccess(transaction);
-            } catch (e) {
-              console.error("Fehler beim Abschließen der Transaktion", e);
-              onFailure("Fehler beim Bestätigen des Kaufs.");
-            }
-          });
-
-          store.when().cancelled(() => {
-            onFailure("Kaufvorgang wurde abgebrochen.");
-          });
-
-          store.when().error((error: any) => {
-            console.warn("Billing Notice:", error);
-            safeOnReady();
-          });
+      // 2. Unabhängige Event-Listener (v13 strukturell aufgetrennt ohne Method Chaining)
+      store.when().productUpdated((product: any) => {
+        if (product.id === playId || product.id === productId) {
+          safeOnReady();
         }
-      } catch (evtErr) {
-        console.warn("Listener registration notice:", evtErr);
-      }
+      });
 
+      store.when().approved((transaction: any) => {
+        try {
+          transaction.finish();
+          onSuccess(transaction);
+        } catch (e) {
+          console.error("Fehler beim Abschließen der Transaktion", e);
+          onFailure("Fehler beim Bestätigen des Kaufs.");
+        }
+      });
+
+      store.when().cancelled(() => {
+        onFailure("Kaufvorgang wurde abgebrochen.");
+      });
+
+      store.when().error((error: any) => {
+        console.warn("Billing Notice:", error);
+        safeOnReady();
+      });
+
+      // 3. store.ready() als eigenständiger Aufruf
       if (typeof store.ready === 'function') {
         try {
-          store.ready(() => safeOnReady());
-        } catch (e) {}
-      }
-
-      // 3. Store initialisieren (Sichere v13 Syntax mit Fallback)
-      if (store.ready === true) {
-        safeOnReady();
-      } else {
-        try {
-          store.initialize([{ platform: CdvPurchase.Platform.GOOGLE_PLAY }]);
-        } catch (initErr) {
-          console.warn("Store initialize array notice:", initErr);
-          try {
-            store.initialize();
-          } catch (e2) {
-            console.warn("Store initialize fallback notice:", e2);
-          }
+          store.ready(() => {
+            safeOnReady();
+          });
+        } catch (e) {
+          safeOnReady();
         }
       }
 
-      // 4. Safety Fallback Timeout (max. 1 Sek.)
+      // 4. store.initialize() als eigenständiger Aufruf
+      try {
+        store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
+      } catch (initErr) {
+        console.warn("Store initialize notice:", initErr);
+        try {
+          store.initialize();
+        } catch (e2) {
+          console.warn("Store initialize fallback notice:", e2);
+        }
+      }
+
+      // 5. Safety Fallback Timeout (max. 1 Sek.), damit UI nie hängen bleibt
       setTimeout(() => {
         safeOnReady();
       }, 1000);
@@ -147,6 +142,22 @@ export const BillingService = {
       if (!CdvPurchase || !CdvPurchase.store) {
         if (onFailure) onFailure("Google Play Store Bezahl-Plugin auf diesem Gerät nicht verfügbar.");
         return;
+      }
+
+      // 📊 GA4 DataLayer Event (begin_checkout) vor Auslösen des Bezahlfensters
+      if (typeof window !== 'undefined') {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({
+          event: 'begin_checkout',
+          ecommerce: {
+            items: [{
+              item_name: 'Premium Freischaltung',
+              item_category: 'In App Kauf',
+              price: 1.99,
+              currency: 'EUR'
+            }]
+          }
+        });
       }
 
       const store = CdvPurchase.store;
