@@ -38,6 +38,7 @@ export default function Home() {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
+  const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.() || (window as any).CdvPurchase);
 
   // Calculate daily wisdom index
   const dayOfYear = Math.floor((Date.now() - Number(new Date(new Date().getFullYear(), 0, 0))) / 86400000);
@@ -277,15 +278,17 @@ export default function Home() {
         </section>
 
         <section className="mt-8 mb-4 text-center flex flex-wrap justify-center items-center gap-4">
-          <a 
-            href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
-          >
-            <GooglePlayIcon className="w-5 h-5 shrink-0" />
-            <span>JETZT BEI Google Play</span>
-          </a>
+          {!isNativeApp && (
+            <a 
+              href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
+            >
+              <GooglePlayIcon className="w-5 h-5 shrink-0" />
+              <span>JETZT BEI Google Play</span>
+            </a>
+          )}
 
           <a 
             href="https://t.me/+figVxVO_tkw4MGJi" 
