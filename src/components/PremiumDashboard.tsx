@@ -519,6 +519,26 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   })();
 
   useEffect(() => {
+    // 3. Proaktiver Ownership-Check: DataLayer Push & Asynchroner Supabase Sync falls Order ID im Backend fehlte
+    try {
+      const CdvPurchase = (window as any).CdvPurchase;
+      if (CdvPurchase && CdvPurchase.store) {
+        const playId = getPlayStoreProductId(produkt.id);
+        const p = CdvPurchase.store.get(playId) || CdvPurchase.store.get(produkt.id);
+        if (p?.owned === true) {
+          pushToDataLayer('purchase_restored', { item_id: p.id || produkt.id });
+          const purchaseToken = p.transaction?.purchaseToken || p.transaction?.id || ('RESTORED_' + Date.now());
+          handlePurchaseSuccess({
+            purchaseToken,
+            productId: produkt.id,
+            price: parseFloat(produkt.preis) || 1.99
+          }, user.id).then(() => {
+            onSuccess();
+          }).catch(() => {});
+        }
+      }
+    } catch (e) {}
+
     BillingService.init({
       productId: produkt.id, 
       onReady: () => setStoreReady(true),
@@ -543,6 +563,11 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       onFailure: (msg) => {
         setIsProcessing(false);
         setError(msg);
+        if (msg && (msg.includes("Kauf gefunden") || msg.includes("synchronisiert"))) {
+          setTimeout(() => {
+            onSuccess();
+          }, 1500);
+        }
       }
     });
   }, [produkt.id, user]);
@@ -577,10 +602,16 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
   };
 
+  const isInfoMsg = error && (error.includes("Kauf gefunden") || error.includes("synchronisiert"));
+
   return (
     <div className="w-full flex flex-col items-center">
       {error && (
-        <div className="w-full text-xs text-[#ef4444] bg-[#fef2f2] border border-[#fecaca] rounded-xl p-2 mb-3 font-medium text-center">
+        <div className={`w-full text-xs rounded-xl p-2.5 mb-3 font-medium text-center border ${
+          isInfoMsg 
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800' 
+            : 'bg-[#fef2f2] text-[#ef4444] border-[#fecaca]'
+        }`}>
           {error}
         </div>
       )}

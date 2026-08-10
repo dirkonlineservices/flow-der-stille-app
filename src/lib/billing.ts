@@ -99,11 +99,14 @@ export const BillingService = {
 
       // 2. Striktes Decoupling der Event-Listener (OHNE Method Chaining)
       
-      // a) Produkt-Updates
+      // a) Produkt-Updates & Proaktiver Ownership Check
       try {
         store.when().productUpdated((product: any) => {
           if (product.id === playId || product.id === productId) {
             safeOnReady();
+            if (product.owned === true) {
+              pushToDataLayer('purchase_restored', { item_id: product.id });
+            }
           }
         });
       } catch (e) {
@@ -161,13 +164,45 @@ export const BillingService = {
         console.warn("approved listener notice:", e);
       }
 
-      // c) Globales Fehler-Handling (store.error)
+      // c) Globales Fehler-Handling (store.error) - Sauberes Formatiertes Logging & Graceful ITEM_ALREADY_OWNED
       try {
         store.error((error: any) => {
-          console.error("Billing Error: ", error);
-          pushToDataLayer('purchase_failed', { error_message: error?.message || 'Billing Error' });
-          onFailure(error?.message || "Kaufvorgang konnte nicht abgeschlossen werden.");
+          let errJson = "";
+          try { errJson = JSON.stringify(error); } catch (e) { errJson = String(error); }
+          
+          // 1. Error-Logging lesbar machen (ohne [object Object])
+          console.error("Billing Error:", errJson, error?.message, error?.code);
+
+          const errorMsg = error?.message || (typeof error === 'string' ? error : errJson);
+          const isAlreadyOwned = (error?.code === 6) || 
+                                (errorMsg && (
+                                  errorMsg.includes("ITEM_ALREADY_OWNED") || 
+                                  errorMsg.includes("already owned") || 
+                                  errorMsg.includes("bereits gekauft") ||
+                                  errorMsg.includes("Already Owned")
+                                ));
+
+          // 2. Infinite Error Loop verhindern: Spinner sofort killen
           safeOnReady();
+
+          // 4. Graceful Error Handling für "Already Owned" (Code 6)
+          if (isAlreadyOwned) {
+            console.log("Graceful Handling für ITEM_ALREADY_OWNED getriggert.");
+            pushToDataLayer('purchase_restored', { item_id: playId });
+            onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
+
+            // Triggere transaction.finish() für das Produkt, um den Google Cache zu leeren
+            try {
+              const p = store.get(playId) || store.get(productId);
+              if (p && p.transaction && typeof p.transaction.finish === 'function') {
+                p.transaction.finish();
+              }
+            } catch (fErr) {}
+            return;
+          }
+
+          pushToDataLayer('purchase_failed', { error_message: errorMsg || 'Billing Error' });
+          onFailure(errorMsg || "Kaufvorgang konnte nicht abgeschlossen werden.");
         });
       } catch (e) {
         console.warn("store.error listener notice:", e);
@@ -256,8 +291,14 @@ export const BillingService = {
           try {
             const res = await offer.order();
             if (res && res.error) {
-              pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
-              if (onFailure) onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
+              const isOwned = res.error.code === 6 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
+              if (isOwned) {
+                pushToDataLayer('purchase_restored', { item_id: playId });
+                if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
+              } else {
+                pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
+                if (onFailure) onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
+              }
             }
             return;
           } catch (eOffer) {
@@ -273,18 +314,30 @@ export const BillingService = {
         try {
           const res = await store.order(targetOffer);
           if (res && res.error) {
-            pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
-            if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
+            const isOwned = res.error.code === 6 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
+            if (isOwned) {
+              pushToDataLayer('purchase_restored', { item_id: playId });
+              if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
+            } else {
+              pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
+              if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
+            }
           }
           return;
-        } catch (eOrder) {
+        } catch (eOrder: any) {
           console.warn("store.order(targetOffer) notice:", eOrder);
           // Versuche 3: Direct String Fallback store.order(playId)
           try {
             const resStr = await store.order(playId);
             if (resStr && resStr.error) {
-              pushToDataLayer('purchase_failed', { error_message: resStr.error.message || 'Kauf abgebrochen' });
-              if (onFailure) onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
+              const isOwned = resStr.error.code === 6 || String(resStr.error.message).includes("ITEM_ALREADY_OWNED");
+              if (isOwned) {
+                pushToDataLayer('purchase_restored', { item_id: playId });
+                if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
+              } else {
+                pushToDataLayer('purchase_failed', { error_message: resStr.error.message || 'Kauf abgebrochen' });
+                if (onFailure) onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
+              }
             }
             return;
           } catch (eStr) {
