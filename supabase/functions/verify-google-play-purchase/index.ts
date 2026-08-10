@@ -1,4 +1,4 @@
-// Version: 1.0.6 - Return HTTP 200 for clean JSON error responses & prevent non-2xx SDK exceptions
+// Version: 1.0.7 - Dual DB & Play ID mapping for bulletproof kaeufe table insertion
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -10,6 +10,35 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
+// 🗺️ Exakte Zuordnung der Produkt-IDs
+const PLAY_TO_DB_MAP: Record<string, string> = {
+  'fds_hypnose_selbstbewusstsein': 'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen',
+  'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
+  'fds_meditation_loslassen': 'meditation_loslassen',
+  'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
+  'fds_hypnose_fokus': 'selbsthypnose_fokus_konzentration',
+  'fds_herzkompass_meditation': 'meditation_herzkompass',
+  'fds_meditation_inneres_kind': 'meditation_inneres_kind',
+  'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
+  'fds_pmr_basis': 'pmr_basis',
+  'fds_gefuehrte_atemuebung': 'gefuehrte_atemuebung'
+};
+
+const DB_TO_PLAY_MAP: Record<string, string> = {
+  'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
+  'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
+  'meditation_zur_herzoeffnung': 'fds_herzoeffnung_meditation',
+  'meditation_loslassen': 'fds_meditation_loslassen',
+  'selbsthypnose_ernaehrung': 'fds_hypnose_gesunde_ernaehrung',
+  'selbsthypnose_fokus&konzentration': 'fds_hypnose_fokus',
+  'selbsthypnose_fokus_konzentration': 'fds_hypnose_fokus',
+  'meditation_herzkompass': 'fds_herzkompass_meditation',
+  'meditation_inneres_kind': 'fds_meditation_inneres_kind',
+  'meditation_innere_ruhe': 'fds_meditation_innere_ruhe',
+  'pmr_basis': 'fds_pmr_basis',
+  'gefuehrte_atemuebung': 'fds_gefuehrte_atemuebung'
+};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -24,6 +53,10 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Ermittle sowohl DB-ID als auch Play Store ID
+    const dbProductId = PLAY_TO_DB_MAP[productId] || productId;
+    const playProductId = DB_TO_PLAY_MAP[productId] || productId;
 
     // 1. Google API Authentifizierung
     const rawCredentials = Deno.env.get('GOOGLE_SERVICE_ACCOUNT') || Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT') || '{}';
@@ -48,7 +81,7 @@ serve(async (req) => {
         // 2. Kauf bei Google validieren
         const purchase = await androidpublisher.purchases.products.get({
           packageName: 'app.flowderstille.de',
-          productId: productId,
+          productId: playProductId,
           token: purchaseToken,
         })
 
@@ -63,7 +96,7 @@ serve(async (req) => {
         if (!isRefunded && purchase.data.acknowledgementState === 0) {
           await androidpublisher.purchases.products.acknowledge({
             packageName: 'app.flowderstille.de',
-            productId: productId,
+            productId: playProductId,
             token: purchaseToken,
             requestBody: { developerPayload: userId }
           });
@@ -82,7 +115,7 @@ serve(async (req) => {
         .from('kaeufe')
         .delete()
         .eq('user_id', userId)
-        .eq('produkt_id', productId);
+        .in('produkt_id', [dbProductId, playProductId, productId]);
 
       return new Response(JSON.stringify({ 
         success: false, 
@@ -104,7 +137,7 @@ serve(async (req) => {
         .from('user_purchases')
         .upsert({
           user_id: userId,
-          product_id: productId,
+          product_id: dbProductId,
           order_id: orderId,
           purchase_token: purchaseToken,
           status: 'active'
@@ -113,24 +146,42 @@ serve(async (req) => {
       console.warn("Notice user_purchases:", e1);
     }
 
-    const dbKey = `${orderId}_${productId}`;
-    const { error: dbError } = await supabase
+    // Speichere primär mit DB-ID in public.kaeufe
+    const dbKey1 = `${orderId}_${dbProductId}`;
+    const { error: dbError1 } = await supabase
       .from('kaeufe')
       .upsert({
         user_id: userId,
-        produkt_id: productId,
+        produkt_id: dbProductId,
         betrag: price,
         waehrung: 'EUR',
         status: 'completed',
         zahlungsmethode: 'google_play',
-        paypal_order_id: dbKey,
+        paypal_order_id: dbKey1,
         transaktions_id: purchaseToken,
         created_at: new Date().toISOString()
       }, { onConflict: 'paypal_order_id' });
 
-    if (dbError) {
-      console.error("Datenbank Fehler bei kaeufe:", dbError);
-      throw new Error("Kauf konnte nicht in Supabase gesichert werden");
+    if (dbError1) {
+      console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
+    }
+
+    // Speichere sekundär mit Play Store ID falls unterschiedlich
+    if (playProductId !== dbProductId) {
+      const dbKey2 = `${orderId}_${playProductId}`;
+      await supabase
+        .from('kaeufe')
+        .upsert({
+          user_id: userId,
+          produkt_id: playProductId,
+          betrag: price,
+          waehrung: 'EUR',
+          status: 'completed',
+          zahlungsmethode: 'google_play',
+          paypal_order_id: dbKey2,
+          transaktions_id: purchaseToken,
+          created_at: new Date().toISOString()
+        }, { onConflict: 'paypal_order_id' });
     }
 
     // Profil-Status & Rolle auf 'kunde' setzen (identisch mit PayPal)

@@ -586,10 +586,10 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
             }, user.id);
 
             setShowUnlockBanner(true);
+            await onSuccess(); // Lädt Shop-Daten sofort neu, aktualisiert gekaufteSet und schaltet Play Button frei!
             setTimeout(() => {
-              onSuccess(); // Lädt Shop-Daten neu, aktualisiert gekaufteSet und schaltet Play Button frei!
               setShowUnlockBanner(false);
-            }, 1200);
+            }, 2000);
           } catch (syncErr) {
             console.error("Sync-Fehler bei ITEM_ALREADY_OWNED:", syncErr);
             onSuccess();
