@@ -7,7 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Umgebungsvariablen laden
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
@@ -70,7 +69,7 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In Supabase speichern (in user_purchases & public.kaeufe für die App-Freischaltung)
+    // 3. In Supabase speichern (sowohl user_purchases als auch public.kaeufe für die App- & Web-Freischaltung)
     try {
       await supabase
         .from('user_purchases')
@@ -85,7 +84,7 @@ serve(async (req) => {
       console.warn("Notice user_purchases:", e1);
     }
 
-    // Speichern in public.kaeufe (woraus das App-Frontend liest)
+    // Identischer Eintrag in public.kaeufe (daraus lesen sowohl Web als auch App)
     const dbKey = `${orderId}_${productId}`;
     const { error: dbError } = await supabase
       .from('kaeufe')
@@ -106,14 +105,57 @@ serve(async (req) => {
       throw new Error("Kauf konnte nicht in Supabase gesichert werden");
     }
 
-    // Profil-Status auf Premium setzen
+    // Profil-Status & Rolle auf 'kunde' setzen (identisch mit PayPal)
     await supabase
       .from('profiles')
       .update({ 
         is_premium: true, 
+        user_role: 'kunde',
         updated_at: new Date().toISOString() 
       })
       .eq('id', userId);
+
+    // Identische Kaufbestätigung per E-Mail versenden via Resend
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey) {
+      try {
+        const { data: userData } = await supabase.auth.admin.getUserById(userId);
+        const userEmail = userData?.user?.email;
+
+        if (userEmail) {
+          const emailHtml = `
+            <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">
+              <h2 style="color: #8A9A8A; margin-top: 0;">Vielen Dank für dein Vertrauen</h2>
+              <p>Dein Kauf über Google Play war erfolgreich.</p>
+              <div style="background: #FFFFFF; padding: 15px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Bestell-ID:</strong> ${orderId}</p>
+                <p style="margin: 5px 0;"><strong>Zahlungsmethode:</strong> Google Play</p>
+                <p style="margin: 5px 0;"><strong>Betrag:</strong> ${price || '1.99'} EUR</p>
+              </div>
+              <p>Deine Inhalte stehen ab sofort sowohl in der App als auch auf der Webseite für dich bereit.</p>
+              <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 20px 0;" />
+              <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-der-stille.de</p>
+            </div>
+          `;
+
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${resendApiKey}`
+            },
+            body: JSON.stringify({
+              from: 'Flow der Stille <info@flow-der-stille.de>',
+              to: [userEmail],
+              subject: 'Kaufbestätigung: Flow der Stille Premium',
+              html: emailHtml
+            })
+          });
+        }
+      } catch (mErr) {
+        console.warn("Non-fatal Resend email notice:", mErr);
+      }
+    }
 
     // 4. Erfolgreiche Response an die App (erlaubt transaction.finish)
     return new Response(JSON.stringify({ 
