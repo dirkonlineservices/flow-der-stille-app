@@ -130,6 +130,11 @@ export default function PremiumShopDashboard() {
       setProdukte(finalProdukte);
       setGekauftIds(gekaufteSet);
       setIsVip(userIsVip);
+
+      // 1. Produkte als Array initialisieren (Batch-Registrierung für Cordova Purchase Store)
+      if (BillingService.isNative() && finalProdukte.length > 0) {
+        BillingService.registerAllProducts(finalProdukte);
+      }
     } catch (error: any) {
       console.error("Fehler beim Laden:", error);
       setProdukte([]);
@@ -588,7 +593,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     setIsProcessing(true);
 
     try {
-      await BillingService.startPurchase(produkt.id, (msg) => {
+      await BillingService.startPurchase(produkt, (msg) => {
         setIsProcessing(false);
         setError(msg);
       });
