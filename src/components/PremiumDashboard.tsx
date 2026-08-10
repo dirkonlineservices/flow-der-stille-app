@@ -504,6 +504,20 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 1. Proaktive UI Ownership-Abfrage (blendet Bezahl-Button aus, wenn store.get().owned === true)
+  const isOwnedInStore = (() => {
+    try {
+      const CdvPurchase = (window as any).CdvPurchase;
+      if (CdvPurchase && CdvPurchase.store) {
+        const store = CdvPurchase.store;
+        const playId = getPlayStoreProductId(produkt.id);
+        const p = store.get(playId) || store.get(produkt.id);
+        return p?.owned === true;
+      }
+    } catch (e) {}
+    return false;
+  })();
+
   useEffect(() => {
     BillingService.init({
       productId: produkt.id, 
@@ -512,22 +526,19 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         setIsProcessing(false);
         const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
 
-        try {
-          await handlePurchaseSuccess({
-            purchaseToken,
-            productId: produkt.id,
-            price: parseFloat(produkt.preis) || 1.99
-          }, user.id);
+        const vResult = await handlePurchaseSuccess({
+          purchaseToken,
+          productId: produkt.id,
+          price: parseFloat(produkt.preis) || 1.99
+        }, user.id);
 
-          setShowUnlockBanner(true);
-          setTimeout(() => {
-            onSuccess();
-            setShowUnlockBanner(false);
-          }, 2500);
-        } catch (vErr) {
-          console.warn('Google Play verification notice:', vErr);
+        setShowUnlockBanner(true);
+        setTimeout(() => {
           onSuccess();
-        }
+          setShowUnlockBanner(false);
+        }, 2500);
+
+        return vResult;
       },
       onFailure: (msg) => {
         setIsProcessing(false);
@@ -535,6 +546,17 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       }
     });
   }, [produkt.id, user]);
+
+  if (isOwnedInStore) {
+    return (
+      <div className="w-full text-center">
+        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 font-semibold text-xs border border-emerald-300/50">
+          <CheckCircle2 size={16} className="text-emerald-600" />
+          <span>Inhalt freigeschaltet</span>
+        </span>
+      </div>
+    );
+  }
 
   const handlePurchase = async () => {
     setError(null);

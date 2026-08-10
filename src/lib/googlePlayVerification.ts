@@ -5,7 +5,7 @@ interface VerifyPurchaseParams {
   purchaseToken: string;
   productId: string;
   userId: string;
-  price: number; // Beispiel: 1.99 oder 4.99
+  price: number;
 }
 
 export const verifyGooglePlayPurchase = async ({
@@ -23,29 +23,13 @@ export const verifyGooglePlayPurchase = async ({
       purchaseToken,
       productId: playProductId,
       userId,
+      price: price || 1.99,
       packageName: 'app.flowderstille.de'
     }
   });
 
   if (error || !data?.success) {
-    throw new Error(error?.message || data?.error || 'Kauf konnte nicht verifiziert werden.');
-  }
-
-  // 2. DataLayer Event für GA4 mit dynamischem Preis
-  if (typeof window !== 'undefined' && (window as any).dataLayer) {
-    (window as any).dataLayer.push({
-      event: 'purchase',
-      ecommerce: {
-        transaction_id: purchaseToken,
-        value: price,
-        currency: 'EUR',
-        items: [{
-          item_id: productId,
-          item_name: 'Flow der Stille Premium',
-          price: price
-        }]
-      }
-    });
+    throw new Error(error?.message || data?.error || 'Kauf konnte von Supabase nicht verifiziert werden.');
   }
 
   return data;

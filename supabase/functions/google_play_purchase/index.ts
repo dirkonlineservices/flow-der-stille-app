@@ -70,6 +70,7 @@ serve(async (req) => {
     );
 
     let isVerified = false;
+    let fetchedOrderId = '';
 
     const serviceAccountRaw = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
@@ -96,6 +97,11 @@ serve(async (req) => {
 
         if (googleRes.ok) {
           const googleData = await googleRes.json();
+
+          if (googleData.orderId) {
+            fetchedOrderId = googleData.orderId;
+          }
+
           if (googleData.purchaseState === 0) {
             isVerified = true;
 
@@ -129,6 +135,8 @@ serve(async (req) => {
       );
     }
 
+    const finalOrderId = fetchedOrderId || purchaseToken;
+
     const targetProductIds = new Set<string>();
     targetProductIds.add(productId);
 
@@ -153,18 +161,23 @@ serve(async (req) => {
     }
 
     for (const pId of targetProductIds) {
-      const orderId = `${purchaseToken}_${pId}`;
-      await supabaseAdmin.from('kaeufe').upsert({
+      const dbKey = `${finalOrderId}_${pId}`;
+      const { error: insertErr } = await supabaseAdmin.from('kaeufe').upsert({
         user_id: userId,
         produkt_id: pId,
         betrag: price,
         waehrung: 'EUR',
         status: 'completed',
         zahlungsmethode: 'google_play',
-        paypal_order_id: orderId,
+        paypal_order_id: dbKey,
         transaktions_id: purchaseToken,
         created_at: new Date().toISOString()
       }, { onConflict: 'paypal_order_id' });
+
+      if (insertErr) {
+        console.error("Fehler beim Speichern in kaeufe:", insertErr);
+        throw new Error(`Datenbankfehler: ${insertErr.message}`);
+      }
     }
 
     await supabaseAdmin
@@ -178,7 +191,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Kauf erfolgreich verifiziert und in public.kaeufe freigeschaltet.',
+        message: 'Kauf erfolgreich verifiziert und in Supabase gespeichert.',
+        orderId: finalOrderId,
         productId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }

@@ -1,7 +1,7 @@
 interface BillingInitProps {
   productId: string;
   onReady: () => void;
-  onSuccess: (transaction?: any) => void;
+  onSuccess: (transaction?: any) => Promise<any> | any;
   onFailure: (errorMsg: string) => void;
 }
 
@@ -110,12 +110,12 @@ export const BillingService = {
         console.warn("productUpdated listener notice:", e);
       }
 
-      // b) Erfolgreicher Kauf (Approved) - Transaktion exakt EINMAL nach Backend-Check abschließen!
+      // b) Erfolgreicher Kauf (Approved) - transaction.finish() NUR wenn Supabase Status 200 liefert!
       try {
         store.when().approved(async (transaction: any) => {
           const txId = transaction?.transactionId || transaction?.id || transaction?.purchaseToken || `tx_${Date.now()}`;
 
-          // 🛑 Idempotenz-Sperre: Verhindere Endlosschleife bei "action: acknowledgePurchase"
+          // 🛑 Idempotenz-Sperre: Verhindere doppelte Verarbeitung
           if (processedTransactionsSet.has(txId)) {
             try {
               if (typeof transaction.finish === 'function') {
@@ -127,13 +127,19 @@ export const BillingService = {
           processedTransactionsSet.add(txId);
 
           try {
-            // 1. Serverseitige Verifizierung & Freischaltung in Supabase
-            await onSuccess(transaction);
+            // 1. Sende Receipt/PurchaseToken an Supabase Edge Function (Backend Verification & DB Insert)
+            const verificationResult = await onSuccess(transaction);
+            const confirmedOrderId = verificationResult?.orderId || txId;
 
-            // 2. GA4 Makro-Conversion Tracking Push
+            // 2. WICHTIG: transaction.finish() ausschließlich aufrufen, wenn Supabase 200 OK zurückgibt!
+            if (typeof transaction.finish === 'function') {
+              await transaction.finish();
+            }
+
+            // 3. GA4 E-Commerce Tracking (DataLayer Push NACH transaction.finish())
             pushToDataLayer('purchase', {
               ecommerce: {
-                transaction_id: txId,
+                transaction_id: confirmedOrderId,
                 value: 1.99,
                 currency: 'EUR',
                 items: [{
@@ -144,22 +150,11 @@ export const BillingService = {
                 }]
               }
             });
-
-            // 3. Transaktion exakt EINMAL nach erfolgreicher Validierung finishen
-            if (typeof transaction.finish === 'function') {
-              await transaction.finish();
-            }
           } catch (err: any) {
-            console.error("Fehler bei der Kaufbestätigung:", err);
+            console.error("Fehler bei der Kaufbestätigung (Supabase Backend):", err);
             pushToDataLayer('purchase_failed', { error_message: err?.message || 'Verifizierung fehlgeschlagen' });
-            onFailure(err?.message || "Kauf konnte nicht verifiziert werden.");
-            
-            // Auch bei Fehler Transaktion 1x finishen, um den Loop zu stoppen
-            try {
-              if (typeof transaction.finish === 'function') {
-                await transaction.finish();
-              }
-            } catch (e) {}
+            onFailure(err?.message || "Kauf konnte von Supabase nicht verifiziert werden.");
+            // Keinem ungültigen Kauf ein finish() ausstellen!
           }
         });
       } catch (e) {

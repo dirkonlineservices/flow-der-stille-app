@@ -70,6 +70,7 @@ serve(async (req) => {
     );
 
     let isVerified = false;
+    let fetchedOrderId = '';
 
     // 1. Google Play Service Account verifizieren
     const serviceAccountRaw = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
@@ -89,6 +90,7 @@ serve(async (req) => {
         const client = await auth.getClient();
         const accessToken = await client.getAccessToken();
 
+        // ⚡ In-App Produkte Endpoint (purchases.products.get)
         const googleApiUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}`;
         
         const googleRes = await fetch(googleApiUrl, {
@@ -97,6 +99,12 @@ serve(async (req) => {
 
         if (googleRes.ok) {
           const googleData = await googleRes.json();
+
+          // 🔍 Order ID aus der Google JSON-Antwort auslesen
+          if (googleData.orderId) {
+            fetchedOrderId = googleData.orderId;
+          }
+
           // purchaseState 0 = Purchased
           if (googleData.purchaseState === 0) {
             isVerified = true;
@@ -115,7 +123,7 @@ serve(async (req) => {
             }
           }
         } else {
-          // License Testing / Sandbox Fallback
+          // Sandbox / License Testing Fallback
           isVerified = true;
         }
       } catch (gErr) {
@@ -134,11 +142,12 @@ serve(async (req) => {
       );
     }
 
-    // 2. Dynamisch Produkt-IDs aus Supabase auslesen (Option 1)
+    const finalOrderId = fetchedOrderId || purchaseToken;
+
+    // 2. Dynamisch Produkt-IDs aus Supabase auslesen
     const targetProductIds = new Set<string>();
     targetProductIds.add(productId);
 
-    // Füge bekannte Fallbacks hinzu
     if (HARDCODED_ALIAS_MAP[productId]) {
       HARDCODED_ALIAS_MAP[productId].forEach(id => targetProductIds.add(id));
     }
@@ -159,23 +168,28 @@ serve(async (req) => {
       console.warn("Dynamic produkte query notice:", dbQueryErr);
     }
 
-    // 3. In public.kaeufe eintragen
+    // 3. Datenbank-Aufruf (UPSERT) in Supabase public.kaeufe
     for (const pId of targetProductIds) {
-      const orderId = `${purchaseToken}_${pId}`;
-      await supabaseAdmin.from('kaeufe').upsert({
+      const dbKey = `${finalOrderId}_${pId}`;
+      const { error: insertErr } = await supabaseAdmin.from('kaeufe').upsert({
         user_id: userId,
         produkt_id: pId,
         betrag: price,
         waehrung: 'EUR',
         status: 'completed',
         zahlungsmethode: 'google_play',
-        paypal_order_id: orderId,
+        paypal_order_id: dbKey,
         transaktions_id: purchaseToken,
         created_at: new Date().toISOString()
       }, { onConflict: 'paypal_order_id' });
+
+      if (insertErr) {
+        console.error("Fehler beim Speichern in kaeufe:", insertErr);
+        throw new Error(`Datenbankfehler: ${insertErr.message}`);
+      }
     }
 
-    // 4. Optional auch Profil auf is_premium updaten
+    // 4. Profil aktualisieren
     await supabaseAdmin
       .from('profiles')
       .update({ 
@@ -184,10 +198,12 @@ serve(async (req) => {
       })
       .eq('id', userId);
 
+    // ⚡ Erst NACH erfolgreichem Datenbank-Schreibvorgang Response 200 zurücksenden!
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Kauf erfolgreich verifiziert und in public.kaeufe freigeschaltet.',
+        message: 'Kauf erfolgreich verifiziert und in Supabase gespeichert.',
+        orderId: finalOrderId,
         productId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
