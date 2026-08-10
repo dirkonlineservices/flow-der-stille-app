@@ -40,6 +40,19 @@ export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'gefuehrte_atemuebung': 'fds_gefuehrte_atemuebung'
 };
 
+export const REVERSE_PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
+  'fds_hypnose_selbstbewusstsein': 'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen',
+  'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
+  'fds_meditation_loslassen': 'meditation_loslassen',
+  'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
+  'fds_hypnose_fokus': 'selbsthypnose_fokus_konzentration',
+  'fds_herzkompass_meditation': 'meditation_herzkompass',
+  'fds_meditation_inneres_kind': 'meditation_inneres_kind',
+  'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
+  'fds_pmr_basis': 'pmr_basis',
+  'fds_gefuehrte_atemuebung': 'gefuehrte_atemuebung'
+};
+
 export const getPlayStoreProductId = (input: any): string => {
   if (typeof input === 'object' && input !== null) {
     if (input.play_store_id && typeof input.play_store_id === 'string' && input.play_store_id.trim().length > 0) {
@@ -164,6 +177,8 @@ export const BillingService = {
 
             const errorMsg = error?.message || (typeof error === 'string' ? error : errJson);
             const isAlreadyOwned = (error?.code === 6) || 
+                                  (error?.code === 6777003) ||
+                                  (errJson && errJson.includes("ITEM_ALREADY_OWNED")) ||
                                   (errorMsg && (
                                     errorMsg.includes("ITEM_ALREADY_OWNED") || 
                                     errorMsg.includes("already owned") || 
@@ -280,7 +295,7 @@ export const BillingService = {
           try {
             const res = await offer.order();
             if (res && res.error) {
-              const isOwned = res.error.code === 6 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
+              const isOwned = res.error.code === 6 || res.error.code === 6777003 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
               if (isOwned) {
                 pushToDataLayer('purchase_restored', { item_id: playId });
                 if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
@@ -300,7 +315,7 @@ export const BillingService = {
         try {
           const res = await store.order(targetOffer);
           if (res && res.error) {
-            const isOwned = res.error.code === 6 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
+            const isOwned = res.error.code === 6 || res.error.code === 6777003 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
             if (isOwned) {
               pushToDataLayer('purchase_restored', { item_id: playId });
               if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
@@ -314,7 +329,7 @@ export const BillingService = {
           try {
             const resStr = await store.order(playId);
             if (resStr && resStr.error) {
-              const isOwned = resStr.error.code === 6 || String(resStr.error.message).includes("ITEM_ALREADY_OWNED");
+              const isOwned = resStr.error.code === 6 || resStr.error.code === 6777003 || String(resStr.error.message).includes("ITEM_ALREADY_OWNED");
               if (isOwned) {
                 pushToDataLayer('purchase_restored', { item_id: playId });
                 if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");

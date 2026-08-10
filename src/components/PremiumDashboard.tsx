@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2 } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
-import { BillingService } from '../lib/billing';
-import { verifyGooglePlayPurchase } from '../lib/googlePlayVerification';
+import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer } from '../lib/billing';
+import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 
 export default function PremiumShopDashboard() {
@@ -36,56 +36,55 @@ export default function PremiumShopDashboard() {
   }, [user]);
 
   useEffect(() => {
-    const fetchMyPurchases = async () => {
-      if (!user) {
-        setLoadingPurchases(false);
-        return;
-      }
-      const supabase = getSupabase();
-      
-      const [kaeufeRes, vipRes] = await Promise.all([
-        supabase.from('kaeufe').select('*').eq('user_id', user.id),
-        supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
-      ]);
-
-      if (!kaeufeRes.error && kaeufeRes.data) {
-        setMyPurchases(kaeufeRes.data);
-      }
-      if (!vipRes.error && vipRes.data) {
-        setIsVip(!!vipRes.data);
-      }
+    if (user) {
+      loadMyPurchases();
+    } else {
+      setMyPurchases([]);
       setLoadingPurchases(false);
-    };
+    }
+  }, [user, gekauftIds]);
 
-    fetchMyPurchases();
-  }, [user]);
+  const loadMyPurchases = async () => {
+    if (!user) return;
+    try {
+      setLoadingPurchases(true);
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from('kaeufe')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Fehler beim Laden meiner Einkäufe:', error);
+      } else {
+        setMyPurchases(data || []);
+      }
+    } catch (e) {
+      console.error('Exception beim Laden meiner Einkäufe:', e);
+    } finally {
+      setLoadingPurchases(false);
+    }
+  };
 
   useEffect(() => {
     try {
-      if (window.location.hash && window.location.hash.startsWith('#product-')) {
-        const hashRaw = window.location.hash;
-        const targetId = hashRaw.replace('#', '');
-        
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#product-') && produkte.length > 0) {
+        const targetId = hash.replace('#product-', '');
         const timer = setTimeout(() => {
-          try {
-            const el = document.getElementById(targetId);
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-              window.history.replaceState(null, '', window.location.pathname);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-          } catch (err) {
-            window.history.replaceState(null, '', window.location.pathname);
+          const el = document.getElementById(`product-${targetId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }, 300);
-
+        
         const fallbackTimer = setTimeout(() => {
-          if (window.location.hash && window.location.hash.startsWith('#product-')) {
-            window.history.replaceState(null, '', window.location.pathname);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+          const el = document.getElementById(`product-${targetId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        }, 4000);
+        }, 1000);
 
         return () => {
           clearTimeout(timer);
@@ -117,7 +116,18 @@ export default function PremiumShopDashboard() {
             supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
           ]);
           if (!kaufRes.error && kaufRes.data) {
-            gekaufteSet = new Set(kaufRes.data.map((k: any) => k.produkt_id));
+            const ids = new Set<string>();
+            kaufRes.data.forEach((k: any) => {
+              const rawId = k.produkt_id;
+              if (rawId) {
+                ids.add(rawId);
+                const playId = getPlayStoreProductId(rawId);
+                ids.add(playId);
+                const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[rawId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playId];
+                if (dbId) ids.add(dbId);
+              }
+            });
+            gekaufteSet = ids;
           }
           if (!vipRes.error && vipRes.data) {
             userIsVip = !!vipRes.data;
@@ -160,45 +170,13 @@ export default function PremiumShopDashboard() {
     }
   }
 
-  const baseCategories = ['Alle', 'Kostenfrei', 'Meditation', 'Entspannungsübungen', 'Selbsthypnose'];
-  const categories = user ? [...baseCategories, 'Meine Käufe'] : baseCategories;
+  const getProductCoverImage = (prod: any) => {
+    if (prod.image_url) return prod.image_url;
+    
+    const id = prod.id?.toLowerCase() || '';
+    const title = prod.titel?.toLowerCase() || '';
+    const kat = prod.kategorie?.toLowerCase() || '';
 
-  const formatDuration = (seconds: number) => {
-    if (!seconds) return '';
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getCategoryBadgeStyle = (kategorie: string = '') => {
-    const cat = (kategorie || '').toLowerCase();
-    if (cat.includes('meditation')) {
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60';
-    }
-    if (cat.includes('hypnose') || cat.includes('selbsthypnose')) {
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/60';
-    }
-    if (cat.includes('atem') || cat.includes('kosten')) {
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60';
-    }
-    return 'bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/60';
-  };
-
-  const getProductCoverImage = (produkt: any): string => {
-    if (produkt.bild_url && produkt.bild_url.startsWith('http')) return produkt.bild_url;
-    const id = produkt.id ? produkt.id.toLowerCase() : '';
-    const title = produkt.titel ? produkt.titel.toLowerCase() : '';
-    const kat = produkt.kategorie ? produkt.kategorie.toLowerCase() : '';
-
-    if (id.includes('innere_ruhe') || title.includes('innere ruhe') || title.includes('ruhe')) {
-      return '/images/products/cover_innere_ruhe.jpg';
-    }
-    if (id.includes('inneres_kind') || title.includes('inneres kind') || title.includes('kind')) {
-      return '/images/products/cover_inneres_kind.jpg';
-    }
-    if (id.includes('herzkompass') || title.includes('kompass')) {
-      return '/images/products/cover_herzkompass.jpg';
-    }
     if (id.includes('herzoeffnung') || title.includes('herzöffnung') || title.includes('herz-öffnung')) {
       return '/images/products/cover_herzoeffnung.jpg';
     }
@@ -241,25 +219,40 @@ export default function PremiumShopDashboard() {
     } else if (activeFilter === 'Entspannungsübungen') {
         matchesCategory = catLower.includes('entspannung') || titleLower.includes('entspannung') || titleLower.includes('muskelentspannung');
     } else if (activeFilter === 'Selbsthypnose') {
-       matchesCategory = catLower.includes('selbsthypnose') || titleLower.includes('selbsthypnose');
-    } else if (activeFilter === 'Meine Käufe') {
-       matchesCategory = gekauftIds.has(prod.id);
+        matchesCategory = catLower.includes('hypnose') || titleLower.includes('hypnose') || titleLower.includes('selbstbewusstsein') || titleLower.includes('fokus') || titleLower.includes('ernährung');
     }
-    
+
     return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-      if (sortBy === 'Neueste') {
-          const dateA = new Date(a.created_at || '1970-01-01').getTime();
-          const dateB = new Date(b.created_at || '1970-01-01').getTime();
-          return dateB - dateA;
-      } else if (sortBy === 'Älteste') {
-          const dateA = new Date(a.created_at || '1970-01-01').getTime();
-          const dateB = new Date(b.created_at || '1970-01-01').getTime();
-          return dateA - dateB;
-      } else if (sortBy === 'Teuerste') {
-          return parseFloat(b.preis) - parseFloat(a.preis);
-      } else if (sortBy === 'Günstigste') {
+  });
+
+  const formatDuration = (dauerStr: any) => {
+    if (!dauerStr) return '';
+    const str = String(dauerStr).trim();
+    if (str.includes(':')) {
+      const parts = str.split(':');
+      if (parts.length === 2) return parts[0]; 
+      if (parts.length === 3) return parts[0]; 
+    }
+    const num = parseInt(str.replace(/\D/g, ''));
+    if (!isNaN(num)) return num;
+    return str;
+  };
+
+  const categories = ['Alle', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei'];
+
+  const getCategoryBadgeStyle = (katStr: string = '') => {
+    const k = katStr.toLowerCase();
+    if (k.includes('meditation')) return 'bg-amber-500/90 text-white border border-amber-300/30';
+    if (k.includes('hypnose')) return 'bg-indigo-600/90 text-white border border-indigo-300/30';
+    if (k.includes('entspannung') || k.includes('pmr') || k.includes('atem')) return 'bg-teal-600/90 text-white border border-teal-300/30';
+    return 'bg-stone-700/90 text-white border border-stone-400/30';
+  };
+
+  const sortedProdukte = [...filteredProdukte].sort((a, b) => {
+      if (sortBy === 'Preis: Aufsteigend') {
           return parseFloat(a.preis) - parseFloat(b.preis);
+      } else if (sortBy === 'Preis: Absteigend') {
+          return parseFloat(b.preis) - parseFloat(a.preis);
       }
       return 0;
   });
@@ -312,7 +305,7 @@ export default function PremiumShopDashboard() {
           ) : (
             <div className="flex flex-col gap-3">
               {myPurchases.map((purchase) => {
-                const prod = produkte.find(p => p.id === purchase.produkt_id);
+                const prod = produkte.find(p => p.id === purchase.produkt_id || getPlayStoreProductId(p.id) === purchase.produkt_id);
                 return (
                   <div key={purchase.id || purchase.produkt_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)]">
                     <div>
@@ -320,12 +313,11 @@ export default function PremiumShopDashboard() {
                       <p className="text-xs text-[var(--text-muted)]">Kaufdatum: {new Date(purchase.created_at || Date.now()).toLocaleDateString('de-DE')}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 font-semibold border border-emerald-300/50">Freigeschaltet</span>
-                      <a 
+                      <a
                         href={`#product-${purchase.produkt_id}`}
                         onClick={(e) => {
                           e.preventDefault();
-                          const el = document.getElementById(`product-${purchase.produkt_id}`);
+                          const el = document.getElementById(`product-${purchase.produkt_id}`) || document.getElementById(`product-${prod?.id}`);
                           if (el) {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             window.location.hash = `product-${purchase.produkt_id}`;
@@ -354,20 +346,38 @@ export default function PremiumShopDashboard() {
           </div>
         )}
 
-        {filteredProdukte.map((produkt: any) => {
+        {sortedProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
-          const hatZugriff = isVip || gekauftIds.has(produkt.id) || istKostenlos;
-          const isHeartOpening = produkt.id === HEART_OPENING_ID;
+          const playId = getPlayStoreProductId(produkt.id);
+          const hatZugriff = isVip || gekauftIds.has(produkt.id) || gekauftIds.has(playId) || istKostenlos;
 
-          if (isHeartOpening && !user) {
+          if (produkt.id === HEART_OPENING_ID && !user) {
             return (
-              <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 transition hover:shadow-md">
-                <div className="flex-1">
-                  <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase mb-3 inline-block ${getCategoryBadgeStyle(produkt.kategorie || 'Atemarbeit')}`}>
-                    {produkt.kategorie || 'Atemarbeit'}
+              <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden">
+                <div className="relative h-48 sm:h-56 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
+                  <img 
+                    src={getProductCoverImage(produkt)} 
+                    alt={produkt.titel} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md bg-amber-500/90 text-white border border-amber-300/30">
+                      Kostenfreies Audio
+                    </span>
+                  </div>
+                  <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2 py-0.5 rounded-md border border-white/20 shadow-md">
+                    ✨ KI
                   </span>
-                  <h2 className="text-xl lg:text-2xl font-bold text-[var(--text-main)]">{produkt.titel}</h2>
-                  <p className="text-[var(--text-muted)] text-sm lg:text-base mt-2">{produkt.beschreibung}</p>
+                  {produkt.dauer && (
+                    <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
+                      ⏱ {formatDuration(produkt.dauer)} min
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-2 leading-tight">{produkt.titel}</h3>
+                  <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed mb-4">{produkt.beschreibung}</p>
                 </div>
                 <div className="w-full lg:w-auto text-center lg:text-right text-sm text-[var(--text-muted)] italic font-medium pt-4 lg:pt-0 border-t lg:border-t-0 border-[var(--border)]">
                   Kostenfrei nach Anmeldung
@@ -526,18 +536,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isOwnedInStore = (() => {
-    try {
-      const CdvPurchase = (window as any).CdvPurchase;
-      if (CdvPurchase && CdvPurchase.store) {
-        const store = CdvPurchase.store;
-        const playId = getPlayStoreProductId(produkt.id);
-        const p = store.get(playId) || store.get(produkt.id);
-        return p?.owned === true;
-      }
-    } catch (e) {}
-    return false;
-  })();
+  const playId = getPlayStoreProductId(produkt.id);
 
   useEffect(() => {
     BillingService.init({
@@ -546,29 +545,57 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     });
   }, [produkt.id]);
 
-  if (isOwnedInStore) {
-    return (
-      <div className="w-full text-center">
-        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 font-semibold text-xs border border-emerald-300/50">
-          <CheckCircle2 size={16} className="text-emerald-600" />
-          <span>Inhalt freigeschaltet</span>
-        </span>
-      </div>
-    );
-  }
-
   const handlePurchase = async () => {
     setError(null);
     setIsProcessing(true);
 
     try {
-      await BillingService.startPurchase(produkt, (msg) => {
+      await BillingService.startPurchase(produkt, async (msg) => {
         setIsProcessing(false);
-        setError(msg);
-        if (msg && (msg.includes("Kauf gefunden") || msg.includes("synchronisiert"))) {
-          setTimeout(() => {
+
+        const isOwnedMsg = msg && (
+          msg.includes("Kauf gefunden") || 
+          msg.includes("synchronisiert") || 
+          msg.includes("ITEM_ALREADY_OWNED") ||
+          msg.includes("bereits gekauft")
+        );
+
+        if (isOwnedMsg) {
+          setError("Kauf in Google Play gefunden. Schalte Inhalte frei...");
+          
+          try {
+            let purchaseToken = 'GPLAY_OWNED_' + Date.now();
+            try {
+              const CdvPurchase = (window as any).CdvPurchase;
+              if (CdvPurchase && CdvPurchase.store) {
+                const p = CdvPurchase.store.get(playId) || CdvPurchase.store.get(produkt.id);
+                if (p && p.transaction) {
+                  purchaseToken = p.transaction.purchaseToken || p.transaction.id || purchaseToken;
+                  if (typeof p.transaction.finish === 'function') {
+                    await p.transaction.finish();
+                  }
+                }
+              }
+            } catch (e) {}
+
+            // WICHTIG: Erzwinge Eintrag in Supabase public.kaeufe & Profil-Update!
+            await handlePurchaseSuccess({
+              purchaseToken,
+              productId: produkt.id,
+              price: parseFloat(produkt.preis) || 1.99
+            }, user.id);
+
+            setShowUnlockBanner(true);
+            setTimeout(() => {
+              onSuccess(); // Lädt Shop-Daten neu, aktualisiert gekaufteSet und schaltet Play Button frei!
+              setShowUnlockBanner(false);
+            }, 1200);
+          } catch (syncErr) {
+            console.error("Sync-Fehler bei ITEM_ALREADY_OWNED:", syncErr);
             onSuccess();
-          }, 1500);
+          }
+        } else {
+          setError(msg);
         }
       });
     } catch (err: any) {
@@ -581,7 +608,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
   };
 
-  const isInfoMsg = error && (error.includes("Kauf gefunden") || error.includes("synchronisiert"));
+  const isInfoMsg = error && (error.includes("Kauf") || error.includes("synchronisiert") || error.includes("freigeschaltet"));
 
   return (
     <div className="w-full flex flex-col items-center">
