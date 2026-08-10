@@ -613,7 +613,10 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     error.includes("synchronisiert") || 
     error.includes("freigeschaltet") ||
     error.includes("Verbindung") ||
-    error.includes("geladen")
+    error.includes("geladen") ||
+    error.includes("erstattet") ||
+    error.includes("storniert") ||
+    error.includes("bereits")
   );
 
   return (
