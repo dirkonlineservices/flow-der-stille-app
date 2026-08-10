@@ -344,8 +344,7 @@ export const BillingService = {
       }
 
       if (onFailure) {
-        pushToDataLayer('purchase_failed', { error_message: 'Widget konnte nicht geöffnet werden' });
-        onFailure(`Google Play Bezahl-Widget für "${playId}" konnte nicht geöffnet werden.`);
+        onFailure("Store-Verbindung wird geladen... Bitte tippe in Kürze erneut auf Kaufen.");
       }
       
     } catch (error: any) {

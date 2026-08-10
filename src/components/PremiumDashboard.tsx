@@ -608,7 +608,13 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
   };
 
-  const isInfoMsg = error && (error.includes("Kauf") || error.includes("synchronisiert") || error.includes("freigeschaltet"));
+  const isInfoMsg = error && (
+    error.includes("Kauf") || 
+    error.includes("synchronisiert") || 
+    error.includes("freigeschaltet") ||
+    error.includes("Verbindung") ||
+    error.includes("geladen")
+  );
 
   return (
     <div className="w-full flex flex-col items-center">

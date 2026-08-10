@@ -1,4 +1,4 @@
-// Version: 1.0.5 - Enhanced isTestToken check for GPLAY_ and RESTORED_ fallback tokens
+// Version: 1.0.6 - Return HTTP 200 for clean JSON error responses & prevent non-2xx SDK exceptions
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -194,9 +194,9 @@ serve(async (req) => {
     })
 
   } catch (error: any) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
+    return new Response(JSON.stringify({ success: false, error: error.message || 'Verifizierungsfehler' }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
+      status: 200,
     })
   }
 })
