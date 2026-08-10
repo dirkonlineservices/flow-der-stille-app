@@ -16,6 +16,9 @@ export const pushToDataLayer = (eventName: string, payload?: any) => {
   }
 };
 
+// 🛑 Set zur Verhinderung von Endlosschleifen (Idempotenz-Sperre)
+const processedTransactionsSet = new Set<string>();
+
 // 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Google Play Console Produkt-ID
 export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
@@ -107,21 +110,56 @@ export const BillingService = {
         console.warn("productUpdated listener notice:", e);
       }
 
-      // b) Erfolgreicher Kauf (Approved)
+      // b) Erfolgreicher Kauf (Approved) - Transaktion exakt EINMAL nach Backend-Check abschließen!
       try {
-        store.when().approved((transaction: any) => {
+        store.when().approved(async (transaction: any) => {
+          const txId = transaction?.transactionId || transaction?.id || transaction?.purchaseToken || `tx_${Date.now()}`;
+
+          // 🛑 Idempotenz-Sperre: Verhindere Endlosschleife bei "action: acknowledgePurchase"
+          if (processedTransactionsSet.has(txId)) {
+            try {
+              if (typeof transaction.finish === 'function') {
+                await transaction.finish();
+              }
+            } catch (e) {}
+            return;
+          }
+          processedTransactionsSet.add(txId);
+
           try {
-            if (typeof transaction.verify === 'function') {
-              transaction.verify();
-            }
+            // 1. Serverseitige Verifizierung & Freischaltung in Supabase
+            await onSuccess(transaction);
+
+            // 2. GA4 Makro-Conversion Tracking Push
+            pushToDataLayer('purchase', {
+              ecommerce: {
+                transaction_id: txId,
+                value: 1.99,
+                currency: 'EUR',
+                items: [{
+                  item_name: 'Premium Freischaltung',
+                  item_category: 'In App Kauf',
+                  price: 1.99,
+                  quantity: 1
+                }]
+              }
+            });
+
+            // 3. Transaktion exakt EINMAL nach erfolgreicher Validierung finishen
             if (typeof transaction.finish === 'function') {
-              transaction.finish();
+              await transaction.finish();
             }
-            onSuccess(transaction);
-          } catch (e) {
-            console.error("Fehler beim Abschließen der Transaktion:", e);
-            pushToDataLayer('purchase_failed', { error_message: 'Transaktion Bestätigungsfehler' });
-            onFailure("Fehler beim Bestätigen des Kaufs.");
+          } catch (err: any) {
+            console.error("Fehler bei der Kaufbestätigung:", err);
+            pushToDataLayer('purchase_failed', { error_message: err?.message || 'Verifizierung fehlgeschlagen' });
+            onFailure(err?.message || "Kauf konnte nicht verifiziert werden.");
+            
+            // Auch bei Fehler Transaktion 1x finishen, um den Loop zu stoppen
+            try {
+              if (typeof transaction.finish === 'function') {
+                await transaction.finish();
+              }
+            } catch (e) {}
           }
         });
       } catch (e) {
