@@ -5,6 +5,17 @@ interface BillingInitProps {
   onFailure: (errorMsg: string) => void;
 }
 
+// 📊 DataLayer Push Helper für GA4 Tracking
+export const pushToDataLayer = (eventName: string, payload?: any) => {
+  if (typeof window !== 'undefined') {
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).dataLayer.push({
+      event: eventName,
+      ...payload
+    });
+  }
+};
+
 // 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Google Play Console Produkt-ID
 export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
@@ -83,31 +94,51 @@ export const BillingService = {
         } catch (e) {}
       }
 
-      // 2. Unabhängige Event-Listener (v13 strukturell aufgetrennt ohne Method Chaining)
-      store.when().productUpdated((product: any) => {
-        if (product.id === playId || product.id === productId) {
+      // 2. Striktes Decoupling der Event-Listener (OHNE Method Chaining)
+      
+      // a) Produkt-Updates
+      try {
+        store.when().productUpdated((product: any) => {
+          if (product.id === playId || product.id === productId) {
+            safeOnReady();
+          }
+        });
+      } catch (e) {
+        console.warn("productUpdated listener notice:", e);
+      }
+
+      // b) Erfolgreicher Kauf (Approved)
+      try {
+        store.when().approved((transaction: any) => {
+          try {
+            if (typeof transaction.verify === 'function') {
+              transaction.verify();
+            }
+            if (typeof transaction.finish === 'function') {
+              transaction.finish();
+            }
+            onSuccess(transaction);
+          } catch (e) {
+            console.error("Fehler beim Abschließen der Transaktion:", e);
+            pushToDataLayer('purchase_failed', { error_message: 'Transaktion Bestätigungsfehler' });
+            onFailure("Fehler beim Bestätigen des Kaufs.");
+          }
+        });
+      } catch (e) {
+        console.warn("approved listener notice:", e);
+      }
+
+      // c) Globales Fehler-Handling (store.error)
+      try {
+        store.error((error: any) => {
+          console.error("Billing Error: ", error);
+          pushToDataLayer('purchase_failed', { error_message: error?.message || 'Billing Error' });
+          onFailure(error?.message || "Kaufvorgang konnte nicht abgeschlossen werden.");
           safeOnReady();
-        }
-      });
-
-      store.when().approved((transaction: any) => {
-        try {
-          transaction.finish();
-          onSuccess(transaction);
-        } catch (e) {
-          console.error("Fehler beim Abschließen der Transaktion", e);
-          onFailure("Fehler beim Bestätigen des Kaufs.");
-        }
-      });
-
-      store.when().cancelled(() => {
-        onFailure("Kaufvorgang wurde abgebrochen.");
-      });
-
-      store.when().error((error: any) => {
-        console.warn("Billing Notice:", error);
-        safeOnReady();
-      });
+        });
+      } catch (e) {
+        console.warn("store.error listener notice:", e);
+      }
 
       // 3. store.ready() als eigenständiger Aufruf
       if (typeof store.ready === 'function') {
@@ -120,7 +151,7 @@ export const BillingService = {
         }
       }
 
-      // 4. store.initialize() als eigenständiger Aufruf
+      // 4. store.initialize() erst aufrufen, NACHDEM alle Listener isoliert registriert sind
       try {
         store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
       } catch (initErr) {
@@ -152,21 +183,17 @@ export const BillingService = {
         return;
       }
 
-      // 📊 GA4 DataLayer Event (begin_checkout) vor Auslösen des Bezahlfensters
-      if (typeof window !== 'undefined') {
-        (window as any).dataLayer = (window as any).dataLayer || [];
-        (window as any).dataLayer.push({
-          event: 'begin_checkout',
-          ecommerce: {
-            items: [{
-              item_name: 'Premium Freischaltung',
-              item_category: 'In App Kauf',
-              price: 1.99,
-              currency: 'EUR'
-            }]
-          }
-        });
-      }
+      // 📊 GA4 DataLayer Event (begin_checkout) kurz vor store.order(product)
+      pushToDataLayer('begin_checkout', {
+        ecommerce: {
+          items: [{
+            item_name: 'Premium Freischaltung',
+            item_category: 'In App Kauf',
+            price: 1.99,
+            currency: 'EUR'
+          }]
+        }
+      });
 
       const store = CdvPurchase.store;
       const playId = getPlayStoreProductId(productId);
@@ -195,8 +222,9 @@ export const BillingService = {
         if (typeof offer.order === 'function') {
           try {
             const res = await offer.order();
-            if (res && res.error && onFailure) {
-              onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
+            if (res && res.error) {
+              pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
+              if (onFailure) onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
             }
             return;
           } catch (eOffer) {
@@ -211,8 +239,9 @@ export const BillingService = {
       if (typeof store.order === 'function') {
         try {
           const res = await store.order(targetOffer);
-          if (res && res.error && onFailure) {
-            onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
+          if (res && res.error) {
+            pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
+            if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
           }
           return;
         } catch (eOrder) {
@@ -220,8 +249,9 @@ export const BillingService = {
           // Versuche 3: Direct String Fallback store.order(playId)
           try {
             const resStr = await store.order(playId);
-            if (resStr && resStr.error && onFailure) {
-              onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
+            if (resStr && resStr.error) {
+              pushToDataLayer('purchase_failed', { error_message: resStr.error.message || 'Kauf abgebrochen' });
+              if (onFailure) onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
             }
             return;
           } catch (eStr) {
@@ -231,11 +261,13 @@ export const BillingService = {
       }
 
       if (onFailure) {
+        pushToDataLayer('purchase_failed', { error_message: 'Widget konnte nicht geöffnet werden' });
         onFailure(`Google Play Bezahl-Widget für "${playId}" konnte nicht geöffnet werden.`);
       }
       
     } catch (error: any) {
       console.error("Fataler Fehler bei startPurchase:", error);
+      pushToDataLayer('purchase_failed', { error_message: error?.message || 'Unerwarteter Fehler' });
       if (onFailure) onFailure(`Bezahlfehler: ${error?.message || 'Unerwarteter Fehler'}`);
     }
   }
