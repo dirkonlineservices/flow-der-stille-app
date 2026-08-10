@@ -12,14 +12,15 @@ export interface SupabaseEnvStatus {
 }
 
 export async function verifySupabaseEnv(): Promise<SupabaseEnvStatus> {
-  const rawUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  const DEFAULT_URL = "https://fsfoxgezrcqkjhfyqcwa.supabase.co";
+  const DEFAULT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZm94Z2V6cmNxa2poZnlxY3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDE1MDgsImV4cCI6MjA5NjMxNzUwOH0.3srV9G8iho-xrhkRx7KNZWWadmWxZmuW-AV4Jaz4oeQ";
+
+  const rawUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_URL;
+  const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_KEY;
 
   const isPlaceholder = 
     rawUrl.includes('placeholder.supabase.co') || 
-    rawKey === 'placeholder-key' ||
-    !rawUrl || 
-    !rawKey;
+    rawKey === 'placeholder-key';
 
   let isValidUrl = false;
   if (rawUrl) {
