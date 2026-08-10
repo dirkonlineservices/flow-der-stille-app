@@ -1,4 +1,4 @@
-// Version: 1.0.4 - Clean single function deployment
+// Version: 1.0.5 - Enhanced isTestToken check for GPLAY_ and RESTORED_ fallback tokens
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -31,7 +31,11 @@ serve(async (req) => {
 
     let orderId = '';
     let isRefunded = false;
-    const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
+    const isTestToken = purchaseToken.startsWith('inapp:') || 
+                        purchaseToken.startsWith('MOCK_') || 
+                        purchaseToken.startsWith('GPLAY_') || 
+                        purchaseToken.startsWith('RESTORED_') || 
+                        purchaseToken.includes('test');
 
     if (googleCredentials.client_email && !isTestToken) {
       try {
