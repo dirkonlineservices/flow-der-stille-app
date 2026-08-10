@@ -17,8 +17,8 @@ export const verifyGooglePlayPurchase = async ({
   const supabase = getSupabase();
   const playProductId = getPlayStoreProductId(productId);
 
-  // 1. Primärer Aufruf der Edge Function (verify-google-play-purchase)
-  let { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
+  // Aufruf der offiziellen Edge Function (verify-google-play-purchase)
+  const { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
     body: {
       purchaseToken,
       productId: playProductId,
@@ -27,23 +27,6 @@ export const verifyGooglePlayPurchase = async ({
       packageName: 'app.flowderstille.de'
     }
   });
-
-  // Fallback auf google-play-purchase falls primäre Funktion nicht antwortet
-  if (error || !data?.success) {
-    const fallbackRes = await supabase.functions.invoke('google-play-purchase', {
-      body: {
-        purchaseToken,
-        productId: playProductId,
-        userId,
-        price: price || 1.99,
-        packageName: 'app.flowderstille.de'
-      }
-    });
-    if (!fallbackRes.error && fallbackRes.data?.success) {
-      data = fallbackRes.data;
-      error = null;
-    }
-  }
 
   if (error || !data?.success) {
     throw new Error(error?.message || data?.error || 'Kauf konnte von Supabase nicht verifiziert werden.');
