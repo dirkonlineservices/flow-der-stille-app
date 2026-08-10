@@ -44,11 +44,18 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Hosting & Datenbank (Supabase in der EU)</h2>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Webhosting & Datenbank-Infrastruktur</h2>
+            <h3 className="font-semibold text-[var(--color-text-main)]">Webhosting (Hostinger)</h3>
             <p>
-              Unsere Anwendung und Datenbank werden bei <strong>Supabase Inc.</strong> auf Servern innerhalb der Europäischen Union (AWS Rechenzentrum Frankfurt am Main, Deutschland) gehostet. 
-              Hierbei werden Ihre Kontodaten, E-Mail-Adresse (kryptographisch gehashtes Passwort), Kaufhistorie und Einstellungen sicher verarbeitet. 
-              Die Datenübertragung erfolgt ausschließlich über gesicherte TLS-/SSL-Verschlüsselung (Art. 6 Abs. 1 lit. b & f DSGVO).
+              Unsere Webseite und Webanwendung werden bei der <strong>Hostinger International Ltd.</strong> (61 Lordou Vironos Street, 6023 Larnaca, Zypern) auf gesicherten Webservern innerhalb der Europäischen Union gehostet. Beim Aufruf unserer Webseite erfasst Hostinger automatisch sogenannte Server-Logfiles (z. B. anonymisierte IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Dateiname, Browsertyp). Dies dient der sicheren, stabilen und performanten Bereitstellung unserer Webseite gemäß Art. 6 Abs. 1 lit. f DSGVO.
+            </p>
+
+            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Datenbank & Automatisierte Prozesse (Supabase in der EU)</h3>
+            <p>
+              Für die Verwaltung von Registrierungen, Kundenkonten, Freischaltungen und Systemeinstellungen nutzen wir die Cloud-Datenbankinfrastruktur von <strong>Supabase Inc.</strong> auf Servern innerhalb der Europäischen Union (AWS-Rechenzentrum Frankfurt am Main, Deutschland).
+            </p>
+            <p className="mt-2">
+              <strong>Kein externes CRM / CMS:</strong> Wir nutzen derzeit kein externes Kundenbeziehungs-Management-System (CRM) und kein Drittanbieter-Content-Management-System (CMS). Sämtliche Anwendungsdaten, Registrierungsbestätigungen und Kontoverwaltungen werden automatisiert direkt über unsere eigene Anwendungslogik und die gesicherte Supabase-Datenbank abgewickelt (Art. 6 Abs. 1 lit. b & f DSGVO). Die Datenübertragung erfolgt stets über gesicherte TLS-/SSL-Verschlüsselung.
             </p>
           </section>
 
