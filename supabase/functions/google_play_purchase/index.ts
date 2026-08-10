@@ -70,6 +70,7 @@ serve(async (req) => {
     );
 
     let isVerified = false;
+
     const serviceAccountRaw = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
 
@@ -97,6 +98,7 @@ serve(async (req) => {
           const googleData = await googleRes.json();
           if (googleData.purchaseState === 0) {
             isVerified = true;
+
             if (googleData.acknowledgementState === 0) {
               const ackUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}:acknowledge`;
               await fetch(ackUrl, {
@@ -113,6 +115,7 @@ serve(async (req) => {
           isVerified = true;
         }
       } catch (gErr) {
+        console.warn("Google API Auth Notice:", gErr);
         isVerified = true;
       }
     } else {
@@ -143,10 +146,18 @@ serve(async (req) => {
       }, { onConflict: 'paypal_order_id' });
     }
 
+    await supabaseAdmin
+      .from('profiles')
+      .update({ 
+        is_premium: true, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq('id', userId);
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Kauf erfolgreich in Supabase verifiziert und freigeschaltet.',
+        message: 'Kauf erfolgreich verifiziert und in public.kaeufe freigeschaltet.',
         productId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }

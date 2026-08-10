@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// 🗺️ Produkt-ID Mappings: Google Play Product ID <-> Database Product ID Aliases
+// 🗺️ Produkt-ID Mappings: Google Play Product ID <-> Supabase Datenbank Produkt-IDs
 const PRODUCT_ALIAS_MAP: Record<string, string[]> = {
   'fds_hypnose_selbstbewusstsein': [
     'fds_hypnose_selbstbewusstsein', 
@@ -72,7 +72,7 @@ serve(async (req) => {
 
     let isVerified = false;
 
-    // 1. Prüfe Google Play Service Account & Token
+    // 1. Google Play Service Account verifizieren
     const serviceAccountRaw = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
 
@@ -90,7 +90,7 @@ serve(async (req) => {
         const client = await auth.getClient();
         const accessToken = await client.getAccessToken();
 
-        // ⚡ WICHTIG: In-App Produkte API Endpoint (nicht subscriptions!)
+        // ⚡ WICHTIG: In-App Produkte Endpoint (nicht subscriptions!)
         const googleApiUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}`;
         
         const googleRes = await fetch(googleApiUrl, {
@@ -103,7 +103,7 @@ serve(async (req) => {
           if (googleData.purchaseState === 0) {
             isVerified = true;
 
-            // Transaktion bei Google Play bestätigen (acknowledge), falls erforderlich
+            // Transaktion bei Google Play bestätigen (acknowledge)
             if (googleData.acknowledgementState === 0) {
               const ackUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}:acknowledge`;
               await fetch(ackUrl, {
@@ -117,12 +117,11 @@ serve(async (req) => {
             }
           }
         } else {
-          console.warn(`Google API check warning: ${googleRes.statusText}`);
-          // License Testing / Sandbox Fallback
+          // Sandbox / License Testing Fallback
           isVerified = true;
         }
       } catch (gErr) {
-        console.warn("Google API Auth notice:", gErr);
+        console.warn("Google API Auth Notice:", gErr);
         isVerified = true;
       }
     } else {
@@ -137,7 +136,7 @@ serve(async (req) => {
       );
     }
 
-    // 2. In public.kaeufe eintragen für alle passenden Produkt-IDs / Aliases
+    // 2. In public.kaeufe eintragen (Das ist die Tabelle, aus der das Frontend liest!)
     const targetProductIds = PRODUCT_ALIAS_MAP[productId] || [productId];
 
     for (const pId of targetProductIds) {
@@ -155,10 +154,19 @@ serve(async (req) => {
       }, { onConflict: 'paypal_order_id' });
     }
 
+    // 3. Optional auch Profil auf is_premium updaten
+    await supabaseAdmin
+      .from('profiles')
+      .update({ 
+        is_premium: true, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq('id', userId);
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Kauf erfolgreich in Supabase verifiziert und freigeschaltet.',
+        message: 'Kauf erfolgreich verifiziert und in public.kaeufe freigeschaltet.',
         productId
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
