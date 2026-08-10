@@ -29,6 +29,7 @@ serve(async (req) => {
     const googleCredentials = JSON.parse(rawCredentials);
 
     let orderId = '';
+    let isRefunded = false;
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
 
     if (googleCredentials.client_email && !isTestToken) {
@@ -48,8 +49,13 @@ serve(async (req) => {
 
         orderId = purchase.data.orderId || '';
 
-        // Transaktion bei Google Play bestätigen (acknowledge)
-        if (purchase.data.acknowledgementState === 0) {
+        // Prüfe purchaseState (0 = Gekauft, 1 = Storniert/Erstattet, 2 = Ausstehend)
+        if (purchase.data.purchaseState === 1) {
+          isRefunded = true;
+        }
+
+        // Transaktion bei Google Play bestätigen (acknowledge) falls nicht erstattet
+        if (!isRefunded && purchase.data.acknowledgementState === 0) {
           await androidpublisher.purchases.products.acknowledge({
             packageName: 'app.flowderstille.de',
             productId: productId,
@@ -65,11 +71,29 @@ serve(async (req) => {
       orderId = `GPA.TEST-${Date.now()}`;
     }
 
+    // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus public.kaeufe!
+    if (isRefunded) {
+      await supabase
+        .from('kaeufe')
+        .delete()
+        .eq('user_id', userId)
+        .eq('produkt_id', productId);
+
+      return new Response(JSON.stringify({ 
+        success: false, 
+        refunded: true, 
+        error: "Dieser Kauf wurde bei Google Play erstattet." 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     if (!orderId) {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In Supabase speichern (sowohl user_purchases als auch public.kaeufe für die App- & Web-Freischaltung)
+    // 3. In Supabase speichern (user_purchases & public.kaeufe)
     try {
       await supabase
         .from('user_purchases')
@@ -84,7 +108,6 @@ serve(async (req) => {
       console.warn("Notice user_purchases:", e1);
     }
 
-    // Identischer Eintrag in public.kaeufe (daraus lesen sowohl Web als auch App)
     const dbKey = `${orderId}_${productId}`;
     const { error: dbError } = await supabase
       .from('kaeufe')
@@ -157,7 +180,6 @@ serve(async (req) => {
       }
     }
 
-    // 4. Erfolgreiche Response an die App (erlaubt transaction.finish)
     return new Response(JSON.stringify({ 
       success: true, 
       orderId: orderId 

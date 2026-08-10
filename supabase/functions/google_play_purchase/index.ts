@@ -24,10 +24,12 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+    // 1. Google API Authentifizierung
     const rawCredentials = Deno.env.get('GOOGLE_SERVICE_ACCOUNT') || Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT') || '{}';
     const googleCredentials = JSON.parse(rawCredentials);
 
     let orderId = '';
+    let isRefunded = false;
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
 
     if (googleCredentials.client_email && !isTestToken) {
@@ -38,6 +40,7 @@ serve(async (req) => {
         })
         const androidpublisher = google.androidpublisher({ version: 'v3', auth })
 
+        // 2. Kauf bei Google validieren
         const purchase = await androidpublisher.purchases.products.get({
           packageName: 'app.flowderstille.de',
           productId: productId,
@@ -46,7 +49,11 @@ serve(async (req) => {
 
         orderId = purchase.data.orderId || '';
 
-        if (purchase.data.acknowledgementState === 0) {
+        if (purchase.data.purchaseState === 1) {
+          isRefunded = true;
+        }
+
+        if (!isRefunded && purchase.data.acknowledgementState === 0) {
           await androidpublisher.purchases.products.acknowledge({
             packageName: 'app.flowderstille.de',
             productId: productId,
@@ -60,6 +67,23 @@ serve(async (req) => {
       }
     } else {
       orderId = `GPA.TEST-${Date.now()}`;
+    }
+
+    if (isRefunded) {
+      await supabase
+        .from('kaeufe')
+        .delete()
+        .eq('user_id', userId)
+        .eq('produkt_id', productId);
+
+      return new Response(JSON.stringify({ 
+        success: false, 
+        refunded: true, 
+        error: "Dieser Kauf wurde bei Google Play erstattet." 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
     }
 
     if (!orderId) {
