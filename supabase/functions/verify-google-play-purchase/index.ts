@@ -1,4 +1,4 @@
-// Version: 1.0.8 - Added price column support to user_purchases & dual table mapping
+// Version: 1.0.9 - Unified kaeufe table writes & Google Play Developer API purchase acknowledgment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -11,7 +11,7 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
-// 🗺️ Exakte Zuordnung der Produkt-IDs
+// 🗺️ Exakte Zuordnung der Produkt-IDs (Play Store ID <-> Supabase DB ID)
 const PLAY_TO_DB_MAP: Record<string, string> = {
   'fds_hypnose_selbstbewusstsein': 'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
@@ -21,7 +21,7 @@ const PLAY_TO_DB_MAP: Record<string, string> = {
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
   'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
-  'fds_pmr_basis': 'fds_pmr_basis',
+  'fds_pmr_basis': 'pmr_basis',
   'fds_gefuehrte_atemuebung': 'gefuehrte_atemuebung'
 };
 
@@ -92,14 +92,18 @@ serve(async (req) => {
           isRefunded = true;
         }
 
-        // Transaktion bei Google Play bestätigen (acknowledge) falls nicht erstattet
+        // Transaktion bei Google Play zwingend bestätigen (acknowledge), damit die Bestellung auf Google Play abgeschlossen wird!
         if (!isRefunded && purchase.data.acknowledgementState === 0) {
-          await androidpublisher.purchases.products.acknowledge({
-            packageName: 'app.flowderstille.de',
-            productId: playProductId,
-            token: purchaseToken,
-            requestBody: { developerPayload: userId }
-          });
+          try {
+            await androidpublisher.purchases.products.acknowledge({
+              packageName: 'app.flowderstille.de',
+              productId: playProductId,
+              token: purchaseToken,
+              requestBody: { developerPayload: userId }
+            });
+          } catch (ackErr) {
+            console.warn("Acknowledge Notice:", ackErr);
+          }
         }
       } catch (gErr) {
         console.warn("Google API Auth Notice:", gErr);
@@ -109,19 +113,13 @@ serve(async (req) => {
       orderId = `GPA.TEST-${Date.now()}`;
     }
 
-    // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus beiden Tabellen!
+    // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus public.kaeufe!
     if (isRefunded) {
       await supabase
         .from('kaeufe')
         .delete()
         .eq('user_id', userId)
         .in('produkt_id', [dbProductId, playProductId, productId]);
-
-      await supabase
-        .from('user_purchases')
-        .delete()
-        .eq('user_id', userId)
-        .in('product_id', [dbProductId, playProductId, productId]);
 
       return new Response(JSON.stringify({ 
         success: false, 
@@ -137,24 +135,7 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In user_purchases speichern (mit Preis)
-    try {
-      await supabase
-        .from('user_purchases')
-        .upsert({
-          user_id: userId,
-          product_id: dbProductId,
-          order_id: orderId,
-          purchase_token: purchaseToken,
-          status: 'active',
-          price: price,
-          betrag: price
-        }, { onConflict: 'order_id' });
-    } catch (e1) {
-      console.warn("Notice user_purchases:", e1);
-    }
-
-    // 4. In public.kaeufe speichern (primär DB-ID)
+    // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern (Identischer Prozess wie PayPal / Webseite!)
     const dbKey1 = `${orderId}_${dbProductId}`;
     const { error: dbError1 } = await supabase
       .from('kaeufe')
@@ -174,7 +155,7 @@ serve(async (req) => {
       console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
     }
 
-    // Speichere sekundär mit Play Store ID falls unterschiedlich
+    // Speichere sekundär mit Play Store ID falls unterschiedlich (für 100%ige Abdeckung)
     if (playProductId !== dbProductId) {
       const dbKey2 = `${orderId}_${playProductId}`;
       await supabase
@@ -202,7 +183,7 @@ serve(async (req) => {
       })
       .eq('id', userId);
 
-    // Identische Kaufbestätigung per E-Mail versenden via Resend
+    // Kaufbestätigung per E-Mail versenden via Resend
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (resendApiKey) {
       try {

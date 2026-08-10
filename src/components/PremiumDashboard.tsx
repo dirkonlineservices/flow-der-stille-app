@@ -111,9 +111,8 @@ export default function PremiumShopDashboard() {
 
       if (user) {
         try {
-          const [kaufRes, userPurchasesRes, vipRes] = await Promise.all([
+          const [kaufRes, vipRes] = await Promise.all([
             supabase.from('kaeufe').select('produkt_id').eq('user_id', user.id),
-            supabase.from('user_purchases').select('product_id').eq('user_id', user.id),
             supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
           ]);
           const ids = new Set<string>();
@@ -121,19 +120,6 @@ export default function PremiumShopDashboard() {
           if (!kaufRes.error && kaufRes.data) {
             kaufRes.data.forEach((k: any) => {
               const rawId = k.produkt_id;
-              if (rawId) {
-                ids.add(rawId);
-                const playId = getPlayStoreProductId(rawId);
-                ids.add(playId);
-                const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[rawId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playId];
-                if (dbId) ids.add(dbId);
-              }
-            });
-          }
-
-          if (!userPurchasesRes.error && userPurchasesRes.data) {
-            userPurchasesRes.data.forEach((up: any) => {
-              const rawId = up.product_id;
               if (rawId) {
                 ids.add(rawId);
                 const playId = getPlayStoreProductId(rawId);
@@ -556,10 +542,20 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const playId = getPlayStoreProductId(produkt.id);
 
   useEffect(() => {
+    let isMounted = true;
     BillingService.init({
       productId: produkt.id, 
-      onReady: () => setStoreReady(true)
+      onReady: () => {
+        if (isMounted) setStoreReady(true);
+      }
     });
+    const t = setTimeout(() => {
+      if (isMounted) setStoreReady(true);
+    }, 1000);
+    return () => {
+      isMounted = false;
+      clearTimeout(t);
+    };
   }, [produkt.id]);
 
   const handlePurchase = async () => {

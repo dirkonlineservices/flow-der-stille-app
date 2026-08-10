@@ -1,5 +1,5 @@
 import { getSupabase } from './supabaseClient';
-import { getPlayStoreProductId, PLAY_STORE_PRODUCT_MAP, REVERSE_PLAY_STORE_PRODUCT_MAP } from './billing';
+import { getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP } from './billing';
 
 interface VerifyPurchaseParams {
   purchaseToken: string;
@@ -41,19 +41,8 @@ export const verifyGooglePlayPurchase = async ({
     console.warn("Edge Function notice:", fnErr);
   }
 
-  // 2. WICHTIG: Sichere direkten Eintrag in user_purchases & public.kaeufe
+  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (Identisch mit PayPal / Webseite!)
   try {
-    // In user_purchases schreiben (mit Preis)
-    await supabase.from('user_purchases').upsert({
-      user_id: userId,
-      product_id: dbProductId,
-      order_id: orderId,
-      purchase_token: purchaseToken,
-      status: 'active',
-      price: price || 1.99,
-      betrag: price || 1.99
-    }, { onConflict: 'order_id' });
-
     // In kaeufe schreiben (DB ID)
     const dbKey1 = `${orderId}_${dbProductId}`;
     await supabase.from('kaeufe').upsert({
@@ -84,7 +73,7 @@ export const verifyGooglePlayPurchase = async ({
       }, { onConflict: 'paypal_order_id' });
     }
 
-    // Profil-Status & Rolle anpassen
+    // Profil-Status & Rolle anpassen (is_premium = true, user_role = 'kunde')
     await supabase.from('profiles').update({
       is_premium: true,
       user_role: 'kunde',
@@ -93,7 +82,7 @@ export const verifyGooglePlayPurchase = async ({
 
     verifiedSuccessfully = true;
   } catch (dbErr) {
-    console.error("Direkter Table-Upsert Fehler:", dbErr);
+    console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
   }
 
   return { success: verifiedSuccessfully, orderId };
