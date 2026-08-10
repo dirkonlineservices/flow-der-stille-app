@@ -110,12 +110,15 @@ export default function PremiumShopDashboard() {
       let userIsVip = false;
 
       if (user) {
+        console.log('🔑 DEBUG: user.id =', user.id, '| user.email =', user.email);
         try {
           const [kaufRes, vipRes] = await Promise.all([
             supabase.from('kaeufe').select('produkt_id').eq('user_id', user.id),
             supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
           ]);
           const ids = new Set<string>();
+
+          console.log('🛒 DEBUG: kaeufe query result:', kaufRes.error ? kaufRes.error.message : `${kaufRes.data?.length || 0} Käufe gefunden`, kaufRes.data);
 
           if (!kaufRes.error && kaufRes.data) {
             kaufRes.data.forEach((k: any) => {
@@ -130,10 +133,13 @@ export default function PremiumShopDashboard() {
             });
           }
 
+          console.log('✅ DEBUG: gekauftIds Set:', [...ids]);
+
           gekaufteSet = ids;
           if (!vipRes.error && vipRes.data) {
             userIsVip = !!vipRes.data;
           }
+          console.log('👑 DEBUG: isVip =', !!vipRes.data);
         } catch (e) {
           console.warn('Could not fetch purchases or VIP status:', e);
         }
@@ -335,6 +341,13 @@ export default function PremiumShopDashboard() {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* TEMPORÄRER DEBUG BANNER – nach Lösung entfernen */}
+      {user && (
+        <div className="p-3 mb-4 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 rounded-lg text-xs font-mono text-yellow-800 dark:text-yellow-200">
+          <strong>🔑 Debug:</strong> User-ID: <span className="select-all">{user.id}</span> | Email: {user.email} | Käufe: {gekauftIds.size} IDs ({[...gekauftIds].join(', ') || 'keine'}) | VIP: {isVip ? 'Ja' : 'Nein'}
         </div>
       )}
 
