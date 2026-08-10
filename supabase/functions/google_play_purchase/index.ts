@@ -58,7 +58,7 @@ serve(async (req) => {
   }
 
   try {
-    const { purchaseToken, productId, userId, price = 1.99, packageName = 'app.flowderstille.de' } = await req.json();
+    const { productId, purchaseToken, userId, price = 1.99, packageName = 'app.flowderstille.de' } = await req.json();
 
     if (!purchaseToken || !productId || !userId) {
       throw new Error('Fehlende Parameter: purchaseToken, productId oder userId erforderlich.');
@@ -72,7 +72,7 @@ serve(async (req) => {
     let isVerified = false;
     let fetchedOrderId = '';
 
-    const serviceAccountRaw = Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
+    const serviceAccountRaw = Deno.env.get('GOOGLE_SERVICE_ACCOUNT') || Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT');
     const isTestToken = purchaseToken.startsWith('inapp:') || purchaseToken.startsWith('MOCK_') || purchaseToken.includes('test');
 
     if (serviceAccountRaw && !isTestToken) {
@@ -119,13 +119,16 @@ serve(async (req) => {
           }
         } else {
           isVerified = true;
+          fetchedOrderId = `GPA.TEST-${Date.now()}`;
         }
       } catch (gErr) {
         console.warn("Google API Auth Notice:", gErr);
         isVerified = true;
+        fetchedOrderId = `GPA.TEST-${Date.now()}`;
       }
     } else {
       isVerified = true;
+      fetchedOrderId = `GPA.TEST-${Date.now()}`;
     }
 
     if (!isVerified) {
@@ -135,7 +138,7 @@ serve(async (req) => {
       );
     }
 
-    const finalOrderId = fetchedOrderId || purchaseToken;
+    const finalOrderId = fetchedOrderId || `GPA.${purchaseToken.substring(0, 16)}`;
 
     const targetProductIds = new Set<string>();
     targetProductIds.add(productId);
@@ -162,21 +165,23 @@ serve(async (req) => {
 
     for (const pId of targetProductIds) {
       const dbKey = `${finalOrderId}_${pId}`;
-      const { error: insertErr } = await supabaseAdmin.from('kaeufe').upsert({
-        user_id: userId,
-        produkt_id: pId,
-        betrag: price,
-        waehrung: 'EUR',
-        status: 'completed',
-        zahlungsmethode: 'google_play',
-        paypal_order_id: dbKey,
-        transaktions_id: purchaseToken,
-        created_at: new Date().toISOString()
-      }, { onConflict: 'paypal_order_id' });
+      const { error: dbError } = await supabaseAdmin
+        .from('kaeufe')
+        .upsert({
+          user_id: userId,
+          produkt_id: pId,
+          betrag: price,
+          waehrung: 'EUR',
+          status: 'completed',
+          zahlungsmethode: 'google_play',
+          paypal_order_id: dbKey,
+          transaktions_id: purchaseToken,
+          created_at: new Date().toISOString()
+        }, { onConflict: 'paypal_order_id' });
 
-      if (insertErr) {
-        console.error("Fehler beim Speichern in kaeufe:", insertErr);
-        throw new Error(`Datenbankfehler: ${insertErr.message}`);
+      if (dbError) {
+        console.error("Datenbank Fehler bei public.kaeufe:", dbError);
+        throw new Error("Kauf konnte nicht in Supabase gesichert werden");
       }
     }
 
@@ -191,17 +196,22 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Kauf erfolgreich verifiziert und in Supabase gespeichert.',
         orderId: finalOrderId,
         productId
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
     );
 
-  } catch (err: any) {
+  } catch (error: any) {
     return new Response(
-      JSON.stringify({ success: false, error: err.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ success: false, error: error.message }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      }
     );
   }
 });
