@@ -102,15 +102,18 @@ export default function Datenschutz() {
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">6. Ihre Rechte & Kontolöschung</h2>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">6. Ihre Rechte, Speicherdauer & Kontolöschung</h2>
             <p>
               Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung Ihrer personenbezogenen Daten (Art. 15–21 DSGVO).
             </p>
             <p className="mt-2">
-              <strong>Kontolöschung in der App:</strong> Sie können Ihr Benutzerkonto und alle verbundenen Daten jederzeit direkt in den App-Einstellungen unwiderruflich löschen. Mit der Löschung werden Ihre gespeicherten Daten zeitnah aus unserer Supabase-Datenbank entfernt.
+              <strong>Kontolöschung & Löschfristen:</strong> Sie können Ihr Benutzerkonto und alle damit verbundenen persönlichen Profil- und Nutzungsdaten jederzeit direkt in den Einstellungen der App oder durch eine Nachricht an uns löschen lassen. Nach Auslösung der Löschung werden Ihre persönlichen Nutzerdaten automatisiert unverzüglich, spätestens jedoch innerhalb von 30 Tagen, vollständig und unwiderruflich aus unseren aktiven Datenbanken (Supabase) gelöscht.
             </p>
             <p className="mt-2">
-              Für Anfragen wenden Sie sich bitte per E-Mail an: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
+              <strong>Gesetzliche Aufbewahrungspflichten:</strong> Ausgenommen von der sofortigen Löschung sind ausschließlich diejenigen Daten, zu deren Aufbewahrung wir aufgrund gesetzlicher Vorgaben (z. B. nach Handels- oder Steuerrecht gemäß § 147 AO / § 257 HGB für Buchhaltungs- und Zahlungsbelege) verpflichtet sind. Diese Daten werden für jede sonstige Nutzung gesperrt, ausschließlich für die gesetzlich vorgeschriebene Dauer aufbewahrt und nach Ablauf der Aufbewahrungsfristen gelöscht.
+            </p>
+            <p className="mt-2">
+              Für Anträge oder Fragen zur Datenlöschung wenden Sie sich bitte per E-Mail an: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
             </p>
           </section>
 
