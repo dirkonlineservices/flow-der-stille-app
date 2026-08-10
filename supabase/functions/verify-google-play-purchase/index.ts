@@ -135,40 +135,74 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
+    // Fetch user's email to see if an alias account (@gmail.com <-> @googlemail.com) exists
+    let userEmail: string | undefined;
+    const targetUserIds: string[] = [userId];
+
+    try {
+      const { data: userData } = await supabase.auth.admin.getUserById(userId);
+      userEmail = userData?.user?.email;
+
+      if (userEmail) {
+        const cleanEmail = userEmail.toLowerCase().trim();
+        let aliasEmail: string | null = null;
+        if (cleanEmail.endsWith('@gmail.com')) {
+          aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
+        } else if (cleanEmail.endsWith('@googlemail.com')) {
+          aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
+        }
+
+        if (aliasEmail) {
+          const { data: aliasProfiles } = await supabase
+            .from('profiles')
+            .select('id')
+            .in('email', [cleanEmail, aliasEmail]);
+
+          if (aliasProfiles && aliasProfiles.length > 0) {
+            aliasProfiles.forEach((p: any) => {
+              if (p.id && !targetUserIds.includes(p.id)) {
+                targetUserIds.push(p.id);
+              }
+            });
+          }
+        }
+      }
+    } catch (uErr) {
+      console.warn("Could not fetch user email for alias matching:", uErr);
+    }
+
     // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern mit Spalte 'preis' & onConflict: 'user_id,produkt_id'
-    const dbKey1 = `${orderId}_${dbProductId}`;
+    const purchasesToInsert = targetUserIds.map((uid, idx) => ({
+      user_id: uid,
+      produkt_id: dbProductId,
+      preis: price,
+      waehrung: 'EUR',
+      paypal_order_id: `${orderId}_${dbProductId}_${idx}`,
+      created_at: new Date().toISOString(),
+      widerruf_verzicht_akzeptiert: true
+    }));
+
     const { error: dbError1 } = await supabase
       .from('kaeufe')
-      .upsert({
-        user_id: userId,
-        produkt_id: dbProductId,
-        preis: price,
-        waehrung: 'EUR',
-        paypal_order_id: dbKey1,
-        created_at: new Date().toISOString(),
-        widerruf_verzicht_akzeptiert: true
-      }, { onConflict: 'user_id,produkt_id' });
+      .upsert(purchasesToInsert, { onConflict: 'user_id,produkt_id' });
 
     if (dbError1) {
       console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
     }
 
-    // Profil-Status auf is_premium = true setzen
+    // Profil-Status auf is_premium = true setzen für alle verknüpften Accounts
     await supabase
       .from('profiles')
       .update({ 
         is_premium: true, 
         updated_at: new Date().toISOString() 
       })
-      .eq('id', userId);
+      .in('id', targetUserIds);
 
     // Kaufbestätigung per E-Mail versenden via Resend
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (resendApiKey) {
       try {
-        const { data: userData } = await supabase.auth.admin.getUserById(userId);
-        const userEmail = userData?.user?.email;
-
         if (userEmail) {
           const emailHtml = `
             <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">

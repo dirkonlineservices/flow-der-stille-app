@@ -38,21 +38,47 @@ export default function PremiumShopDashboard() {
   useEffect(() => {
     if (user) {
       loadMyPurchases();
+      fetchMyPurchases();
     } else {
       setMyPurchases([]);
       setLoadingPurchases(false);
     }
   }, [user, gekauftIds]);
 
-  const loadMyPurchases = async () => {
+  const fetchMyPurchases = async () => {
     if (!user) return;
     try {
       setLoadingPurchases(true);
       const supabase = getSupabase();
+
+      const targetUserIds: string[] = [user.id];
+      const cleanEmail = (user.email || '').toLowerCase().trim();
+      let aliasEmail: string | null = null;
+      if (cleanEmail.endsWith('@gmail.com')) {
+        aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
+      } else if (cleanEmail.endsWith('@googlemail.com')) {
+        aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
+      }
+
+      if (aliasEmail) {
+        const { data: aliasProfiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .in('email', [cleanEmail, aliasEmail]);
+
+        if (aliasProfiles && aliasProfiles.length > 0) {
+          aliasProfiles.forEach((p: any) => {
+            if (p.id && !targetUserIds.includes(p.id)) {
+              targetUserIds.push(p.id);
+            }
+          });
+        }
+      }
+
       const { data, error } = await supabase
         .from('kaeufe')
         .select('*')
-        .eq('user_id', user.id)
+        .in('user_id', targetUserIds)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -110,15 +136,37 @@ export default function PremiumShopDashboard() {
       let userIsVip = false;
 
       if (user) {
-        console.log('🔑 DEBUG: user.id =', user.id, '| user.email =', user.email);
         try {
+          // Automatic resolution for @gmail.com <-> @googlemail.com aliases
+          const targetUserIds: string[] = [user.id];
+          const cleanEmail = (user.email || '').toLowerCase().trim();
+          let aliasEmail: string | null = null;
+          if (cleanEmail.endsWith('@gmail.com')) {
+            aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
+          } else if (cleanEmail.endsWith('@googlemail.com')) {
+            aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
+          }
+
+          if (aliasEmail) {
+            const { data: aliasProfiles } = await supabase
+              .from('profiles')
+              .select('id')
+              .in('email', [cleanEmail, aliasEmail]);
+
+            if (aliasProfiles && aliasProfiles.length > 0) {
+              aliasProfiles.forEach((p: any) => {
+                if (p.id && !targetUserIds.includes(p.id)) {
+                  targetUserIds.push(p.id);
+                }
+              });
+            }
+          }
+
           const [kaufRes, vipRes] = await Promise.all([
-            supabase.from('kaeufe').select('produkt_id').eq('user_id', user.id),
-            supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
+            supabase.from('kaeufe').select('produkt_id').in('user_id', targetUserIds),
+            supabase.from('vip_zugang').select('user_id').in('user_id', targetUserIds)
           ]);
           const ids = new Set<string>();
-
-          console.log('🛒 DEBUG: kaeufe query result:', kaufRes.error ? kaufRes.error.message : `${kaufRes.data?.length || 0} Käufe gefunden`, kaufRes.data);
 
           if (!kaufRes.error && kaufRes.data) {
             kaufRes.data.forEach((k: any) => {
@@ -133,13 +181,10 @@ export default function PremiumShopDashboard() {
             });
           }
 
-          console.log('✅ DEBUG: gekauftIds Set:', [...ids]);
-
           gekaufteSet = ids;
           if (!vipRes.error && vipRes.data) {
-            userIsVip = !!vipRes.data;
+            userIsVip = vipRes.data.length > 0;
           }
-          console.log('👑 DEBUG: isVip =', !!vipRes.data);
         } catch (e) {
           console.warn('Could not fetch purchases or VIP status:', e);
         }
