@@ -344,12 +344,7 @@ export default function PremiumShopDashboard() {
         </div>
       )}
 
-      {/* TEMPORÄRER DEBUG BANNER – nach Lösung entfernen */}
-      {user && (
-        <div className="p-3 mb-4 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 rounded-lg text-xs font-mono text-yellow-800 dark:text-yellow-200">
-          <strong>🔑 Debug:</strong> User-ID: <span className="select-all">{user.id}</span> | Email: {user.email} | Käufe: {gekauftIds.size} IDs ({[...gekauftIds].join(', ') || 'keine'}) | VIP: {isVip ? 'Ja' : 'Nein'}
-        </div>
-      )}
+
 
       <div className="space-y-6">
         {showUnlockBanner && <UnlockBanner />}
