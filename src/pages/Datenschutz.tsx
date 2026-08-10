@@ -28,7 +28,7 @@ export default function Datenschutz() {
             <Shield className="text-[var(--color-accent-primary)] w-8 h-8" />
             <h1 className="text-3xl font-serif text-[var(--color-accent-primary)]">Datenschutzerklärung</h1>
           </div>
-          <p className="text-[var(--color-text-muted-light)] text-xs">Stand: Juni 2026</p>
+          <p className="text-[var(--color-text-muted-light)] text-xs">Stand: August 2026</p>
         </header>
 
         <div className="space-y-6 text-[var(--color-text-muted)] text-sm leading-relaxed">
@@ -37,21 +37,45 @@ export default function Datenschutz() {
             <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">1. Verantwortlicher</h2>
             <p>
               Verantwortlich für die Datenverarbeitung im Sinne der DSGVO ist:<br />
-              <strong>Dirk Schmetzer</strong><br />
+              <strong>Dirk Schmetzer – Flow der Stille</strong><br />
               Riedgrasweg 30, 70599 Stuttgart<br />
               E-Mail: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Datenschutz auf der Webseite</h2>
-            <h3 className="font-semibold text-[var(--color-text-main)]">Google Tag Manager (GTM) & Analytics (GA4)</h3>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">2. Hosting & Datenbank (Supabase in der EU)</h2>
             <p>
-              Wir setzen den Google Tag Manager ein, um Tags auf unserer Webseite zu verwalten. Der Tag Manager selbst speichert keine personenbezogenen Daten. Er dient lediglich als technisches Hilfsmittel zur Aussteuerung anderer Tools.
+              Unsere Anwendung und Datenbank werden bei <strong>Supabase Inc.</strong> auf Servern innerhalb der Europäischen Union (AWS Rechenzentrum Frankfurt am Main, Deutschland) gehostet. 
+              Hierbei werden Ihre Kontodaten, E-Mail-Adresse (kryptographisch gehashtes Passwort), Kaufhistorie und Einstellungen sicher verarbeitet. 
+              Die Datenübertragung erfolgt ausschließlich über gesicherte TLS-/SSL-Verschlüsselung (Art. 6 Abs. 1 lit. b & f DSGVO).
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">3. Newsletter & Double-Opt-In</h2>
+            <p>
+              Wenn Sie sich für unseren Newsletter anmelden, verarbeiten wir Ihre E-Mail-Adresse ausschließlich zum Zweck des regelmäßigen E-Mail-Versands über empfohlene Entspannungsinhalte und Neuigkeiten. 
+              Die Anmeldung erfolgt im rechtssicheren <strong>Double-Opt-In-Verfahren</strong>: Nach der Registrierung erhalten Sie eine E-Mail mit einem Bestätigungslink. Erst nach Anklicken dieses Links ist Ihre Anmeldung aktiv.
             </p>
             <p className="mt-2">
-              Zur Analyse der Webseitennutzung setzen wir Google Analytics 4 (GA4) ein. Dies geschieht in einer datenschutzkonformen Konfiguration unter Verwendung der IP-Anonymisierung.
+              Verwaltung & Speicherung: Ihre Einwilligung und E-Mail-Adresse werden direkt in unserer eigenen, EU-gehosteten Supabase-Datenbank verwaltet. Wir nutzen derzeit keine externen Drittanbieter-Newsletter-Marketingdienste. Sie können sich jederzeit über den Abmeldelink in jeder E-Mail oder per E-Mail an uns abmelden.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Google-Dienste & Analysetools</h2>
+            <p>
+              Wir nutzen verschiedene Dienste der Google Ireland Limited („Google“), Gordon House, Barrow Street, Dublin 4, Irland:
+            </p>
+            <ul className="list-disc pl-5 mt-2 space-y-1.5">
+              <li><strong>Google Tag Manager (GTM):</strong> Technisches Hilfsmittel zur Einbindung und Steuerung von Analyse-Tags. Der Tag Manager selbst erstellt keine Nutzerprofile und speichert keine Cookies.</li>
+              <li><strong>Google Analytics 4 (GA4) & Analytics for Firebase:</strong> Zur Analyse der Webseiten- und App-Nutzung. Die IP-Adresse wird von Google automatisch anonymisiert. Die App-Daten werden mit der Google Play Console verknüpft, um Akquisitions- und Leistungsdaten auszuwerten.</li>
+              <li><strong>Google Search Console:</strong> Werkzeug zur Überwachung der Auffindbarkeit unserer Plattform in der Google-Suche (ohne Erfassung personenbezogener Nutzerdaten).</li>
+              <li><strong>Firebase Crashlytics:</strong> Erfassung anonymer Absturzberichte zur Optimierung der App-Stabilität (Art. 6 Abs. 1 lit. f DSGVO).</li>
+              <li><strong>Google Ads:</strong> Einsatz von Werbeanzeigen und Conversion-Tracking zur Reichweitenmessung unserer Marketingkampagnen.</li>
+            </ul>
+
             <div className="mt-4 p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-2.5 text-xs text-[var(--color-text-main)]">
                 <Cookie size={18} className="text-[var(--color-accent-primary)] shrink-0" />
@@ -65,40 +89,28 @@ export default function Datenschutz() {
                 Cookie-Einstellungen anpassen
               </button>
             </div>
-            
-            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Newsletter (Supabase)</h3>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">5. Social Media & Online-Werbung</h2>
             <p>
-              Falls du dich für unseren Newsletter anmeldest, speichern wir deine E-Mail-Adresse in unserer Datenbank beim Cloud-Dienstanbieter Supabase, welcher seine Dienste innerhalb der EU hostet. Die Anmeldung erfolgt über ein "Double Opt-In"-Verfahren, bei dem du die Newsletter-Anmeldung nach der Registrierung durch einen Klick auf einen Aktivierungslink bestätigen musst.
+              Zur Präsentation unserer Inhalte und für Zielgruppenwerbung unterhalten wir Online-Präsenzen auf Social-Media-Plattformen (z. B. Meta [Facebook & Instagram], Pinterest, TikTok) und schalten dort Werbeanzeigen.
+            </p>
+            <p className="mt-2">
+              Beim Besuch unserer Social-Media-Seiten oder beim Klick auf Werbeanzeigen verarbeiten die Betreiber dieser Netzwerke Daten der Nutzer für Marktforschungs- und Werbezwecke (z. B. zur Erstellung von Interessenprofilen). Die Auswertung von Werbekampagnen auf unserer Webseite erfolgt ausschließlich nach Ihrer freiwilligen Einwilligung über unser Cookie-Banner (Art. 6 Abs. 1 lit. a DSGVO).
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">3. Datenschutz in der mobilen App</h2>
-            <h3 className="font-semibold text-[var(--color-text-main)]">Nutzer-Authentifizierung (Supabase)</h3>
+            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">6. Ihre Rechte & Kontolöschung</h2>
             <p>
-              Für die Anmeldung (Login/Registrierung) nutzen wir Supabase Auth. Deine E-Mail-Adresse und Passwortdaten (gespeichert als kryptographischer Hash) werden sicher auf unseren Servern innerhalb der EU verarbeitet.
+              Sie haben jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung Ihrer personenbezogenen Daten (Art. 15–21 DSGVO).
             </p>
-            
-            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Applikations-Stabilität & Firebase Crashlytics</h3>
-            <p>
-              Zur Verbesserung der App-Stabilität setzen wir Firebase Crashlytics ein. Hierbei werden anonymisierte Absturzdaten (Device-Daten, Stacktraces) erfasst, die uns helfen, technische Fehler zu beheben. Dies geschieht auf Basis unseres berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO.
+            <p className="mt-2">
+              <strong>Kontolöschung in der App:</strong> Sie können Ihr Benutzerkonto und alle verbundenen Daten jederzeit direkt in den App-Einstellungen unwiderruflich löschen. Mit der Löschung werden Ihre gespeicherten Daten zeitnah aus unserer Supabase-Datenbank entfernt.
             </p>
-
-            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Google Analytics for Firebase</h3>
-            <p>
-              Zur Analyse der App-Nutzung nutzen wir Google Analytics for Firebase. Diese Daten werden mit der Google Play Console verknüpft, um Akquisitionskennzahlen und Stabilitätsdaten gesammelt auszuwerten. Eine persönliche Identifizierung findet hierbei nicht statt.
-            </p>
-
-            <h3 className="font-semibold text-[var(--color-text-main)] mt-4">Kontolöschung</h3>
-            <p>
-              Du hast das Recht auf jederzeitige, unwiderrufliche Löschung deines Benutzerkontos und der damit verbundenen persönlichen Daten direkt in den Einstellungen der App. Mit der Löschung werden auch deine gespeicherten Daten (z. B. Fortschritt, E-Mail-Adresse) zeitnah aus unserer Datenbank entfernt.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-serif text-[var(--color-text-main)] mb-2">4. Deine Rechte</h2>
-            <p>
-              Du hast jederzeit das Recht auf Auskunft, Berichtigung, Löschung oder Einschränkung der Verarbeitung deiner Daten. Bitte wende dich hierzu an die oben genannte Verantwortliche Stelle unter: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
+            <p className="mt-2">
+              Für Anfragen wenden Sie sich bitte per E-Mail an: <a href="mailto:datenschutz@flow-der-stille.de" className="text-[var(--color-accent-primary)] hover:underline">datenschutz@flow-der-stille.de</a>.
             </p>
           </section>
 
