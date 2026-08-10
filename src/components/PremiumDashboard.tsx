@@ -604,6 +604,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
             setShowUnlockBanner(true);
             await onSuccess(); // Lädt Shop-Daten sofort neu, aktualisiert gekaufteSet und schaltet Play Button frei!
+            setError(null);
             setTimeout(() => {
               setShowUnlockBanner(false);
             }, 2000);

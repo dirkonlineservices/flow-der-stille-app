@@ -1,4 +1,4 @@
-// Version: 1.1.0 - Added google_play_order_id field to kaeufe table upsert
+// Version: 1.1.1 - Fixed kaeufe column name 'preis' & onConflict 'user_id,produkt_id'
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -13,11 +13,11 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
 // 🗺️ Exakte Zuordnung der Produkt-IDs (Play Store ID <-> Supabase DB ID)
 const PLAY_TO_DB_MAP: Record<string, string> = {
-  'fds_hypnose_selbstbewusstsein': 'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen',
+  'fds_hypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
   'fds_meditation_loslassen': 'meditation_loslassen',
   'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
-  'fds_hypnose_fokus': 'selbsthypnose_fokus_konzentration',
+  'fds_hypnose_fokus': 'selbsthypnose_fokus&konzentration',
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
   'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
@@ -135,54 +135,29 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern mit google_play_order_id
+    // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern mit Spalte 'preis' & onConflict: 'user_id,produkt_id'
     const dbKey1 = `${orderId}_${dbProductId}`;
     const { error: dbError1 } = await supabase
       .from('kaeufe')
       .upsert({
         user_id: userId,
         produkt_id: dbProductId,
-        betrag: price,
+        preis: price,
         waehrung: 'EUR',
-        status: 'completed',
-        zahlungsmethode: 'google_play',
         paypal_order_id: dbKey1,
-        google_play_order_id: orderId,
-        google_order_id: orderId,
-        transaktions_id: purchaseToken,
-        created_at: new Date().toISOString()
-      }, { onConflict: 'paypal_order_id' });
+        created_at: new Date().toISOString(),
+        widerruf_verzicht_akzeptiert: true
+      }, { onConflict: 'user_id,produkt_id' });
 
     if (dbError1) {
       console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
     }
 
-    // Speichere sekundär mit Play Store ID falls unterschiedlich
-    if (playProductId !== dbProductId) {
-      const dbKey2 = `${orderId}_${playProductId}`;
-      await supabase
-        .from('kaeufe')
-        .upsert({
-          user_id: userId,
-          produkt_id: playProductId,
-          betrag: price,
-          waehrung: 'EUR',
-          status: 'completed',
-          zahlungsmethode: 'google_play',
-          paypal_order_id: dbKey2,
-          google_play_order_id: orderId,
-          google_order_id: orderId,
-          transaktions_id: purchaseToken,
-          created_at: new Date().toISOString()
-        }, { onConflict: 'paypal_order_id' });
-    }
-
-    // Profil-Status & Rolle auf 'kunde' setzen (identisch mit PayPal)
+    // Profil-Status auf is_premium = true setzen
     await supabase
       .from('profiles')
       .update({ 
         is_premium: true, 
-        user_role: 'kunde',
         updated_at: new Date().toISOString() 
       })
       .eq('id', userId);

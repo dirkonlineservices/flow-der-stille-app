@@ -41,46 +41,22 @@ export const verifyGooglePlayPurchase = async ({
     console.warn("Edge Function notice:", fnErr);
   }
 
-  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (mit google_play_order_id!)
+  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (mit Spalte 'preis' & onConflict: 'user_id,produkt_id')
   try {
-    // In kaeufe schreiben (DB ID)
     const dbKey1 = `${orderId}_${dbProductId}`;
     await supabase.from('kaeufe').upsert({
       user_id: userId,
       produkt_id: dbProductId,
-      betrag: price || 1.99,
+      preis: price || 1.99,
       waehrung: 'EUR',
-      status: 'completed',
-      zahlungsmethode: 'google_play',
       paypal_order_id: dbKey1,
-      google_play_order_id: orderId,
-      google_order_id: orderId,
-      transaktions_id: purchaseToken,
-      created_at: new Date().toISOString()
-    }, { onConflict: 'paypal_order_id' });
+      created_at: new Date().toISOString(),
+      widerruf_verzicht_akzeptiert: true
+    }, { onConflict: 'user_id,produkt_id' });
 
-    // In kaeufe schreiben (Play ID falls unterschiedlich)
-    if (playProductId !== dbProductId) {
-      const dbKey2 = `${orderId}_${playProductId}`;
-      await supabase.from('kaeufe').upsert({
-        user_id: userId,
-        produkt_id: playProductId,
-        betrag: price || 1.99,
-        waehrung: 'EUR',
-        status: 'completed',
-        zahlungsmethode: 'google_play',
-        paypal_order_id: dbKey2,
-        google_play_order_id: orderId,
-        google_order_id: orderId,
-        transaktions_id: purchaseToken,
-        created_at: new Date().toISOString()
-      }, { onConflict: 'paypal_order_id' });
-    }
-
-    // Profil-Status & Rolle anpassen (is_premium = true, user_role = 'kunde')
+    // Profil-Status anpassen
     await supabase.from('profiles').update({
       is_premium: true,
-      user_role: 'kunde',
       updated_at: new Date().toISOString()
     }).eq('id', userId);
 
