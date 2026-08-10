@@ -41,7 +41,7 @@ export const verifyGooglePlayPurchase = async ({
     console.warn("Edge Function notice:", fnErr);
   }
 
-  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (Identisch mit PayPal / Webseite!)
+  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (mit google_play_order_id!)
   try {
     // In kaeufe schreiben (DB ID)
     const dbKey1 = `${orderId}_${dbProductId}`;
@@ -53,6 +53,8 @@ export const verifyGooglePlayPurchase = async ({
       status: 'completed',
       zahlungsmethode: 'google_play',
       paypal_order_id: dbKey1,
+      google_play_order_id: orderId,
+      google_order_id: orderId,
       transaktions_id: purchaseToken,
       created_at: new Date().toISOString()
     }, { onConflict: 'paypal_order_id' });
@@ -68,6 +70,8 @@ export const verifyGooglePlayPurchase = async ({
         status: 'completed',
         zahlungsmethode: 'google_play',
         paypal_order_id: dbKey2,
+        google_play_order_id: orderId,
+        google_order_id: orderId,
         transaktions_id: purchaseToken,
         created_at: new Date().toISOString()
       }, { onConflict: 'paypal_order_id' });

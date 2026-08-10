@@ -1,4 +1,4 @@
-// Version: 1.0.9 - Unified kaeufe table writes & Google Play Developer API purchase acknowledgment
+// Version: 1.1.0 - Added google_play_order_id field to kaeufe table upsert
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -92,7 +92,7 @@ serve(async (req) => {
           isRefunded = true;
         }
 
-        // Transaktion bei Google Play zwingend bestätigen (acknowledge), damit die Bestellung auf Google Play abgeschlossen wird!
+        // Transaktion bei Google Play zwingend bestätigen (acknowledge)
         if (!isRefunded && purchase.data.acknowledgementState === 0) {
           try {
             await androidpublisher.purchases.products.acknowledge({
@@ -135,7 +135,7 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern (Identischer Prozess wie PayPal / Webseite!)
+    // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern mit google_play_order_id
     const dbKey1 = `${orderId}_${dbProductId}`;
     const { error: dbError1 } = await supabase
       .from('kaeufe')
@@ -147,6 +147,8 @@ serve(async (req) => {
         status: 'completed',
         zahlungsmethode: 'google_play',
         paypal_order_id: dbKey1,
+        google_play_order_id: orderId,
+        google_order_id: orderId,
         transaktions_id: purchaseToken,
         created_at: new Date().toISOString()
       }, { onConflict: 'paypal_order_id' });
@@ -155,7 +157,7 @@ serve(async (req) => {
       console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
     }
 
-    // Speichere sekundär mit Play Store ID falls unterschiedlich (für 100%ige Abdeckung)
+    // Speichere sekundär mit Play Store ID falls unterschiedlich
     if (playProductId !== dbProductId) {
       const dbKey2 = `${orderId}_${playProductId}`;
       await supabase
@@ -168,6 +170,8 @@ serve(async (req) => {
           status: 'completed',
           zahlungsmethode: 'google_play',
           paypal_order_id: dbKey2,
+          google_play_order_id: orderId,
+          google_order_id: orderId,
           transaktions_id: purchaseToken,
           created_at: new Date().toISOString()
         }, { onConflict: 'paypal_order_id' });
