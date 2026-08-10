@@ -1,4 +1,4 @@
-// Version: 1.0.1 - GitHub Actions Automated Deployment
+// Version: 1.0.2 - Force redeploy via GitHub Actions workflow
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
