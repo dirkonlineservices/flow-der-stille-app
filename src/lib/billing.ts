@@ -1,8 +1,10 @@
+import { handlePurchaseSuccess } from './googlePlayVerification';
+
 interface BillingInitProps {
   productId: string;
   onReady: () => void;
-  onSuccess: (transaction?: any) => Promise<any> | any;
-  onFailure: (errorMsg: string) => void;
+  onSuccess?: (transaction?: any) => Promise<any> | any;
+  onFailure?: (errorMsg: string) => void;
 }
 
 // 📊 DataLayer Push Helper für GA4 Tracking
@@ -18,6 +20,9 @@ export const pushToDataLayer = (eventName: string, payload?: any) => {
 
 // 🛑 Set zur Verhinderung von Endlosschleifen (Idempotenz-Sperre)
 const processedTransactionsSet = new Set<string>();
+let isGlobalStoreInitialized = false;
+let globalSuccessCallback: ((transaction?: any) => Promise<any> | any) | null = null;
+let activePurchaseFailureCallback: ((msg: string) => void) | null = null;
 
 // 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Google Play Console Produkt-ID
 export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
@@ -55,12 +60,16 @@ export const BillingService = {
     );
   },
 
-  // 1. Produkte als Array initialisieren (Batch-Registrierung aller verfügbaren Produkte)
-  registerAllProducts: (products: any[]) => {
+  // 1. Einmalige Globale Registrierung der Produkte & Event Listener
+  registerAllProducts: (products: any[], onSuccessGlobal?: (transaction?: any) => Promise<any> | any) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
       if (!CdvPurchase || !CdvPurchase.store) return;
       const store = CdvPurchase.store;
+
+      if (onSuccessGlobal) {
+        globalSuccessCallback = onSuccessGlobal;
+      }
 
       const registeredSet = new Set<string>();
 
@@ -81,31 +90,127 @@ export const BillingService = {
           }
         });
       });
+
+      // EINMALIGE Listener-Registrierung (Verhindert 6-faches Triggern)
+      if (!isGlobalStoreInitialized) {
+        isGlobalStoreInitialized = true;
+
+        // a) Produkt-Updates
+        try {
+          store.when().productUpdated((product: any) => {
+            if (product.owned === true) {
+              pushToDataLayer('purchase_restored', { item_id: product.id });
+            }
+          });
+        } catch (e) {}
+
+        // b) Erfolgreicher Kauf (Approved)
+        try {
+          store.when().approved(async (transaction: any) => {
+            const txId = transaction?.transactionId || transaction?.id || transaction?.purchaseToken || `tx_${Date.now()}`;
+
+            if (processedTransactionsSet.has(txId)) {
+              try {
+                if (typeof transaction.finish === 'function') {
+                  await transaction.finish();
+                }
+              } catch (e) {}
+              return;
+            }
+            processedTransactionsSet.add(txId);
+
+            try {
+              let verificationResult = null;
+              if (globalSuccessCallback) {
+                verificationResult = await globalSuccessCallback(transaction);
+              }
+              const confirmedOrderId = verificationResult?.orderId || txId;
+              const confirmedItemName = verificationResult?.productTitle || verificationResult?.productId || 'Flow der Stille Premium';
+              const confirmedPrice = verificationResult?.price || 1.99;
+
+              if (typeof transaction.finish === 'function') {
+                await transaction.finish();
+              }
+
+              pushToDataLayer('purchase', {
+                ecommerce: {
+                  transaction_id: confirmedOrderId,
+                  value: confirmedPrice,
+                  currency: 'EUR',
+                  items: [{
+                    item_id: verificationResult?.productId || transaction.productId || 'fds_item',
+                    item_name: confirmedItemName,
+                    price: confirmedPrice,
+                    quantity: 1
+                  }]
+                }
+              });
+            } catch (err: any) {
+              console.error("Fehler bei Kaufbestätigung:", err);
+              pushToDataLayer('purchase_failed', { error_message: err?.message || 'Verifizierung fehlgeschlagen' });
+              if (activePurchaseFailureCallback) {
+                activePurchaseFailureCallback(err?.message || "Kauf konnte von Supabase nicht verifiziert werden.");
+              }
+            }
+          });
+        } catch (e) {}
+
+        // c) Globales Fehler-Handling
+        try {
+          store.error((error: any) => {
+            let errJson = "";
+            try { errJson = JSON.stringify(error); } catch (e) { errJson = String(error); }
+            console.error("Billing Error:", errJson, error?.message, error?.code);
+
+            const errorMsg = error?.message || (typeof error === 'string' ? error : errJson);
+            const isAlreadyOwned = (error?.code === 6) || 
+                                  (errorMsg && (
+                                    errorMsg.includes("ITEM_ALREADY_OWNED") || 
+                                    errorMsg.includes("already owned") || 
+                                    errorMsg.includes("bereits gekauft")
+                                  ));
+
+            if (isAlreadyOwned) {
+              if (activePurchaseFailureCallback) {
+                activePurchaseFailureCallback("Kauf gefunden. Inhalte werden synchronisiert...");
+              }
+              return;
+            }
+
+            pushToDataLayer('purchase_failed', { error_message: errorMsg || 'Billing Error' });
+            if (activePurchaseFailureCallback) {
+              activePurchaseFailureCallback(errorMsg || "Kaufvorgang konnte nicht abgeschlossen werden.");
+            }
+          });
+        } catch (e) {}
+
+        try {
+          store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
+        } catch (initErr) {
+          try { store.initialize(); } catch (e2) {}
+        }
+      }
     } catch (err) {
       console.warn("registerAllProducts notice:", err);
     }
   },
 
-  init: ({ productId, onReady, onSuccess, onFailure }: BillingInitProps) => {
+  // 2. Produktbezogene Initialisierung für einzelne Buttons
+  init: ({ productId, onReady, onSuccess }: BillingInitProps) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
       
       if (!CdvPurchase || !CdvPurchase.store) {
-        console.warn("Cordova Purchase Plugin nicht gefunden.");
         setTimeout(() => onReady(), 500);
         return;
       }
 
+      if (onSuccess) {
+        globalSuccessCallback = onSuccess;
+      }
+
       const store = CdvPurchase.store;
       const playId = getPlayStoreProductId(productId);
-
-      let isReadyCalled = false;
-      const safeOnReady = () => {
-        if (!isReadyCalled) {
-          isReadyCalled = true;
-          onReady();
-        }
-      };
 
       try {
         store.register({
@@ -115,130 +220,13 @@ export const BillingService = {
         });
       } catch (e) {}
 
-      if (playId !== productId) {
-        try {
-          store.register({
-            id: productId,
-            type: CdvPurchase.ProductType.NON_CONSUMABLE,
-            platform: CdvPurchase.Platform.GOOGLE_PLAY
-          });
-        } catch (e) {}
-      }
-
-      // a) Produkt-Updates
-      try {
-        store.when().productUpdated((product: any) => {
-          if (product.id === playId || product.id === productId) {
-            safeOnReady();
-            if (product.owned === true) {
-              pushToDataLayer('purchase_restored', { item_id: product.id });
-            }
-          }
-        });
-      } catch (e) {}
-
-      // b) Erfolgreicher Kauf (Approved)
-      try {
-        store.when().approved(async (transaction: any) => {
-          const txId = transaction?.transactionId || transaction?.id || transaction?.purchaseToken || `tx_${Date.now()}`;
-
-          if (processedTransactionsSet.has(txId)) {
-            try {
-              if (typeof transaction.finish === 'function') {
-                await transaction.finish();
-              }
-            } catch (e) {}
-            return;
-          }
-          processedTransactionsSet.add(txId);
-
-          try {
-            const verificationResult = await onSuccess(transaction);
-            const confirmedOrderId = verificationResult?.orderId || txId;
-            const confirmedItemName = verificationResult?.productTitle || verificationResult?.productId || playId;
-            const confirmedPrice = verificationResult?.price || 1.99;
-
-            if (typeof transaction.finish === 'function') {
-              await transaction.finish();
-            }
-
-            // 3. Dynamisches Tracking für "purchase" mit spezifischer item_id, item_name & price
-            pushToDataLayer('purchase', {
-              ecommerce: {
-                transaction_id: confirmedOrderId,
-                value: confirmedPrice,
-                currency: 'EUR',
-                items: [{
-                  item_id: verificationResult?.productId || playId,
-                  item_name: confirmedItemName,
-                  price: confirmedPrice,
-                  quantity: 1
-                }]
-              }
-            });
-          } catch (err: any) {
-            console.error("Fehler bei der Kaufbestätigung:", err);
-            pushToDataLayer('purchase_failed', { error_message: err?.message || 'Verifizierung fehlgeschlagen' });
-            onFailure(err?.message || "Kauf konnte von Supabase nicht verifiziert werden.");
-          }
-        });
-      } catch (e) {}
-
-      // c) Globales Fehler-Handling
-      try {
-        store.error((error: any) => {
-          let errJson = "";
-          try { errJson = JSON.stringify(error); } catch (e) { errJson = String(error); }
-          console.error("Billing Error:", errJson, error?.message, error?.code);
-
-          const errorMsg = error?.message || (typeof error === 'string' ? error : errJson);
-          const isAlreadyOwned = (error?.code === 6) || 
-                                (errorMsg && (
-                                  errorMsg.includes("ITEM_ALREADY_OWNED") || 
-                                  errorMsg.includes("already owned") || 
-                                  errorMsg.includes("bereits gekauft")
-                                ));
-
-          safeOnReady();
-
-          if (isAlreadyOwned) {
-            pushToDataLayer('purchase_restored', { item_id: playId });
-            onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
-            try {
-              const p = store.get(playId) || store.get(productId);
-              if (p && p.transaction && typeof p.transaction.finish === 'function') {
-                p.transaction.finish();
-              }
-            } catch (fErr) {}
-            return;
-          }
-
-          pushToDataLayer('purchase_failed', { error_message: errorMsg || 'Billing Error' });
-          onFailure(errorMsg || "Kaufvorgang konnte nicht abgeschlossen werden.");
-        });
-      } catch (e) {}
-
-      if (typeof store.ready === 'function') {
-        try {
-          store.ready(() => safeOnReady());
-        } catch (e) { safeOnReady(); }
-      }
-
-      try {
-        store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
-      } catch (initErr) {
-        try { store.initialize(); } catch (e2) {}
-      }
-
-      setTimeout(() => safeOnReady(), 1000);
-      
+      setTimeout(() => onReady(), 300);
     } catch (error) {
-      console.error("Fehler in Billing init:", error);
       onReady();
     }
   },
 
-  // 3. Dynamisches Tracking für "begin_checkout" mit spezifischer item_id, item_name & price
+  // 3. Start des Kaufprozesses für ein spezifisches Produkt
   startPurchase: async (produkt: any, onFailure?: (errorMsg: string) => void) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
@@ -248,12 +236,15 @@ export const BillingService = {
         return;
       }
 
+      if (onFailure) {
+        activePurchaseFailureCallback = onFailure;
+      }
+
       const dbId = typeof produkt === 'object' ? produkt.id : produkt;
       const playId = getPlayStoreProductId(produkt);
       const itemName = (typeof produkt === 'object' && produkt.titel) ? produkt.titel : (typeof produkt === 'object' && produkt.title) ? produkt.title : dbId;
       const itemPrice = (typeof produkt === 'object' && produkt.preis) ? parseFloat(produkt.preis) : 1.99;
 
-      // 📊 GA4 DataLayer Event (begin_checkout) mit DYNAMISCHEN Werten
       pushToDataLayer('begin_checkout', {
         ecommerce: {
           items: [{

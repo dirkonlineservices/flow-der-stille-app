@@ -133,7 +133,24 @@ export default function PremiumShopDashboard() {
 
       // 1. Produkte als Array initialisieren (Batch-Registrierung für Cordova Purchase Store)
       if (BillingService.isNative() && finalProdukte.length > 0) {
-        BillingService.registerAllProducts(finalProdukte);
+        BillingService.registerAllProducts(finalProdukte, async (transaction?: any) => {
+          const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
+          const productId = transaction?.productId || 'fds_hypnose_selbstbewusstsein';
+          
+          const vResult = await handlePurchaseSuccess({
+            purchaseToken,
+            productId: productId,
+            price: 1.99
+          }, user.id);
+
+          setShowUnlockBanner(true);
+          setTimeout(() => {
+            loadShopData();
+            setShowUnlockBanner(false);
+          }, 2500);
+
+          return vResult;
+        });
       }
     } catch (error: any) {
       console.error("Fehler beim Laden:", error);
@@ -509,7 +526,6 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Proaktive UI Ownership-Abfrage (blendet Bezahl-Button aus, wenn store.get().owned === true)
   const isOwnedInStore = (() => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
@@ -524,58 +540,11 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   })();
 
   useEffect(() => {
-    // 3. Proaktiver Ownership-Check: DataLayer Push & Asynchroner Supabase Sync falls Order ID im Backend fehlte
-    try {
-      const CdvPurchase = (window as any).CdvPurchase;
-      if (CdvPurchase && CdvPurchase.store) {
-        const playId = getPlayStoreProductId(produkt.id);
-        const p = CdvPurchase.store.get(playId) || CdvPurchase.store.get(produkt.id);
-        if (p?.owned === true) {
-          pushToDataLayer('purchase_restored', { item_id: p.id || produkt.id });
-          const purchaseToken = p.transaction?.purchaseToken || p.transaction?.id || ('RESTORED_' + Date.now());
-          handlePurchaseSuccess({
-            purchaseToken,
-            productId: produkt.id,
-            price: parseFloat(produkt.preis) || 1.99
-          }, user.id).then(() => {
-            onSuccess();
-          }).catch(() => {});
-        }
-      }
-    } catch (e) {}
-
     BillingService.init({
       productId: produkt.id, 
-      onReady: () => setStoreReady(true),
-      onSuccess: async (transaction?: any) => {
-        setIsProcessing(false);
-        const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
-
-        const vResult = await handlePurchaseSuccess({
-          purchaseToken,
-          productId: produkt.id,
-          price: parseFloat(produkt.preis) || 1.99
-        }, user.id);
-
-        setShowUnlockBanner(true);
-        setTimeout(() => {
-          onSuccess();
-          setShowUnlockBanner(false);
-        }, 2500);
-
-        return vResult;
-      },
-      onFailure: (msg) => {
-        setIsProcessing(false);
-        setError(msg);
-        if (msg && (msg.includes("Kauf gefunden") || msg.includes("synchronisiert"))) {
-          setTimeout(() => {
-            onSuccess();
-          }, 1500);
-        }
-      }
+      onReady: () => setStoreReady(true)
     });
-  }, [produkt.id, user]);
+  }, [produkt.id]);
 
   if (isOwnedInStore) {
     return (
@@ -596,6 +565,11 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       await BillingService.startPurchase(produkt, (msg) => {
         setIsProcessing(false);
         setError(msg);
+        if (msg && (msg.includes("Kauf gefunden") || msg.includes("synchronisiert"))) {
+          setTimeout(() => {
+            onSuccess();
+          }, 1500);
+        }
       });
     } catch (err: any) {
       setIsProcessing(false);
@@ -626,7 +600,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50"
       >
         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-        <span>{storeReady ? 'Über Google Play kaufen' : 'Verbinde Play Store...'}</span>
+        <span>{storeReady ? `Über Google Play kaufen (${produkt.preis} €)` : 'Verbinde Play Store...'}</span>
       </button>
       <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
         Sichere Zahlung über dein Google Konto.
