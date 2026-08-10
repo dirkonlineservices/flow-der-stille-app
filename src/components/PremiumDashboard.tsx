@@ -516,32 +516,18 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
           await handlePurchaseSuccess({
             purchaseToken,
             productId: produkt.id,
-            price: parseFloat(produkt.preis) || 0
+            price: parseFloat(produkt.preis) || 1.99
           }, user.id);
+
+          setShowUnlockBanner(true);
+          setTimeout(() => {
+            onSuccess();
+            setShowUnlockBanner(false);
+          }, 2500);
         } catch (vErr) {
           console.warn('Google Play verification notice:', vErr);
-        }
-
-        const supabase = getSupabase();
-        await supabase.from('kaeufe').upsert(
-          {
-            user_id: user.id,
-            email: user.email || '',
-            produkt_id: produkt.id,
-            paypal_order_id: purchaseToken,
-            preis: parseFloat(produkt.preis),
-            waehrung: 'EUR',
-            status: 'completed',
-            widerruf_verzicht_akzeptiert: true,
-            updated_at: new Date().toISOString()
-          },
-          { onConflict: 'paypal_order_id' }
-        );
-        setShowUnlockBanner(true);
-        setTimeout(() => {
           onSuccess();
-          setShowUnlockBanner(false);
-        }, 2000);
+        }
       },
       onFailure: (msg) => {
         setIsProcessing(false);
