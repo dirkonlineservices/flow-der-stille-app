@@ -21,7 +21,15 @@ export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'gefuehrte_atemuebung': 'fds_gefuehrte_atemuebung'
 };
 
-export const getPlayStoreProductId = (dbProductId: string): string => {
+export const getPlayStoreProductId = (input: any): string => {
+  if (typeof input === 'object' && input !== null) {
+    if (input.play_store_id && typeof input.play_store_id === 'string' && input.play_store_id.trim().length > 0) {
+      return input.play_store_id.trim();
+    }
+    return getPlayStoreProductId(input.id || '');
+  }
+  const dbProductId = String(input || '');
+  if (dbProductId.startsWith('fds_')) return dbProductId;
   return PLAY_STORE_PRODUCT_MAP[dbProductId] || `fds_${dbProductId.replace(/&/g, '_').replace(/__/g, '_')}`;
 };
 

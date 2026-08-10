@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const PRODUCT_ALIAS_MAP: Record<string, string[]> = {
+const HARDCODED_ALIAS_MAP: Record<string, string[]> = {
   'fds_hypnose_selbstbewusstsein': [
     'fds_hypnose_selbstbewusstsein', 
     'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen', 
@@ -129,7 +129,28 @@ serve(async (req) => {
       );
     }
 
-    const targetProductIds = PRODUCT_ALIAS_MAP[productId] || [productId];
+    const targetProductIds = new Set<string>();
+    targetProductIds.add(productId);
+
+    if (HARDCODED_ALIAS_MAP[productId]) {
+      HARDCODED_ALIAS_MAP[productId].forEach(id => targetProductIds.add(id));
+    }
+
+    try {
+      const { data: dbProducts } = await supabaseAdmin
+        .from('produkte')
+        .select('id, play_store_id')
+        .or(`play_store_id.eq.${productId},id.eq.${productId}`);
+
+      if (dbProducts && dbProducts.length > 0) {
+        for (const p of dbProducts) {
+          if (p.id) targetProductIds.add(p.id);
+          if (p.play_store_id) targetProductIds.add(p.play_store_id);
+        }
+      }
+    } catch (dbQueryErr) {
+      console.warn("Dynamic produkte query notice:", dbQueryErr);
+    }
 
     for (const pId of targetProductIds) {
       const orderId = `${purchaseToken}_${pId}`;

@@ -7,8 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// 🗺️ Produkt-ID Mappings: Google Play Product ID <-> Supabase Datenbank Produkt-IDs
-const PRODUCT_ALIAS_MAP: Record<string, string[]> = {
+const HARDCODED_ALIAS_MAP: Record<string, string[]> = {
   'fds_hypnose_selbstbewusstsein': [
     'fds_hypnose_selbstbewusstsein', 
     'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen', 
@@ -90,7 +89,6 @@ serve(async (req) => {
         const client = await auth.getClient();
         const accessToken = await client.getAccessToken();
 
-        // ⚡ WICHTIG: In-App Produkte Endpoint (nicht subscriptions!)
         const googleApiUrl = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}`;
         
         const googleRes = await fetch(googleApiUrl, {
@@ -117,7 +115,7 @@ serve(async (req) => {
             }
           }
         } else {
-          // Sandbox / License Testing Fallback
+          // License Testing / Sandbox Fallback
           isVerified = true;
         }
       } catch (gErr) {
@@ -136,9 +134,32 @@ serve(async (req) => {
       );
     }
 
-    // 2. In public.kaeufe eintragen (Das ist die Tabelle, aus der das Frontend liest!)
-    const targetProductIds = PRODUCT_ALIAS_MAP[productId] || [productId];
+    // 2. Dynamisch Produkt-IDs aus Supabase auslesen (Option 1)
+    const targetProductIds = new Set<string>();
+    targetProductIds.add(productId);
 
+    // Füge bekannte Fallbacks hinzu
+    if (HARDCODED_ALIAS_MAP[productId]) {
+      HARDCODED_ALIAS_MAP[productId].forEach(id => targetProductIds.add(id));
+    }
+
+    try {
+      const { data: dbProducts } = await supabaseAdmin
+        .from('produkte')
+        .select('id, play_store_id')
+        .or(`play_store_id.eq.${productId},id.eq.${productId}`);
+
+      if (dbProducts && dbProducts.length > 0) {
+        for (const p of dbProducts) {
+          if (p.id) targetProductIds.add(p.id);
+          if (p.play_store_id) targetProductIds.add(p.play_store_id);
+        }
+      }
+    } catch (dbQueryErr) {
+      console.warn("Dynamic produkte query notice:", dbQueryErr);
+    }
+
+    // 3. In public.kaeufe eintragen
     for (const pId of targetProductIds) {
       const orderId = `${purchaseToken}_${pId}`;
       await supabaseAdmin.from('kaeufe').upsert({
@@ -154,7 +175,7 @@ serve(async (req) => {
       }, { onConflict: 'paypal_order_id' });
     }
 
-    // 3. Optional auch Profil auf is_premium updaten
+    // 4. Optional auch Profil auf is_premium updaten
     await supabaseAdmin
       .from('profiles')
       .update({ 
