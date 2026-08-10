@@ -111,12 +111,14 @@ export default function PremiumShopDashboard() {
 
       if (user) {
         try {
-          const [kaufRes, vipRes] = await Promise.all([
+          const [kaufRes, userPurchasesRes, vipRes] = await Promise.all([
             supabase.from('kaeufe').select('produkt_id').eq('user_id', user.id),
+            supabase.from('user_purchases').select('product_id').eq('user_id', user.id),
             supabase.from('vip_zugang').select('user_id').eq('user_id', user.id).maybeSingle()
           ]);
+          const ids = new Set<string>();
+
           if (!kaufRes.error && kaufRes.data) {
-            const ids = new Set<string>();
             kaufRes.data.forEach((k: any) => {
               const rawId = k.produkt_id;
               if (rawId) {
@@ -127,8 +129,22 @@ export default function PremiumShopDashboard() {
                 if (dbId) ids.add(dbId);
               }
             });
-            gekaufteSet = ids;
           }
+
+          if (!userPurchasesRes.error && userPurchasesRes.data) {
+            userPurchasesRes.data.forEach((up: any) => {
+              const rawId = up.product_id;
+              if (rawId) {
+                ids.add(rawId);
+                const playId = getPlayStoreProductId(rawId);
+                ids.add(playId);
+                const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[rawId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playId];
+                if (dbId) ids.add(dbId);
+              }
+            });
+          }
+
+          gekaufteSet = ids;
           if (!vipRes.error && vipRes.data) {
             userIsVip = !!vipRes.data;
           }
@@ -534,6 +550,7 @@ export default function PremiumShopDashboard() {
 function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
   const [storeReady, setStoreReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const playId = getPlayStoreProductId(produkt.id);
@@ -546,6 +563,10 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   }, [produkt.id]);
 
   const handlePurchase = async () => {
+    if (!acceptedTerms) {
+      setError("Bitte stimme vor dem Kauf dem Widerrufsverzicht zu.");
+      return;
+    }
     setError(null);
     setIsProcessing(true);
 
@@ -621,6 +642,18 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
   return (
     <div className="w-full flex flex-col items-center">
+      <label className={`flex items-start gap-3 p-3.5 mb-3 rounded-xl cursor-pointer transition-colors border text-left ${acceptedTerms ? 'bg-[var(--bg-main)] border-[var(--accent)]' : 'bg-[var(--bg-alt)] border-[var(--border)] hover:bg-[var(--bg-main)]'}`}>
+        <input
+          type="checkbox"
+          checked={acceptedTerms}
+          onChange={(e) => setAcceptedTerms(e.target.checked)}
+          className="mt-0.5 w-4 h-4 accent-[var(--accent)] cursor-pointer shrink-0"
+        />
+        <span className="flex-1 text-xs text-[var(--text-muted)] leading-relaxed">
+          Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. <strong>Mir ist bekannt, dass ich dadurch mein Widerrufsrecht verliere.</strong>
+        </span>
+      </label>
+
       {error && (
         <div className={`w-full text-xs rounded-xl p-2.5 mb-3 font-medium text-center border ${
           isInfoMsg 
@@ -632,8 +665,8 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       )}
       <button
         onClick={handlePurchase}
-        disabled={!storeReady || isProcessing}
-        className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+        disabled={!storeReady || isProcessing || !acceptedTerms}
+        className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
         <span>{storeReady ? `Über Google Play kaufen (${produkt.preis} €)` : 'Verbinde Play Store...'}</span>

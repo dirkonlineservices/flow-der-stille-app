@@ -1,4 +1,4 @@
-// Version: 1.0.7 - Dual DB & Play ID mapping for bulletproof kaeufe table insertion
+// Version: 1.0.8 - Added price column support to user_purchases & dual table mapping
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "npm:googleapis"
@@ -21,7 +21,7 @@ const PLAY_TO_DB_MAP: Record<string, string> = {
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
   'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
-  'fds_pmr_basis': 'pmr_basis',
+  'fds_pmr_basis': 'fds_pmr_basis',
   'fds_gefuehrte_atemuebung': 'gefuehrte_atemuebung'
 };
 
@@ -109,13 +109,19 @@ serve(async (req) => {
       orderId = `GPA.TEST-${Date.now()}`;
     }
 
-    // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus public.kaeufe!
+    // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus beiden Tabellen!
     if (isRefunded) {
       await supabase
         .from('kaeufe')
         .delete()
         .eq('user_id', userId)
         .in('produkt_id', [dbProductId, playProductId, productId]);
+
+      await supabase
+        .from('user_purchases')
+        .delete()
+        .eq('user_id', userId)
+        .in('product_id', [dbProductId, playProductId, productId]);
 
       return new Response(JSON.stringify({ 
         success: false, 
@@ -131,7 +137,7 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // 3. In Supabase speichern (user_purchases & public.kaeufe)
+    // 3. In user_purchases speichern (mit Preis)
     try {
       await supabase
         .from('user_purchases')
@@ -140,13 +146,15 @@ serve(async (req) => {
           product_id: dbProductId,
           order_id: orderId,
           purchase_token: purchaseToken,
-          status: 'active'
+          status: 'active',
+          price: price,
+          betrag: price
         }, { onConflict: 'order_id' });
     } catch (e1) {
       console.warn("Notice user_purchases:", e1);
     }
 
-    // Speichere primär mit DB-ID in public.kaeufe
+    // 4. In public.kaeufe speichern (primär DB-ID)
     const dbKey1 = `${orderId}_${dbProductId}`;
     const { error: dbError1 } = await supabase
       .from('kaeufe')

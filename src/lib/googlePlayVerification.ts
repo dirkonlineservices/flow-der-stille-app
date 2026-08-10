@@ -41,8 +41,20 @@ export const verifyGooglePlayPurchase = async ({
     console.warn("Edge Function notice:", fnErr);
   }
 
-  // 2. WICHTIG: Sichere direkten Eintrag in public.kaeufe (Sowohl DB-ID als auch Play-ID)
+  // 2. WICHTIG: Sichere direkten Eintrag in user_purchases & public.kaeufe
   try {
+    // In user_purchases schreiben (mit Preis)
+    await supabase.from('user_purchases').upsert({
+      user_id: userId,
+      product_id: dbProductId,
+      order_id: orderId,
+      purchase_token: purchaseToken,
+      status: 'active',
+      price: price || 1.99,
+      betrag: price || 1.99
+    }, { onConflict: 'order_id' });
+
+    // In kaeufe schreiben (DB ID)
     const dbKey1 = `${orderId}_${dbProductId}`;
     await supabase.from('kaeufe').upsert({
       user_id: userId,
@@ -56,6 +68,7 @@ export const verifyGooglePlayPurchase = async ({
       created_at: new Date().toISOString()
     }, { onConflict: 'paypal_order_id' });
 
+    // In kaeufe schreiben (Play ID falls unterschiedlich)
     if (playProductId !== dbProductId) {
       const dbKey2 = `${orderId}_${playProductId}`;
       await supabase.from('kaeufe').upsert({
@@ -80,7 +93,7 @@ export const verifyGooglePlayPurchase = async ({
 
     verifiedSuccessfully = true;
   } catch (dbErr) {
-    console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
+    console.error("Direkter Table-Upsert Fehler:", dbErr);
   }
 
   return { success: verifiedSuccessfully, orderId };
