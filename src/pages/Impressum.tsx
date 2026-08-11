@@ -46,6 +46,13 @@ export default function Impressum() {
         </section>
         
         <section>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Transparenzhinweis zu KI-Inhalten (EU AI Act, Art. 50 KI-VO)</h2>
+          <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
+            Auf dieser Anwendung und Webseite bereitgestellte Inhalte (insbesondere Cover-Illustrationen, ausgewählte Audio-Produktionen sowie digitale Textinhalte) wurden teilweise unter Zuhilfenahme künstlicher Intelligenz (z. B. Google Gemini) generiert oder digital unterstützt.
+          </p>
+        </section>
+
+        <section>
           <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Streitschlichtung</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
             Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
