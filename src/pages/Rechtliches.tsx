@@ -25,6 +25,18 @@ export default function Rechtliches() {
           </p>
         </section>
 
+        <section>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Urheberrecht, Weitergabe- & Vervielfältigungsverbot</h2>
+          <div className="text-[var(--color-text-muted)] leading-relaxed text-sm space-y-3">
+            <p>
+              <strong>Empfehlen erlaubt & erwünscht:</strong> Das Empfehlen und Teilen des Links zu unserer Plattform (www.flow-der-stille.de) sowie unserer mobilen App ist ausdrücklich erlaubt und sehr herzlich willkommen!
+            </p>
+            <p>
+              <strong>Nutzungsverbot & Urheberrechtsschutz:</strong> Alle auf dieser Plattform angebotenen Inhalte (insbesondere Audios, Meditationen, Selbsthypnosen, Hörbücher, Skripte, Texte und Bilder) sind urheberrechtlich geschützt. Es ist strengstens untersagt, diese Inhalte herunterzuladen, mitschneiden zu lassen, zu vervielfältigen, an Dritte weiterzugeben, zu verkaufen, zu vermieten, im Internet oder auf Plattformen Dritter öffentlich zugänglich zu machen oder kommerziell zu verwerten.
+            </p>
+          </div>
+        </section>
+
         <section id="ki-transparenz">
           <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Transparenzhinweis zur Nutzung von KI</h2>
           <div className="text-[var(--color-text-muted)] leading-relaxed text-sm space-y-4">

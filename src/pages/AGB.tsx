@@ -49,10 +49,11 @@ export default function AGB() {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">5. Bereitstellung digitaler Inhalte und Nutzungsrechte</h2>
-          <p>5.1. Digitale Inhalte (geführte Meditationen, Selbsthypnosen, Audio-Anwendungen) werden dem Kunden ausschließlich online über die Webseite oder innerhalb seines Kundenkontos in der App zur Nutzung per Streaming bereitgestellt. Es wird kein Download-Link zur Verfügung gestellt.</p>
-          <p className="mt-2">5.2. Der Anbieter räumt dem Kunden an den freigeschalteten digitalen Inhalten ein einfaches, nicht übertragbares Recht ein, die bereitgestellten Audio-Inhalte ausschließlich für den persönlichen, privaten Gebrauch online per Streaming anzuhören.</p>
-          <p className="mt-2">5.3. Es ist dem Kunden ausdrücklich untersagt, die bereitgestellten Audio-Inhalte herunterzuladen, zu kopieren, mitschneiden zu lassen, zu vervielfältigen, zu verbreiten, öffentlich zugänglich zu machen (z. B. im Internet), zu vermieten oder in irgendeiner Form weiterzuverkaufen.</p>
+          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">5. Bereitstellung digitaler Inhalte, Nutzungsrechte & Vervielfältigungsverbot</h2>
+          <p>5.1. Digitale Inhalte (geführte Meditationen, Selbsthypnosen, Audio-Anwendungen) werden dem Kunden ausschließlich online über die Webseite oder innerhalb seines Kundenkontos in der App zur Nutzung per Streaming bereitgestellt. Es wird kein Download der Audio-Dateien zur lokalen Speicherung angeboten.</p>
+          <p className="mt-2">5.2. <strong>Empfehlung erwünscht:</strong> Das Weiterempfehlen unserer Webseite (www.flow-der-stille.de) sowie unserer mobilen App an Freunde, Familie und Bekannte ist ausdrücklich erlaubt und sehr herzlich willkommen.</p>
+          <p className="mt-2">5.3. <strong>Striktes Vervielfältigungs- und Weitergabeverbot:</strong> Sämtliche auf der Plattform bereitgestellten Inhalte (insbesondere Audio-Dateien, Texte, Skripte und Bilder) sind urheberrechtlich geschützt. Dem Kunden wird ein einfaches, nicht übertragbares Recht zur ausschließlich persönlichen, privaten Nutzung per Online-Streaming eingeräumt. Es ist dem Kunden ausdrücklich untersagt, die Audio-Dateien oder sonstigen Inhalte herunterzuladen, mitschneiden zu lassen, zu kopieren, zu vervielfältigen, an Dritte weiterzugeben, im Internet oder in sozialen Medien öffentlich zugänglich zu machen, zu vermieten, zu verändern oder gewerblich bzw. kommerziell weiterzuvertreiben.</p>
+          <p className="mt-2">5.4. Zuwiderhandlungen gegen das Urheberrecht oder diese Nutzungsbestimmungen werden zivil- und strafrechtlich verfolgt.</p>
         </section>
 
         <section>
