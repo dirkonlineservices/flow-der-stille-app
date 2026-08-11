@@ -37,7 +37,6 @@ export default function PremiumShopDashboard() {
 
   useEffect(() => {
     if (user) {
-      loadMyPurchases();
       fetchMyPurchases();
     } else {
       setMyPurchases([]);
