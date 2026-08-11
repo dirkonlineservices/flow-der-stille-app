@@ -39,9 +39,17 @@ export default function Impressum() {
         </section>
 
         <section>
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Verantwortlich für den Inhalt</h2>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Verantwortlich für Inhalt & Technik</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed">
-            Dirk Schmetzer
+            Dirk Schmetzer (Betreiber der Plattform, Technik & Webseiteninhalte)
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Urheberrecht & Konzeption der Werke</h2>
+          <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
+            <strong>Jacqueline Schmetzer</strong><br />
+            Autorin und Erstellerin aller auf dieser Plattform angebotenen Produkte (Selbsthypnosen, Meditationen, Audios und Hörbücher). Sämtliche Texte, Skripte und Konzeptionen dieser Werke sind urheberrechtlich geschützt und ihr geistiges Eigentum.
           </p>
         </section>
         
