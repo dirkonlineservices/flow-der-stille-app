@@ -436,7 +436,7 @@ export default function PremiumShopDashboard() {
                     </span>
                   </div>
                   <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md">
-                    ✨ KI-Inhalt
+                    ✨ KI-Design
                   </span>
                   {produkt.dauer && (
                     <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
@@ -477,7 +477,7 @@ export default function PremiumShopDashboard() {
                   )}
                 </div>
                 <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md">
-                  ✨ KI-Inhalt
+                  ✨ KI-Design
                 </span>
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
@@ -502,7 +502,7 @@ export default function PremiumShopDashboard() {
                     <div className="mt-4 p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-muted)] flex items-start gap-2">
                       <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
                       <span className="leading-snug">
-                        {produkt.audio_hinweis || "🎙️ Stimme: Lisa · Audio-Produktion & Coverbild KI-gestützt"}
+                        {produkt.audio_hinweis || "🎙️ Persönlich eingesprochen · Coverbild KI-gestützt"}
                       </span>
                     </div>
                 </div>
