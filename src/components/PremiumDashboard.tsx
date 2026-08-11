@@ -279,16 +279,30 @@ export default function PremiumShopDashboard() {
   });
 
   const formatDuration = (dauerStr: any) => {
-    if (!dauerStr) return '';
+    if (!dauerStr && dauerStr !== 0) return '';
     const str = String(dauerStr).trim();
     if (str.includes(':')) {
       const parts = str.split(':');
-      if (parts.length === 2) return parts[0]; 
-      if (parts.length === 3) return parts[0]; 
+      if (parts.length === 2) {
+        const min = parseInt(parts[0], 10);
+        const sec = parseInt(parts[1], 10);
+        return `${isNaN(min) ? 0 : min}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
+      }
+      if (parts.length === 3) {
+        const totalMin = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        const sec = parseInt(parts[2], 10);
+        return `${isNaN(totalMin) ? 0 : totalMin}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
+      }
+      return str;
     }
-    const num = parseInt(str.replace(/\D/g, ''));
-    if (!isNaN(num)) return num;
-    return str;
+    const totalSeconds = parseInt(str.replace(/\D/g, ''), 10);
+    if (isNaN(totalSeconds)) return str;
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const formattedSec = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+    return `${minutes}:${formattedSec}`;
   };
 
   const categories = ['Alle', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei'];
@@ -426,7 +440,7 @@ export default function PremiumShopDashboard() {
                   </span>
                   {produkt.dauer && (
                     <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                      ⏱ {formatDuration(produkt.dauer)} min
+                      ⏱ {formatDuration(produkt.dauer)} Min.
                     </span>
                   )}
                 </div>
@@ -467,7 +481,7 @@ export default function PremiumShopDashboard() {
                 </span>
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                    ⏱ {formatDuration(produkt.dauer)} min
+                    ⏱ {formatDuration(produkt.dauer)} Min.
                   </span>
                 )}
               </div>
