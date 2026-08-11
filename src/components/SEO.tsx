@@ -14,6 +14,7 @@ export default function SEO({ title, description, image = '/og-image.png' }: SEO
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      <meta name="google-site-verification" content="Hxvh5vEnODGC_YArOCRnJymGuAPlqPJwVCm46l2sFFo" />
       
       {/* Canonical */}
       <link rel="canonical" href={url} />
