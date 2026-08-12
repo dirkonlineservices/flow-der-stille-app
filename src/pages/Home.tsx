@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -38,7 +38,20 @@ export default function Home() {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
+  const [hoerprobenCount, setHoerprobenCount] = useState(0);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.() || (window as any).CdvPurchase);
+
+  // Hörproben-Anzahl aus Supabase laden (für Banner)
+  useEffect(() => {
+    getSupabase()
+      .from('produkte')
+      .select('id', { count: 'exact', head: false })
+      .not('hoerprobe_url', 'is', null)
+      .neq('hoerprobe_url', '')
+      .then(({ count }) => {
+        if (count && count > 0) setHoerprobenCount(count);
+      });
+  }, []);
 
   // Calculate daily wisdom index
   const dayOfYear = Math.floor((Date.now() - Number(new Date(new Date().getFullYear(), 0, 0))) / 86400000);
@@ -186,6 +199,37 @@ export default function Home() {
           <div className="mt-6">
             <FriendInviteWidget />
           </div>
+
+          {/* Kostenlose Hörproben-Banner – nur sichtbar wenn Supabase Hörproben enthält */}
+          {hoerprobenCount > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-6"
+            >
+              <Link
+                to="/premium?filter=H%C3%B6rprobe"
+                className="flex items-center gap-4 p-5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-50/80 to-amber-100/40 dark:from-amber-900/25 dark:to-amber-800/10 hover:shadow-md hover:border-amber-400/70 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Headphones size={24} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
+                    🎧 Kostenlose Hörproben verfügbar
+                  </div>
+                  <div className="text-amber-700/70 dark:text-amber-400/70 text-xs mt-0.5 leading-snug">
+                    Hör rein, bevor du kaufst – {hoerprobenCount} {hoerprobenCount === 1 ? 'Hörprobe' : 'Hörproben'} kostenfrei und ohne Anmeldung
+                  </div>
+                </div>
+                <div className="text-amber-600 dark:text-amber-400 text-xs font-semibold shrink-0 group-hover:translate-x-1 transition-transform">
+                  Anhören →
+                </div>
+              </Link>
+            </motion.div>
+          )}
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

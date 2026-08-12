@@ -10,6 +10,7 @@ import UnlockBanner from './UnlockBanner';
 import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer } from '../lib/billing';
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
+import { HoerprobenPlayer } from './HoerprobenPlayer';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -304,7 +305,7 @@ export default function PremiumShopDashboard() {
     return `${minutes}:${formattedSec}`;
   };
 
-  const categories = ['Alle', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei'];
+  const categories = ['Alle', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei', 'Hörprobe'];
 
   const getCategoryBadgeStyle = (katStr: string = '') => {
     const k = katStr.toLowerCase();
@@ -504,6 +505,9 @@ export default function PremiumShopDashboard() {
                         <span className="leading-snug">{produkt.audio_hinweis}</span>
                       </div>
                     )}
+
+                    {/* Kostenlose Hörprobe – nur anzeigen wenn URL in Supabase befüllt */}
+                    <HoerprobenPlayer produkt={produkt} />
                 </div>
 
                 {!hatZugriff && (
