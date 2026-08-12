@@ -26,13 +26,20 @@ let activePurchaseFailureCallback: ((msg: string) => void) | null = null;
 
 // 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Google Play Console Produkt-ID
 export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
-  'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
-  'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
+  'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
+  'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
+  'fds_hypnose_selbstbewusstsein': 'fds_selbsthypnose_selbstbewusstsein',
+
   'meditation_zur_herzoeffnung': 'fds_herzoeffnung_meditation',
   'meditation_loslassen': 'fds_meditation_loslassen',
-  'selbsthypnose_ernaehrung': 'fds_hypnose_gesunde_ernaehrung',
-  'selbsthypnose_fokus&konzentration': 'fds_hypnose_fokus',
-  'selbsthypnose_fokus_konzentration': 'fds_hypnose_fokus',
+
+  'selbsthypnose_ernaehrung': 'fds_selbsthypnose_gesunde_ernaehrung',
+  'fds_hypnose_gesunde_ernaehrung': 'fds_selbsthypnose_gesunde_ernaehrung',
+
+  'selbsthypnose_fokus&konzentration': 'fds_selbsthypnose_fokus_absolute_konzentration',
+  'selbsthypnose_fokus_konzentration': 'fds_selbsthypnose_fokus_absolute_konzentration',
+  'fds_hypnose_fokus': 'fds_selbsthypnose_fokus_absolute_konzentration',
+
   'meditation_herzkompass': 'fds_herzkompass_meditation',
   'meditation_inneres_kind': 'fds_meditation_inneres_kind',
   'meditation_innere_ruhe': 'fds_meditation_innere_ruhe',
@@ -41,11 +48,14 @@ export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
 };
 
 export const REVERSE_PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
-  'fds_hypnose_selbstbewusstsein': 'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen',
+  'fds_selbsthypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
+  'fds_hypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
   'fds_meditation_loslassen': 'meditation_loslassen',
+  'fds_selbsthypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
   'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
-  'fds_hypnose_fokus': 'selbsthypnose_fokus_konzentration',
+  'fds_selbsthypnose_fokus_absolute_konzentration': 'selbsthypnose_fokus&konzentration',
+  'fds_hypnose_fokus': 'selbsthypnose_fokus&konzentration',
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
   'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
