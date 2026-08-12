@@ -6,3 +6,11 @@
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>
+
+<IfModule mod_headers.c>
+  <Files "assetlinks.json">
+    Header set Content-Type "application/json"
+    Header set Access-Control-Allow-Origin "*"
+  </Files>
+</IfModule>
+
