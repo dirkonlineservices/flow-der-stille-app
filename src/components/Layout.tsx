@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
-  Info, Shield, FileText, Scale 
+  Info, Shield, FileText, Scale, Headphones 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -274,6 +274,21 @@ export default function Layout() {
                   </div>
                 </Link>
 
+                {/* Hörproben */}
+                <Link
+                  to="/premium?filter=H%C3%B6rprobe"
+                  onClick={() => handleMenuClick('Hörproben')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <Headphones size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)]">Hörproben</div>
+                    <div className="text-xs text-[var(--text-muted)]">Kostenlos reinhören</div>
+                  </div>
+                </Link>
+
                 {/* Einstellungen */}
                 {user && (
                   <Link
@@ -368,7 +383,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.5.7 (Build 52)
+                    Flow der Stille v4.5.8 (Build 53)
                   </span>
                 </div>
               </div>
