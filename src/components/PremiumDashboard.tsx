@@ -12,6 +12,7 @@ import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { useSearchParams } from 'react-router-dom';
+import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -633,6 +634,12 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
   const [isProcessing, setIsProcessing] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<PurchaseToastData>({
+    show: false,
+    type: 'cancelled',
+    title: '',
+    message: ''
+  });
 
   const playId = getPlayStoreProductId(produkt.id);
 
@@ -709,11 +716,39 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
           }
         } else {
           setError(msg);
+          const lower = (msg || '').toLowerCase();
+          const isCancel = lower.includes('user_canceled') || lower.includes('cancelled') || lower.includes('abgebrochen');
+          if (isCancel) {
+            setToast({
+              show: true,
+              type: 'cancelled',
+              title: 'Google Play Kauf abgebrochen',
+              productTitle: produkt?.titel,
+              message: 'Du hast den Bezahlvorgang in Google Play abgebrochen. Es wurde kein Betrag von deinem Google-Konto abgebucht.'
+            });
+          } else {
+            setToast({
+              show: true,
+              type: 'failed',
+              title: 'Google Play Kauf nicht möglich',
+              productTitle: produkt?.titel,
+              message: 'Der Bezahlvorgang konnte über den Play Store nicht durchgeführt werden. Es wurde kein Geld abgebucht.',
+              showSupportLink: true
+            });
+          }
         }
       });
     } catch (err: any) {
       setIsProcessing(false);
       setError(err?.message || 'Bezahlvorgang konnte nicht gestartet werden.');
+      setToast({
+        show: true,
+        type: 'failed',
+        title: 'Google Play Kauf fehlgeschlagen',
+        productTitle: produkt?.titel,
+        message: err?.message || 'Der Bezahlvorgang konnte nicht gestartet werden. Es wurde kein Geld abgebucht.',
+        showSupportLink: true
+      });
     } finally {
       setTimeout(() => {
         setIsProcessing(false);
@@ -813,6 +848,12 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
         Sichere Zahlung über dein Google Konto.
       </div>
+
+      {/* Floating Purchase Toast Notification */}
+      <PurchaseToast 
+        toast={toast} 
+        onClose={() => setToast(prev => ({ ...prev, show: false }))} 
+      />
     </div>
   );
 }

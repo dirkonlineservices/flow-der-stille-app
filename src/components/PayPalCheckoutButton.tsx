@@ -3,6 +3,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
 import { reportCriticalError } from '../lib/errorLogger';
+import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -39,6 +40,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState(false);
+  const [toast, setToast] = useState<PurchaseToastData>({
+    show: false,
+    type: 'cancelled',
+    title: '',
+    message: ''
+  });
   const [runtimeClientId, setRuntimeClientId] = useState<string>(
     import.meta.env.VITE_PAYPAL_CLIENT_ID || paypalClientId || "BAAKqq0F1xbok5dmAg0bFJL6dvnPRzq-Pe53JEyL5nZbWvHSg5DZlFZHzwsxJZ2JkS9Q1uKJ4OtVDZsWEk"
   );
@@ -295,6 +302,13 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onCancel={() => {
+                setToast({
+                  show: true,
+                  type: 'cancelled',
+                  title: 'PayPal-Kauf abgebrochen',
+                  productTitle: produkt?.titel,
+                  message: 'Du hast den Bezahlvorgang im PayPal-Fenster abgebrochen. Es wurde kein Betrag von deinem Konto abgebucht.'
+                });
                 transactionLogger.logWarning(
                   'Kauf abgebrochen',
                   'Der Bezahlvorgang wurde vom Nutzer abgebrochen.',
@@ -308,6 +322,14 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onError={async (err) => {
+                setToast({
+                  show: true,
+                  type: 'failed',
+                  title: 'PayPal-Zahlung fehlgeschlagen',
+                  productTitle: produkt?.titel,
+                  message: 'Der Bezahlvorgang mit PayPal konnte nicht abgeschlossen werden. Es wurde kein Geld abgebucht. Du kannst es gleich erneut versuchen.',
+                  showSupportLink: true
+                });
                 await reportCriticalError({
                   context: 'PayPal SDK Fehler',
                   error: err,
@@ -332,6 +354,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
           </PayPalScriptProvider>
         </div>
       )}
+
+      {/* Floating Purchase Toast Notification */}
+      <PurchaseToast 
+        toast={toast} 
+        onClose={() => setToast(prev => ({ ...prev, show: false }))} 
+      />
     </div>
   );
 };
