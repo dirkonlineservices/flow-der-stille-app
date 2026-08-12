@@ -42,6 +42,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/auth/callback" />
                 <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/newsletter-bestaetigt" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/reset-password" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/update-password" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/forgot-password" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/danke" />
+                <data android:scheme="https" android:host="flow-der-stille.de" android:pathPrefix="/shop" />
             </intent-filter>
         </activity>
 
