@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -721,16 +721,50 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
   };
 
-  const isInfoMsg = error && (
-    error.includes("Kauf") || 
-    error.includes("synchronisiert") || 
-    error.includes("freigeschaltet") ||
-    error.includes("Verbindung") ||
-    error.includes("geladen") ||
-    error.includes("erstattet") ||
-    error.includes("storniert") ||
-    error.includes("bereits")
-  );
+  const getFriendlyErrorInfo = (rawError: string | null) => {
+    if (!rawError) return null;
+    const lower = rawError.toLowerCase();
+
+    if (lower.includes('user_canceled') || lower.includes('cancelled') || lower.includes('abgebrochen')) {
+      return {
+        text: 'Der Kaufvorgang wurde abgebrochen.',
+        isInfo: true,
+        showSupport: false
+      };
+    }
+
+    if (lower.includes('already owned') || lower.includes('bereits gekauft') || lower.includes('kauf gefunden')) {
+      return {
+        text: 'Kauf in Google Play gefunden. Schalte Inhalte frei...',
+        isInfo: true,
+        showSupport: false
+      };
+    }
+
+    if (lower.includes('item_unavailable') || lower.includes('not_found') || lower.includes('nicht verfügbar') || lower.includes('nicht gefunden') || lower.includes('unavailable')) {
+      return {
+        text: 'Dieses Produkt ist derzeit im Google Play Store noch nicht verfügbar oder wird gerade geprüft.',
+        isInfo: false,
+        showSupport: true
+      };
+    }
+
+    if (lower.includes('network') || lower.includes('connection') || lower.includes('verbindung')) {
+      return {
+        text: 'Verbindungsfehler zum Google Play Store. Bitte prüfe deine Internetverbindung.',
+        isInfo: false,
+        showSupport: false
+      };
+    }
+
+    return {
+      text: rawError,
+      isInfo: false,
+      showSupport: true
+    };
+  };
+
+  const errorInfo = getFriendlyErrorInfo(error);
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -746,13 +780,26 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         </span>
       </label>
 
-      {error && (
-        <div className={`w-full text-xs rounded-xl p-2.5 mb-3 font-medium text-center border ${
-          isInfoMsg 
-            ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800' 
-            : 'bg-[#fef2f2] text-[#ef4444] border-[#fecaca]'
-        }`}>
-          {error}
+      {errorInfo && (
+        <div className="w-full mb-3">
+          <div className={`w-full text-xs rounded-xl p-3 font-medium text-center border leading-relaxed ${
+            errorInfo.isInfo 
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800' 
+              : 'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-900'
+          }`}>
+            {errorInfo.text}
+          </div>
+          {errorInfo.showSupport && (
+            <div className="mt-2 text-center">
+              <a
+                href={`mailto:hallo@flow-der-stille.de?subject=${encodeURIComponent(`Kundenservice-Anfrage: Produkt "${produkt.titel}"`)}&body=${encodeURIComponent(`Hallo Flow der Stille Team,\n\nich möchte gerne das Produkt "${produkt.titel}" (ID: ${produkt.id}) kaufen, erhalte aber im App Store folgende Rückmeldung:\n${error}\n\nBitte helft mir beim Kauf/Freischalten.`)}`}
+                className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline font-semibold pt-1"
+              >
+                <Mail size={14} />
+                <span>Problem melden / Support per E-Mail kontaktieren</span>
+              </a>
+            </div>
+          )}
         </div>
       )}
       <button
