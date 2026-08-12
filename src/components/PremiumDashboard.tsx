@@ -11,6 +11,7 @@ import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, 
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
+import { useSearchParams } from 'react-router-dom';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -21,6 +22,15 @@ export default function PremiumShopDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
+  const [searchParams] = useSearchParams();
+
+  // URL-Filter-Parameter beim ersten Laden auslesen (?filter=Meditation etc.)
+  useEffect(() => {
+    const filterParam = searchParams.get('filter');
+    if (filterParam) {
+      setActiveFilter(filterParam);
+    }
+  }, []);
   
   const [isVip, setIsVip] = useState(false);
   const [myPurchases, setMyPurchases] = useState<any[]>([]);

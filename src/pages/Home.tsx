@@ -245,7 +245,7 @@ export default function Home() {
             description={t('home.card.breathing.desc')}
             icon={<Wind className="text-blue-400" />}
             delay={0.2}
-            to="/exercises"
+            to="/premium#product-gefuehrte_atemuebung"
           />
           <QuickActionCard 
             title={t('home.card.meal.title')} 
@@ -259,7 +259,7 @@ export default function Home() {
             description={t('home.card.evening.desc')}
             icon={<Moon className="text-indigo-400" />}
             delay={0.4}
-            to="/evening"
+            to="/premium?filter=Meditation"
           />
         </div>
 
