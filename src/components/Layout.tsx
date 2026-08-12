@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { AdminTools } from './AdminTools';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
+import { getSupabase } from '../lib/supabaseClient';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -42,7 +43,20 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
+  const [hasHoerproben, setHasHoerproben] = useState(false);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
+
+  // Dynamisch prüfen ob Hörproben in Supabase existieren
+  useEffect(() => {
+    getSupabase()
+      .from('produkte')
+      .select('id', { count: 'exact', head: false })
+      .not('hoerprobe_url', 'is', null)
+      .neq('hoerprobe_url', '')
+      .then(({ count }) => {
+        if (count && count > 0) setHasHoerproben(true);
+      });
+  }, []);
 
   useEffect(() => {
     pushVirtualPageView(location.pathname, location.search);
@@ -274,20 +288,22 @@ export default function Layout() {
                   </div>
                 </Link>
 
-                {/* Hörproben */}
-                <Link
-                  to="/premium?filter=H%C3%B6rprobe"
-                  onClick={() => handleMenuClick('Hörproben')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <Headphones size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)]">Hörproben</div>
-                    <div className="text-xs text-[var(--text-muted)]">Kostenlos reinhören</div>
-                  </div>
-                </Link>
+                {/* Hörproben - nur anzeigen wenn in Supabase vorhanden */}
+                {hasHoerproben && (
+                  <Link
+                    to="/premium?filter=H%C3%B6rprobe"
+                    onClick={() => handleMenuClick('Hörproben')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <Headphones size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">Hörproben</div>
+                      <div className="text-xs text-[var(--text-muted)]">Kostenlos reinhören</div>
+                    </div>
+                  </Link>
+                )}
 
                 {/* Einstellungen */}
                 {user && (
@@ -383,7 +399,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.5.8 (Build 53)
+                    Flow der Stille v4.5.9
                   </span>
                 </div>
               </div>
