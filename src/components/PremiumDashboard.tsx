@@ -11,11 +11,12 @@ import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, 
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
+  const location = useLocation();
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,29 @@ export default function PremiumShopDashboard() {
       setActiveFilter(filterParam);
     }
   }, []);
+
+  // Nach Login-Redirect: Zum Produkt scrollen wenn ein #product-XXX Hash in der URL steckt
+  useEffect(() => {
+    const hash = location.hash; // z.B. "#product-fds_herzoeffnung_meditation"
+    if (!hash || !hash.startsWith('#product-')) return;
+
+    // Warte bis Produkte gerendert sind (Daten aus Supabase brauchen einen Moment)
+    const scrollToProduct = () => {
+      const el = document.getElementById(hash.slice(1)); // hash ohne das "#"
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Hash nach dem Scrollen entfernen damit er nicht stört
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    };
+
+    // Versuch 1: sofort (für den Fall, dass Produkte schon gecacht sind)
+    const t1 = setTimeout(scrollToProduct, 400);
+    // Versuch 2: nach längerer Wartezeit (Supabase-Ladeverzögerung)
+    const t2 = setTimeout(scrollToProduct, 1400);
+
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [location.hash, loading]);
 
   const handleJumpToProduct = (productId: string) => {
     setActiveFilter('Alle');
@@ -598,7 +622,6 @@ export default function PremiumShopDashboard() {
                 )}
               </div>
 
-              {/* Für nicht-eingeloggte Gäste: Einheitliche Vollbreiten-Box zum Anmelden / Registrieren */}
               {!user && (
                 <div className="mt-6 md:mt-8 bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-5 sm:p-6 text-[var(--text-main)] shadow-sm">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
@@ -620,13 +643,13 @@ export default function PremiumShopDashboard() {
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
                       <Link 
-                        to="/register" 
+                        to={`/register?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
                         className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
                       >
                         Jetzt kostenlos registrieren
                       </Link>
                       <Link 
-                        to="/login" 
+                        to={`/login?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
                         className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
                       >
                         Anmelden
