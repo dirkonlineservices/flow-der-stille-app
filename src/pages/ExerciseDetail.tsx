@@ -354,8 +354,8 @@ export default function ExerciseDetail() {
           </div>
           <a 
             href="/impressum#ki-transparenz" 
-            title="Bildgestaltung: KI-Design"
-            className="absolute bottom-4 left-4 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/80 transition-all flex items-center gap-1 cursor-pointer"
+            title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+            className="absolute bottom-4 left-4 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
           >
             ✨ KI-Design
           </a>

@@ -73,8 +73,8 @@ function ExerciseCard({ id, title, category, duration, description, image, isAud
             onClick={(e) => {
               e.stopPropagation();
             }}
-            title="Bildgestaltung: KI-Design"
-            className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/80 transition-all flex items-center gap-1 cursor-pointer"
+            title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+            className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
           >
             ✨ KI-Design
           </a>

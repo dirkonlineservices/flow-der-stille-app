@@ -53,11 +53,22 @@ export default function Impressum() {
           </p>
         </section>
         
-        <section id="ki-transparenz">
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Transparenzhinweis zu KI-Design (EU AI Act, Art. 50 KI-VO)</h2>
+        <section id="ki-transparenz" className="p-5 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] space-y-3">
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] font-medium">Transparenzhinweis zu KI-Unterstützung (EU AI Act, Art. 50 KI-VO)</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
-            Die Kennzeichnung <strong>✨ KI-Design</strong> bezieht sich ausschließlich auf die visuelle Bildgestaltung (Cover-Illustrationen & Produkt-Grafiken), welche unter Zuhilfenahme künstlicher Intelligenz digital gestaltet wurden. Sämtliche Skripte, Meditationsinhalte, Audio-Produktionen und Übungen wurden von Jacqueline Schmetzer konzipiert und stehen unter ihrem urheberrechtlichen Schutz.
+            Um vollständige Transparenz gemäß den Vorgaben des europäischen KI-Gesetzes (EU AI Act) zu gewährleisten, informieren wir transparent über den Einsatz digitaler KI-Werkzeuge auf unserer Plattform:
           </p>
+          <ul className="list-disc pl-5 space-y-2 text-[var(--color-text-muted)] text-sm leading-relaxed">
+            <li>
+              <strong>Texte & Inhalte (100 % Originalwerk):</strong> Sämtliche Meditationsskripte, Selbsthypnose-Texte, Übungskonzepte und Impulse sind zu 100 % von <strong>Jacqueline Schmetzer</strong> selbst konzipiert, verfasst und urheberrechtlich geschützt.
+            </li>
+            <li>
+              <strong>Audio-Vertonung & Klangwelten:</strong> Die Sprachausgabe der Skripte sowie die entspannenden Hintergrund-Sounds und Musikarrangements entstehen mit digitaler Unterstützung moderner KI-Audiotechnologien.
+            </li>
+            <li>
+              <strong>Visuelles Cover-Design (✨ KI-Design):</strong> Die Produkt-Coverbilder und visuellen Grafikmotive wurden mithilfe digitaler KI-Bildgeneratoren gestaltet.
+            </li>
+          </ul>
         </section>
 
         <section>

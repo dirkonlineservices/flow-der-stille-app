@@ -461,9 +461,14 @@ export default function PremiumShopDashboard() {
                       Kostenfreies Audio
                     </span>
                   </div>
-                  <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md">
+                  <a 
+                    href="/impressum#ki-transparenz"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+                    className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
+                  >
                     ✨ KI-Design
-                  </span>
+                  </a>
                   {produkt.dauer && (
                     <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
                       ⏱ {formatDuration(produkt.dauer)} Min.
@@ -502,9 +507,14 @@ export default function PremiumShopDashboard() {
                     </span>
                   )}
                 </div>
-                <span className="absolute bottom-3 left-3 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md">
+                <a 
+                  href="/impressum#ki-transparenz"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+                  className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
+                >
                   ✨ KI-Design
-                </span>
+                </a>
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
                     ⏱ {formatDuration(produkt.dauer)} Min.
