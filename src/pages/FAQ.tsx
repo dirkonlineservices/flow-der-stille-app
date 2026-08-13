@@ -11,6 +11,13 @@ interface FAQItem {
 }
 
 const faqData: FAQItem[] = [
+  // 0. Über Flow der Stille & Unsere Motivation
+  {
+    category: "Über Flow der Stille",
+    question: "Warum haben wir Flow der Stille ins Leben gerufen? (Unsere Vision)",
+    answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline und Dirk Schmetzer, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
+  },
+
   // 1. Achtsamkeit, Meditation, Selbsthypnose & Affirmationen
   {
     category: "Achtsamkeit, Meditation & Selbsthypnose",
@@ -67,7 +74,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [activeCategory, setActiveCategory] = useState<string>('Alle');
 
-  const categories = ['Alle', 'Achtsamkeit, Meditation & Selbsthypnose', 'Plattform- & App-Nutzung', 'Kauf & Abwicklung'];
+  const categories = ['Alle', 'Über Flow der Stille', 'Achtsamkeit, Meditation & Selbsthypnose', 'Plattform- & App-Nutzung', 'Kauf & Abwicklung'];
 
   const filteredFAQs = activeCategory === 'Alle' 
     ? faqData 
