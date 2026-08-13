@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle2, Sparkles, Lock, Heart, Share2, Copy, MessageCircle, ExternalLink, Video } from 'lucide-react';
+import { Send, CheckCircle2, Sparkles, Lock, Heart, Share2, Copy, MessageCircle, ExternalLink, Video, ChevronDown, ChevronUp, Instagram, Pin } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -17,8 +17,10 @@ export const FriendInviteWidget: React.FC = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedStory, setCopiedStory] = useState(false);
+  const [isShareAccordionOpen, setIsShareAccordionOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // 1. Sichere Domain-Ermittlung (Immer https://flow-der-stille.de im Live/App Betrieb, niemals localhost)
+  // Sichere Domain-Ermittlung (Immer https://flow-der-stille.de im Live/App Betrieb, niemals localhost)
   const getBaseDomain = () => {
     if (typeof window !== 'undefined' && window.location.origin) {
       const origin = window.location.origin;
@@ -29,7 +31,7 @@ export const FriendInviteWidget: React.FC = () => {
     return 'https://flow-der-stille.de';
   };
 
-  // 2. Personalisierter Empfehlungscode (Vorname + kurze ID)
+  // Personalisierter Empfehlungscode (Vorname + kurze ID)
   const getPersonalizedRefCode = (u: any) => {
     if (!u) return 'flow-ref';
     const cleanName = (u.first_name || u.username || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -45,9 +47,15 @@ export const FriendInviteWidget: React.FC = () => {
 
   const storyText = `Ich nutze aktuell Flow der Stille für tägliche Meditation & tiefes Durchatmen 🌿✨ Probier es aus – über meinen Link gibt's direkten Zugriff: ${referralLink}`;
 
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
     setCopiedLink(true);
+    triggerToast('Empfehlungs-Link in Zwischenablage kopiert! 📋');
     setTimeout(() => setCopiedLink(false), 3000);
 
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
@@ -62,6 +70,7 @@ export const FriendInviteWidget: React.FC = () => {
   const handleCopyStoryText = () => {
     navigator.clipboard.writeText(storyText);
     setCopiedStory(true);
+    triggerToast('Story-Text kopiert! Bereit für Instagram oder TikTok 🎬');
     setTimeout(() => setCopiedStory(false), 3000);
   };
 
@@ -93,6 +102,14 @@ export const FriendInviteWidget: React.FC = () => {
     window.open(waUrl, '_blank');
   };
 
+  const handleInstagramShare = () => {
+    navigator.clipboard.writeText(storyText);
+    triggerToast('Text für Instagram Story kopiert! Öffne Instagram...');
+    setTimeout(() => {
+      window.open('https://instagram.com', '_blank');
+    }, 800);
+  };
+
   const handleTelegramShare = () => {
     const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`;
     window.open(tgUrl, '_blank');
@@ -101,6 +118,11 @@ export const FriendInviteWidget: React.FC = () => {
   const handleFacebookShare = () => {
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`;
     window.open(fbUrl, '_blank');
+  };
+
+  const handlePinterestShare = () => {
+    const pinUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(referralLink)}&description=${encodeURIComponent(shareText)}`;
+    window.open(pinUrl, '_blank');
   };
 
   const supabase = getSupabase();
@@ -192,8 +214,16 @@ export const FriendInviteWidget: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Haupt-Karte: Personalisierter Empfehlungslink & Direct Social Sharing */}
+    <div className="space-y-8 relative">
+      {/* Toast Feedback Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-text-main)] px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs md:text-sm font-medium animate-in fade-in slide-in-from-bottom-3">
+          <CheckCircle2 size={18} className="text-[var(--color-accent-primary)] shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Haupt-Karte: Personalisierter Empfehlungslink & Brand CI Social Sharing */}
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">
@@ -223,56 +253,102 @@ export const FriendInviteWidget: React.FC = () => {
           />
           <button
             onClick={handleCopyLink}
-            className="px-5 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-xs shrink-0 hover:bg-[var(--color-accent-hover)] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+            className="px-5 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-xs shrink-0 hover:bg-[var(--color-accent-hover)] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
           >
             {copiedLink ? <CheckCircle2 size={15} /> : <Copy size={15} />}
             <span>{copiedLink ? 'Kopiert!' : 'Link kopieren'}</span>
           </button>
         </div>
 
-        {/* Schnell-Teilen Buttons für Social Media */}
-        <div className="space-y-3 pt-2 border-t border-[var(--color-border-main)]">
-          <span className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider block">
-            Direkt auf Social Media oder Gerät teilen:
-          </span>
+        {/* Aufklappbares Element für Social Media Kanäle in Brand-CI Farben */}
+        <div className="pt-3 border-t border-[var(--color-border-main)]">
+          <button
+            onClick={() => setIsShareAccordionOpen(!isShareAccordionOpen)}
+            className="w-full p-4 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-medium text-xs md:text-sm transition-all flex items-center justify-between gap-3 cursor-pointer group shadow-xs"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Share2 size={16} />
+              </div>
+              <span className="font-semibold group-hover:text-[var(--color-accent-primary)] transition-colors">
+                Kanäle zum Teilen wählen (WhatsApp, Instagram, Telegram, Facebook, Pinterest)
+              </span>
+            </div>
+            <div className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors">
+              {isShareAccordionOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </div>
+          </button>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            {/* Native Device Share Sheet Button */}
-            <button
-              onClick={handleNativeShare}
-              className="py-3 px-4 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-xs hover:opacity-95 transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer col-span-2 sm:col-span-1"
-            >
-              <Share2 size={16} />
-              <span>Gerät / App Teilen</span>
-            </button>
+          {/* Aufgeklapptes Menü mit CI-konformen Buttons */}
+          {isShareAccordionOpen && (
+            <div className="mt-3 p-4 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] animate-in fade-in slide-in-from-top-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] block mb-3">
+                Wähle deine bevorzugte App:
+              </span>
 
-            {/* WhatsApp Button */}
-            <button
-              onClick={handleWhatsAppShare}
-              className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-            >
-              <MessageCircle size={16} />
-              <span>WhatsApp</span>
-            </button>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                {/* 1. Gerät / Mobile App Teilen */}
+                <button
+                  onClick={handleNativeShare}
+                  title="Über natives Teilen-Menü auf deinem Gerät versenden"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <Share2 size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">Gerät / App</span>
+                </button>
 
-            {/* Telegram Button */}
-            <button
-              onClick={handleTelegramShare}
-              className="py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-            >
-              <Send size={16} />
-              <span>Telegram</span>
-            </button>
+                {/* 2. WhatsApp */}
+                <button
+                  onClick={handleWhatsAppShare}
+                  title="Auf WhatsApp teilen"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <MessageCircle size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">WhatsApp</span>
+                </button>
 
-            {/* Facebook Button */}
-            <button
-              onClick={handleFacebookShare}
-              className="py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-            >
-              <ExternalLink size={16} />
-              <span>Facebook</span>
-            </button>
-          </div>
+                {/* 3. Instagram */}
+                <button
+                  onClick={handleInstagramShare}
+                  title="Text & Link für Instagram Story kopieren"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <Instagram size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">Instagram</span>
+                </button>
+
+                {/* 4. Telegram */}
+                <button
+                  onClick={handleTelegramShare}
+                  title="Auf Telegram teilen"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <Send size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">Telegram</span>
+                </button>
+
+                {/* 5. Facebook */}
+                <button
+                  onClick={handleFacebookShare}
+                  title="Auf Facebook teilen"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <ExternalLink size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">Facebook</span>
+                </button>
+
+                {/* 6. Pinterest */}
+                <button
+                  onClick={handlePinterestShare}
+                  title="Auf Pinterest pinnen"
+                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
+                >
+                  <Pin size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">Pinterest</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -298,9 +374,9 @@ export const FriendInviteWidget: React.FC = () => {
 
         <button
           onClick={handleCopyStoryText}
-          className="py-3 px-5 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-body)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+          className="py-3 px-5 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-alt)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
         >
-          {copiedStory ? <CheckCircle2 size={16} className="text-emerald-500" /> : <Copy size={16} />}
+          {copiedStory ? <CheckCircle2 size={16} className="text-[var(--color-accent-primary)]" /> : <Copy size={16} />}
           <span>{copiedStory ? 'Story-Text kopiert!' : 'Story & Reel Text kopieren'}</span>
         </button>
       </div>
