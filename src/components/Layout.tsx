@@ -86,14 +86,21 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
-      {/* Top Right Corner Google Play App Button */}
+      {/* Top Right Corner Google Play App Button (Springt per Anker-Link nach unten zum QR-Code) */}
       {!isNativeApp && (
         <a
-          href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed top-4 right-4 md:right-8 z-40 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-sm"
-          title="Flow der Stille Android App im Google Play Store laden"
+          href="#google-play-download"
+          onClick={(e) => {
+            e.preventDefault();
+            const el = document.getElementById('google-play-download');
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              window.open('https://play.google.com/store/apps/details?id=app.flowderstille.de', '_blank');
+            }
+          }}
+          className="fixed top-4 right-4 md:right-8 z-40 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-sm cursor-pointer"
+          title="Zur App-Download-Box mit QR-Code springen"
         >
           <GooglePlayIcon className="w-4 h-4 shrink-0" />
           <span className="hidden sm:inline font-medium">Google Play App</span>
@@ -158,6 +165,49 @@ export default function Layout() {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* App Download Box mit Google Play Badge & QR-Code (Für Webseiten-Besucher) */}
+      {!isNativeApp && (
+        <div id="google-play-download" className="w-full max-w-4xl mx-auto px-4 md:px-8 my-6">
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-sm text-center">
+            <h3 className="font-serif font-semibold text-xl sm:text-2xl text-[var(--text-main)] mb-1.5">
+              Flow der Stille als Android App nutzen
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto mb-6 leading-relaxed">
+              Lade dir unsere App direkt im Google Play Store herunter oder scanne einfach den QR-Code mit deinem Smartphone.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+              {/* Link für Smartphone-Nutzer & Direkt-Klick */}
+              <a 
+                href="https://play.google.com/store/apps/details?id=app.flowderstille.de" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:scale-105 transition-transform shrink-0"
+              >
+                <img 
+                  src="https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png" 
+                  alt="Jetzt bei Google Play" 
+                  width="200" 
+                  className="h-14 w-auto object-contain"
+                />
+              </a>
+
+              {/* QR-Code für Desktop-Nutzer */}
+              <div className="flex flex-col items-center gap-2 p-3.5 bg-white dark:bg-stone-900 rounded-2xl border border-[var(--border)] shadow-xs">
+                <img 
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://play.google.com/store/apps/details?id=app.flowderstille.de" 
+                  alt="QR-Code zum Play Store" 
+                  width="130"
+                  height="130"
+                  className="rounded-lg"
+                />
+                <span className="text-[11px] font-medium text-[var(--text-muted)]">Mit dem Smartphone scannen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer className="w-full max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
@@ -408,7 +458,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.8.8
+                    Flow der Stille v4.8.9
                   </span>
                 </div>
               </div>
