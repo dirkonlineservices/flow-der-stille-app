@@ -394,9 +394,9 @@ export default function PremiumShopDashboard() {
         const hoerproben = produkte.filter(p => !!p.hoerprobe_url && p.hoerprobe_url.trim() !== '');
         if (hoerproben.length === 0) return null;
         return (
-          <div className="w-full bg-[var(--bg-card)] border border-amber-400/40 dark:border-amber-700/40 rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
+          <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-amber-500 text-white">
+              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--accent)] text-white">
                 Kostenlos reinschnuppern
               </span>
               <h3 className="text-base sm:text-lg font-serif font-semibold text-[var(--text-main)]">
@@ -404,11 +404,11 @@ export default function PremiumShopDashboard() {
               </h3>
             </div>
             <p className="text-xs text-[var(--text-muted)] mb-3">
-              Höre unverbindlich rein. Klicke auf „Zum Produkt →“, um direkt zur Beschreibung und Bestellung zu springen.
+              Höre unverbindlich rein – 100 % werbefrei und ohne Anmeldung.
             </p>
             <div className="grid grid-cols-1 gap-2.5">
               {hoerproben.map((p) => (
-                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} />
+                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={activeFilter !== 'Hörprobe'} />
               ))}
             </div>
           </div>
@@ -469,7 +469,7 @@ export default function PremiumShopDashboard() {
           </div>
         )}
 
-        {sortedProdukte.map((produkt: any) => {
+        {activeFilter !== 'Hörprobe' && sortedProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const playId = getPlayStoreProductId(produkt.id);
           const hatZugriff = isVip || gekauftIds.has(produkt.id) || gekauftIds.has(playId) || istKostenlos;
@@ -539,7 +539,7 @@ export default function PremiumShopDashboard() {
                     {produkt.kategorie || 'Kategorie'}
                   </span>
                   {produkt.hoerprobe_url && (
-                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-amber-500/90 text-white uppercase shadow-md flex items-center gap-1">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--accent)] text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
                       🎧 Hörprobe verfügbar
                     </span>
                   )}

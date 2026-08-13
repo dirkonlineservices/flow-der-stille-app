@@ -1,9 +1,8 @@
 /**
  * HoerprobenPlayer – Kostenlose Hörprobe für ein Produkt.
  *
- * Voraussetzung Supabase-Spalte: `public.produkte.hoerprobe_url` (text, nullable)
- * Wenn der Wert NULL oder leer ist, rendert diese Komponente NICHTS.
- * Kein Login erforderlich – Hörproben sind öffentlich zugänglich.
+ * Farbzusammenstellung im Marken-CI (Salbeigrün & Grün, keine Knall-Farben).
+ * Sehr kompakte, schlanke Darstellung ohne gedrungenen Vollbreiten-Balken.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -78,47 +77,49 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   };
 
   return (
-    <div className={`rounded-xl border border-amber-400/30 bg-amber-50/70 dark:bg-amber-950/30 shadow-xs transition-all ${variant === 'compact' ? 'p-3' : 'p-4'}`}>
+    <div className={`rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5' : 'p-5'}`}>
       {/* Header-Zeile mit Titel */}
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Headphones size={14} className="text-amber-600 dark:text-amber-400 shrink-0" />
-          <span className="text-[11px] font-bold tracking-wide text-amber-800 dark:text-amber-300 uppercase truncate">
-            Kostenlose Hörprobe: {produkt.titel}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-6 h-6 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0">
+            <Headphones size={13} />
+          </span>
+          <span className="text-xs font-semibold text-[var(--color-text-main)] truncate">
+            Kostenlose Hörprobe: <span className="font-serif italic font-normal text-[var(--color-text-muted)]">{produkt.titel}</span>
           </span>
         </div>
 
         {showProductLink && (
           <button
             onClick={scrollToProduct}
-            className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-all shrink-0 cursor-pointer shadow-xs"
+            className="px-3 py-1 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95"
           >
             Zum Produkt →
           </button>
         )}
       </div>
 
-      {/* Audio-Steuerung */}
+      {/* Audio-Steuerung: Kompakter Play Button + zentrierter Fortschrittsbalken */}
       <div className="flex items-center gap-3">
         {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
           aria-label={isPlaying ? 'Pause' : 'Hörprobe abspielen'}
           className={`w-9 h-9 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white cursor-pointer ${
-            isPlaying ? 'bg-amber-600 hover:bg-amber-700' : 'bg-amber-500 hover:bg-amber-600'
+            isPlaying ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)]'
           }`}
         >
           {isPlaying ? (
-            <Pause size={16} fill="white" stroke="none" />
+            <Pause size={15} fill="white" stroke="none" />
           ) : (
-            <Play size={16} className="ml-0.5" fill="white" stroke="none" />
+            <Play size={15} className="ml-0.5" fill="white" stroke="none" />
           )}
         </button>
 
-        {/* Fortschrittsbalken + Zeit */}
-        <div className="flex-1 min-w-0">
+        {/* Fortschrittsbalken + Zeit (kompakt begrenzt) */}
+        <div className="flex-1 max-w-sm min-w-0">
           <div
-            className="relative h-2 bg-amber-200/80 dark:bg-amber-900/60 rounded-full cursor-pointer overflow-hidden mb-1"
+            className="relative h-2 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-full cursor-pointer overflow-hidden mb-1"
             onClick={handleSeek}
             role="progressbar"
             aria-valuenow={Math.round(progress)}
@@ -126,11 +127,11 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
             aria-valuemax={100}
           >
             <div
-              className="absolute left-0 top-0 h-full bg-amber-500 rounded-full transition-all"
+              className="absolute left-0 top-0 h-full bg-[var(--color-accent-primary)] rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-amber-800/80 dark:text-amber-300/80 font-mono">
+          <div className="flex justify-between text-[10px] text-[var(--color-text-muted)] font-mono">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>

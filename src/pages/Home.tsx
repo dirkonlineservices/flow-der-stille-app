@@ -11,6 +11,7 @@ import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
+import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 
 const dailyWisdoms = [
   { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
@@ -39,17 +40,21 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
   const [hoerprobenCount, setHoerprobenCount] = useState(0);
+  const [hoerprobenList, setHoerprobenList] = useState<any[]>([]);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.() || (window as any).CdvPurchase);
 
-  // Hörproben-Anzahl aus Supabase laden (für Banner)
+  // Hörproben aus Supabase laden
   useEffect(() => {
     getSupabase()
       .from('produkte')
-      .select('id', { count: 'exact', head: false })
+      .select('*')
       .not('hoerprobe_url', 'is', null)
       .neq('hoerprobe_url', '')
-      .then(({ count }) => {
-        if (count && count > 0) setHoerprobenCount(count);
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setHoerprobenList(data);
+          setHoerprobenCount(data.length);
+        }
       });
   }, []);
 
@@ -217,33 +222,41 @@ export default function Home() {
             <FriendInviteWidget />
           </div>
 
-          {/* Kostenlose Hörproben-Banner – nur sichtbar wenn Supabase Hörproben enthält */}
-          {hoerprobenCount > 0 && (
+          {/* Kostenlose Hörproben – Premium-Feld im Marken-CI */}
+          {hoerprobenList.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-6"
+              className="mt-8 p-5 sm:p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] transition-all shadow-sm space-y-4"
             >
-              <Link
-                to="/premium?filter=H%C3%B6rprobe"
-                className="flex items-center gap-4 p-5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-50/80 to-amber-100/40 dark:from-amber-900/25 dark:to-amber-800/10 hover:shadow-md hover:border-amber-400/70 transition-all group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Headphones size={24} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
-                    🎧 Kostenlose Hörproben verfügbar
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-border-main)]">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white">
+                      Kostenlos reinschnuppern
+                    </span>
+                    <h3 className="font-serif font-semibold text-lg text-[var(--color-text-main)]">
+                      Kostenlose Hörproben
+                    </h3>
                   </div>
-                  <div className="text-amber-700/70 dark:text-amber-400/70 text-xs mt-0.5 leading-snug">
-                    Hör rein, bevor du kaufst – {hoerprobenCount} {hoerprobenCount === 1 ? 'Hörprobe' : 'Hörproben'} kostenfrei und ohne Anmeldung
-                  </div>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    Höre unverbindlich rein – 100 % werbefrei und ohne Anmeldung.
+                  </p>
                 </div>
-                <div className="text-amber-600 dark:text-amber-400 text-xs font-semibold shrink-0 group-hover:translate-x-1 transition-transform">
-                  Anhören →
-                </div>
-              </Link>
+                <Link
+                  to="/premium?filter=H%C3%B6rprobe"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
+                >
+                  Zu allen Premium-Inhalten →
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                {hoerprobenList.map((p) => (
+                  <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={false} />
+                ))}
+              </div>
             </motion.div>
           )}
 
