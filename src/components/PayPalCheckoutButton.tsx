@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { HelpCircle, X, CreditCard, Users, Building2 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
@@ -40,12 +42,15 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [toast, setToast] = useState<PurchaseToastData>({
     show: false,
     type: 'cancelled',
     title: '',
     message: ''
   });
+  const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
+
   const [runtimeClientId, setRuntimeClientId] = useState<string>(
     import.meta.env.VITE_PAYPAL_CLIENT_ID || paypalClientId || "BAAKqq0F1xbok5dmAg0bFJL6dvnPRzq-Pe53JEyL5nZbWvHSg5DZlFZHzwsxJZ2JkS9Q1uKJ4OtVDZsWEk"
   );
@@ -360,6 +365,117 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         toast={toast} 
         onClose={() => setToast(prev => ({ ...prev, show: false }))} 
       />
+
+      {/* PayPal Hilfe-Link (nur auf Web, nicht in nativer App) */}
+      {!isNativeApp && acceptedTerms && (
+        <div className="text-center mt-1">
+          <button
+            type="button"
+            onClick={() => setShowHelpModal(true)}
+            className="inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer underline-offset-2 hover:underline"
+          >
+            <HelpCircle size={13} />
+            <span>Kein PayPal-Konto oder Fragen zur Zahlung?</span>
+          </button>
+        </div>
+      )}
+
+      {/* PayPal Hilfe-Modal */}
+      <AnimatePresence>
+        {showHelpModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center px-4"
+            onClick={() => setShowHelpModal(false)}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 8 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md bg-[var(--bg-card)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="px-6 pt-6 pb-4 border-b border-[var(--border)] flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-serif font-semibold text-lg text-[var(--text-main)] leading-snug">
+                    Flexible Zahlung per PayPal – Auch ohne Konto
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                    Du hast mehrere bequeme Zahlungsoptionen zur Auswahl.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowHelpModal(false)}
+                  aria-label="Hilfe schließen"
+                  className="p-1.5 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition-colors cursor-pointer shrink-0 mt-0.5"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="px-6 py-5 space-y-4">
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 shrink-0 mt-0.5">
+                    <Users size={18} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-[var(--text-main)] mb-0.5">Kein PayPal-Konto nötig</h4>
+                    <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      Du benötigst kein eigenes PayPal-Konto, um zu bezahlen.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
+                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 shrink-0 mt-0.5">
+                    <CreditCard size={18} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-[var(--text-main)] mb-0.5">Gastzahlung mit Kreditkarte</h4>
+                    <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      Klicke im geöffneten PayPal-Fenster einfach auf <strong className="text-[var(--text-main)]">&ldquo;Mit Kredit- oder Debitkarte zahlen&rdquo;</strong> oder <strong className="text-[var(--text-main)]">&ldquo;Als Gast bezahlen&rdquo;</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
+                  <div className="p-2 rounded-xl bg-violet-500/10 text-violet-600 shrink-0 mt-0.5">
+                    <Building2 size={18} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-[var(--text-main)] mb-0.5">Zahlung per Bankeinzug / IBAN</h4>
+                    <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                      Du kannst deine normale Bankkarte (Girocard/Debitkarte) oder deine IBAN nutzen, um bequem per Lastschrift zu bezahlen.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 pb-6">
+                <button
+                  onClick={() => setShowHelpModal(false)}
+                  className="w-full py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                >
+                  Verstanden
+                </button>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
