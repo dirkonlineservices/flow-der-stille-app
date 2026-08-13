@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -367,7 +367,14 @@ export default function PremiumShopDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto p-2 pb-4 lg:p-4 lg:pb-6 font-sans bg-[var(--bg-main)]">
-      <header className="mb-5 lg:mb-6 text-center">
+      <header className="mb-5 lg:mb-6 text-center relative">
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors mb-3 sm:mb-0 sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-full shadow-xs cursor-pointer"
+        >
+          <ArrowLeft size={14} />
+          <span>Zurück</span>
+        </Link>
         <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Premium Inhalte</h1>
         <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
       </header>

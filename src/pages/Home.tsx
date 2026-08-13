@@ -358,26 +358,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-6 mb-1 text-center flex flex-wrap justify-center items-center gap-4">
-          {!isNativeApp && (
-            <a 
-              href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white font-semibold transition-all active:scale-95 shadow-md text-sm"
-            >
-              <GooglePlayIcon className="w-5 h-5 shrink-0" />
-              <span>JETZT BEI Google Play</span>
-            </a>
-          )}
-
+        <section className="mt-8 mb-2 text-center flex justify-center items-center">
           <a 
             href="https://t.me/+figVxVO_tkw4MGJi" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-sm text-sm"
+            className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group"
           >
-            <Send size={18} />
+            <Send size={20} className="group-hover:translate-x-0.5 transition-transform" />
             <span>Folge uns auf Telegram</span>
           </a>
         </section>
