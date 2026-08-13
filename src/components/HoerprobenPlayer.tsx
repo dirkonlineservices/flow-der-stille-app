@@ -2,7 +2,7 @@
  * HoerprobenPlayer – Kostenlose Hörprobe für ein Produkt.
  *
  * Farbzusammenstellung im Marken-CI (Salbeigrün & Grün, keine Knall-Farben).
- * Sehr kompakte, schlanke Darstellung ohne gedrungenen Vollbreiten-Balken.
+ * Dynamischer, vollbreitenausfüllender Fortschrittsbalken ohne leere Freiräume.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,9 +15,11 @@ interface Props {
   variant?: 'compact' | 'full';
   /** Optionaler Button "Zum Produkt" mit Anchor-Scroll */
   showProductLink?: boolean;
+  /** Callback beim Klick auf "Zum Produkt" */
+  onProductClick?: (productId: string) => void;
 }
 
-export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false }: Props) {
+export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
   const url: string = produkt?.hoerprobe_url ?? '';
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -69,22 +71,26 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   };
 
   const scrollToProduct = () => {
-    const el = document.getElementById(`product-${produkt.id}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      window.location.hash = `product-${produkt.id}`;
+    if (onProductClick) {
+      onProductClick(produkt.id);
+    } else {
+      const el = document.getElementById(`product-${produkt.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.location.hash = `product-${produkt.id}`;
+      }
     }
   };
 
   return (
-    <div className={`rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5' : 'p-5'}`}>
-      {/* Header-Zeile mit Titel */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+    <div className={`w-full rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
+      {/* Header-Zeile mit Titel und optionalem "Zum Produkt"-Button */}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="w-6 h-6 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0">
-            <Headphones size={13} />
+          <span className="w-7 h-7 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0">
+            <Headphones size={14} />
           </span>
-          <span className="text-xs font-semibold text-[var(--color-text-main)] truncate">
+          <span className="text-xs sm:text-sm font-semibold text-[var(--color-text-main)] truncate">
             Kostenlose Hörprobe: <span className="font-serif italic font-normal text-[var(--color-text-muted)]">{produkt.titel}</span>
           </span>
         </div>
@@ -92,34 +98,34 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         {showProductLink && (
           <button
             onClick={scrollToProduct}
-            className="px-3 py-1 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95"
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 ml-auto"
           >
             Zum Produkt →
           </button>
         )}
       </div>
 
-      {/* Audio-Steuerung: Kompakter Play Button + zentrierter Fortschrittsbalken */}
-      <div className="flex items-center gap-3">
+      {/* Audio-Steuerung: Play Button + Vollbreiten-Fortschrittsbalken */}
+      <div className="flex items-center gap-3 w-full">
         {/* Play/Pause Button */}
         <button
           onClick={togglePlay}
           aria-label={isPlaying ? 'Pause' : 'Hörprobe abspielen'}
-          className={`w-9 h-9 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white cursor-pointer ${
+          className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white cursor-pointer ${
             isPlaying ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)]'
           }`}
         >
           {isPlaying ? (
-            <Pause size={15} fill="white" stroke="none" />
+            <Pause size={16} fill="white" stroke="none" />
           ) : (
-            <Play size={15} className="ml-0.5" fill="white" stroke="none" />
+            <Play size={16} className="ml-0.5" fill="white" stroke="none" />
           )}
         </button>
 
-        {/* Fortschrittsbalken + Zeit (kompakt begrenzt) */}
-        <div className="flex-1 max-w-sm min-w-0">
+        {/* Fortschrittsbalken + Zeit (Füllt die gesamte verbleibende Breite perfekt aus) */}
+        <div className="flex-1 w-full min-w-0">
           <div
-            className="relative h-2 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-full cursor-pointer overflow-hidden mb-1"
+            className="relative h-2.5 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-full cursor-pointer overflow-hidden mb-1.5"
             onClick={handleSeek}
             role="progressbar"
             aria-valuenow={Math.round(progress)}
@@ -131,7 +137,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-[var(--color-text-muted)] font-mono">
+          <div className="flex justify-between text-[11px] text-[var(--color-text-muted)] font-mono font-medium">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>

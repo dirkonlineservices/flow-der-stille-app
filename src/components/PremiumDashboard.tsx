@@ -32,6 +32,17 @@ export default function PremiumShopDashboard() {
       setActiveFilter(filterParam);
     }
   }, []);
+
+  const handleJumpToProduct = (productId: string) => {
+    setActiveFilter('Alle');
+    setTimeout(() => {
+      const el = document.getElementById(`product-${productId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.location.hash = `product-${productId}`;
+      }
+    }, 100);
+  };
   
   const [isVip, setIsVip] = useState(false);
   const [myPurchases, setMyPurchases] = useState<any[]>([]);
@@ -408,7 +419,7 @@ export default function PremiumShopDashboard() {
             </p>
             <div className="grid grid-cols-1 gap-2.5">
               {hoerproben.map((p) => (
-                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={activeFilter !== 'Hörprobe'} />
+                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} onProductClick={handleJumpToProduct} />
               ))}
             </div>
           </div>
@@ -494,7 +505,7 @@ export default function PremiumShopDashboard() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                   <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md bg-amber-500/90 text-white border border-amber-300/30">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md bg-[var(--accent)] text-white border border-white/20">
                       Kostenfreies Audio
                     </span>
                   </div>
@@ -584,8 +595,12 @@ export default function PremiumShopDashboard() {
                       </div>
                     )}
 
-                    {/* Kostenlose Hörprobe – nur anzeigen wenn URL in Supabase befüllt */}
-                    <HoerprobenPlayer produkt={produkt} />
+                    {/* Kostenlose Hörprobe – mit großzügigem vertikalen Abstand zum Audio-Hinweis */}
+                    {produkt.hoerprobe_url && (
+                      <div className="mt-6 md:mt-8">
+                        <HoerprobenPlayer produkt={produkt} variant="compact" />
+                      </div>
+                    )}
                 </div>
 
                 {!hatZugriff && (
@@ -623,14 +638,14 @@ export default function PremiumShopDashboard() {
               {hatZugriff && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
                     {istKostenlos && !user && (
-                      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-amber-900 dark:text-amber-200 shadow-sm mb-4">
+                      <div className="bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-6 text-[var(--text-main)] shadow-sm mb-4">
                         <div className="flex items-start gap-4">
-                          <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 shrink-0">
+                          <div className="p-3 bg-[var(--accent)]/15 rounded-xl text-[var(--accent)] shrink-0">
                             <Lock size={22} />
                           </div>
                           <div>
-                            <h4 className="font-serif font-bold text-base mb-1">Kostenloses Audio nach Registrierung anhören</h4>
-                            <p className="text-xs sm:text-sm opacity-90 mb-4 leading-relaxed">
+                            <h4 className="font-serif font-bold text-base text-[var(--text-main)] mb-1">Kostenloses Audio nach Registrierung anhören</h4>
+                            <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-4 leading-relaxed">
                               Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit.
                             </p>
                             <div className="flex flex-wrap gap-3">
@@ -642,7 +657,7 @@ export default function PremiumShopDashboard() {
                               </Link>
                               <Link 
                                 to="/login" 
-                                className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white dark:bg-stone-100 dark:hover:bg-stone-200 dark:text-stone-900 text-xs sm:text-sm font-semibold rounded-xl border border-stone-800 transition shadow-sm"
+                                className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
                               >
                                 Anmelden
                               </Link>

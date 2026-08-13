@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import NewsletterBanner from '../components/NewsletterBanner';
@@ -35,6 +35,7 @@ export function GooglePlayIcon({ className = "w-5 h-5" }: { className?: string }
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -254,7 +255,13 @@ export default function Home() {
 
               <div className="grid grid-cols-1 gap-3">
                 {hoerprobenList.map((p) => (
-                  <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={false} />
+                  <HoerprobenPlayer 
+                    key={p.id} 
+                    produkt={p} 
+                    variant="compact" 
+                    showProductLink={true} 
+                    onProductClick={(productId) => navigate(`/premium#product-${productId}`)}
+                  />
                 ))}
               </div>
             </motion.div>
