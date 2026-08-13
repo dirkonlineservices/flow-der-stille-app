@@ -43,8 +43,8 @@ export default function Morning() {
           title="Geführte Morgen-Meditation"
           desc="Erlebe 5 Minuten geführte Aufmerksamkeit, um Gedanken zu ordnen und mit positiver Energie in den Tag zu starten."
           icon={<Headphones className="w-6 h-6 text-emerald-500" />}
-          linkTo="/premium#product-gefuehrte_atemuebung"
-          linkText="Morgen-Audio starten"
+          linkTo="/premium?filter=Meditation"
+          linkText="Morgen-Meditation starten"
           delay={0.3}
         />
       </div>
