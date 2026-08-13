@@ -9,8 +9,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         
         // 👇 UPDATE: Frische Versionsnummer für Google Play Release 👇
-        versionCode 62
-        versionName "4.6.7"
+        versionCode 63
+        versionName "4.6.8"
         
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

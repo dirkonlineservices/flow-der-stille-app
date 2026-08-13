@@ -352,8 +352,12 @@ export default function ExerciseDetail() {
           <div className="absolute top-4 left-4 md:hidden bg-black/50 text-white text-[10px] font-medium px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm">
             Tippe zum Starten
           </div>
-          <a href="/impressum#ki-transparenz" className="absolute bottom-4 right-4 z-10 bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">
-            <span>[KI]</span>
+          <a 
+            href="/impressum#ki-transparenz" 
+            title="Bildgestaltung: KI-Design"
+            className="absolute bottom-4 left-4 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/80 transition-all flex items-center gap-1 cursor-pointer"
+          >
+            ✨ KI-Design
           </a>
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
             <div>

@@ -53,10 +53,10 @@ export default function Impressum() {
           </p>
         </section>
         
-        <section>
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Transparenzhinweis zu KI-Inhalten (EU AI Act, Art. 50 KI-VO)</h2>
+        <section id="ki-transparenz">
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Transparenzhinweis zu KI-Design (EU AI Act, Art. 50 KI-VO)</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
-            Auf dieser Anwendung und Webseite bereitgestellte Inhalte (insbesondere Cover-Illustrationen, ausgewählte Audio-Produktionen sowie digitale Textinhalte) wurden teilweise unter Zuhilfenahme künstlicher Intelligenz (z. B. Google Gemini) generiert oder digital unterstützt.
+            Die Kennzeichnung <strong>✨ KI-Design</strong> bezieht sich ausschließlich auf die visuelle Bildgestaltung (Cover-Illustrationen & Produkt-Grafiken), welche unter Zuhilfenahme künstlicher Intelligenz digital gestaltet wurden. Sämtliche Skripte, Meditationsinhalte, Audio-Produktionen und Übungen wurden von Jacqueline Schmetzer konzipiert und stehen unter ihrem urheberrechtlichen Schutz.
           </p>
         </section>
 

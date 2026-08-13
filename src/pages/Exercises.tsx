@@ -68,13 +68,16 @@ function ExerciseCard({ id, title, category, duration, description, image, isAud
               e.currentTarget.src = 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop'; 
             }}
           />
-          <span onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            window.location.href = '/impressum#ki-transparenz';
-          }} className="absolute bottom-3 right-3 z-10 cursor-pointer">
-            <span className="bg-black/40 text-white/90 text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md">[KI]</span>
-          </span>
+          <a
+            href="/impressum#ki-transparenz"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            title="Bildgestaltung: KI-Design"
+            className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/80 transition-all flex items-center gap-1 cursor-pointer"
+          >
+            ✨ KI-Design
+          </a>
           <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 z-0" />
         </div>
         
