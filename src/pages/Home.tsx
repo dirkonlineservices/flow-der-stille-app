@@ -128,8 +128,9 @@ export default function Home() {
   return (
     <>
       <SEO 
-        title="Persönlicher Ruhebereich" 
-        description="Finde innere Ruhe bei Flow der Stille. Dein persönlicher Bereich für Achtsamkeit, Stressabbau und tägliche Impulse." 
+        title="Meditation, Achtsamkeit & Vagusnerv-Entspannung" 
+        description="Finde innere Ruhe bei Flow der Stille. Geführte Meditationen, Selbsthypnosen & Achtsamkeits-Übungen zur Stressreduktion und Vagusnerv-Aktivierung." 
+        keywords="Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Stressreduktion, Selbsthypnose, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Flow der Stille"
       />
       <div className="space-y-8">
         <header className="mb-12 flex flex-col items-center">

@@ -7,7 +7,26 @@ import SEO from '../components/SEO';
 export default function Morning() {
   return (
     <div className="space-y-12">
-      <SEO title="Morgenritual & Tagesstart" description="Aktiviere deinen Körper und dein Nervensystem sanft für einen klaren, fokussierten Tag." />
+      <SEO 
+        title="Morgenritual & Morgenmeditation – Vagusnerv-Aktivierung" 
+        description="Starte gestärkt in den Tag mit deinem persönlichen Morgenritual: Vagusnerv-Aktivierung, sanfte Atemarbeit und geführte Morgenmeditation von Jacqueline Schmetzer." 
+        keywords="Morgenritual, Morgenmeditation, Vagusnerv aktivieren, Atemübung Morgen, Achtsamkeit Tagesstart, Stressreduktion, Flow der Stille"
+        schemaJson={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Dein Morgenritual für mehr Klarheit & Vagusnerv-Aktivierung",
+          "description": "Anleitung für ein bewusstes Morgenritual mit Vagusnerv-Aktivierung, Tagesintention und geführter Meditation.",
+          "author": {
+            "@type": "Person",
+            "name": "Jacqueline Schmetzer"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Flow der Stille",
+            "logo": "https://flow-der-stille.de/logo-transparent.png"
+          }
+        }}
+      />
       <header className="mb-12">
         <Link to="/" className="inline-flex items-center text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] mb-6 transition-colors">
           <ArrowLeft size={16} className="mr-2" />
