@@ -337,7 +337,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-8 mb-4 text-center flex flex-wrap justify-center items-center gap-4">
+        <section className="mt-6 mb-1 text-center flex flex-wrap justify-center items-center gap-4">
           {!isNativeApp && (
             <a 
               href="https://play.google.com/store/apps/details?id=app.flowderstille.de&pcampaignid=web_share" 

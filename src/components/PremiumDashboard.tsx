@@ -353,10 +353,10 @@ export default function PremiumShopDashboard() {
   if (loading) return <div className="p-10 text-center text-[var(--text-muted)] animate-pulse">Inhalte werden aus der Datenbank geladen...</div>;
 
   return (
-    <div className="max-w-5xl mx-auto p-4 pb-32 lg:p-6 lg:pb-12 font-sans bg-[var(--bg-main)] min-h-screen">
-      <header className="mb-8 lg:mb-10 text-center">
+    <div className="max-w-5xl mx-auto p-2 pb-4 lg:p-4 lg:pb-6 font-sans bg-[var(--bg-main)]">
+      <header className="mb-5 lg:mb-6 text-center">
         <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Premium Inhalte</h1>
-        <p className="text-[var(--text-muted)] mt-2 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">

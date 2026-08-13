@@ -144,7 +144,7 @@ export default function Layout() {
         </nav>
 
         {/* Main Content Area */}
-        <main className="max-w-5xl mx-auto p-6 md:p-12 pt-16 md:pt-12">
+        <main className="max-w-5xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -160,7 +160,7 @@ export default function Layout() {
       </div>
 
       {/* FOOTER */}
-      <footer className="w-full max-w-5xl mx-auto px-6 md:px-12 mt-12 md:mt-16 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+      <footer className="w-full max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
         {[
           { to: '/contact', label: 'Kontakt', isButton: true },
           { to: '/impressum', label: 'Impressum' },
@@ -399,7 +399,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.7.7
+                    Flow der Stille v4.7.8
                   </span>
                 </div>
               </div>
