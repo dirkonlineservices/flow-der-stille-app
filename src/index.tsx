@@ -17,7 +17,8 @@ import Evening from './pages/Evening';
 import Morning from './pages/Morning';
 import FAQ from './pages/FAQ';
 import Settings from './pages/Settings';
-import AtemChat from './pages/atemchat'; 
+import AtemChat from './pages/atemchat';
+import AppDownload from './pages/AppDownload'; 
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -130,6 +131,9 @@ export default function App() {
                   <Route path="faq" element={<FAQ />} />
                   <Route path="haeufige-fragen" element={<FAQ />} />
                   <Route path="fragen" element={<FAQ />} />
+                  <Route path="app" element={<AppDownload />} />
+                  <Route path="android-app" element={<AppDownload />} />
+                  <Route path="playstore" element={<AppDownload />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="konto-loeschen" element={<DataDeletion />} />
