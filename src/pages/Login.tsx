@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
@@ -43,9 +43,16 @@ export default function Login() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
   useEffect(() => {
     checkConsentForAuth();
-  }, []);
+    const redirectParam = searchParams.get('redirectTo') || location.state?.from;
+    if (redirectParam) {
+      sessionStorage.setItem('auth_return_url', redirectParam);
+    }
+  }, [searchParams, location]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -89,8 +96,10 @@ export default function Login() {
         user_id: data?.user?.id || 'unknown'
       });
 
-      // Weiterleitung zum aktualisierten Dashboard
-      navigate('/premium-dashboard');
+      // Dynamische Weiterleitung: Zurück zur ursprünglichen Stelle oder zum Dashboard
+      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/premium-dashboard';
+      sessionStorage.removeItem('auth_return_url');
+      navigate(returnUrl, { replace: true });
     } catch (err) {
       const fallbackMsg = 'Ein unerwarteter Fehler ist aufgetreten.';
       setError(fallbackMsg);

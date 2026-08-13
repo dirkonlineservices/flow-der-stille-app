@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
@@ -14,6 +14,9 @@ export default function Register() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
   useEffect(() => {
     checkConsentForAuth();
     if (typeof window !== 'undefined') {
@@ -22,8 +25,12 @@ export default function Register() {
       if (refParam) {
         localStorage.setItem('flow_referred_by', refParam);
       }
+      const redirectParam = params.get('redirectTo') || location.state?.from;
+      if (redirectParam) {
+        sessionStorage.setItem('auth_return_url', redirectParam);
+      }
     }
-  }, []);
+  }, [searchParams, location]);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');

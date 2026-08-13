@@ -109,6 +109,22 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const scrollTarget = params.get('scroll') || window.location.hash.replace('#', '');
+      if (scrollTarget) {
+        const timer = setTimeout(() => {
+          const el = document.getElementById(scrollTarget);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user]);
+
   return (
     <>
       <SEO 

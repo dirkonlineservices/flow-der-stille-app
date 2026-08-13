@@ -40,10 +40,11 @@ export default function AuthCallback() {
             });
           }
 
-          // Redirect to home or personal area after brief pause
+          const returnUrl = sessionStorage.getItem('auth_return_url') || '/premium-dashboard';
+          sessionStorage.removeItem('auth_return_url');
           setTimeout(() => {
-            navigate('/', { replace: true });
-          }, 2000);
+            navigate(returnUrl, { replace: true });
+          }, 1800);
         } else {
           // If no session immediately, listen to auth state change or wait briefly
           const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
@@ -60,9 +61,11 @@ export default function AuthCallback() {
                 });
               }
 
+              const returnUrl = sessionStorage.getItem('auth_return_url') || '/premium-dashboard';
+              sessionStorage.removeItem('auth_return_url');
               setTimeout(() => {
-                navigate('/', { replace: true });
-              }, 2000);
+                navigate(returnUrl, { replace: true });
+              }, 1800);
             }
           });
 

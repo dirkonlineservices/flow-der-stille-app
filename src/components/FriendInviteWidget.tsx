@@ -181,7 +181,7 @@ export const FriendInviteWidget: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
+      <div id="freunde-werben" className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">
             <Lock size={20} />
@@ -197,13 +197,13 @@ export const FriendInviteWidget: React.FC = () => {
 
         <div className="flex items-center gap-4">
           <Link
-            to="/login"
+            to="/login?redirectTo=/?scroll=freunde-werben"
             className="py-3 px-6 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-sm shadow-sm hover:bg-[var(--color-accent-hover)] transition-all flex items-center justify-center gap-2"
           >
             Anmelden & Teilnehmen
           </Link>
           <Link
-            to="/register"
+            to="/register?redirectTo=/?scroll=freunde-werben"
             className="py-3 px-6 rounded-xl border border-[var(--color-border-main)] bg-[var(--color-bg-alt)] text-[var(--color-text-main)] font-semibold text-sm hover:opacity-80 transition-all"
           >
             Konto erstellen
@@ -224,7 +224,7 @@ export const FriendInviteWidget: React.FC = () => {
       )}
 
       {/* Haupt-Karte: Personalisierter Empfehlungslink & Brand CI Social Sharing */}
-      <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
+      <div id="freunde-werben" className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 md:p-8 shadow-sm text-[var(--color-text-main)]">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center">
             <Sparkles size={20} />
