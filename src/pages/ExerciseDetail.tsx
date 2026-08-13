@@ -328,10 +328,16 @@ export default function ExerciseDetail() {
       </AnimatePresence>
 
       {/* 2. Standard Static Details Page View */}
-      <Link to="/exercises" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] mb-6 transition-colors">
-        <ArrowLeft size={20} />
-        <span>{t('exercise.back')}</span>
-      </Link>
+      <div className="flex items-center gap-4 mb-6 flex-wrap">
+        <Link to="/" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
+          <ArrowLeft size={16} />
+          <span>Startseite</span>
+        </Link>
+        <span className="text-[var(--color-text-muted)] opacity-40 select-none">/</span>
+        <Link to="/exercises" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
+          <span>{t('exercise.back')}</span>
+        </Link>
+      </div>
 
       <motion.div 
         id="static-exercise-detail-container"

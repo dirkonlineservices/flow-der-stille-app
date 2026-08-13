@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Wind, Activity, Timer, ArrowRight, Lock } from 'lucide-react';
+import { Wind, Activity, Timer, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { exercises } from '../data/exercises';
 import SEO from '../components/SEO';
@@ -14,6 +14,10 @@ export default function Exercises() {
     <div className="space-y-8">
       <SEO title="Übungen" description="Achtsamkeitsübungen und Atemtechniken zur Entspannung." />
       <header className="mb-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
+          <ArrowLeft size={16} />
+          Zurück zur Startseite
+        </Link>
         <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">{t('exercises.title')}</h1>
         <p className="text-[var(--color-text-muted)]">
           {t('exercises.subtitle')}

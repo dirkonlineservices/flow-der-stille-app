@@ -9,8 +9,8 @@ export default function Evening() {
     <div className="space-y-12">
       <SEO title="Abendliche Entspannung" description="Bereite deinen Körper und Geist sanft auf einen erholsamen Schlaf vor. Abendroutine." />
       <header className="mb-12">
-        <Link to="/" className="inline-flex items-center text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] mb-6 transition-colors">
-          <ArrowLeft size={16} className="mr-2" />
+        <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
+          <ArrowLeft size={16} />
           Zurück zur Startseite
         </Link>
         <h1 className="text-4xl md:text-5xl font-serif text-[var(--color-accent-primary)] mb-4 flex items-center gap-3">
