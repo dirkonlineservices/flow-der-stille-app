@@ -16,6 +16,13 @@ export default function Register() {
 
   useEffect(() => {
     checkConsentForAuth();
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const refParam = params.get('ref');
+      if (refParam) {
+        localStorage.setItem('flow_referred_by', refParam);
+      }
+    }
   }, []);
 
   const [firstName, setFirstName] = useState('');
@@ -55,6 +62,10 @@ export default function Register() {
         ? 'app.flowderstille.de://auth/callback'
         : `${window.location.origin}/auth/callback`;
 
+      const referredBy = (typeof window !== 'undefined') 
+        ? (localStorage.getItem('flow_referred_by') || new URLSearchParams(window.location.search).get('ref') || null) 
+        : null;
+
       const { data, error: supabaseError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password: password,
@@ -64,7 +75,8 @@ export default function Register() {
             first_name: firstName,
             last_name: lastName,
             newsletter_optin: newsletter,
-            source: isNative ? 'app' : 'web'
+            source: isNative ? 'app' : 'web',
+            referred_by: referredBy
           }
         }
       });
