@@ -494,46 +494,6 @@ export default function PremiumShopDashboard() {
             return `${coverNotice} | Klick für KI-Transparenzhinweis`;
           };
 
-          if (produkt.id === HEART_OPENING_ID && !user) {
-            return (
-              <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden">
-                <div className="relative h-48 sm:h-56 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
-                  <img 
-                    src={getProductCoverImage(produkt)} 
-                    alt={produkt.titel} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md bg-[var(--accent)] text-white border border-white/20">
-                      Kostenfreies Audio
-                    </span>
-                  </div>
-                  <a 
-                    href="/impressum#ki-transparenz"
-                    onClick={(e) => e.stopPropagation()}
-                    title={getKIBadgeTitle(produkt)}
-                    className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
-                  >
-                    ✨ KI-Design
-                  </a>
-                  {produkt.dauer && (
-                    <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                      ⏱ {formatDuration(produkt.dauer)} Min.
-                    </span>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-2 leading-tight">{produkt.titel}</h3>
-                  <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed mb-4">{produkt.beschreibung}</p>
-                </div>
-                <div className="w-full lg:w-auto text-center lg:text-right text-sm text-[var(--text-muted)] italic font-medium pt-4 lg:pt-0 border-t lg:border-t-0 border-[var(--border)]">
-                  Kostenfrei nach Anmeldung
-                </div>
-              </div>
-            );
-          }
-
           return (
             <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden`}>
               
@@ -575,9 +535,10 @@ export default function PremiumShopDashboard() {
                 )}
               </div>
 
-              <div className="flex flex-col lg:flex-row items-stretch gap-6 lg:gap-10">
+              {/* Produktdetails: 2-Spalten für eingeloggtes Kaufen, 1-Spalte Vollbreite für Gäste */}
+              <div className={`flex flex-col ${!hatZugriff && user ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-10`}>
                 
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col w-full">
                     <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-2 leading-tight">{produkt.titel}</h3>
                     
                     {!hatZugriff && !istKostenlos && (
@@ -603,16 +564,12 @@ export default function PremiumShopDashboard() {
                     )}
                 </div>
 
-                {!hatZugriff && (
+                {/* Checkout-Button Spalte – nur wenn eingeloggt und noch kein Zugriff */}
+                {!hatZugriff && user && (
                     <div className="lg:w-[45%] xl:w-[40%] pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)]">
                         <div className="h-full w-full flex flex-col justify-center items-center lg:pl-8">
                             <div className="w-full max-w-md lg:max-w-[340px] flex flex-col gap-3">
-                            {!user ? (
-                                <div className="text-center p-5 text-sm font-medium text-[var(--text-muted)] bg-[var(--bg-alt)] rounded-xl border border-[var(--border)]">
-                                    Bitte <Link to="/login" className="text-[var(--accent)] underline font-semibold transition-colors hover:text-[var(--accent-hover)]">einloggen</Link> oder <Link to="/register" className="text-[var(--accent)] underline font-semibold transition-colors hover:text-[var(--accent-hover)]">registrieren</Link>.
-                                </div>
-                            ) : (
-                                isNativeApp ? (
+                                {isNativeApp ? (
                                     <GooglePlayCheckoutButton 
                                       produkt={produkt}
                                       user={user}
@@ -627,47 +584,56 @@ export default function PremiumShopDashboard() {
                                       onSuccess={loadShopData} 
                                       paypalClientId={PAYPAL_CLIENT_ID}
                                     />
-                                )
-                            )}
+                                )}
                             </div>
                         </div>
                     </div>
                 )}
               </div>
 
-              {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
-                    {istKostenlos && !user && (
-                      <div className="bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-6 text-[var(--text-main)] shadow-sm mb-4">
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 bg-[var(--accent)]/15 rounded-xl text-[var(--accent)] shrink-0">
-                            <Lock size={22} />
-                          </div>
-                          <div>
-                            <h4 className="font-serif font-bold text-base text-[var(--text-main)] mb-1">Kostenloses Audio nach Registrierung anhören</h4>
-                            <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-4 leading-relaxed">
-                              Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit.
-                            </p>
-                            <div className="flex flex-wrap gap-3">
-                              <Link 
-                                to="/register" 
-                                className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
-                              >
-                                Jetzt kostenlos registrieren
-                              </Link>
-                              <Link 
-                                to="/login" 
-                                className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
-                              >
-                                Anmelden
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+              {/* Für nicht-eingeloggte Gäste: Einheitliche Vollbreiten-Box zum Anmelden / Registrieren */}
+              {!user && (
+                <div className="mt-6 md:mt-8 bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-5 sm:p-6 text-[var(--text-main)] shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-[var(--accent)]/15 rounded-xl text-[var(--accent)] shrink-0">
+                        <Lock size={22} />
                       </div>
-                    )}
+                      <div>
+                        <h4 className="font-serif font-bold text-base text-[var(--text-main)] mb-1">
+                          {istKostenlos ? "Kostenloses Audio nach Registrierung anhören" : "Produkt freischalten"}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                          {istKostenlos 
+                            ? "Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit."
+                            : `Melde dich an oder registriere dich kostenlos, um dieses Produkt zum Preis von ${produkt.preis} € freizuschalten.`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+                      <Link 
+                        to="/register" 
+                        className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                      >
+                        Jetzt kostenlos registrieren
+                      </Link>
+                      <Link 
+                        to="/login" 
+                        className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
+                      >
+                        Anmelden
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Für freigeschaltete Produkte: Audio Player Button */}
+              {hatZugriff && user && (
+                <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
                     <AudioPlayerButton 
-                      produkt={produkt} 
+                      produkt={produkt}  
                       getUrl={async (p: any) => {
                         if (p.audio_path && p.audio_path.startsWith('http')) {
                           return p.audio_path;
