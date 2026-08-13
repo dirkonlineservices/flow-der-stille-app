@@ -17,6 +17,11 @@ const faqData: FAQItem[] = [
     question: "Warum haben wir Flow der Stille ins Leben gerufen? (Unsere Vision)",
     answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline und Dirk Schmetzer, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
   },
+  {
+    category: "Über Flow der Stille",
+    question: "Welche Rolle spielt KI (Künstliche Intelligenz) bei Flow der Stille?",
+    answer: "Viele Menschen blicken der KI mit Skepsis oder Sorge entgegen. Bei Flow der Stille nutzen wir moderne KI-Technologie als positives Werkzeug für das Gute: Sämtliche Texte, Meditationen und Skripte stammen zu 100 % aus menschlicher Hand von Jacqueline Schmetzer. Die KI unterstützt uns bei der Erschaffung von entspannenden Hintergrund-Klangwelten und visuellen Motiven. Dadurch sparen wir teure Studio- und Produktionskosten ein – und geben diesen Preisvorteil 1:1 an dich weiter. So können wir dir wirksame Entspannungsinhalte in bester Qualität für einen schmalen, für jeden bezahlbaren Preis anbieten."
+  },
 
   // 1. Achtsamkeit, Meditation, Selbsthypnose & Affirmationen
   {
