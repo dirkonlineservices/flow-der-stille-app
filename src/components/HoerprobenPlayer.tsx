@@ -12,9 +12,13 @@ import { Play, Pause, Headphones } from 'lucide-react';
 interface Props {
   /** Das komplette Produkt-Objekt aus Supabase */
   produkt: any;
+  /** Variante für Darstellung: 'compact' (platzsparend für Mobile/Listen) oder 'full' */
+  variant?: 'compact' | 'full';
+  /** Optionaler Button "Zum Produkt" mit Anchor-Scroll */
+  showProductLink?: boolean;
 }
 
-export function HoerprobenPlayer({ produkt }: Props) {
+export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false }: Props) {
   const url: string = produkt?.hoerprobe_url ?? '';
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -65,14 +69,33 @@ export function HoerprobenPlayer({ produkt }: Props) {
     audio.currentTime = ratio * duration;
   };
 
+  const scrollToProduct = () => {
+    const el = document.getElementById(`product-${produkt.id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.location.hash = `product-${produkt.id}`;
+    }
+  };
+
   return (
-    <div className="mt-4 rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-50/60 to-amber-100/30 dark:from-amber-900/20 dark:to-amber-800/10 p-4 shadow-sm">
-      {/* Titel-Zeile */}
-      <div className="flex items-center gap-2 mb-3">
-        <Headphones size={15} className="text-amber-600 dark:text-amber-400 shrink-0" />
-        <span className="text-xs font-semibold tracking-wide text-amber-700 dark:text-amber-300 uppercase">
-          Kostenlose Hörprobe
-        </span>
+    <div className={`rounded-xl border border-amber-400/30 bg-amber-50/70 dark:bg-amber-950/30 shadow-xs transition-all ${variant === 'compact' ? 'p-3' : 'p-4'}`}>
+      {/* Header-Zeile mit Titel */}
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Headphones size={14} className="text-amber-600 dark:text-amber-400 shrink-0" />
+          <span className="text-[11px] font-bold tracking-wide text-amber-800 dark:text-amber-300 uppercase truncate">
+            Kostenlose Hörprobe: {produkt.titel}
+          </span>
+        </div>
+
+        {showProductLink && (
+          <button
+            onClick={scrollToProduct}
+            className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-all shrink-0 cursor-pointer shadow-xs"
+          >
+            Zum Produkt →
+          </button>
+        )}
       </div>
 
       {/* Audio-Steuerung */}
@@ -81,24 +104,21 @@ export function HoerprobenPlayer({ produkt }: Props) {
         <button
           onClick={togglePlay}
           aria-label={isPlaying ? 'Pause' : 'Hörprobe abspielen'}
-          className={`w-11 h-11 flex items-center justify-center rounded-full shrink-0 shadow-md active:scale-95 transition-all text-white ${
-            isPlaying
-              ? 'bg-amber-500 hover:bg-amber-600'
-              : 'bg-amber-500 hover:bg-amber-600'
+          className={`w-9 h-9 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white cursor-pointer ${
+            isPlaying ? 'bg-amber-600 hover:bg-amber-700' : 'bg-amber-500 hover:bg-amber-600'
           }`}
         >
           {isPlaying ? (
-            <Pause size={18} fill="white" stroke="none" />
+            <Pause size={16} fill="white" stroke="none" />
           ) : (
-            <Play size={18} className="ml-0.5" fill="white" stroke="none" />
+            <Play size={16} className="ml-0.5" fill="white" stroke="none" />
           )}
         </button>
 
         {/* Fortschrittsbalken + Zeit */}
         <div className="flex-1 min-w-0">
-          {/* Klickbarer Fortschrittsbalken */}
           <div
-            className="relative h-2 bg-amber-200/70 dark:bg-amber-800/40 rounded-full cursor-pointer overflow-hidden mb-1.5"
+            className="relative h-2 bg-amber-200/80 dark:bg-amber-900/60 rounded-full cursor-pointer overflow-hidden mb-1"
             onClick={handleSeek}
             role="progressbar"
             aria-valuenow={Math.round(progress)}
@@ -110,17 +130,12 @@ export function HoerprobenPlayer({ produkt }: Props) {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-amber-700/80 dark:text-amber-400/80 font-mono">
+          <div className="flex justify-between text-[10px] text-amber-800/80 dark:text-amber-300/80 font-mono">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
         </div>
       </div>
-
-      {/* Hinweis */}
-      <p className="mt-3 text-[10px] text-amber-700/70 dark:text-amber-400/60 italic text-center">
-        Hörprobe – kein Login erforderlich
-      </p>
 
       {/* Verstecktes Audio-Element */}
       <audio

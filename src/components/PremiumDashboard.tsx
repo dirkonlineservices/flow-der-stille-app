@@ -299,6 +299,8 @@ export default function PremiumShopDashboard() {
         matchesCategory = catLower.includes('entspannung') || titleLower.includes('entspannung') || titleLower.includes('muskelentspannung');
     } else if (activeFilter === 'Selbsthypnose') {
         matchesCategory = catLower.includes('hypnose') || titleLower.includes('hypnose') || titleLower.includes('selbstbewusstsein') || titleLower.includes('fokus') || titleLower.includes('ernährung');
+    } else if (activeFilter === 'Hörprobe') {
+        matchesCategory = !!prod.hoerprobe_url && prod.hoerprobe_url.trim() !== '';
     }
 
     return matchesSearch && matchesCategory;
@@ -386,6 +388,32 @@ export default function PremiumShopDashboard() {
           ))}
         </div>
       </div>
+
+      {/* Kompakter Bereich für kostenlose Hörproben (oben vor gekauften Produkten) */}
+      {(() => {
+        const hoerproben = produkte.filter(p => !!p.hoerprobe_url && p.hoerprobe_url.trim() !== '');
+        if (hoerproben.length === 0) return null;
+        return (
+          <div className="w-full bg-[var(--bg-card)] border border-amber-400/40 dark:border-amber-700/40 rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-amber-500 text-white">
+                Kostenlos reinschnuppern
+              </span>
+              <h3 className="text-base sm:text-lg font-serif font-semibold text-[var(--text-main)]">
+                Kostenlose Hörproben
+              </h3>
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mb-3">
+              Höre unverbindlich rein. Klicke auf „Zum Produkt →“, um direkt zur Beschreibung und Bestellung zu springen.
+            </p>
+            <div className="grid grid-cols-1 gap-2.5">
+              {hoerproben.map((p) => (
+                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} />
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {user && (
         <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 mb-8 shadow-sm">
@@ -510,6 +538,11 @@ export default function PremiumShopDashboard() {
                   <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md ${getCategoryBadgeStyle(produkt.kategorie)}`}>
                     {produkt.kategorie || 'Kategorie'}
                   </span>
+                  {produkt.hoerprobe_url && (
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-amber-500/90 text-white uppercase shadow-md flex items-center gap-1">
+                      🎧 Hörprobe verfügbar
+                    </span>
+                  )}
                   {hatZugriff && !istKostenlos && (
                     <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-emerald-600 text-white uppercase shadow-md flex items-center gap-1">
                       ✓ Freigeschaltet
