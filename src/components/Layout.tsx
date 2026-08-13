@@ -174,10 +174,10 @@ export default function Layout() {
               Flow der Stille als Android App nutzen
             </h3>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto mb-6 leading-relaxed">
-              Lade dir unsere App direkt im Google Play Store herunter oder scanne einfach den QR-Code mit deinem Smartphone.
+              Lade dir unsere App direkt im Google Play Store herunter<span className="hidden md:inline"> oder scanne den QR-Code mit deinem Smartphone</span>.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
               {/* Link für Smartphone-Nutzer & Direkt-Klick */}
               <a 
                 href="https://play.google.com/store/apps/details?id=app.flowderstille.de" 
@@ -193,8 +193,8 @@ export default function Layout() {
                 />
               </a>
 
-              {/* QR-Code für Desktop-Nutzer */}
-              <div className="flex flex-col items-center gap-2 p-3.5 bg-white dark:bg-stone-900 rounded-2xl border border-[var(--border)] shadow-xs">
+              {/* QR-Code nur für Desktop-Nutzer (Auf Smartphones/Handys ausgeblendet) */}
+              <div className="hidden md:flex flex-col items-center gap-2 p-3.5 bg-white dark:bg-stone-900 rounded-2xl border border-[var(--border)] shadow-xs">
                 <img 
                   src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://play.google.com/store/apps/details?id=app.flowderstille.de" 
                   alt="QR-Code zum Play Store" 
@@ -458,7 +458,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.8.9
+                    Flow der Stille v4.9.0
                   </span>
                 </div>
               </div>
