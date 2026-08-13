@@ -190,8 +190,8 @@ export default function Home() {
           </div>
 
           <div className="mt-6">
-             <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:shadow-md transition">
-                <h3 className="font-bold text-[var(--color-text-main)]">Premium-Bereich: Übungen & Meditationen</h3>
+             <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] dark:hover:border-stone-400 hover:shadow-md transition-all group">
+                <h3 className="font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors">Premium-Bereich: Übungen & Meditationen</h3>
                 <p className="text-[var(--color-text-muted)] text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
              </Link>
           </div>
@@ -356,10 +356,10 @@ function QuickActionCard({ title, description, icon, delay, to }: { title: strin
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay }}
-        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-[var(--color-border-main)] h-full"
+        className="p-6 bg-[var(--color-bg-card)] rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] dark:hover:border-stone-400 group-active:scale-[0.99] h-full"
       >
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl group-hover:bg-[var(--color-bg-body)] transition-colors">
+          <div className="p-3 bg-[var(--color-bg-alt)] rounded-xl group-hover:bg-[var(--color-bg-body)] group-hover:scale-110 transition-all">
             {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
           </div>
         </div>
