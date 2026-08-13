@@ -36,16 +36,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const supabase = getSupabase();
+
     // 1. Beim ersten Laden schauen, ob jemand eingeloggt ist
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.warn('Session error:', error.message);
-        if (error.message.includes('Refresh Token') || error.message.includes('Invalid Refresh Token')) {
-          Object.keys(localStorage).forEach(key => {
-            if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
-              localStorage.removeItem(key);
-            }
-          });
+        if (
+          error.message.includes('Refresh Token') ||
+          error.message.includes('Invalid Refresh Token') ||
+          error.message.includes('refresh_token_not_found')
+        ) {
+          // Nur den spezifischen auth-storage-key löschen (nicht alles)
+          localStorage.removeItem('flow-der-stille-auth');
           supabase.auth.signOut().catch(() => {});
         }
       } else if (session?.user) {
@@ -53,18 +55,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }).catch(err => {
       console.warn('Get session exception:', err);
-      Object.keys(localStorage).forEach(key => {
-        if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
-          localStorage.removeItem(key);
-        }
-      });
+      localStorage.removeItem('flow-der-stille-auth');
     });
 
     // 2. Echtzeit-Wächter: Reagiert sofort auf Logins oder Logouts!
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // Bei Password-Recovery-Flow: Session setzen aber nicht navigieren
+        // (das übernimmt die ResetPassword-Seite)
+        if (session?.user) {
+          mapAndSetUser(session.user);
+        }
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        // Token-Refresh: User-State aktualisieren
         mapAndSetUser(session.user);
-      } else {
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        mapAndSetUser(session.user);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      } else if (session?.user) {
+        mapAndSetUser(session.user);
+      } else if (!session) {
         setUser(null);
       }
     });
@@ -72,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Wächter beim Verlassen aufräumen
     return () => subscription.unsubscribe();
   }, []);
+
 
   // Hilfsfunktion: Wandelt Supabase-Daten in unser App-Format um
   const mapAndSetUser = (supabaseUser: any) => {

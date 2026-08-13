@@ -6,6 +6,15 @@ export const normalizeEmail = (email: string): string => {
   return lower.replace('@googlemail.com', '@gmail.com');
 };
 
+// Prüft ob wir in einer nativen Capacitor-App sind
+const isNativeCapacitor = (): boolean => {
+  try {
+    return typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
+  } catch {
+    return false;
+  }
+};
+
 let supabaseClient: SupabaseClient | null = null;
 
 export const getSupabase = (): SupabaseClient => {
@@ -15,24 +24,52 @@ export const getSupabase = (): SupabaseClient => {
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
-    
+
+    const native = isNativeCapacitor();
+
     try {
       supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: true,
+          // In der nativen App kein URL-Hash-Parsing (kein Browser-URL),
+          // im Web-Browser dagegen schon (für Magic Links / OAuth Callbacks)
+          detectSessionInUrl: !native,
+          // Stabiler storage key für beide Plattformen
+          storageKey: 'flow-der-stille-auth',
         }
       });
     } catch (e) {
       console.error('Failed to create Supabase client:', e);
+      // Fallback: Alle alten Auth-Tokens löschen und neu erstellen
       Object.keys(localStorage).forEach(key => {
-        if (key.includes('supabase.auth.token') || key.startsWith('sb-')) {
+        if (key.includes('supabase.auth.token') || key.startsWith('sb-') || key.startsWith('flow-der-stille-auth')) {
           localStorage.removeItem(key);
         }
       });
-      supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+      supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: !native,
+          storageKey: 'flow-der-stille-auth',
+        }
+      });
     }
   }
   return supabaseClient;
+};
+
+// Session aus dem Cache löschen (für Debugging / Notfall-Logout)
+export const clearSupabaseSession = (): void => {
+  Object.keys(localStorage).forEach(key => {
+    if (
+      key.includes('supabase.auth.token') ||
+      key.startsWith('sb-') ||
+      key === 'flow-der-stille-auth'
+    ) {
+      localStorage.removeItem(key);
+    }
+  });
+  supabaseClient = null;
 };
