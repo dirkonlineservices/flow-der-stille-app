@@ -70,6 +70,16 @@ const faqData: FAQItem[] = [
   },
   {
     category: "Kauf & Abwicklung",
+    question: "Kann ich per PayPal bezahlen, auch wenn ich kein eigenes PayPal-Konto habe?",
+    answer: "Ja, absolut! Du benötigst kein eigenes PayPal-Konto, um deinen gewünschten Inhalt bei Flow der Stille freizuschalten. Über das PayPal-Zahlungsfenster stehen dir verschiedene flexible Zahlungsmöglichkeiten zur Verfügung:\n\n1. Gastzahlung nutzen: Klicke im geöffneten PayPal-Fenster einfach auf 'Mit Kredit- oder Debitkarte zahlen' oder 'Als Gast bezahlen'.\n2. Kredit- oder Debitkarte: Du kannst jede gängige Karte (Visa, Mastercard, American Express) ohne Registrierung nutzen.\n3. Bankeinzug / IBAN (SEPA-Lastschrift): Du kannst deine normale Bankkarte (Girocard/Debitkarte) oder deine IBAN eingeben, um bequem per Lastschrift zu bezahlen.\n\nNach dem Bezahlvorgang schaltet sich dein gewünschtes Produkt sofort automatisch in deinem Kundenkonto frei."
+  },
+  {
+    category: "Kauf & Abwicklung",
+    question: "Welche Zahlungsarten stehen mir ohne PayPal-Registrierung zur Verfügung?",
+    answer: "Ohne eigenes PayPal-Konto kannst du auf unserer Webseite über den PayPal-Gastzugang folgende Zahlungsarten wählen:\n• Kreditkarten & Debitkarten (Visa, Mastercard, AMEX)\n• SEPA-Lastschrift (Zahlung per Bankeinzug mit deiner IBAN oder Girocard)\n• Einmalige Gastzahlung ohne Kontoerstellung\n\nIn der Android-App kannst du sämtliche im Google Play Store hinterlegten Zahlungsarten (inkl. Google Pay, Mobilfunkrechnung, Play-Guthaben etc.) nutzen."
+  },
+  {
+    category: "Kauf & Abwicklung",
     question: "Was passiert, wenn eine Zahlung abgebrochen wird?",
     answer: "Sollte eine Zahlung fehlschlagen oder abgebrochen werden, wird dein Konto selbstverständlich nicht belastet. Unsere Plattform zeigt dir unten rechts ein klares Benachrichtigungs-Popup an ('Kauf wurde nicht vollzogen'), damit du es bei Bedarf später erneut versuchen kannst."
   },

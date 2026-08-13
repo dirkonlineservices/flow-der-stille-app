@@ -80,7 +80,7 @@ export function NewContentNotification() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ type: 'spring', damping: 20, stiffness: 250 }}
-        className="fixed bottom-20 right-4 sm:right-6 z-[90] w-[calc(100vw-2rem)] sm:w-96 bg-[var(--color-bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl shadow-xl p-4 sm:p-5 backdrop-blur-md text-[var(--color-text-main)] overflow-hidden"
+        className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 z-[90] sm:w-96 bg-[var(--color-bg-card)]/98 border-2 border-[var(--color-accent-primary)] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.45)] ring-1 ring-black/10 p-4.5 sm:p-5 backdrop-blur-xl text-[var(--color-text-main)] overflow-hidden"
       >
         {/* Dekorative Hintergrundwelle */}
         <div className="absolute -top-12 -right-12 w-24 h-24 bg-[var(--color-accent-primary)]/10 rounded-full blur-xl pointer-events-none" />

@@ -366,16 +366,30 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         onClose={() => setToast(prev => ({ ...prev, show: false }))} 
       />
 
-      {/* PayPal Hilfe-Link (nur auf Web, nicht in nativer App) */}
+      {/* PayPal Hilfe-Button / Infobox (nur auf Web, nicht in nativer App) */}
       {!isNativeApp && acceptedTerms && (
-        <div className="text-center mt-1">
+        <div className="mt-2">
           <button
             type="button"
             onClick={() => setShowHelpModal(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer underline-offset-2 hover:underline"
+            className="w-full p-3 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] border border-[var(--accent)]/30 hover:border-[var(--accent)]/60 rounded-xl transition-all cursor-pointer group flex items-center justify-between gap-3 text-left shadow-xs"
           >
-            <HelpCircle size={13} />
-            <span>Kein PayPal-Konto oder Fragen zur Zahlung?</span>
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] shrink-0 group-hover:scale-105 transition-transform">
+                <HelpCircle size={18} />
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
+                  Kein PayPal-Konto oder Fragen zur Zahlung?
+                </span>
+                <span className="block text-[11px] text-[var(--text-muted)] mt-0.5">
+                  Zahlung auch per Kreditkarte, Debitkarte oder IBAN ohne Registrierung
+                </span>
+              </div>
+            </div>
+            <span className="text-xs font-semibold text-[var(--accent)] underline-offset-2 group-hover:underline shrink-0 flex items-center gap-1">
+              Infos &amp; Hilfe
+            </span>
           </button>
         </div>
       )}
