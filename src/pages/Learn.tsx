@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Brain, Activity, Zap, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import NewsletterBanner from '../components/NewsletterBanner';
 
@@ -59,6 +60,24 @@ export default function Learn() {
           />
         </div>
       </div>
+
+      {/* FAQ Banner auf der Lernen-Seite */}
+      <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-accent-primary)]">Häufige Fragen</span>
+          <h3 className="text-2xl font-serif text-[var(--color-text-main)] mt-1 mb-2">Fragen zu Meditation, Selbsthypnose & Vagusnerv?</h3>
+          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+            Erfahre die genauen Unterschiede zwischen Meditation, Selbsthypnose und Affirmationen sowie Details zur Aktivierung deines Nervensystems.
+          </p>
+        </div>
+        <Link
+          to="/faq"
+          className="px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-sm hover:bg-[var(--color-accent-hover)] transition-all shrink-0 cursor-pointer shadow-sm"
+        >
+          Zum FAQ-Bereich →
+        </Link>
+      </div>
+
       <NewsletterBanner variant="in-content" />
     </div>
   );

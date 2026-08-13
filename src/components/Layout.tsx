@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
-  Info, Shield, FileText, Scale, Headphones 
+  Info, Shield, FileText, Scale, Headphones, HelpCircle 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -163,6 +163,7 @@ export default function Layout() {
       <footer className="w-full max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
         {[
           { to: '/contact', label: 'Kontakt', isButton: true },
+          { to: '/faq', label: 'FAQ' },
           { to: '/impressum', label: 'Impressum' },
           { to: '/datenschutz', label: 'Datenschutz' },
           { to: '/agb', label: 'AGB' },
@@ -387,6 +388,14 @@ export default function Layout() {
                     <span>AGB</span>
                   </Link>
                   <Link
+                    to="/faq"
+                    onClick={() => handleMenuClick('FAQ')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <HelpCircle size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>Häufige Fragen (FAQ)</span>
+                  </Link>
+                  <Link
                     to="/rechtliches"
                     onClick={() => handleMenuClick('Rechtliches & KI')}
                     className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
@@ -399,7 +408,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v4.7.9
+                    Flow der Stille v4.8.0
                   </span>
                 </div>
               </div>

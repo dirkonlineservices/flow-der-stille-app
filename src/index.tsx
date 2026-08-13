@@ -15,6 +15,7 @@ import Recipes from './pages/Recipes';
 import Learn from './pages/Learn';
 import Evening from './pages/Evening';
 import Morning from './pages/Morning';
+import FAQ from './pages/FAQ';
 import Settings from './pages/Settings';
 import AtemChat from './pages/atemchat'; 
 
@@ -126,6 +127,9 @@ export default function App() {
                   <Route path="confirm-newsletter" element={<NewsletterConfirmation />} />
                   <Route path="online-widerruf" element={<OnlineWiderruf />} />
                   <Route path="register" element={<Register />} />
+                  <Route path="faq" element={<FAQ />} />
+                  <Route path="haeufige-fragen" element={<FAQ />} />
+                  <Route path="fragen" element={<FAQ />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="datenschutz" element={<Datenschutz />} />
                   <Route path="konto-loeschen" element={<DataDeletion />} />
