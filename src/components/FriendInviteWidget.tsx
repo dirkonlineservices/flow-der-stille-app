@@ -111,6 +111,14 @@ export const FriendInviteWidget: React.FC = () => {
     }
   }, [user]);
 
+  const getRecommendationLink = (cat: string) => {
+    const c = (cat || '').toLowerCase();
+    if (c.includes('morgen')) return '/morgenritual';
+    if (c.includes('mittag')) return '/exercises';
+    if (c.includes('abend')) return '/evening';
+    return '/exercises';
+  };
+
   const fetchData = async () => {
     setLoadingData(true);
     try {
@@ -120,7 +128,17 @@ export const FriendInviteWidget: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (!recsError && recsData && recsData.length > 0) {
-        setRecommendations(recsData);
+        const seenCategories = new Set<string>();
+        const uniqueRecs: RecommendationItem[] = [];
+        for (const item of recsData) {
+          const catKey = (item.category || item.title || '').trim().toLowerCase();
+          if (!seenCategories.has(catKey)) {
+            seenCategories.add(catKey);
+            uniqueRecs.push(item);
+          }
+          if (uniqueRecs.length >= 3) break;
+        }
+        setRecommendations(uniqueRecs.length > 0 ? uniqueRecs : recsData.slice(0, 3));
       } else {
         setRecommendations([
           { id: '1', title: 'Morgen-Atemmeditation (5 Min)', description: 'Starte deinen Tag mit bewusster Sauerstoffzufuhr für einen klaren Fokus.', category: 'Morgenritual' },
@@ -303,15 +321,22 @@ export const FriendInviteWidget: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {recommendations.map((rec) => (
-            <div key={rec.id} className="p-5 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col justify-between gap-3">
+            <Link 
+              key={rec.id} 
+              to={getRecommendationLink(rec.category)}
+              className="p-5 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col justify-between gap-3 hover:border-[var(--color-accent-primary)] hover:shadow-sm transition-all group"
+            >
               <div>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]">
                   {rec.category}
                 </span>
-                <h4 className="font-serif font-medium text-base text-[var(--color-text-main)] mt-2">{rec.title}</h4>
+                <h4 className="font-serif font-medium text-base text-[var(--color-text-main)] mt-2 group-hover:text-[var(--color-accent-primary)] transition-colors">{rec.title}</h4>
                 <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">{rec.description}</p>
               </div>
-            </div>
+              <span className="text-xs font-semibold text-[var(--color-accent-primary)] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1 mt-2">
+                Jetzt entdecken →
+              </span>
+            </Link>
           ))}
         </div>
       </div>

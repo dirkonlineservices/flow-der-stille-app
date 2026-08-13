@@ -14,6 +14,7 @@ import ExerciseDetail from './pages/ExerciseDetail';
 import Recipes from './pages/Recipes';
 import Learn from './pages/Learn';
 import Evening from './pages/Evening';
+import Morning from './pages/Morning';
 import Settings from './pages/Settings';
 import AtemChat from './pages/atemchat'; 
 
@@ -111,6 +112,8 @@ export default function App() {
                   <Route path="recipes" element={<Recipes />} />
                   <Route path="learn" element={<Learn />} />
                   <Route path="evening" element={<Evening />} />
+                  <Route path="morning" element={<Morning />} />
+                  <Route path="morgenritual" element={<Morning />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="chat" element={<ChatRoute />} />
                   <Route path="login" element={<Login />} />
