@@ -54,19 +54,22 @@ export default function Impressum() {
         </section>
         
         <section id="ki-transparenz" className="p-5 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] space-y-3">
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] font-medium">Transparenzhinweis zu KI-Unterstützung (EU AI Act, Art. 50 KI-VO)</h2>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] font-medium">Transparenzhinweis zu Inhalten & KI-Unterstützung (EU AI Act, Art. 50 KI-VO)</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed text-sm">
-            Um vollständige Transparenz gemäß den Vorgaben des europäischen KI-Gesetzes (EU AI Act) zu gewährleisten, informieren wir transparent über den Einsatz digitaler KI-Werkzeuge auf unserer Plattform:
+            Um vollständige Transparenz gemäß den Vorgaben des europäischen KI-Gesetzes (EU AI Act) zu gewährleisten, informieren wir ehrlich und detailliert über die Urheberschaft und den Einsatz digitaler Werkzeuge:
           </p>
           <ul className="list-disc pl-5 space-y-2 text-[var(--color-text-muted)] text-sm leading-relaxed">
             <li>
-              <strong>Texte & Inhalte (100 % Originalwerk):</strong> Sämtliche Meditationsskripte, Selbsthypnose-Texte, Übungskonzepte und Impulse sind zu 100 % von <strong>Jacqueline Schmetzer</strong> selbst konzipiert, verfasst und urheberrechtlich geschützt.
+              <strong>Texte, Skripte & Konzepte (100 % Mensch / Originalwerk):</strong> Sämtliche Meditationsskripte, Selbsthypnose-Texte, Hörbuch-Inhalte und Entspannungsübungen sind zu 100 % von <strong>Jacqueline Schmetzer</strong> selbst konzipiert, verfasst und urheberrechtlich geschützt.
             </li>
             <li>
-              <strong>Audio-Vertonung & Klangwelten:</strong> Die Sprachausgabe der Skripte sowie die entspannenden Hintergrund-Sounds und Musikarrangements entstehen mit digitaler Unterstützung moderner KI-Audiotechnologien.
+              <strong>Sprecherstimme & Audio-Vertonung:</strong> Bei unseren Hauptprodukten (Meditationen, Selbsthypnosen, Hörbüchern) wird die Sprecherstimme von einem <strong>Menschen (Jacqueline Schmetzer)</strong> selbst eingesprochen. Einzelne kostenfreie Anwendungen (z. B. PMR) können digital generiert sein. Der exakte Audio-Hinweis ist transparent direkt beim jeweiligen Produkt aus unserer Datenbank angegeben.
             </li>
             <li>
-              <strong>Visuelles Cover-Design (✨ KI-Design):</strong> Die Produkt-Coverbilder und visuellen Grafikmotive wurden mithilfe digitaler KI-Bildgeneratoren gestaltet.
+              <strong>Hintergrundmusik & Klangwelten:</strong> Die entspannenden Hintergrund-Klangwelten und Musiktitel wurden von <strong>Dirk Schmetzer</strong> mittels KI-Unterstützung komponiert und produziert.
+            </li>
+            <li>
+              <strong>Visuelles Cover-Design (✨ KI-Design):</strong> Die Produkt-Coverbilder und visuellen Grafiken wurden mit Unterstützung digitaler KI-Bildgeneratoren gestaltet.
             </li>
           </ul>
         </section>

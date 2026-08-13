@@ -446,6 +446,15 @@ export default function PremiumShopDashboard() {
           const playId = getPlayStoreProductId(produkt.id);
           const hatZugriff = isVip || gekauftIds.has(produkt.id) || gekauftIds.has(playId) || istKostenlos;
 
+          const getKIBadgeTitle = (p: any) => {
+            const dbHinweis = p.audio_hinweis ? p.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '') : '';
+            const coverNotice = "Bildgestaltung: ✨ KI-Design";
+            if (dbHinweis) {
+              return `${coverNotice} | Audio: ${dbHinweis} (Klick für KI-Transparenzhinweis)`;
+            }
+            return `${coverNotice} | Klick für KI-Transparenzhinweis`;
+          };
+
           if (produkt.id === HEART_OPENING_ID && !user) {
             return (
               <div key={produkt.id} id={`product-${produkt.id}`} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden">
@@ -464,7 +473,7 @@ export default function PremiumShopDashboard() {
                   <a 
                     href="/impressum#ki-transparenz"
                     onClick={(e) => e.stopPropagation()}
-                    title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+                    title={getKIBadgeTitle(produkt)}
                     className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
                   >
                     ✨ KI-Design
@@ -510,7 +519,7 @@ export default function PremiumShopDashboard() {
                 <a 
                   href="/impressum#ki-transparenz"
                   onClick={(e) => e.stopPropagation()}
-                  title="Cover-Illustration: KI-Design | Audios: Digitale Sprachsynthese & Musik (Klick für Transparenzhinweis)"
+                  title={getKIBadgeTitle(produkt)}
                   className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
                 >
                   ✨ KI-Design
