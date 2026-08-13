@@ -34,6 +34,11 @@ const faqData: FAQItem[] = [
     question: "Wer konzipiert und verfasst die Inhalte bei Flow der Stille?",
     answer: "Sämtliche Meditationstexte, Selbsthypnose-Skripte, Hörbücher und Übungskonzepte sind 100 % Originalwerke von Jacqueline Schmetzer. Bei den Hauptprodukten wird die Sprecherstimme von einem Menschen eingesprochen. Die entspannenden Hintergrund-Klangwelten und Entspannungsmusiken wurden von Dirk Schmetzer mit KI-Unterstützung komponiert."
   },
+  {
+    category: "Achtsamkeit, Meditation & Selbsthypnose",
+    question: "Kann ich persönliche Fragen zu Meditation, Selbsthypnose oder Affirmationen stellen?",
+    answer: "Ja, sehr gerne! Wenn du inhaltliche Fragen zu den Themen Meditation, Selbsthypnose, Affirmationen oder den Übungen hast, gibt dir Jacqueline Schmetzer jederzeit sehr gerne Auskunft. Du kannst deine Fragen einfach über unser Kontaktformular an uns senden."
+  },
 
   // 2. Plattform- & App-Nutzung
   {
@@ -195,8 +200,8 @@ export default function FAQ() {
         <h3 className="text-xl font-serif text-[var(--color-text-main)] font-medium">
           Deine Frage war nicht dabei?
         </h3>
-        <p className="text-sm text-[var(--color-text-muted)] max-w-md mx-auto leading-relaxed">
-          Wir helfen dir jederzeit gerne weiter. Dirk Schmetzer steht dir für technische Fragen und Support persönlich zur Verfügung.
+        <p className="text-sm text-[var(--color-text-muted)] max-w-lg mx-auto leading-relaxed">
+          Wir helfen dir jederzeit gerne weiter! Bei inhaltlichen Fragen zu Meditation, Selbsthypnose & Affirmationen gibt dir <strong>Jacqueline Schmetzer</strong> gerne Auskunft. Für technische Fragen, App-Nutzung & Kaufabwicklung steht dir <strong>Dirk Schmetzer</strong> zur Verfügung.
         </p>
         <div>
           <Link
