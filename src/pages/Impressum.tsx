@@ -39,9 +39,9 @@ export default function Impressum() {
         </section>
 
         <section>
-          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Verantwortlich für Inhalt & Technik</h2>
+          <h2 className="text-xl font-serif text-[var(--color-text-main)] mb-3">Verantwortlich für Inhalt, Technik & Support</h2>
           <p className="text-[var(--color-text-muted)] leading-relaxed">
-            Dirk Schmetzer (Betreiber der Plattform, Technik & Webseiteninhalte)
+            Dirk Schmetzer (Betreiber der Plattform, Ansprechpartner für Technik, Support & Webseiteninhalte)
           </p>
         </section>
 
@@ -63,7 +63,7 @@ export default function Impressum() {
               <strong>Texte, Skripte & Konzepte (100 % Mensch / Originalwerk):</strong> Sämtliche Meditationsskripte, Selbsthypnose-Texte, Hörbuch-Inhalte und Entspannungsübungen sind zu 100 % von <strong>Jacqueline Schmetzer</strong> selbst konzipiert, verfasst und urheberrechtlich geschützt.
             </li>
             <li>
-              <strong>Sprecherstimme & Audio-Vertonung:</strong> Bei unseren Hauptprodukten (Meditationen, Selbsthypnosen, Hörbüchern) wird die Sprecherstimme von einem <strong>Menschen (Jacqueline Schmetzer)</strong> selbst eingesprochen. Einzelne kostenfreie Anwendungen (z. B. PMR) können digital generiert sein. Der exakte Audio-Hinweis ist transparent direkt beim jeweiligen Produkt aus unserer Datenbank angegeben.
+              <strong>Sprecherstimme & Audio-Vertonung:</strong> Bei unseren Hauptprodukten (Meditationen, Selbsthypnosen, Hörbüchern) wird die Vertonung von einem <strong>Menschen (menschliche Sprecherstimme)</strong> eingesprochen. Einzelne kostenfreie Anwendungen (z. B. PMR) können digital generiert sein. Der exakte Audio-Hinweis ist transparent direkt beim jeweiligen Produkt aus unserer Datenbank angegeben.
             </li>
             <li>
               <strong>Hintergrundmusik & Klangwelten:</strong> Die entspannenden Hintergrund-Klangwelten und Musiktitel wurden von <strong>Dirk Schmetzer</strong> mittels KI-Unterstützung komponiert und produziert.
