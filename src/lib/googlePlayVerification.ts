@@ -19,7 +19,8 @@ export const verifyGooglePlayPurchase = async ({
   const dbProductId = REVERSE_PLAY_STORE_PRODUCT_MAP[productId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playProductId] || productId;
 
   let verifiedSuccessfully = false;
-  let orderId = `GPA.TEST-${Date.now()}`;
+  const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
+  let orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
 
   // 1. Aufruf der Supabase Edge Function
   try {

@@ -68,7 +68,8 @@ serve(async (req) => {
                         purchaseToken.startsWith('MOCK_') || 
                         purchaseToken.startsWith('GPLAY_') || 
                         purchaseToken.startsWith('RESTORED_') || 
-                        purchaseToken.includes('test');
+                        purchaseToken.includes('test') ||
+                        purchaseToken.includes('TEST');
 
     if (googleCredentials.client_email && !isTestToken) {
       try {
@@ -107,10 +108,12 @@ serve(async (req) => {
         }
       } catch (gErr) {
         console.warn("Google API Auth Notice:", gErr);
-        orderId = `GPA.TEST-${Date.now()}`;
+        const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
+        orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
       }
     } else {
-      orderId = `GPA.TEST-${Date.now()}`;
+      const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
+      orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
     }
 
     // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus public.kaeufe!
@@ -171,6 +174,16 @@ serve(async (req) => {
       console.warn("Could not fetch user email for alias matching:", uErr);
     }
 
+    // 🔒 Idempotenz-Sperre: Prüfe vorab, ob dieser Kauf bereits existiert
+    const { data: existingKauf } = await supabase
+      .from('kaeufe')
+      .select('id')
+      .in('user_id', targetUserIds)
+      .in('produkt_id', [dbProductId, playProductId, productId])
+      .maybeSingle();
+
+    const isAlreadyPurchased = !!existingKauf;
+
     // 3. In der zentralen Datenbank-Tabelle public.kaeufe speichern mit Spalte 'preis' & onConflict: 'user_id,produkt_id'
     const purchasesToInsert = targetUserIds.map((uid, idx) => ({
       user_id: uid,
@@ -199,43 +212,45 @@ serve(async (req) => {
       })
       .in('id', targetUserIds);
 
-    // Kaufbestätigung per E-Mail versenden via Resend
+    // 📩 Kaufbestätigung per E-Mail versenden via Resend (NUR bei echten NEUKÄUFEN! Keine Test-Token, keine Duplikate!)
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    if (resendApiKey) {
+    if (resendApiKey && userEmail && !isAlreadyPurchased && !isTestToken) {
       try {
-        if (userEmail) {
-          const emailHtml = `
-            <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">
-              <h2 style="color: #8A9A8A; margin-top: 0;">Vielen Dank für dein Vertrauen</h2>
-              <p>Dein Kauf über Google Play war erfolgreich.</p>
-              <div style="background: #FFFFFF; padding: 15px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 20px 0;">
-                <p style="margin: 5px 0;"><strong>Bestell-ID:</strong> ${orderId}</p>
-                <p style="margin: 5px 0;"><strong>Zahlungsmethode:</strong> Google Play</p>
-                <p style="margin: 5px 0;"><strong>Betrag:</strong> ${price || '1.99'} EUR</p>
-              </div>
-              <p>Deine Inhalte stehen ab sofort sowohl in der App als auch auf der Webseite für dich bereit.</p>
-              <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 20px 0;" />
-              <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-der-stille.de</p>
+        const emailHtml = `
+          <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">
+            <h2 style="color: #8A9A8A; margin-top: 0;">Vielen Dank für dein Vertrauen</h2>
+            <p>Dein Kauf über Google Play war erfolgreich.</p>
+            <div style="background: #FFFFFF; padding: 15px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 20px 0;">
+              <p style="margin: 5px 0;"><strong>Bestell-ID:</strong> ${orderId}</p>
+              <p style="margin: 5px 0;"><strong>Zahlungsmethode:</strong> Google Play</p>
+              <p style="margin: 5px 0;"><strong>Betrag:</strong> ${price || '1.99'} EUR</p>
             </div>
-          `;
+            <p>Deine Inhalte stehen ab sofort sowohl in der App als auch auf der Webseite für dich bereit.</p>
+            <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 20px 0;" />
+            <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-der-stille.de</p>
+          </div>
+        `;
 
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${resendApiKey}`
-            },
-            body: JSON.stringify({
-              from: 'Flow der Stille <info@flow-der-stille.de>',
-              to: [userEmail],
-              subject: 'Kaufbestätigung: Flow der Stille Premium',
-              html: emailHtml
-            })
-          });
-        }
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`
+          },
+          body: JSON.stringify({
+            from: 'Flow der Stille <info@flow-der-stille.de>',
+            to: [userEmail],
+            subject: 'Kaufbestätigung: Flow der Stille Premium',
+            html: emailHtml
+          })
+        });
       } catch (mErr) {
         console.warn("Non-fatal Resend email notice:", mErr);
       }
+    } else if (isAlreadyPurchased) {
+      console.log(`[IDEMPOTENCY] Product ${dbProductId} for user ${userId} was already purchased. Resend email skipped.`);
+    } else if (isTestToken) {
+      console.log(`[TEST_TOKEN] Test token processed. Resend email skipped.`);
     }
 
     return new Response(JSON.stringify({ 
