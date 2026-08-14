@@ -276,6 +276,9 @@ export default function PremiumShopDashboard() {
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
+    if (id.includes('schlaf') || title.includes('schlaf')) {
+      return '/images/products/cover_schlaf.jpg';
+    }
     if (id.includes('inneres_kind') || id.includes('inneres-kind') || title.includes('inneres kind')) {
       return '/images/products/cover_inneres_kind.jpg';
     }

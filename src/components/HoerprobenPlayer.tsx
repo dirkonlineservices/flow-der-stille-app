@@ -85,12 +85,12 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   return (
     <div className={`w-full rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
       {/* Header-Zeile mit Titel und optionalem "Zum Produkt"-Button */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="w-7 h-7 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+        <div className="flex items-start sm:items-center gap-2 flex-1 min-w-0">
+          <span className="w-7 h-7 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
             <Headphones size={14} />
           </span>
-          <span className="text-xs sm:text-sm font-semibold text-[var(--color-text-main)] truncate">
+          <span className="text-xs sm:text-sm font-semibold text-[var(--color-text-main)] leading-snug break-words">
             Kostenlose Hörprobe: <span className="font-serif italic font-normal text-[var(--color-text-muted)]">{produkt.titel}</span>
           </span>
         </div>
@@ -98,7 +98,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         {showProductLink && (
           <button
             onClick={scrollToProduct}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 ml-auto"
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 self-start sm:self-center"
           >
             Zum Produkt →
           </button>
