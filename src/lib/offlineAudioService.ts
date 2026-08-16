@@ -1,0 +1,269 @@
+/**
+ * offlineAudioService.ts – Sicheres Offline-Caching & Sandbox-Speicherung für Audio-Dateien.
+ *
+ * Schutz der Inhalte & Flugmodus-Verfügbarkeit:
+ * - Verwendet die CacheStorage API & Blobs in der geschützten App-Sandbox.
+ * - Dateien landen NICHT in der öffentlichen Musikbibliothek oder im Downloads-Ordner.
+ * - Beim Deinstallieren der App werden alle gecachten Daten durch das Betriebssystem gelöscht.
+ * - Automatisches Hintergrund-Caching beim Abspielen & manuelles Speichern per Button.
+ */
+
+const CACHE_NAME = 'fds-protected-audio-v1';
+const METADATA_KEY = 'fds_offline_audio_metadata';
+
+export interface OfflineTrackMetadata {
+  productId: string;
+  title: string;
+  url: string;
+  sizeBytes: number;
+  cachedAt: string;
+}
+
+/**
+ * Holt alle gespeicherten Metadaten aus dem localStorage
+ */
+function getMetadataMap(): Record<string, OfflineTrackMetadata> {
+  try {
+    const raw = localStorage.getItem(METADATA_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Speichert Metadaten im localStorage
+ */
+function saveMetadataMap(map: Record<string, OfflineTrackMetadata>): void {
+  try {
+    localStorage.setItem(METADATA_KEY, JSON.stringify(map));
+  } catch (e) {
+    console.warn('Could not save offline audio metadata:', e);
+  }
+}
+
+/**
+ * Prüft, ob ein bestimmtes Produkt / eine URL offline im Sandbox-Cache liegt.
+ */
+export async function isOfflineAvailable(productId: string, url?: string): Promise<boolean> {
+  if (!productId) return false;
+  
+  // 1. Metadaten-Check
+  const map = getMetadataMap();
+  if (map[productId]) return true;
+
+  // 2. Direkter Cache-Check
+  if ('caches' in window && url) {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      const match = await cache.match(url);
+      return !!match;
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Lädt eine Audio-Datei im Hintergrund in den geschützten App-Sandbox-Cache.
+ */
+export async function saveForOffline(
+  productId: string,
+  url: string,
+  title: string = 'Audio',
+  onProgress?: (percent: number) => void
+): Promise<string> {
+  if (!url) throw new Error('Keine gültige Audio-URL übergeben.');
+
+  if (!('caches' in window)) {
+    throw new Error('Offline-Cache wird von diesem Gerät/Browser nicht unterstützt.');
+  }
+
+  const cache = await caches.open(CACHE_NAME);
+
+  // Prüfen ob bereits vorhanden
+  const existing = await cache.match(url);
+  if (existing) {
+    const blob = await existing.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    
+    // Metadaten aktualisieren falls nötig
+    const map = getMetadataMap();
+    map[productId] = {
+      productId,
+      title,
+      url,
+      sizeBytes: blob.size,
+      cachedAt: new Date().toISOString()
+    };
+    saveMetadataMap(map);
+
+    return blobUrl;
+  }
+
+  // 1. Download mit Fetch (für Fortschrittsanzeige)
+  const response = await fetch(url, { mode: 'cors' });
+  if (!response.ok) {
+    throw new Error(`Download fehlgeschlagen mit Status: ${response.status}`);
+  }
+
+  const contentLength = response.headers.get('content-length');
+  const total = contentLength ? parseInt(contentLength, 10) : 0;
+
+  if (!response.body || total === 0) {
+    // Fallback: Response direkt cachen
+    await cache.put(url, response.clone());
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const map = getMetadataMap();
+    map[productId] = {
+      productId,
+      title,
+      url,
+      sizeBytes: blob.size,
+      cachedAt: new Date().toISOString()
+    };
+    saveMetadataMap(map);
+    if (onProgress) onProgress(100);
+    return blobUrl;
+  }
+
+  // Stream verarbeiten für exakte %-Fortschrittsanzeige
+  const reader = response.body.getReader();
+  let loaded = 0;
+  const chunks: Uint8Array[] = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) {
+      chunks.push(value);
+      loaded += value.length;
+      if (total > 0 && onProgress) {
+        const percent = Math.round((loaded / total) * 100);
+        onProgress(percent);
+      }
+    }
+  }
+
+  const blob = new Blob(chunks, { type: response.headers.get('content-type') || 'audio/mpeg' });
+  const syntheticResponse = new Response(blob, {
+    status: 200,
+    statusText: 'OK',
+    headers: response.headers
+  });
+
+  // Im Sandbox Cache ablegen
+  await cache.put(url, syntheticResponse);
+
+  // Metadaten registrieren
+  const map = getMetadataMap();
+  map[productId] = {
+    productId,
+    title,
+    url,
+    sizeBytes: blob.size,
+    cachedAt: new Date().toISOString()
+  };
+  saveMetadataMap(map);
+
+  if (onProgress) onProgress(100);
+  return URL.createObjectURL(blob);
+}
+
+/**
+ * Automatisches Caching im Hintergrund beim Abspielen.
+ * Läuft stumm ab, ohne das Playback zu blockieren.
+ */
+export async function cacheAudioInBackground(productId: string, url: string, title?: string): Promise<void> {
+  if (!url || !('caches' in window)) return;
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const match = await cache.match(url);
+    if (!match) {
+      const response = await fetch(url, { mode: 'cors' });
+      if (response.ok) {
+        await cache.put(url, response.clone());
+        const blob = await response.blob();
+        const map = getMetadataMap();
+        map[productId] = {
+          productId,
+          title: title || 'Audio',
+          url,
+          sizeBytes: blob.size,
+          cachedAt: new Date().toISOString()
+        };
+        saveMetadataMap(map);
+        console.log(`[OfflineCache] Audio '${title || productId}' im Hintergrund gecached.`);
+      }
+    }
+  } catch (e) {
+    console.warn('[OfflineCache] Hintergrund-Caching fehlgeschlagen (evtl. offline):', e);
+  }
+}
+
+/**
+ * Gibt die abspielbare Audio-URL zurück.
+ * Wenn die Datei im geschützten Offline-Cache liegt, wird eine Blob-URL zurückgegeben.
+ * Falls nicht, wird die Remote-URL geliefert UND im Hintergrund automatisch gecached.
+ */
+export async function getPlayableAudioUrl(productId: string, remoteUrl: string, title?: string): Promise<string> {
+  if (!remoteUrl) return '';
+
+  if ('caches' in window) {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      const match = await cache.match(remoteUrl);
+      if (match) {
+        const blob = await match.blob();
+        console.log(`[OfflineCache] Verwende Offline-Sandbox-Blob für '${title || productId}'`);
+        return URL.createObjectURL(blob);
+      }
+    } catch (e) {
+      console.warn('[OfflineCache] Cache match fehler:', e);
+    }
+  }
+
+  // Automatisches Hintergrund-Caching starten (nicht-blockierend!)
+  cacheAudioInBackground(productId, remoteUrl, title);
+
+  return remoteUrl;
+}
+
+/**
+ * Löscht eine gecachte Datei aus dem Sandbox-Speicher.
+ */
+export async function removeOfflineAudio(productId: string, url: string): Promise<void> {
+  if ('caches' in window && url) {
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.delete(url);
+    } catch (e) {
+      console.warn('Could not delete from CacheStorage:', e);
+    }
+  }
+
+  const map = getMetadataMap();
+  delete map[productId];
+  saveMetadataMap(map);
+}
+
+/**
+ * Gibt alle aktuell gespeicherten Offline-Tracks zurück
+ */
+export function getOfflineTrackList(): OfflineTrackMetadata[] {
+  const map = getMetadataMap();
+  return Object.values(map);
+}
+
+/**
+ * Formatierte Dateigröße in MB
+ */
+export function formatSizeBytes(bytes: number): string {
+  if (!bytes || isNaN(bytes)) return '0 MB';
+  const mb = bytes / (1024 * 1024);
+  return `${mb.toFixed(1)} MB`;
+}

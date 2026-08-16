@@ -7,6 +7,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Headphones } from 'lucide-react';
+import { getPlayableAudioUrl } from '../lib/offlineAudioService';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 interface Props {
   /** Das komplette Produkt-Objekt aus Supabase */
@@ -20,15 +22,31 @@ interface Props {
 }
 
 export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
-  const url: string = produkt?.hoerprobe_url ?? '';
+  const rawUrl: string = produkt?.hoerprobe_url ?? '';
+  const [audioUrl, setAudioUrl] = useState<string>(rawUrl);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  useEffect(() => {
+    let isMounted = true;
+    async function resolveAudio() {
+      if (!rawUrl) return;
+      try {
+        const playable = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, rawUrl, `Hörprobe: ${produkt.titel}`);
+        if (isMounted) setAudioUrl(playable);
+      } catch (e) {
+        console.warn('Could not resolve offline audio for hoerprobe:', e);
+      }
+    }
+    resolveAudio();
+    return () => { isMounted = false; };
+  }, [rawUrl, produkt.id, produkt.titel]);
+
   // Nichts rendern, wenn keine Hörprobe vorhanden
-  if (!url) return null;
+  if (!rawUrl) return null;
 
   const formatTime = (secs: number) => {
     if (!secs || isNaN(secs) || !isFinite(secs)) return '0:00';
@@ -84,7 +102,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   return (
     <div className={`w-full rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
-      {/* Header-Zeile mit Titel und optionalem "Zum Produkt"-Button */}
+      {/* Header-Zeile mit Titel, Offline-Icon und optionalem "Zum Produkt"-Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
         <div className="flex items-start sm:items-center gap-2 flex-1 min-w-0">
           <span className="w-7 h-7 rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
@@ -95,14 +113,23 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           </span>
         </div>
 
-        {showProductLink && (
-          <button
-            onClick={scrollToProduct}
-            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 self-start sm:self-center"
-          >
-            Zum Produkt →
-          </button>
-        )}
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+          <OfflineDownloadButton
+            productId={`hoerprobe_${produkt.id}`}
+            audioUrl={rawUrl}
+            title={`Hörprobe: ${produkt.titel}`}
+            variant="icon"
+          />
+
+          {showProductLink && (
+            <button
+              onClick={scrollToProduct}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95"
+            >
+              Zum Produkt →
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Audio-Steuerung: Play Button + Vollbreiten-Fortschrittsbalken */}
@@ -147,7 +174,8 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
       {/* Verstecktes Audio-Element */}
       <audio
         ref={audioRef}
-        src={url}
+        src={audioUrl || rawUrl}
+        controlsList="nodownload"
         preload="metadata"
         className="hidden"
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}

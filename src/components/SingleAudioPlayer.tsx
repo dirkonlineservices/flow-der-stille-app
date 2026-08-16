@@ -16,10 +16,13 @@ import { getSupabase } from '../lib/supabaseClient';
 import DisclaimerModal from './DisclaimerModal';
 import AuthRequiredModal from './AuthRequiredModal';
 import { useAuth } from '../context/AuthContext';
+import { getPlayableAudioUrl } from '../lib/offlineAudioService';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
   const { user } = useAuth();
   const [url, setUrl] = useState('');
+  const [rawUrl, setRawUrl] = useState('');
   const [titel, setTitel] = useState('');
   const [audioHinweis, setAudioHinweis] = useState('');
   const [loading, setLoading] = useState(true);
@@ -59,7 +62,10 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         
         if (prod && prod.audio_path) {
           setTitel(prod.titel);
-          setUrl(prod.audio_path);
+          setRawUrl(prod.audio_path);
+          // ⚡ Auflösen: Blob-URL falls offline gecacht oder Remote-URL
+          const playableUrl = await getPlayableAudioUrl(produktId, prod.audio_path, prod.titel);
+          setUrl(playableUrl);
           setAudioHinweis(prod.audio_hinweis || '');
         }
       } catch (e: any) {
@@ -95,17 +101,17 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   };
 
   if (loading) return <span className="text-stone-400 text-xs">Lädt Audio-Spur...</span>;
-  if (!url) return <span className="text-red-400 text-xs">Fehler: Audio-URL fehlt in Datenbank</span>;
+  if (!url && !rawUrl) return <span className="text-red-400 text-xs">Fehler: Audio-URL fehlt in Datenbank</span>;
 
   return (
     <>
       <div className="mt-8 p-4 sm:p-6 md:p-8 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl w-full shadow-sm">
-        <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--color-text-main)] mb-4">{titel}</h4>
+        <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--text-main)] mb-4">{titel}</h4>
         
         {/* Nativer Browser-Player, aber mit globaler Pausen-Kontrolle (onPlay) */}
         <audio 
           ref={audioRef}
-          src={url} 
+          src={url || rawUrl} 
           controls 
           className="w-full" 
           preload="metadata" 
@@ -119,6 +125,16 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
           {formatTime(currentTime)} / {formatTime(duration)}
         </div>
+
+        {/* Schalter für Offline-Verfügbarkeit im Flugmodus */}
+        {rawUrl && (
+          <OfflineDownloadButton
+            productId={produktId}
+            audioUrl={rawUrl}
+            title={titel}
+            variant="button"
+          />
+        )}
         
         {/* KI-Label dezent integriert */}
         {audioHinweis && (

@@ -61,6 +61,11 @@ const faqData: FAQItem[] = [
     question: "Gibt es kostenfreie Hörproben und Entspannungsübungen?",
     answer: "Ja! Wir bieten kostenfreie Hörproben, geführte Atemübungen (z. B. Vagusnerv-Atempausen) und Tages-Impulse an, damit du unverbindlich und kostenfrei in die Wirkung von Flow der Stille hineinhören kannst."
   },
+  {
+    category: "Plattform- & App-Nutzung",
+    question: "Kann ich meine Meditationen und Hörbücher auch offline / im Flugmodus anhören?",
+    answer: "Ja! Sobald du eine Meditation oder ein Audio startest, speichert unser Player die Datei im Hintergrund automatisch geschützt im App-internen Zwischenspeicher. Zudem kannst du bei deinen gekauften Produkten oder Hörproben auf 'Offline speichern' klicken, um Inhalte gezielt dauerhaft für den Flugmodus auf deinem Gerät bereitzustellen. Die Dateien liegen dabei sicher im geschützten App-Speicher (App Sandbox), tauchen nicht in deiner öffentlichen Musikbibliothek auf und werden beim Deinstallieren der App automatisch entfernt."
+  },
 
   // 3. Kauf, Abwicklung & Support
   {
