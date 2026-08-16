@@ -101,7 +101,7 @@ export function OfflineStorageModal({
                   {quotaExceededNotice ? 'App-Speicher für Offline-Audios ist voll 💾' : 'App-Speicher für Flugmodus verwalten'}
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Geschützter Sandbox-Speicher auf diesem Gerät
+                  Sicherer interner App-Speicher
                 </p>
               </div>
             </div>
@@ -134,7 +134,7 @@ export function OfflineStorageModal({
             <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] text-xs">
               <div className="flex items-center gap-2 text-[var(--text-main)]">
                 <ShieldCheck size={16} className="text-[var(--accent)]" />
-                <span className="font-medium">Belegter Sandbox-Speicher:</span>
+                <span className="font-medium">Belegter App-Speicher:</span>
               </div>
               <div className="font-semibold text-sm text-[var(--accent)] font-mono">
                 {totalMB} <span className="text-xs font-normal text-[var(--text-muted)]">({tracks.length} Audios)</span>

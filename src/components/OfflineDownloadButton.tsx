@@ -155,7 +155,7 @@ export function OfflineDownloadButton({
               <div>
                 <span className="font-semibold block">Offline verfügbar (Flugmodus-bereit)</span>
                 <span className="text-[11px] opacity-80 flex items-center gap-1 mt-0.5">
-                  <ShieldCheck size={11} /> Geschützt in der App-Sandbox hinterlegt
+                  <ShieldCheck size={11} /> Sicher im internen App-Speicher hinterlegt
                 </span>
               </div>
             </div>
