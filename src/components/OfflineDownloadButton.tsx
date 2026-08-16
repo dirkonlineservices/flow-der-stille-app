@@ -1,19 +1,12 @@
-/**
- * OfflineDownloadButton.tsx – Schalter für Offline-Verfügbarkeit im Flugmodus.
- *
- * Bietet Nutzern die Möglichkeit, gezielt bestimmte Audio-Inhalte (Meditationen,
- * Selbsthypnosen, Hörbücher) im geschützten App-internen Speicher (App Sandbox)
- * für den Flugmodus abzulegen.
- */
-
 import React, { useState, useEffect } from 'react';
-import { Download, CheckCircle2, Loader2, Trash2, ShieldCheck, WifiOff } from 'lucide-react';
+import { Download, CheckCircle2, Loader2, Trash2, ShieldCheck, WifiOff, HardDrive } from 'lucide-react';
 import {
   isOfflineAvailable,
   saveForOffline,
   removeOfflineAudio,
-  formatSizeBytes
+  StorageQuotaExceededError
 } from '../lib/offlineAudioService';
+import { OfflineStorageModal } from './OfflineStorageModal';
 
 interface Props {
   productId: string;
@@ -37,6 +30,8 @@ export function OfflineDownloadButton({
   const [progress, setProgress] = useState<number>(0);
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
+  const [showStorageModal, setShowStorageModal] = useState<boolean>(false);
+  const [isQuotaExceeded, setIsQuotaExceeded] = useState<boolean>(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -70,7 +65,13 @@ export function OfflineDownloadButton({
       if (onStatusChange) onStatusChange(true);
     } catch (err: any) {
       console.error('Offline Download Error:', err);
-      setErrorMsg(err.message || 'Download fehlgeschlagen');
+      if (err instanceof StorageQuotaExceededError || (err.name && err.name.includes('Quota'))) {
+        setIsQuotaExceeded(true);
+        setShowStorageModal(true);
+        setErrorMsg('Speicherplatz voll. Bitte lösche eine Datei, um dieses Audio offline zu speichern.');
+      } else {
+        setErrorMsg(err.message || 'Download fehlgeschlagen');
+      }
     } finally {
       setIsDownloading(false);
     }
@@ -213,10 +214,31 @@ export function OfflineDownloadButton({
       )}
 
       {errorMsg && (
-        <p className="text-[11px] text-red-500 mt-1 text-center font-medium">
-          {errorMsg}
-        </p>
+        <div className="mt-1 text-center">
+          <p className="text-[11px] text-red-500 font-medium leading-tight mb-1">
+            {errorMsg}
+          </p>
+          <button
+            onClick={() => setShowStorageModal(true)}
+            className="inline-flex items-center gap-1 text-[11px] text-[var(--accent)] hover:underline font-semibold cursor-pointer"
+          >
+            <HardDrive size={12} />
+            <span>App-Speicher verwalten &amp; Platz schaffen</span>
+          </button>
+        </div>
       )}
+
+      {/* Interactive Storage Management Modal */}
+      <OfflineStorageModal
+        isOpen={showStorageModal}
+        onClose={() => setShowStorageModal(false)}
+        quotaExceededNotice={isQuotaExceeded}
+        onTracksUpdated={async () => {
+          const cached = await isOfflineAvailable(productId, audioUrl);
+          setIsCached(cached);
+          if (onStatusChange) onStatusChange(cached);
+        }}
+      />
     </div>
   );
 }

@@ -66,6 +66,13 @@ export async function isOfflineAvailable(productId: string, url?: string): Promi
   return false;
 }
 
+export class StorageQuotaExceededError extends Error {
+  constructor(message: string = 'Der App-Speicher für Offline-Audios ist voll. Bitte entferne eine gespeicherte Audio-Datei, um Platz zu schaffen.') {
+    super(message);
+    this.name = 'StorageQuotaExceededError';
+  }
+}
+
 /**
  * Lädt eine Audio-Datei im Hintergrund in den geschützten App-Sandbox-Cache.
  */
@@ -114,7 +121,18 @@ export async function saveForOffline(
 
   if (!response.body || total === 0) {
     // Fallback: Response direkt cachen
-    await cache.put(url, response.clone());
+    try {
+      await cache.put(url, response.clone());
+    } catch (e: any) {
+      if (
+        e.name === 'QuotaExceededError' ||
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+        (e.message && /quota|storage|exceeded|full|space/i.test(e.message))
+      ) {
+        throw new StorageQuotaExceededError();
+      }
+      throw e;
+    }
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
 
@@ -156,8 +174,19 @@ export async function saveForOffline(
     headers: response.headers
   });
 
-  // Im Sandbox Cache ablegen
-  await cache.put(url, syntheticResponse);
+  // Im Sandbox Cache ablegen mit QuotaExceededError-Abfang
+  try {
+    await cache.put(url, syntheticResponse);
+  } catch (e: any) {
+    if (
+      e.name === 'QuotaExceededError' ||
+      e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      (e.message && /quota|storage|exceeded|full|space/i.test(e.message))
+    ) {
+      throw new StorageQuotaExceededError();
+    }
+    throw e;
+  }
 
   // Metadaten registrieren
   const map = getMetadataMap();
@@ -252,11 +281,31 @@ export async function removeOfflineAudio(productId: string, url: string): Promis
 }
 
 /**
- * Gibt alle aktuell gespeicherten Offline-Tracks zurück
+ * Löscht ALLE gecachten Dateien aus dem Sandbox-Speicher.
  */
-export function getOfflineTrackList(): OfflineTrackMetadata[] {
-  const map = getMetadataMap();
-  return Object.values(map);
+export async function clearAllOfflineAudio(): Promise<void> {
+  if ('caches' in window) {
+    try {
+      await caches.delete(CACHE_NAME);
+    } catch (e) {
+      console.warn('Could not delete CacheStorage:', e);
+    }
+  }
+  localStorage.removeItem(METADATA_KEY);
+}
+
+/**
+ * Gibt eine Übersicht der gesamten Speicherbelegung zurück.
+ */
+export function getStorageUsageSummary() {
+  const tracks = getOfflineTrackList();
+  const totalBytes = tracks.reduce((acc, t) => acc + (t.sizeBytes || 0), 0);
+  return {
+    totalBytes,
+    totalMBFormatted: formatSizeBytes(totalBytes),
+    totalTracks: tracks.length,
+    tracks
+  };
 }
 
 /**
