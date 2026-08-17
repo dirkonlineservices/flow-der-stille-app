@@ -76,12 +76,14 @@ export const trackLead = (email: string) => {
 export const trackPurchase = (transactionId: string, value: number, email: string) => {
   pushToDataLayer({
     event: 'purchase',
+    transaction_id: transactionId,
+    value: value,
+    user_email: email,
     ecommerce: {
       transaction_id: transactionId,
       value: value,
       currency: 'EUR'
-    },
-    user_email: email
+    }
   });
 };
 
