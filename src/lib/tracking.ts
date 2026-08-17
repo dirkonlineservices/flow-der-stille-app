@@ -32,26 +32,59 @@ export const pushToDataLayer = (data: Record<string, any>) => {
 };
 
 /**
- * Setzt den Analytics-Einwilligungsstatus (App-Consent)
+ * Hilfsfunktion: Stellt sicher, dass window.gtag existiert und direkt auf window.dataLayer pusht
+ */
+const getGtagFn = () => {
+  if (typeof window === 'undefined') return () => {};
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag !== 'function') {
+    window.gtag = function() {
+      window.dataLayer.push(arguments);
+    };
+  }
+  return window.gtag;
+};
+
+/**
+ * Setzt den Analytics-Einwilligungsstatus (App- & Web-Consent)
  */
 export const setAnalyticsConsent = (choice: 'accepted' | 'rejected') => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(CONSENT_STORAGE_KEY, choice);
     
-    window.dataLayer = window.dataLayer || [];
-    const gtagFn = typeof window.gtag === 'function' ? window.gtag : function(...args: any[]) { window.dataLayer.push(args); };
+    const gtagFn = getGtagFn();
 
+    // Korrekter Google Consent Mode v2 Update-Aufruf
     gtagFn('consent', 'update', {
       'analytics_storage': choice === 'accepted' ? 'granted' : 'denied',
       'ad_storage': choice === 'accepted' ? 'granted' : 'denied',
       'ad_user_data': choice === 'accepted' ? 'granted' : 'denied',
-      'ad_personalization': choice === 'accepted' ? 'granted' : 'denied',
+      'ad_personalization': choice === 'accepted' ? 'granted' : 'denied'
     });
 
     pushToDataLayer({
       event: 'consent_update',
       consent_choice: choice,
       analytics_enabled: choice === 'accepted'
+    });
+  }
+};
+
+/**
+ * Initialisiert den Consent-Status beim Laden der Seite, falls bereits zugestimmt wurde
+ */
+export const initConsentState = () => {
+  if (typeof window === 'undefined') return;
+  const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem('flow_cookie_consent_status');
+  const isAccepted = storedConsent === 'accepted' || storedConsent === 'all' || storedConsent === 'necessary';
+
+  if (isAccepted) {
+    const gtagFn = getGtagFn();
+    gtagFn('consent', 'update', {
+      'analytics_storage': 'granted',
+      'ad_storage': 'granted',
+      'ad_user_data': 'granted',
+      'ad_personalization': 'granted'
     });
   }
 };
