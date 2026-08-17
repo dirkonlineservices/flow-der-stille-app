@@ -22,7 +22,7 @@ export function useDisclaimerStatus() {
         .from('profiles')
         .select('disclaimer_accepted_at')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data && data.disclaimer_accepted_at) {
         setHasAccepted(true);
@@ -52,8 +52,7 @@ export function useDisclaimerStatus() {
         const supabase = getSupabase();
         await supabase
           .from('profiles')
-          .update({ disclaimer_accepted_at: timestamp })
-          .eq('id', user.id);
+          .upsert({ id: user.id, disclaimer_accepted_at: timestamp }, { onConflict: 'id' });
       } catch (e) {
         console.warn('Could not sync disclaimer timestamp to Supabase profiles:', e);
       }
