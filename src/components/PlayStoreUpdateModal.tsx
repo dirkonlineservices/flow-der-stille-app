@@ -1,24 +1,27 @@
 /**
- * PlayStoreUpdateModal.tsx – Automatischer Update-Hinweis für die Android App.
+ * PlayStoreUpdateModal.tsx – 100% zuverlässiger 2-Wege Update-Hinweis für die Android App.
  *
- * Fragt auf nativen Android-Geräten direkt den Google Play Core SDK Status ab.
- * Ein Pop-up wird NUR DANN angezeigt, wenn eine neuere App-Version tatsächlich
- * im Google Play Store veröffentlicht und freigegeben wurde!
- *
- * Solange ein Update nur in der Entwicklungs- / Web-Umgebung existiert (z. B. in Anti Gravity)
- * und noch nicht bei Google Play hochgeladen wurde, bleibt dieses Pop-up stumm.
+ * 1. Primär: Direkte Live-Abfrage der 'latest_android_version_code' aus der Supabase-Tabelle 'app_config'.
+ *    -> Schlägt sofort & ohne Google-Cache bei ALLEN Nutzern an, sobald du im Admin-Bereich die Versionsnummer erhöhst!
+ * 2. Sekundär: Fallback auf das native Google Play Core SDK.
  */
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Sparkles, ArrowRight, RefreshCw } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import { AppUpdate, AppUpdateAvailability } from '@capawesome/capacitor-app-update';
+import { getSupabase } from '../lib/supabaseClient';
+
+// Fallback für den lokalen Build-Code, falls CapApp.getInfo() im Web-Browser aufgerufen wird
+const CURRENT_LOCAL_VERSION_CODE = 95;
+const CURRENT_LOCAL_VERSION_NAME = "5.0.0";
 
 export function GooglePlayBadgeIcon({ className = "w-6 h-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none">
-      <path d="M3.609 1.814L13.792 12 3.61 22.186a1.45 1.45 0 01-.61-1.186V3a1.45 1.45 0 01.609-1.186z" fill="#4285F4"/>
+      <path d="M3.609 1.814L13.792 12 3.61 22.186a1.45 1.45 0 01-.61-1.186z" fill="#4285F4"/>
       <path d="M17.062 8.73L13.792 12l3.27 3.27 3.659-2.091c.712-.407.712-1.951 0-2.358l-3.659-2.091z" fill="#FBBC04"/>
       <path d="M3.609 1.814l10.183 10.186L17.062 8.73 6.136 2.486c-.752-.43-1.748-.288-2.527.328z" fill="#EA4335"/>
       <path d="M3.609 22.186l2.527.328 10.926-6.244-3.27-3.27L3.609 22.186z" fill="#34A853"/>
@@ -29,34 +32,87 @@ export function GooglePlayBadgeIcon({ className = "w-6 h-6" }: { className?: str
 export function PlayStoreUpdateModal() {
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [availableVersion, setAvailableVersion] = useState<string>('');
+  const [updateTitle, setUpdateTitle] = useState<string>('App-Aktualisierung verfügbar! 🚀');
+  const [updateMessage, setUpdateMessage] = useState<string>('Eine neue Version von Flow der Stille steht jetzt für dich im Google Play Store bereit.');
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
 
   useEffect(() => {
-    // Nur auf nativen Android-Geräten ausführen! (Nicht auf der Website)
-    if (!Capacitor.isNativePlatform()) return;
+    // Nur auf Android-Geräten ausführen (nicht auf der reinen Desktop-Webseite)
+    const isNative = Capacitor.isNativePlatform();
+    const isAndroid = isNative || /android/i.test(navigator.userAgent);
+    if (!isAndroid) return;
 
     let isMounted = true;
 
-    async function checkForPlayStoreUpdate() {
+    async function checkForUpdates() {
       try {
-        const info = await AppUpdate.getAppUpdateInfo();
-        console.log('[PlayStoreUpdateCheck]', info);
+        // 1. Lokale installierte App-Version ermitteln
+        let localCode = CURRENT_LOCAL_VERSION_CODE;
+        let localName = CURRENT_LOCAL_VERSION_NAME;
 
-        // UpdateAvailability: 2 = UPDATE_AVAILABLE in Google Play Store!
-        if (info.updateAvailability === AppUpdateAvailability.UPDATE_AVAILABLE || (info.updateAvailability as any) === 2) {
-          if (isMounted) {
-            setUpdateAvailable(true);
-            if (info.availableVersionName) {
-              setAvailableVersion(info.availableVersionName);
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const appInfo = await CapApp.getInfo();
+            if (appInfo.build) {
+              localCode = parseInt(appInfo.build, 10) || localCode;
             }
+            if (appInfo.version) {
+              localName = appInfo.version;
+            }
+          } catch (e) {
+            console.warn('[UpdateCheck] CapApp.getInfo fallback used:', e);
+          }
+        }
+
+        // 2. Primärer Check: Supabase 'app_config' Tabelle abfragen
+        const supabase = getSupabase();
+        const { data: configData, error: configError } = await supabase
+          .from('app_config')
+          .select('key, value')
+          .in('key', ['latest_android_version_code', 'latest_android_version_name', 'update_title', 'update_message']);
+
+        if (!configError && configData && configData.length > 0) {
+          const configMap: Record<string, string> = {};
+          configData.forEach(item => {
+            configMap[item.key] = item.value;
+          });
+
+          const remoteCode = parseInt(configMap['latest_android_version_code'] || '0', 10);
+          const remoteName = configMap['latest_android_version_name'] || '';
+
+          if (remoteCode > localCode) {
+            if (isMounted) {
+              setUpdateAvailable(true);
+              setAvailableVersion(remoteName || `v${remoteCode}`);
+              if (configMap['update_title']) setUpdateTitle(configMap['update_title']);
+              if (configMap['update_message']) setUpdateMessage(configMap['update_message']);
+            }
+            return; // Update gefunden!
+          }
+        }
+
+        // 3. Sekundärer Fallback: Natives Google Play Core SDK
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const info = await AppUpdate.getAppUpdateInfo();
+            if (info.updateAvailability === AppUpdateAvailability.UPDATE_AVAILABLE || (info.updateAvailability as any) === 2) {
+              if (isMounted) {
+                setUpdateAvailable(true);
+                if (info.availableVersionName) {
+                  setAvailableVersion(info.availableVersionName);
+                }
+              }
+            }
+          } catch (playErr) {
+            // Unkritisch in Dev/Sideload
           }
         }
       } catch (err) {
-        console.warn('[PlayStoreUpdateCheck] Update-Prüfung fehlgeschlagen (evtl. Entwicklungsumgebung):', err);
+        console.warn('[UpdateCheck] Fehler bei Update-Prüfung:', err);
       }
     }
 
-    checkForPlayStoreUpdate();
+    checkForUpdates();
 
     return () => {
       isMounted = false;
@@ -65,9 +121,12 @@ export function PlayStoreUpdateModal() {
 
   const handleOpenPlayStore = async () => {
     try {
-      await AppUpdate.openAppStore();
+      if (Capacitor.isNativePlatform()) {
+        await AppUpdate.openAppStore();
+      } else {
+        window.open('https://play.google.com/store/apps/details?id=app.flowderstille.de', '_system');
+      }
     } catch (e) {
-      // Fallback: Direkter Play Store Link mit korrekter Application-ID
       window.open('https://play.google.com/store/apps/details?id=app.flowderstille.de', '_system');
     }
   };
@@ -118,20 +177,20 @@ export function PlayStoreUpdateModal() {
 
           {/* Header */}
           <h3 className="font-serif font-semibold text-xl text-[var(--text-main)] leading-snug">
-            App-Aktualisierung verfügbar! 🚀
+            {updateTitle}
           </h3>
 
           <p className="text-xs text-[var(--text-muted)] mt-2 leading-relaxed">
-            Eine neue Version von <strong>Flow der Stille</strong> {availableVersion ? `(${availableVersion})` : ''} steht jetzt für dich im Google Play Store bereit.
+            {updateMessage} {availableVersion ? `(Version ${availableVersion})` : ''}
           </p>
 
-          <div className="mt-4 p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] text-left text-xs text-[var(--text-main)] space-y-1.5">
+          <div className="mt-4 p-3.5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] text-left text-xs text-[var(--text-main)] space-y-1.5">
             <div className="flex items-center gap-2 font-medium">
               <Sparkles size={14} className="text-[var(--accent)] shrink-0" />
-              <span>Optimierte Audio-Wiedergabe &amp; neue Meditationen</span>
+              <span>Optimierte Funktionen &amp; Verbesserungen</span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] pl-5">
-              Aktualisiere jetzt, um alle Verbesserungen auf deinem Smartphone zu nutzen.
+              Aktualisiere jetzt, um alle Neuerungen auf deinem Gerät nutzen zu können.
             </p>
           </div>
 

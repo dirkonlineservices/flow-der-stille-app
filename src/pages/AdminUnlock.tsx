@@ -117,7 +117,15 @@ export default function AdminUnlock() {
   }
 
   // ============================================================================
-  // PRODUKTE LADEN
+  // 5. App-Update Remote-Konfiguration
+  const [remoteVersionCode, setRemoteVersionCode] = useState('95');
+  const [remoteVersionName, setRemoteVersionName] = useState('5.0.0');
+  const [updateTitleInput, setUpdateTitleInput] = useState('App-Aktualisierung verfügbar! 🚀');
+  const [updateMessageInput, setUpdateMessageInput] = useState('Eine neue Version von Flow der Stille steht jetzt für dich im Google Play Store bereit.');
+  const [savingAppConfig, setSavingAppConfig] = useState(false);
+  const [appConfigSaved, setAppConfigSaved] = useState(false);
+
+  // PRODUKTE & APP-CONFIG LADEN
   // ============================================================================
   async function loadProducts() {
     setLoadingProducts(true);
@@ -133,10 +141,52 @@ export default function AdminUnlock() {
       } else if (data) {
         setProducts(data);
       }
+
+      // App Config laden
+      const { data: cfgData } = await supabase
+        .from('app_config')
+        .select('key, value')
+        .in('key', ['latest_android_version_code', 'latest_android_version_name', 'update_title', 'update_message']);
+
+      if (cfgData && cfgData.length > 0) {
+        cfgData.forEach(item => {
+          if (item.key === 'latest_android_version_code') setRemoteVersionCode(item.value);
+          if (item.key === 'latest_android_version_name') setRemoteVersionName(item.value);
+          if (item.key === 'update_title') setUpdateTitleInput(item.value);
+          if (item.key === 'update_message') setUpdateMessageInput(item.value);
+        });
+      }
     } catch (err) {
-      console.error('Exception beim Laden der Produkte:', err);
+      console.error('Exception beim Laden der Daten:', err);
     } finally {
       setLoadingProducts(false);
+    }
+  }
+
+  async function handleSaveAppConfig(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingAppConfig(true);
+    setAppConfigSaved(false);
+    try {
+      const supabase = getSupabase();
+      const rows = [
+        { key: 'latest_android_version_code', value: remoteVersionCode.trim(), updated_at: new Date().toISOString() },
+        { key: 'latest_android_version_name', value: remoteVersionName.trim(), updated_at: new Date().toISOString() },
+        { key: 'update_title', value: updateTitleInput.trim(), updated_at: new Date().toISOString() },
+        { key: 'update_message', value: updateMessageInput.trim(), updated_at: new Date().toISOString() },
+      ];
+
+      const { error } = await supabase.from('app_config').upsert(rows, { onConflict: 'key' });
+      if (error) {
+        setErrorMessage(`Fehler beim Speichern der App-Konfiguration: ${error.message}`);
+      } else {
+        setAppConfigSaved(true);
+        setTimeout(() => setAppConfigSaved(false), 4000);
+      }
+    } catch (err: any) {
+      setErrorMessage(`Fehler: ${err?.message || 'Unbekannt'}`);
+    } finally {
+      setSavingAppConfig(false);
     }
   }
 
@@ -704,6 +754,113 @@ export default function AdminUnlock() {
           </div>
         </div>
       )}
+
+      {/* APP-UPDATE MANAGEMENT (GOOGLE PLAY RELEASE STEUERUNG) */}
+      <div className="mt-10 bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 className="font-serif text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
+              <RefreshCw size={20} className="text-[var(--accent)]" />
+              <span>App-Update Steuerung (Google Play Release)</span>
+            </h3>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Steuere live, ab welcher Versionsnummer die App bei allen Nutzern das automatische Update-Pop-up anzeigt.
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] rounded-full text-xs font-mono">
+            Tabelle: <code>public.app_config</code>
+          </span>
+        </div>
+
+        {appConfigSaved && (
+          <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 text-xs font-semibold flex items-center gap-2">
+            <Check size={16} />
+            <span>Erfolgreich in Supabase gespeichert! Alle Nutzer erhalten das Update-Pop-up, sobald ihre lokale Version kleiner als {remoteVersionCode} ist.</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSaveAppConfig} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+                Neuester Version Code (Play Store):
+              </label>
+              <input
+                type="number"
+                value={remoteVersionCode}
+                onChange={(e) => setRemoteVersionCode(e.target.value)}
+                placeholder="95"
+                className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+                required
+              />
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Zahl aus <code>build.gradle</code> (z. B. 95)
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+                Neuester Version Name:
+              </label>
+              <input
+                type="text"
+                value={remoteVersionName}
+                onChange={(e) => setRemoteVersionName(e.target.value)}
+                placeholder="5.0.0"
+                className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+                required
+              />
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Anzeige-Version (z. B. 5.0.0)
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+              Pop-up Titel:
+            </label>
+            <input
+              type="text"
+              value={updateTitleInput}
+              onChange={(e) => setUpdateTitleInput(e.target.value)}
+              className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+              Pop-up Nachricht:
+            </label>
+            <textarea
+              rows={2}
+              value={updateMessageInput}
+              onChange={(e) => setUpdateMessageInput(e.target.value)}
+              className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={savingAppConfig}
+              className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl text-xs sm:text-sm transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {savingAppConfig ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  <span>Speichere...</span>
+                </>
+              ) : (
+                <>
+                  <Check size={16} />
+                  <span>🚀 Version in Supabase live schalten</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
