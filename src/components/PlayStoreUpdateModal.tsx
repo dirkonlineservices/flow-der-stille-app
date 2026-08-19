@@ -67,8 +67,8 @@ export function PlayStoreUpdateModal() {
     try {
       await AppUpdate.openAppStore();
     } catch (e) {
-      // Fallback: Direkter Play Store Link
-      window.open('https://play.google.com/store/apps/details?id=com.flowderstille.app', '_system');
+      // Fallback: Direkter Play Store Link mit korrekter Application-ID
+      window.open('https://play.google.com/store/apps/details?id=app.flowderstille.de', '_system');
     }
   };
 
