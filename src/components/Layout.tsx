@@ -17,6 +17,7 @@ import { AppDownloadBanner } from './AppDownloadBanner';
 import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
 import { NamePromptModal } from './NamePromptModal';
+import { AdminWelcomeModal } from './AdminWelcomeModal';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -480,6 +481,7 @@ export default function Layout() {
       <NewContentNotification />
       <PlayStoreUpdateModal />
       <NamePromptModal />
+      <AdminWelcomeModal />
 
     </div>
   );
