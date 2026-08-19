@@ -82,7 +82,7 @@ export function NamePromptModal() {
             </h3>
 
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-              Hallo! Schön, dass du da bist. Bitte ergänze in deinen Einstellungen kurz deinen <strong>Vor- und Nachnamen</strong>, damit wir dich in der App persönlich begleiten können.
+              Hallo! Schön, dass du da bist. Bitte ergänze in deinen Einstellungen kurz deinen <strong>Vor- und Nachnamen</strong>, damit wir dich persönlich begleiten können.
             </p>
           </div>
 
