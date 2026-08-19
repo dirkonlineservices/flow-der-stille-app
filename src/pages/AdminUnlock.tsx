@@ -3,7 +3,8 @@ import { getSupabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, ShieldAlert, Search, Gift, CheckCircle2, 
-  AlertCircle, Loader2, User, ArrowLeft, RefreshCw, Sparkles, X, Check
+  AlertCircle, Loader2, User, ArrowLeft, RefreshCw, Sparkles, X, Check,
+  Users, TrendingUp, Calendar, Award, Clock, ArrowRight, UserCheck, Shield
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -15,6 +16,8 @@ interface UserProfile {
   last_name?: string | null;
   full_name?: string | null;
   rolle?: string | null;
+  is_premium?: boolean | null;
+  created_at?: string | null;
 }
 
 interface ProductItem {
@@ -33,20 +36,45 @@ interface UserPurchase {
   preis?: number | string;
 }
 
+interface AdminStats {
+  totalUsers: number;
+  newUsersToday: number;
+  newUsers7Days: number;
+  newUsers30Days: number;
+  premiumUsersCount: number;
+  totalPurchasesCount: number;
+  recentUsers: UserProfile[];
+}
+
 export default function AdminUnlock() {
   const { user } = useAuth();
+
+  // Tab-Steuerung: 'stats' | 'unlock' | 'update'
+  const [activeTab, setActiveTab] = useState<'stats' | 'unlock' | 'update'>('stats');
 
   // 1. Rollen- & Autorisierungsstatus
   const [authChecking, setAuthChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminRole, setAdminRole] = useState<string | null>(null);
 
-  // 2. Produkte aus Supabase
+  // 2. Statistiken
+  const [stats, setStats] = useState<AdminStats>({
+    totalUsers: 0,
+    newUsersToday: 0,
+    newUsers7Days: 0,
+    newUsers30Days: 0,
+    premiumUsersCount: 0,
+    totalPurchasesCount: 0,
+    recentUsers: []
+  });
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  // 3. Produkte aus Supabase
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState('');
 
-  // 3. Nutzersuche
+  // 4. Nutzersuche für Freischaltung
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -56,7 +84,7 @@ export default function AdminUnlock() {
   const [userPurchases, setUserPurchases] = useState<UserPurchase[]>([]);
   const [loadingPurchases, setLoadingPurchases] = useState(false);
 
-  // 4. Aktions-Status
+  // 5. Aktions-Status
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,6 +95,14 @@ export default function AdminUnlock() {
     productTitle: string;
     timestamp: string;
   }[]>([]);
+
+  // 6. App-Update Remote-Konfiguration
+  const [remoteVersionCode, setRemoteVersionCode] = useState('95');
+  const [remoteVersionName, setRemoteVersionName] = useState('5.0.0');
+  const [updateTitleInput, setUpdateTitleInput] = useState('App-Aktualisierung verfügbar! 🚀');
+  const [updateMessageInput, setUpdateMessageInput] = useState('Eine neue Version von Flow der Stille steht jetzt für dich im Google Play Store bereit.');
+  const [savingAppConfig, setSavingAppConfig] = useState(false);
+  const [appConfigSaved, setAppConfigSaved] = useState(false);
 
   // ============================================================================
   // 1. ZUGRIFFSSCHUTZ: Rollenprüfung ('rolle' = 'admin' in profiles)
@@ -103,8 +139,9 @@ export default function AdminUnlock() {
       } else if (profileData && profileData.rolle?.toLowerCase() === 'admin') {
         setIsAdmin(true);
         setAdminRole(profileData.rolle);
-        // Nach erfolgreicher Autorisierung Produkte laden
-        loadProducts();
+        // Nach erfolgreicher Autorisierung Daten & Statistiken laden
+        loadProductsAndConfig();
+        loadAdminStats();
       } else {
         setIsAdmin(false);
       }
@@ -117,17 +154,66 @@ export default function AdminUnlock() {
   }
 
   // ============================================================================
-  // 5. App-Update Remote-Konfiguration
-  const [remoteVersionCode, setRemoteVersionCode] = useState('95');
-  const [remoteVersionName, setRemoteVersionName] = useState('5.0.0');
-  const [updateTitleInput, setUpdateTitleInput] = useState('App-Aktualisierung verfügbar! 🚀');
-  const [updateMessageInput, setUpdateMessageInput] = useState('Eine neue Version von Flow der Stille steht jetzt für dich im Google Play Store bereit.');
-  const [savingAppConfig, setSavingAppConfig] = useState(false);
-  const [appConfigSaved, setAppConfigSaved] = useState(false);
+  // STATISTIKEN LADEN
+  // ============================================================================
+  async function loadAdminStats() {
+    setLoadingStats(true);
+    try {
+      const supabase = getSupabase();
+      
+      // 1. Alle Profile abfragen (inkl. Registrierungsdatum & Rollen)
+      const { data: allProfiles, error: profError } = await supabase
+        .from('profiles')
+        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at')
+        .order('created_at', { ascending: false });
 
+      // 2. Käufe zählen
+      const { count: purchasesCount } = await supabase
+        .from('kaeufe')
+        .select('*', { count: 'exact', head: true });
+
+      if (!profError && allProfiles) {
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const sevenDaysAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+        const thirtyDaysAgo = now.getTime() - 30 * 24 * 60 * 60 * 1000;
+
+        let todayCount = 0;
+        let sevenDaysCount = 0;
+        let thirtyDaysCount = 0;
+        let premiumCount = 0;
+
+        allProfiles.forEach(p => {
+          if (p.is_premium) premiumCount++;
+          if (p.created_at) {
+            const createdTime = new Date(p.created_at).getTime();
+            if (createdTime >= startOfToday) todayCount++;
+            if (createdTime >= sevenDaysAgo) sevenDaysCount++;
+            if (createdTime >= thirtyDaysAgo) thirtyDaysCount++;
+          }
+        });
+
+        setStats({
+          totalUsers: allProfiles.length,
+          newUsersToday: todayCount,
+          newUsers7Days: sevenDaysCount,
+          newUsers30Days: thirtyDaysCount,
+          premiumUsersCount: premiumCount,
+          totalPurchasesCount: purchasesCount || 0,
+          recentUsers: allProfiles.slice(0, 30) // Neueste 30 Registrierungen
+        });
+      }
+    } catch (err) {
+      console.error('Fehler beim Laden der Admin-Statistiken:', err);
+    } finally {
+      setLoadingStats(false);
+    }
+  }
+
+  // ============================================================================
   // PRODUKTE & APP-CONFIG LADEN
   // ============================================================================
-  async function loadProducts() {
+  async function loadProductsAndConfig() {
     setLoadingProducts(true);
     try {
       const supabase = getSupabase();
@@ -219,7 +305,7 @@ export default function AdminUnlock() {
       // Suche nach Email, Full Name, Vorname oder Nachname in 'profiles'
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, first_name, last_name, full_name, rolle')
+        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at')
         .or(`email.ilike.%${clean}%,full_name.ilike.%${clean}%,first_name.ilike.%${clean}%,last_name.ilike.%${clean}%`)
         .limit(10);
 
@@ -229,20 +315,23 @@ export default function AdminUnlock() {
       } else {
         setSearchResults(data || []);
       }
-    } catch (err: any) {
-      console.error('Exception bei der Nutzersuche:', err);
+    } catch (err) {
+      console.error('Exception bei Nutzersuche:', err);
     } finally {
       setIsSearching(false);
     }
   }
 
-  // Wenn ein Nutzer ausgewählt wird: Seine Käufe laden
-  async function handleSelectUser(u: UserProfile) {
-    setSelectedUser(u);
+  // ============================================================================
+  // NUTZER AUSWÄHLEN & SEINE BESTEHENDEN FREISCHALTUNGEN LADEN
+  // ============================================================================
+  async function handleSelectUser(selected: UserProfile) {
+    setSelectedUser(selected);
+    setSearchQuery('');
     setSearchResults([]);
     setErrorMessage('');
     setSuccessMessage('');
-    loadPurchasesForUser(u.id);
+    loadPurchasesForUser(selected.id);
   }
 
   async function loadPurchasesForUser(userId: string) {
@@ -255,13 +344,12 @@ export default function AdminUnlock() {
         .eq('user_id', userId);
 
       if (error) {
-        console.error('Fehler beim Laden der Nutzer-Käufe:', error);
-        setUserPurchases([]);
+        console.error('Fehler beim Laden der Nutzerkäufe:', error);
       } else {
         setUserPurchases(data || []);
       }
-    } catch (e) {
-      console.error('Exception beim Laden der Käufe:', e);
+    } catch (err) {
+      console.error('Exception beim Laden der Käufe:', err);
     } finally {
       setLoadingPurchases(false);
     }
@@ -293,6 +381,7 @@ export default function AdminUnlock() {
         setErrorMessage(`Fehler beim Aktualisieren der Rolle: ${error.message}`);
       } else {
         setSelectedUser({ ...selectedUser, rolle: newRole });
+        loadAdminStats(); // Stats aktualisieren
         const nameDisp = selectedUser.full_name || selectedUser.email || selectedUser.id;
         if (newRole === 'admin') {
           setSuccessMessage(`👑 ${nameDisp} wurde erfolgreich zum Administrator ernannt!`);
@@ -348,7 +437,7 @@ export default function AdminUnlock() {
         return;
       }
 
-      // Optional: User-Profil auf is_premium = true setzen
+      // User-Profil auf is_premium = true setzen
       try {
         await supabase
           .from('profiles')
@@ -371,496 +460,702 @@ export default function AdminUnlock() {
         ...prev
       ]);
 
-      // Formular zurücksetzen: Suchfeld leeren, Nutzer-Auswahl leeren, Produkt zurücksetzen
-      setSearchQuery('');
-      setSelectedUser(null);
+      // Formular & Käufe aktualisieren
+      loadPurchasesForUser(targetUser.id);
+      loadAdminStats();
       setSelectedProductId('');
-      setUserPurchases([]);
 
     } catch (err: any) {
-      console.error('Unerwarteter Fehler beim Freischalten:', err);
-      setErrorMessage(`Unerwarteter Fehler: ${err?.message || 'Bitte versuche es erneut.'}`);
+      console.error('Exception beim Freischalten:', err);
+      setErrorMessage(`Unerwarteter Fehler: ${err?.message || String(err)}`);
     } finally {
       setIsSubmitting(false);
     }
   }
 
   // ============================================================================
-  // RENDERING: LADE-ZUSTAND
+  // RENDERING: LADE- & ZUGRIFFSPRÜFUNG
   // ============================================================================
   if (authChecking) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
+        <SEO title="Adminbereich wird geladen..." description="Berechtigungsprüfung" />
         <Loader2 className="w-10 h-10 text-[var(--accent)] animate-spin mb-4" />
-        <p className="text-sm font-medium text-[var(--text-muted)]">Berechtigungen werden geprüft...</p>
+        <p className="text-sm text-[var(--text-muted)] font-medium">Berechtigung wird geprüft...</p>
       </div>
     );
   }
 
-  // ============================================================================
-  // 1. ZUGRIFFSSCHUTZ: NICHT AUTORISIERT
-  // ============================================================================
   if (!isAdmin) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <SEO title="Zugriff verweigert" description="Interner Adminbereich" />
-        <div className="max-w-md w-full bg-[var(--bg-card)] border border-red-200 dark:border-red-900/40 rounded-3xl p-8 text-center shadow-xl">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-red-600 flex items-center justify-center mx-auto mb-4">
-            <ShieldAlert size={32} />
-          </div>
-          <h1 className="text-2xl font-serif font-bold text-[var(--text-main)] mb-2">Zugriff verweigert</h1>
-          <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-6">
-            Dieser Bereich ist ausschließlich autorisierten Administratoren vorbehalten. Dein Benutzerkonto verfügt in der Tabelle <code>profiles</code> nicht über die Rolle <code>admin</code>.
-          </p>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--accent)] text-white rounded-xl text-sm font-medium hover:bg-[var(--accent-hover)] transition-all shadow-sm"
-          >
-            <ArrowLeft size={16} />
-            <span>Zurück zur Startseite</span>
-          </Link>
+      <div className="max-w-md mx-auto my-16 p-8 bg-[var(--bg-card)] rounded-3xl border border-red-200 dark:border-red-900/40 text-center shadow-lg">
+        <SEO title="Zugriff verweigert" description="Adminbereich geschützt" />
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <ShieldAlert size={32} />
         </div>
+        <h2 className="text-2xl font-serif font-bold text-[var(--text-main)] mb-2">Zugriff verweigert</h2>
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+          Dieser Bereich ist ausschließlich für autorisierte Administratoren reserviert. In deinem Profil ist die Rolle <code className="bg-[var(--bg-alt)] px-1.5 py-0.5 rounded text-red-500 font-mono">admin</code> nicht hinterlegt.
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--accent)] text-white text-xs font-semibold rounded-2xl hover:bg-[var(--accent-hover)] transition-all shadow-md"
+        >
+          <ArrowLeft size={16} />
+          <span>Zurück zur Startseite</span>
+        </Link>
       </div>
     );
   }
 
-  // ============================================================================
-  // 2. ADMIN-OBERFLÄCHE (Autorisiert)
-  // ============================================================================
-  const selectedProduct = products.find(p => p.id === selectedProductId);
-  const alreadyOwned = selectedUser && selectedProductId && userPurchases.some(k => k.produkt_id === selectedProductId);
-
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 pb-16 font-sans">
-      <SEO title="Admin – Produkt-Freischaltung" description="Interner Adminbereich für Produkt-Freischaltungen" />
+    <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 space-y-8 font-sans">
+      <SEO title="Admin-Bereich – Statistiken & Freischaltungen" description="Internes Verwaltungszentrum für Flow der Stille" />
 
-      {/* Header */}
-      <header className="mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
+      {/* TOP BAR / NAVIGATION */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">
+        <div className="flex items-center gap-3">
           <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors bg-[var(--bg-card)] border border-[var(--border)] px-3 py-1.5 rounded-full shadow-xs cursor-pointer"
+            to="/premium-dashboard"
+            className="p-2.5 bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors inline-flex items-center gap-1.5 text-xs font-semibold"
+            title="Zurück zum Store / Dashboard"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={16} />
             <span>Zurück zur App</span>
           </Link>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
-            <ShieldCheck size={15} />
-            <span>Autorisierter Admin {adminRole ? `(${adminRole})` : ''}</span>
-          </div>
         </div>
 
-        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)] flex items-center gap-3">
-          <Gift className="text-[var(--accent)]" size={32} />
-          <span>Produkte kostenfrei freischalten</span>
-        </h1>
-        <p className="text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-          Schalte registrierten Nutzern beliebige Meditationen, Selbsthypnosen oder Hörbücher manuell und kostenfrei frei.
-        </p>
-      </header>
-
-      {/* Erfolgsmeldung */}
-      {successMessage && (
-        <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 rounded-2xl flex items-start gap-3 border border-emerald-200 dark:border-emerald-800/50 shadow-sm animate-fade-in">
-          <CheckCircle2 size={20} className="shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-          <div className="flex-1 text-sm font-medium">{successMessage}</div>
-          <button 
-            type="button"
-            onClick={() => setSuccessMessage('')}
-            className="text-emerald-600 hover:text-emerald-800 p-1 rounded-lg transition-colors cursor-pointer"
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold">
+            <ShieldCheck size={14} />
+            <span>Autorisierter Admin ({adminRole || 'admin'})</span>
+          </span>
+          <button
+            onClick={() => {
+              loadAdminStats();
+              loadProductsAndConfig();
+            }}
+            className="p-2 bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer"
+            title="Daten neu laden"
           >
-            <X size={16} />
+            <RefreshCw size={14} className={loadingStats ? 'animate-spin' : ''} />
           </button>
         </div>
-      )}
+      </div>
 
-      {/* Fehlermeldung */}
+      {/* HEADER & TITEL */}
+      <div>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
+            <Sparkles size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-serif text-[var(--text-main)] font-semibold">
+              Admin-Zentrale
+            </h1>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+              Statistiken, Nutzerverwaltung, kostenfreie Freischaltungen &amp; App-Release Steuerung.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* TAB NAVIGATION */}
+      <div className="flex items-center gap-2 p-1.5 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] overflow-x-auto">
+        <button
+          onClick={() => setActiveTab('stats')}
+          className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            activeTab === 'stats'
+              ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Users size={16} />
+          <span>Statistiken &amp; Nutzer ({stats.totalUsers})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('unlock')}
+          className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            activeTab === 'unlock'
+              ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Gift size={16} />
+          <span>Produkte freischalten</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('update')}
+          className={`flex-1 min-w-[130px] py-2.5 px-4 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            activeTab === 'update'
+              ? 'bg-[var(--bg-card)] text-[var(--accent)] shadow-sm border border-[var(--border)]'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <RefreshCw size={16} />
+          <span>App-Update Steuerung</span>
+        </button>
+      </div>
+
+      {/* FEHLER- & ERFOLGS-BANNER */}
       {errorMessage && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200 rounded-2xl flex items-start gap-3 border border-red-200 dark:border-red-800/50 shadow-sm animate-fade-in">
-          <AlertCircle size={20} className="shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
-          <div className="flex-1 text-sm font-medium">{errorMessage}</div>
-          <button 
-            type="button"
-            onClick={() => setErrorMessage('')}
-            className="text-red-600 hover:text-red-800 p-1 rounded-lg transition-colors cursor-pointer"
-          >
-            <X size={16} />
+        <div className="p-4 bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200 rounded-2xl border border-red-200 dark:border-red-800/50 text-xs sm:text-sm flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle size={18} className="shrink-0 text-red-600 dark:text-red-400" />
+            <span>{errorMessage}</span>
+          </div>
+          <button onClick={() => setErrorMessage('')} className="p-1 hover:bg-red-200/50 rounded-lg cursor-pointer">
+            <X size={14} />
           </button>
         </div>
       )}
 
-      {/* Haupt-Formular */}
-      <form onSubmit={handleUnlockProduct} className="space-y-6">
-        
-        {/* SCHRITT 1: NUTZERAUSWAHL / SUCHFELD */}
-        <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-              1. Nutzer auswählen (Tabelle: profiles)
-            </label>
-            {selectedUser && (
-              <button
-                type="button"
-                onClick={handleResetSelection}
-                className="text-xs text-[var(--text-muted)] hover:text-red-600 flex items-center gap-1 transition-colors cursor-pointer"
-              >
-                <X size={14} />
-                <span>Nutzer ändern</span>
-              </button>
-            )}
+      {successMessage && (
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 text-xs sm:text-sm flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 size={18} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-medium">{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage('')} className="p-1 hover:bg-emerald-200/50 rounded-lg cursor-pointer">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 1: NUTZER & STATISTIKEN                                                */}
+      {/* ========================================================================= */}
+      {activeTab === 'stats' && (
+        <div className="space-y-6">
+          {/* STATS METRIC CARDS */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Gesamt */}
+            <div className="bg-[var(--bg-card)] p-5 rounded-3xl border border-[var(--border)] shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Gesamt-Nutzer</span>
+                <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600">
+                  <Users size={18} />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--text-main)]">
+                {loadingStats ? <Loader2 size={24} className="animate-spin" /> : stats.totalUsers}
+              </div>
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Registrierte Konten in Supabase
+              </span>
+            </div>
+
+            {/* Letzte 7 Tage */}
+            <div className="bg-[var(--bg-card)] p-5 rounded-3xl border border-[var(--border)] shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Letzte 7 Tage</span>
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600">
+                  <TrendingUp size={18} />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                {loadingStats ? <Loader2 size={24} className="animate-spin" /> : `+${stats.newUsers7Days}`}
+              </div>
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Zuwachs in der letzten Woche
+              </span>
+            </div>
+
+            {/* Heute neu */}
+            <div className="bg-[var(--bg-card)] p-5 rounded-3xl border border-[var(--border)] shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Heute neu</span>
+                <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600">
+                  <Calendar size={18} />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">
+                {loadingStats ? <Loader2 size={24} className="animate-spin" /> : `+${stats.newUsersToday}`}
+              </div>
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Registrierungen heute
+              </span>
+            </div>
+
+            {/* Premium & Käufe */}
+            <div className="bg-[var(--bg-card)] p-5 rounded-3xl border border-[var(--border)] shadow-xs relative overflow-hidden">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Freigeschaltet</span>
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600">
+                  <Award size={18} />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-amber-600 dark:text-amber-400">
+                {loadingStats ? <Loader2 size={24} className="animate-spin" /> : stats.totalPurchasesCount}
+              </div>
+              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                Käufe &amp; Geschenke in <code>kaeufe</code>
+              </span>
+            </div>
           </div>
 
-          {!selectedUser ? (
-            <div className="relative">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Suche nach E-Mail-Adresse oder Name des Nutzers..."
-                  className="w-full pl-12 pr-10 py-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] text-[var(--text-main)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all text-sm font-medium"
-                />
-                {isSearching && (
-                  <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] animate-spin" size={18} />
-                )}
+          {/* NEUESTE REGISTRIERUNGEN TABELLE */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
+                  <Clock size={20} className="text-[var(--accent)]" />
+                  <span>Neueste Registrierungen</span>
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
+                  Chronologische Übersicht der zuletzt erstellten Profile in der Supabase-Datenbank.
+                </p>
               </div>
+              <span className="text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1.5 rounded-xl border border-[var(--border)]">
+                {stats.recentUsers.length} Einträge angezeigt
+              </span>
+            </div>
 
-              {/* Dropdown-Ergebnisliste */}
-              {searchResults.length > 0 && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl shadow-xl z-30 max-h-64 overflow-y-auto divide-y divide-[var(--border)]">
-                  {searchResults.map((u) => {
-                    const displayName = u.full_name || [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Kein Name angegeben';
-                    return (
-                      <button
-                        key={u.id}
-                        type="button"
-                        onClick={() => handleSelectUser(u)}
-                        className="w-full text-left p-3.5 hover:bg-[var(--bg-alt)] transition-colors flex items-center justify-between gap-3 cursor-pointer group"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
-                            <User size={16} />
+            {loadingStats ? (
+              <div className="py-12 text-center text-[var(--text-muted)] text-xs flex flex-col items-center gap-3">
+                <Loader2 size={24} className="animate-spin text-[var(--accent)]" />
+                <span>Lade Nutzer-Profile...</span>
+              </div>
+            ) : stats.recentUsers.length === 0 ? (
+              <div className="py-12 text-center text-[var(--text-muted)] text-xs italic">
+                Keine Profile in der Datenbank gefunden.
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--border)] -mx-6 sm:-mx-8 px-6 sm:px-8">
+                {stats.recentUsers.map((u) => {
+                  const displayName = u.full_name || [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Ohne Name';
+                  const formattedDate = u.created_at 
+                    ? new Date(u.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : '-';
+
+                  return (
+                    <div key={u.id} className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[var(--bg-alt)]/40 transition-colors rounded-xl px-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-center shrink-0 text-[var(--text-muted)]">
+                          <User size={18} />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-xs sm:text-sm text-[var(--text-main)] flex items-center gap-2">
+                            <span>{displayName}</span>
+                            {u.rolle?.toLowerCase() === 'admin' && (
+                              <span className="text-[9px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full uppercase">Admin</span>
+                            )}
+                            {u.is_premium && (
+                              <span className="text-[9px] bg-amber-500/15 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">Premium</span>
+                            )}
                           </div>
-                          <div className="min-w-0">
-                            <div className="text-sm font-semibold text-[var(--text-main)] truncate group-hover:text-[var(--accent)] transition-colors">
-                              {displayName}
-                            </div>
-                            <div className="text-xs text-[var(--text-muted)] truncate font-mono">
-                              {u.email || 'Keine E-Mail'}
-                            </div>
+                          <div className="text-xs text-[var(--text-muted)] font-mono">
+                            {u.email || 'Keine E-Mail'}
                           </div>
                         </div>
-                        <span className="text-[11px] text-[var(--text-muted)] shrink-0 font-mono bg-[var(--bg-alt)] px-2 py-1 rounded border border-[var(--border)]">
-                          ID: {u.id.substring(0, 8)}...
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+                      </div>
 
-              {searchQuery.trim().length >= 2 && !isSearching && searchResults.length === 0 && (
-                <p className="text-xs text-[var(--text-muted)] mt-2 italic">
-                  Kein registrierter Nutzer für „{searchQuery}“ in der profiles-Tabelle gefunden.
-                </p>
+                      <div className="flex items-center gap-3 self-end sm:self-center">
+                        <span className="text-[11px] text-[var(--text-muted)] font-mono">
+                          {formattedDate}
+                        </span>
+
+                        <button
+                          onClick={() => {
+                            handleSelectUser(u);
+                            setActiveTab('unlock');
+                          }}
+                          className="px-3 py-1.5 bg-[var(--accent)]/10 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                          title="Für diesen Nutzer ein Produkt freischalten"
+                        >
+                          <Gift size={13} />
+                          <span>Freischalten</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2: PRODUKTE FREISCHALTEN & ROLLEN                                      */}
+      {/* ========================================================================= */}
+      {activeTab === 'unlock' && (
+        <form onSubmit={handleUnlockProduct} className="space-y-6">
+          {/* SCHRITT 1: NUTZER WÄHLEN */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                1. Nutzer auswählen (Tabelle: <code>profiles</code>)
+              </label>
+              {selectedUser && (
+                <button
+                  type="button"
+                  onClick={handleResetSelection}
+                  className="text-xs text-[var(--accent)] hover:underline cursor-pointer flex items-center gap-1"
+                >
+                  <X size={14} /> Nutzer ändern
+                </button>
               )}
             </div>
-          ) : (
-            /* Ausgewählter Nutzer - Kärtchen */
-            <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--accent)]/30 space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <User size={22} />
+
+            {!selectedUser ? (
+              <div className="relative">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] opacity-50" size={18} />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Nach E-Mail oder Name des Nutzers suchen..."
+                    className="w-full pl-11 pr-4 py-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text-main)] placeholder-[var(--text-muted)] focus:ring-2 focus:ring-[var(--accent)] outline-none transition-all"
+                  />
+                  {isSearching && (
+                    <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--accent)] animate-spin" size={18} />
+                  )}
+                </div>
+
+                {/* Suchergebnisse Dropdown */}
+                {searchResults.length > 0 && (
+                  <div className="mt-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden divide-y divide-[var(--border)] max-h-60 overflow-y-auto">
+                    {searchResults.map((u) => {
+                      const displayName = u.full_name || [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Ohne Name';
+                      return (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => handleSelectUser(u)}
+                          className="w-full p-3.5 text-left hover:bg-[var(--bg-alt)] transition-colors flex items-center justify-between gap-3 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center font-bold text-xs">
+                              {displayName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-xs sm:text-sm text-[var(--text-main)] flex items-center gap-2">
+                                <span>{displayName}</span>
+                                {u.rolle?.toLowerCase() === 'admin' && (
+                                  <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Admin</span>
+                                )}
+                              </div>
+                              <div className="text-xs text-[var(--text-muted)] font-mono">
+                                {u.email || 'Keine E-Mail'}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[11px] text-[var(--text-muted)] shrink-0 font-mono bg-[var(--bg-alt)] px-2 py-1 rounded border border-[var(--border)]">
+                            ID: {u.id.substring(0, 8)}...
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <div className="font-semibold text-base text-[var(--text-main)] flex items-center gap-2">
-                      <span>{selectedUser.full_name || [selectedUser.first_name, selectedUser.last_name].filter(Boolean).join(' ') || 'Registrierter Nutzer'}</span>
-                      {selectedUser.rolle?.toLowerCase() === 'admin' ? (
-                        <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>
-                      ) : (
-                        <span className="text-[10px] bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-muted)] font-medium px-2 py-0.5 rounded-full uppercase">Standard User</span>
-                      )}
+                )}
+
+                {searchQuery.trim().length >= 2 && !isSearching && searchResults.length === 0 && (
+                  <p className="text-xs text-[var(--text-muted)] mt-2 italic">
+                    Kein registrierter Nutzer für „{searchQuery}“ in der profiles-Tabelle gefunden.
+                  </p>
+                )}
+              </div>
+            ) : (
+              /* Ausgewählter Nutzer - Kärtchen */
+              <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--accent)]/30 space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center shrink-0 shadow-sm">
+                      <User size={22} />
                     </div>
-                    <div className="text-xs text-[var(--text-muted)] font-mono">
-                      {selectedUser.email}
+                    <div>
+                      <div className="font-semibold text-base text-[var(--text-main)] flex items-center gap-2">
+                        <span>{selectedUser.full_name || [selectedUser.first_name, selectedUser.last_name].filter(Boolean).join(' ') || 'Registrierter Nutzer'}</span>
+                        {selectedUser.rolle?.toLowerCase() === 'admin' ? (
+                          <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>
+                        ) : (
+                          <span className="text-[10px] bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-muted)] font-medium px-2 py-0.5 rounded-full uppercase">Standard User</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-[var(--text-muted)] font-mono">
+                        {selectedUser.email}
+                      </div>
+                      <div className="text-[11px] text-[var(--text-muted)] mt-0.5 font-mono">
+                        UUID: {selectedUser.id}
+                      </div>
                     </div>
-                    <div className="text-[11px] text-[var(--text-muted)] mt-0.5 font-mono">
-                      UUID: {selectedUser.id}
-                    </div>
+                  </div>
+
+                  {/* Rolle verwalten Button */}
+                  <div className="sm:text-right w-full sm:w-auto">
+                    {selectedUser.rolle?.toLowerCase() === 'admin' ? (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleUserAdminRole('user')}
+                        className="w-full sm:w-auto px-3.5 py-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 hover:bg-red-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                        title="Admin-Rechte für diesen Nutzer entziehen"
+                      >
+                        <X size={14} />
+                        <span>Admin-Rechte entziehen</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleUserAdminRole('admin')}
+                        className="w-full sm:w-auto px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+                        title="Diesen Nutzer zum Administrator ernennen"
+                      >
+                        <ShieldCheck size={14} />
+                        <span>👑 Zum Admin ernennen</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Rolle verwalten Button */}
-                <div className="sm:text-right w-full sm:w-auto">
-                  {selectedUser.rolle?.toLowerCase() === 'admin' ? (
-                    <button
-                      type="button"
-                      onClick={() => handleToggleUserAdminRole('user')}
-                      className="w-full sm:w-auto px-3.5 py-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 hover:bg-red-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                      title="Admin-Rechte für diesen Nutzer entziehen"
-                    >
-                      <X size={14} />
-                      <span>Admin-Rechte entziehen</span>
-                    </button>
+                {/* Bereits freigeschaltete Produkte */}
+                <div className="pt-3 border-t border-[var(--border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <span className="text-xs text-[var(--text-muted)] font-medium block">
+                    Bisherige Freischaltungen:
+                  </span>
+                  {loadingPurchases ? (
+                    <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
+                      <Loader2 size={12} className="animate-spin" /> Lade Käufe...
+                    </span>
+                  ) : userPurchases.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                      {userPurchases.map((p, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[11px] bg-[var(--bg-card)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--text-main)] font-mono"
+                          title={`Bestellung: ${p.order_id || '-'}`}
+                        >
+                          ✓ {p.produkt_id}
+                        </span>
+                      ))}
+                    </div>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleToggleUserAdminRole('admin')}
-                      className="w-full sm:w-auto px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
-                      title="Diesen Nutzer zum Administrator ernennen"
-                    >
-                      <ShieldCheck size={14} />
-                      <span>👑 Zum Admin ernennen</span>
-                    </button>
+                    <span className="text-xs text-[var(--text-muted)] italic">Noch keine Produkte freigeschaltet</span>
                   )}
                 </div>
               </div>
-
-              {/* Bereits freigeschaltete Produkte */}
-              <div className="pt-3 border-t border-[var(--border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <span className="text-xs text-[var(--text-muted)] font-medium block">
-                  Bisherige Freischaltungen:
-                </span>
-                {loadingPurchases ? (
-                  <span className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
-                    <Loader2 size={12} className="animate-spin" /> Lade Käufe...
-                  </span>
-                ) : userPurchases.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 sm:justify-end">
-                    {userPurchases.map((p, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[11px] bg-[var(--bg-card)] border border-[var(--border)] px-2.5 py-1 rounded-full text-[var(--text-main)] font-mono"
-                        title={`Bestellung: ${p.order_id || '-'}`}
-                      >
-                        ✓ {p.produkt_id}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-xs text-[var(--text-muted)] italic">Noch keine Produkte freigeschaltet</span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* SCHRITT 2: PRODUKTAUSWAHL */}
-        <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-              2. Produkt auswählen (Tabelle: produkte)
-            </label>
-            <button
-              type="button"
-              onClick={loadProducts}
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center gap-1 cursor-pointer transition-colors"
-              title="Produktliste neu laden"
-            >
-              <RefreshCw size={12} className={loadingProducts ? 'animate-spin' : ''} />
-              <span>Aktualisieren</span>
-            </button>
+            )}
           </div>
 
-          <div className="relative">
+          {/* SCHRITT 2: PRODUKTAUSWAHL */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                2. Produkt auswählen (Tabelle: <code>produkte</code>)
+              </label>
+              <button
+                type="button"
+                onClick={loadProductsAndConfig}
+                className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <RefreshCw size={12} className={loadingProducts ? 'animate-spin' : ''} /> Aktualisieren
+              </button>
+            </div>
+
             <select
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] text-[var(--text-main)] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all cursor-pointer"
+              className="w-full p-4 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none cursor-pointer"
+              required
             >
-              <option value="">– Bitte ein Produkt aus der Datenbank auswählen –</option>
+              <option value="">-- Produkt auswählen --</option>
               {products.map((p) => {
-                const priceFormatted = p.preis !== undefined && p.preis !== null ? `${p.preis} €` : '';
-                const cat = p.kategorie ? `[${p.kategorie}]` : '';
+                const alreadyOwned = userPurchases.some(up => up.produkt_id === p.id);
                 return (
                   <option key={p.id} value={p.id}>
-                    {p.titel} {cat} {priceFormatted ? `– Regulär: ${priceFormatted}` : ''} (ID: {p.id})
+                    {alreadyOwned ? '✓ (Bereits freigeschaltet) ' : ''}
+                    {p.titel} {p.kategorie ? `[${p.kategorie}]` : ''} – Regulär: {p.preis ?? '0.00'} € (ID: {p.id})
                   </option>
                 );
               })}
             </select>
-          </div>
 
-          {/* Hinweis, falls der Nutzer dieses Produkt bereits besitzt */}
-          {alreadyOwned && (
-            <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
-              <AlertCircle size={15} className="shrink-0" />
-              <span>Dieser Nutzer hat das gewählte Produkt bereits in seinen Freischaltungen (wird überschrieben/bestätigt).</span>
-            </div>
-          )}
-
-          {selectedProduct && (
-            <div className="mt-4 p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] text-xs text-[var(--text-muted)] space-y-1">
-              <div><strong className="text-[var(--text-main)]">Titel:</strong> {selectedProduct.titel}</div>
-              <div><strong className="text-[var(--text-main)]">Produkt-ID:</strong> <code className="font-mono">{selectedProduct.id}</code></div>
-              {selectedProduct.kategorie && <div><strong className="text-[var(--text-main)]">Kategorie:</strong> {selectedProduct.kategorie}</div>}
-              <div><strong className="text-[var(--text-main)]">Regulärer Preis:</strong> {selectedProduct.preis || '0'} EUR</div>
-            </div>
-          )}
-        </div>
-
-        {/* SCHRITT 3: AKTION / SPEICHERN */}
-        <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-              <div><strong>Datenbank-Ziel:</strong> Tabelle <code>public.kaeufe</code></div>
-              <div><strong>Eintrag:</strong> <code>user_id</code>: {selectedUser ? selectedUser.id.substring(0, 8) + '...' : '-'} | <code>produkt_id</code>: {selectedProductId || '-'} | <code>preis</code>: 0.00 EUR | <code>order_id</code>: 'GESCHENK'</div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={!selectedUser || !selectedProductId || isSubmitting}
-              className="w-full sm:w-auto px-8 py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl text-sm transition-all shadow-md hover:shadow-lg active:scale-98 flex items-center justify-center gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" size={18} />
-                  <span>Wird freigeschaltet...</span>
-                </>
-              ) : (
-                <>
-                  <Gift size={18} />
-                  <span>Kostenfrei freischalten</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </form>
-
-      {/* SESSION-HISTORIE */}
-      {recentUnlocks.length > 0 && (
-        <div className="mt-10 bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
-          <h3 className="font-serif text-lg font-bold text-[var(--text-main)] mb-4 flex items-center gap-2">
-            <Sparkles size={18} className="text-[var(--accent)]" />
-            <span>In dieser Sitzung freigeschaltet</span>
-          </h3>
-          <div className="divide-y divide-[var(--border)]">
-            {recentUnlocks.map((item, i) => (
-              <div key={i} className="py-3 flex items-center justify-between gap-4 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
-                    <Check size={12} />
-                  </span>
-                  <span className="font-semibold text-[var(--text-main)]">{item.userName}</span>
-                  <span className="text-[var(--text-muted)]">erhielt</span>
-                  <span className="font-medium text-[var(--accent)]">„{item.productTitle}“</span>
-                </div>
-                <span className="text-[var(--text-muted)] font-mono shrink-0">{item.timestamp}</span>
+            {selectedProductId && (
+              <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] text-xs text-[var(--text-muted)] space-y-1">
+                {(() => {
+                  const selProd = products.find(p => p.id === selectedProductId);
+                  if (!selProd) return null;
+                  return (
+                    <>
+                      <div><strong>Titel:</strong> {selProd.titel}</div>
+                      <div><strong>Produkt-ID:</strong> <code>{selProd.id}</code></div>
+                      <div><strong>Kategorie:</strong> {selProd.kategorie || 'Standard'}</div>
+                      <div><strong>Regulärer Preis:</strong> {selProd.preis ?? '0.00'} EUR</div>
+                    </>
+                  );
+                })()}
               </div>
-            ))}
+            )}
           </div>
-        </div>
+
+          {/* SCHRITT 3: AKTION / SPEICHERN */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs text-[var(--text-muted)] leading-relaxed">
+                <div><strong>Datenbank-Ziel:</strong> Tabelle <code>public.kaeufe</code></div>
+                <div><strong>Eintrag:</strong> <code>user_id</code>: {selectedUser ? selectedUser.id.substring(0, 8) + '...' : '-'} | <code>produkt_id</code>: {selectedProductId || '-'} | <code>preis</code>: 0.00 EUR | <code>order_id</code>: 'GESCHENK'</div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={!selectedUser || !selectedProductId || isSubmitting}
+                className="w-full sm:w-auto px-8 py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl text-sm transition-all shadow-md hover:shadow-lg active:scale-98 flex items-center justify-center gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    <span>Wird freigeschaltet...</span>
+                  </>
+                ) : (
+                  <>
+                    <Gift size={18} />
+                    <span>Kostenfrei freischalten</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* SESSION-HISTORIE */}
+          {recentUnlocks.length > 0 && (
+            <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
+              <h3 className="font-serif text-lg font-bold text-[var(--text-main)] mb-4 flex items-center gap-2">
+                <Sparkles size={18} className="text-[var(--accent)]" />
+                <span>In dieser Sitzung freigeschaltet</span>
+              </h3>
+              <div className="divide-y divide-[var(--border)]">
+                {recentUnlocks.map((item, i) => (
+                  <div key={i} className="py-3 flex items-center justify-between gap-4 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+                        <Check size={12} />
+                      </span>
+                      <span className="font-semibold text-[var(--text-main)]">{item.userName}</span>
+                      <span className="text-[var(--text-muted)]">erhielt</span>
+                      <span className="font-medium text-[var(--accent)]">„{item.productTitle}“</span>
+                    </div>
+                    <span className="text-[var(--text-muted)] font-mono shrink-0">{item.timestamp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </form>
       )}
 
-      {/* APP-UPDATE MANAGEMENT (GOOGLE PLAY RELEASE STEUERUNG) */}
-      <div className="mt-10 bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h3 className="font-serif text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
-              <RefreshCw size={20} className="text-[var(--accent)]" />
-              <span>App-Update Steuerung (Google Play Release)</span>
-            </h3>
-            <p className="text-xs text-[var(--text-muted)] mt-1">
-              Steuere live, ab welcher Versionsnummer die App bei allen Nutzern das automatische Update-Pop-up anzeigt.
-            </p>
-          </div>
-          <span className="px-3 py-1 bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] rounded-full text-xs font-mono">
-            Tabelle: <code>public.app_config</code>
-          </span>
-        </div>
-
-        {appConfigSaved && (
-          <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 text-xs font-semibold flex items-center gap-2">
-            <Check size={16} />
-            <span>Erfolgreich in Supabase gespeichert! Alle Nutzer erhalten das Update-Pop-up, sobald ihre lokale Version kleiner als {remoteVersionCode} ist.</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSaveAppConfig} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* ========================================================================= */}
+      {/* TAB 3: APP-UPDATE STEUERUNG                                                */}
+      {/* ========================================================================= */}
+      {activeTab === 'update' && (
+        <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
-                Neuester Version Code (Play Store):
-              </label>
-              <input
-                type="number"
-                value={remoteVersionCode}
-                onChange={(e) => setRemoteVersionCode(e.target.value)}
-                placeholder="95"
-                className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
-                required
-              />
-              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
-                Zahl aus <code>build.gradle</code> (z. B. 95)
-              </span>
+              <h3 className="font-serif text-xl font-bold text-[var(--text-main)] flex items-center gap-2">
+                <RefreshCw size={20} className="text-[var(--accent)]" />
+                <span>App-Update Steuerung (Google Play Release)</span>
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Steuere live, ab welcher Versionsnummer die App bei allen Nutzern das automatische Update-Pop-up anzeigt.
+              </p>
+            </div>
+            <span className="px-3 py-1 bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] rounded-full text-xs font-mono">
+              Tabelle: <code>public.app_config</code>
+            </span>
+          </div>
+
+          {appConfigSaved && (
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 text-xs font-semibold flex items-center gap-2">
+              <Check size={16} />
+              <span>Erfolgreich in Supabase gespeichert! Alle Nutzer erhalten das Update-Pop-up, sobald ihre lokale Version kleiner als {remoteVersionCode} ist.</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSaveAppConfig} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+                  Neuester Version Code (Play Store):
+                </label>
+                <input
+                  type="number"
+                  value={remoteVersionCode}
+                  onChange={(e) => setRemoteVersionCode(e.target.value)}
+                  placeholder="95"
+                  className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+                  required
+                />
+                <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                  Zahl aus <code>build.gradle</code> (z. B. 95)
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+                  Neuester Version Name:
+                </label>
+                <input
+                  type="text"
+                  value={remoteVersionName}
+                  onChange={(e) => setRemoteVersionName(e.target.value)}
+                  placeholder="5.0.0"
+                  className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+                  required
+                />
+                <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
+                  Anzeige-Version (z. B. 5.0.0)
+                </span>
+              </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
-                Neuester Version Name:
+                Pop-up Titel:
               </label>
               <input
                 type="text"
-                value={remoteVersionName}
-                onChange={(e) => setRemoteVersionName(e.target.value)}
-                placeholder="5.0.0"
-                className="w-full p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm font-mono text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
-                required
+                value={updateTitleInput}
+                onChange={(e) => setUpdateTitleInput(e.target.value)}
+                className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
               />
-              <span className="text-[11px] text-[var(--text-muted)] mt-1 block">
-                Anzeige-Version (z. B. 5.0.0)
-              </span>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
-              Pop-up Titel:
-            </label>
-            <input
-              type="text"
-              value={updateTitleInput}
-              onChange={(e) => setUpdateTitleInput(e.target.value)}
-              className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
+                Pop-up Nachricht:
+              </label>
+              <textarea
+                rows={2}
+                value={updateMessageInput}
+                onChange={(e) => setUpdateMessageInput(e.target.value)}
+                className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1 uppercase tracking-wider">
-              Pop-up Nachricht:
-            </label>
-            <textarea
-              rows={2}
-              value={updateMessageInput}
-              onChange={(e) => setUpdateMessageInput(e.target.value)}
-              className="w-full p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
-            />
-          </div>
-
-          <div className="pt-2 flex justify-end">
-            <button
-              type="submit"
-              disabled={savingAppConfig}
-              className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl text-xs sm:text-sm transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {savingAppConfig ? (
-                <>
-                  <Loader2 className="animate-spin" size={16} />
-                  <span>Speichere...</span>
-                </>
-              ) : (
-                <>
-                  <Check size={16} />
-                  <span>🚀 Version in Supabase live schalten</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+            <div className="pt-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={savingAppConfig}
+                className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-2xl text-xs sm:text-sm transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {savingAppConfig ? (
+                  <>
+                    <Loader2 className="animate-spin" size={16} />
+                    <span>Speichere...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} />
+                    <span>🚀 Version in Supabase live schalten</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
