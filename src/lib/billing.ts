@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';
 import { handlePurchaseSuccess } from './googlePlayVerification';
 
 interface BillingInitProps {
@@ -77,10 +78,20 @@ export const getPlayStoreProductId = (input: any): string => {
 
 export const BillingService = {
   isNative: (): boolean => {
-    return typeof window !== 'undefined' && (
-      typeof (window as any).CdvPurchase !== 'undefined' || 
-      typeof (window as any).Capacitor !== 'undefined'
-    );
+    if (typeof window === 'undefined') return false;
+
+    // Capacitor Native Platform check (returns true on Android/iOS native app, false on Web)
+    try {
+      if (typeof Capacitor !== 'undefined' && typeof Capacitor.isNativePlatform === 'function') {
+        return Capacitor.isNativePlatform();
+      }
+    } catch (e) {}
+
+    if (typeof (window as any).Capacitor !== 'undefined' && typeof (window as any).Capacitor.isNativePlatform === 'function') {
+      return (window as any).Capacitor.isNativePlatform();
+    }
+
+    return false;
   },
 
   // 1. Einmalige Globale Registrierung der Produkte & Event Listener
