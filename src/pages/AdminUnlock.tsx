@@ -274,6 +274,9 @@ export default function AdminUnlock() {
     try {
       const supabase = getSupabase();
 
+      // Eindeutige Bestellnummer generieren, um Unique-Constraint-Fehler bei mehreren Geschenken zu vermeiden
+      const giftOrderId = `GESCHENK_${Date.now()}_${targetUser.id.substring(0, 8)}`;
+
       // Datensatz in die Tabelle "kaeufe" schreiben (exakt die Felder: user_id, produkt_id, preis, waehrung, order_id)
       const { error: insertError } = await supabase
         .from('kaeufe')
@@ -283,7 +286,7 @@ export default function AdminUnlock() {
             produkt_id: selectedProductId,
             preis: 0.00,
             waehrung: 'EUR',
-            order_id: 'GESCHENK'
+            order_id: giftOrderId
           },
           { onConflict: 'user_id,produkt_id' }
         );
