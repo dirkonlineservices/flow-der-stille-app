@@ -119,6 +119,10 @@ export default function AudiobookPage() {
               {title}
             </h1>
 
+            <p className="text-xs text-[var(--text-muted)] font-medium">
+              Autorin: <strong className="text-[var(--text-main)]">Jacqueline Schmetzer</strong> • Sprecherin: <strong className="text-[var(--text-main)]">Lisa Ragusa</strong>
+            </p>
+
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
               {productData?.beschreibung || 'Ein berührendes und tiefgründiges Hörbuch über innere Verwandlung, Selbstfindung und das Erwachen zu neuem Lebensmut.'}
             </p>
@@ -203,6 +207,8 @@ export default function AudiobookPage() {
         onClose={() => setIsPlayerOpen(false)}
         productId={productData?.id || productId}
         title={title}
+        author="Jacqueline Schmetzer"
+        reader="Lisa Ragusa"
         audioUrl={audioUrl}
         coverImage="/images/products/cover_schmetterling.jpg"
         durationSeconds={3523}

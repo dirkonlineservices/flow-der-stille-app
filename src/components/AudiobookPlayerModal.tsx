@@ -31,6 +31,7 @@ interface Props {
   productId: string;
   title: string;
   author?: string;
+  reader?: string;
   coverImage?: string;
   audioUrl: string;
   durationSeconds?: number; // z. B. 3523 für 58:43 Min
@@ -50,6 +51,7 @@ export function AudiobookPlayerModal({
   productId,
   title,
   author = 'Jacqueline Schmetzer',
+  reader = 'Lisa Ragusa',
   coverImage = '/images/products/cover_schmetterling.jpg',
   audioUrl,
   durationSeconds = 3523,
@@ -62,26 +64,27 @@ export function AudiobookPlayerModal({
   const [duration, setDuration] = useState<number>(durationSeconds);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [playableUrl, setPlayableUrl] = useState<string>('');
+  const [playableUrl, setPlayableUrl] = useState<string>(audioUrl);
   const [activeChapterId, setActiveChapterId] = useState<string>(chapters[0]?.id || '');
   const [savedPosition, setSavedPosition] = useState<number | null>(null);
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
-  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(true);
+  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
 
-  // 1. Audio-URL auflösen (Sandbox Cache / Stream)
+  // 1. Audio-URL auflösen (Sandbox Cache oder Direkt-URL)
   useEffect(() => {
     if (!isOpen || !audioUrl) return;
 
     let isMounted = true;
-    setIsLoadingAudio(true);
+    setPlayableUrl(audioUrl);
 
     getPlayableAudioUrl(productId, audioUrl, title).then((resolvedUrl) => {
-      if (isMounted) {
+      if (isMounted && resolvedUrl) {
         setPlayableUrl(resolvedUrl);
-        setIsLoadingAudio(false);
       }
+    }).catch(() => {
+      if (isMounted) setPlayableUrl(audioUrl);
     });
 
     // Gespeicherte Hörposition prüfen
@@ -153,7 +156,23 @@ export function AudiobookPlayerModal({
       audio.pause();
       setIsPlaying(false);
     } else {
-      audio.play().then(() => setIsPlaying(true)).catch((err) => console.warn('Audio play error:', err));
+      const targetSrc = playableUrl || audioUrl;
+      if (!audio.src || audio.src !== targetSrc) {
+        audio.src = targetSrc;
+      }
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.warn('Playback fallback to direct audioUrl:', err);
+            if (audioUrl && audio.src !== audioUrl) {
+              audio.src = audioUrl;
+              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback failed:', e));
+            }
+          });
+      }
     }
   };
 
@@ -228,14 +247,12 @@ export function AudiobookPlayerModal({
         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
         {/* Hidden HTML5 Audio Element (Prohibited Download Attributes) */}
-        {playableUrl && (
-          <audio
-            ref={audioRef}
-            src={playableUrl}
-            controlsList="nodownload"
-            preload="metadata"
-          />
-        )}
+        <audio
+          ref={audioRef}
+          src={playableUrl || audioUrl}
+          controlsList="nodownload"
+          preload="auto"
+        />
 
         {/* Player Modal Window */}
         <motion.div
@@ -315,8 +332,8 @@ export function AudiobookPlayerModal({
                 <h2 className="font-serif font-semibold text-xl sm:text-2xl text-[var(--text-main)] leading-snug">
                   {title}
                 </h2>
-                <p className="text-xs text-[var(--text-muted)]">
-                  Gelesen von <strong className="text-[var(--text-main)]">{author}</strong>
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
 
                 {/* Offline-Speicher Button */}

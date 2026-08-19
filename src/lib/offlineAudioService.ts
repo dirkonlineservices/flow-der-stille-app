@@ -256,9 +256,7 @@ export async function getPlayableAudioUrl(productId: string, remoteUrl: string, 
     }
   }
 
-  // Automatisches Hintergrund-Caching starten (nicht-blockierend!)
-  cacheAudioInBackground(productId, remoteUrl, title);
-
+  // Keinesfalls automatisches Hintergrund-Caching! Der Nutzer entscheidet selbst per "Offline speichern" Button.
   return remoteUrl;
 }
 
