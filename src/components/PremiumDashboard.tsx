@@ -208,14 +208,19 @@ export default function PremiumShopDashboard() {
             }
           }
 
-          const [kaufRes, vipRes] = await Promise.all([
+          const emailsToSearch = [cleanEmail];
+          if (aliasEmail) emailsToSearch.push(aliasEmail);
+
+          const [kaufRes, kaufEmailRes, vipRes] = await Promise.all([
             supabase.from('kaeufe').select('produkt_id').in('user_id', targetUserIds),
-            supabase.from('vip_zugang').select('user_id').in('user_id', targetUserIds)
+            supabase.from('kaeufe').select('produkt_id').in('email', emailsToSearch),
+            supabase.from('vip_zugang').select('user_id, email').or(`user_id.in.(${targetUserIds.join(',')}),email.in.(${emailsToSearch.join(',')})`)
           ]);
           const ids = new Set<string>();
 
-          if (!kaufRes.error && kaufRes.data) {
-            kaufRes.data.forEach((k: any) => {
+          const processKaufData = (data: any[]) => {
+            if (!data) return;
+            data.forEach((k: any) => {
               const rawId = k.produkt_id;
               if (rawId) {
                 ids.add(rawId);
@@ -225,7 +230,10 @@ export default function PremiumShopDashboard() {
                 if (dbId) ids.add(dbId);
               }
             });
-          }
+          };
+
+          if (!kaufRes.error && kaufRes.data) processKaufData(kaufRes.data);
+          if (!kaufEmailRes.error && kaufEmailRes.data) processKaufData(kaufEmailRes.data);
 
           gekaufteSet = ids;
           if (!vipRes.error && vipRes.data) {
