@@ -200,11 +200,18 @@ export default function Login() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-4 text-[var(--text-muted)] opacity-60 hover:opacity-100 focus:outline-none"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowPassword(prev => !prev);
+                }}
+                onMouseDown={(e) => e.preventDefault()}
+                className="absolute inset-y-0 right-0 flex items-center justify-center w-12 text-[var(--text-muted)] hover:text-[var(--text-main)] opacity-70 hover:opacity-100 focus:outline-none z-20 cursor-pointer transition-all"
                 tabIndex={-1}
+                aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
+                title={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
