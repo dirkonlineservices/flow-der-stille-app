@@ -81,6 +81,7 @@ export default function Register() {
           data: {
             first_name: firstName,
             last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
             newsletter_optin: newsletter,
             source: isNative ? 'app' : 'web',
             referred_by: referredBy
@@ -103,6 +104,22 @@ export default function Register() {
           error_message: supabaseError.message
         });
         return;
+      }
+
+      // Profile in public.profiles anlegen / aktualisieren mit Vor- und Zunamen
+      if (data?.user?.id) {
+        try {
+          await supabase.from('profiles').upsert({
+            id: data.user.id,
+            email: normalizedEmail,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' });
+        } catch (profileErr) {
+          console.warn('Profile upsert warning:', profileErr);
+        }
       }
 
       // 2. Newsletter Logik isoliert ausführen (Nur wenn Checkbox aktiv ist)
