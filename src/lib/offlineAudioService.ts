@@ -293,6 +293,14 @@ export async function clearAllOfflineAudio(): Promise<void> {
 }
 
 /**
+ * Gibt alle aktuell offline gespeicherten Tracks als Liste zurück
+ */
+export function getOfflineTrackList(): OfflineTrackMetadata[] {
+  const map = getMetadataMap();
+  return Object.values(map);
+}
+
+/**
  * Gibt eine Übersicht der gesamten Speicherbelegung zurück.
  */
 export function getStorageUsageSummary() {
