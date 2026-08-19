@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
-  Info, Shield, FileText, Scale, Headphones, HelpCircle 
+  Info, Shield, FileText, Scale, Headphones, HelpCircle,
+  ShieldCheck, Gift
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -48,8 +49,31 @@ export default function Layout() {
   const { theme, toggleTheme } = useTheme();
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
   const [hasHoerproben, setHasHoerproben] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
   const isPremiumOrAppPage = location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
+
+  // Prüfen ob der Nutzer Admin-Rechte hat
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+    const supabase = getSupabase();
+    supabase
+      .from('profiles')
+      .select('rolle')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.rolle?.toLowerCase() === 'admin') {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      })
+      .catch(() => setIsAdmin(false));
+  }, [user]);
 
   // Dynamisch prüfen ob Hörproben in Supabase existieren
   useEffect(() => {
@@ -330,6 +354,29 @@ export default function Layout() {
                     <div>
                       <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.settings')}</div>
                       <div className="text-xs text-[var(--text-muted)]">Konto & Benachrichtigungen</div>
+                    </div>
+                  </Link>
+                )}
+
+                {/* Admin-Bereich (NUR für Administratoren mit rolle = 'admin' in profiles sichtbar) */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => handleMenuClick('Admin-Bereich')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 hover:border-emerald-500 transition-all text-left shadow-xs group sm:col-span-2 cursor-pointer"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 shadow-xs">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                        <span>Admin-Bereich</span>
+                        <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Admin</span>
+                      </div>
+                      <div className="text-xs text-emerald-700/80 dark:text-emerald-400/80">Produkte freischalten & Benutzerrechte verwalten</div>
+                    </div>
+                    <div className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs pr-1">
+                      Öffnen →
                     </div>
                   </Link>
                 )}

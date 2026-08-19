@@ -225,6 +225,37 @@ export default function AdminUnlock() {
   }
 
   // ============================================================================
+  // NUTZER-ROLLE ÄNDERN (Admin ernennen / Rechte entziehen)
+  // ============================================================================
+  async function handleToggleUserAdminRole(newRole: 'admin' | 'user') {
+    if (!selectedUser) return;
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const supabase = getSupabase();
+      const { error } = await supabase
+        .from('profiles')
+        .update({ rolle: newRole, updated_at: new Date().toISOString() })
+        .eq('id', selectedUser.id);
+
+      if (error) {
+        setErrorMessage(`Fehler beim Aktualisieren der Rolle: ${error.message}`);
+      } else {
+        setSelectedUser({ ...selectedUser, rolle: newRole });
+        const nameDisp = selectedUser.full_name || selectedUser.email || selectedUser.id;
+        if (newRole === 'admin') {
+          setSuccessMessage(`👑 ${nameDisp} wurde erfolgreich zum Administrator ernannt!`);
+        } else {
+          setSuccessMessage(`ℹ️ Admin-Rechte für ${nameDisp} wurden entzogen.`);
+        }
+      }
+    } catch (err: any) {
+      setErrorMessage(`Fehler: ${err?.message || 'Unerwarteter Fehler'}`);
+    }
+  }
+
+  // ============================================================================
   // 3. DATENBANKAKTION: KOSTENFREIE FREISCHALTUNG
   // ============================================================================
   async function handleUnlockProduct(e: React.FormEvent) {
@@ -489,27 +520,59 @@ export default function AdminUnlock() {
             </div>
           ) : (
             /* Ausgewählter Nutzer - Kärtchen */
-            <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--accent)]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <User size={22} />
+            <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--accent)]/30 space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <User size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-base text-[var(--text-main)] flex items-center gap-2">
+                      <span>{selectedUser.full_name || [selectedUser.first_name, selectedUser.last_name].filter(Boolean).join(' ') || 'Registrierter Nutzer'}</span>
+                      {selectedUser.rolle?.toLowerCase() === 'admin' ? (
+                        <span className="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Admin</span>
+                      ) : (
+                        <span className="text-[10px] bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-muted)] font-medium px-2 py-0.5 rounded-full uppercase">Standard User</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] font-mono">
+                      {selectedUser.email}
+                    </div>
+                    <div className="text-[11px] text-[var(--text-muted)] mt-0.5 font-mono">
+                      UUID: {selectedUser.id}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-semibold text-base text-[var(--text-main)]">
-                    {selectedUser.full_name || [selectedUser.first_name, selectedUser.last_name].filter(Boolean).join(' ') || 'Registrierter Nutzer'}
-                  </div>
-                  <div className="text-xs text-[var(--text-muted)] font-mono">
-                    {selectedUser.email}
-                  </div>
-                  <div className="text-[11px] text-[var(--text-muted)] mt-0.5 font-mono">
-                    UUID: {selectedUser.id}
-                  </div>
+
+                {/* Rolle verwalten Button */}
+                <div className="sm:text-right w-full sm:w-auto">
+                  {selectedUser.rolle?.toLowerCase() === 'admin' ? (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleUserAdminRole('user')}
+                      className="w-full sm:w-auto px-3.5 py-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/50 hover:bg-red-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                      title="Admin-Rechte für diesen Nutzer entziehen"
+                    >
+                      <X size={14} />
+                      <span>Admin-Rechte entziehen</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleUserAdminRole('admin')}
+                      className="w-full sm:w-auto px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 hover:bg-emerald-100 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+                      title="Diesen Nutzer zum Administrator ernennen"
+                    >
+                      <ShieldCheck size={14} />
+                      <span>👑 Zum Admin ernennen</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
               {/* Bereits freigeschaltete Produkte */}
-              <div className="sm:text-right w-full sm:w-auto">
-                <span className="text-xs text-[var(--text-muted)] font-medium block mb-1">
+              <div className="pt-3 border-t border-[var(--border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <span className="text-xs text-[var(--text-muted)] font-medium block">
                   Bisherige Freischaltungen:
                 </span>
                 {loadingPurchases ? (
