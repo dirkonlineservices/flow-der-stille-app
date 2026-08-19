@@ -1,0 +1,479 @@
+/**
+ * AudiobookPlayerModal.tsx – Spezialisierter Hörbuch-Player für lange Audios (z. B. 58:43 Min).
+ *
+ * Features:
+ * - Exakter Zeitstrahl (Scroller/Timeline) für präzises Vor- und Zurückspringen.
+ * - Kapitel-Navigation (Schnellfinder für Kapitel 1, 2, 3, 4 etc.).
+ * - Automatischer Speicherstand (Fortschritt merken & an letzter Stelle weiterhören).
+ * - Vor- und Zurückspulen um 15 Sekunden.
+ * - Geschützte Offline-Funktion (Flugmodus) über den internen App-Speicher.
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  X, Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX,
+  Bookmark, CheckCircle2, ListMusic, Sparkles, HardDrive, WifiOff, Clock
+} from 'lucide-react';
+import { getPlayableAudioUrl } from '../lib/offlineAudioService';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
+
+export interface AudiobookChapter {
+  id: string;
+  title: string;
+  startTime: number; // in Sekunden (z. B. 0, 750, 1575, 2530)
+  formattedTime: string; // z. B. "00:00", "12:30", "26:15", "42:10"
+}
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  productId: string;
+  title: string;
+  author?: string;
+  coverImage?: string;
+  audioUrl: string;
+  durationSeconds?: number; // z. B. 3523 für 58:43 Min
+  chapters?: AudiobookChapter[];
+}
+
+const DEFAULT_CHAPTERS: AudiobookChapter[] = [
+  { id: 'ch1', title: 'Kapitel 1: Der Morgentau & Das Erwachen', startTime: 0, formattedTime: '00:00' },
+  { id: 'ch2', title: 'Kapitel 2: Die Reise ins Verborgene', startTime: 750, formattedTime: '12:30' },
+  { id: 'ch3', title: 'Kapitel 3: Erkenntnis & Innere Verwandlung', startTime: 1575, formattedTime: '26:15' },
+  { id: 'ch4', title: 'Kapitel 4: Ankunft in der vollen Entfaltung', startTime: 2530, formattedTime: '42:10' },
+];
+
+export function AudiobookPlayerModal({
+  isOpen,
+  onClose,
+  productId,
+  title,
+  author = 'Jacqueline Schmetzer',
+  coverImage = '/images/products/cover_schmetterling.jpg',
+  audioUrl,
+  durationSeconds = 3523,
+  chapters = DEFAULT_CHAPTERS
+}: Props) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(durationSeconds);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [playableUrl, setPlayableUrl] = useState<string>('');
+  const [activeChapterId, setActiveChapterId] = useState<string>(chapters[0]?.id || '');
+  const [savedPosition, setSavedPosition] = useState<number | null>(null);
+  const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(true);
+
+  const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
+
+  // 1. Audio-URL auflösen (Sandbox Cache / Stream)
+  useEffect(() => {
+    if (!isOpen || !audioUrl) return;
+
+    let isMounted = true;
+    setIsLoadingAudio(true);
+
+    getPlayableAudioUrl(productId, audioUrl, title).then((resolvedUrl) => {
+      if (isMounted) {
+        setPlayableUrl(resolvedUrl);
+        setIsLoadingAudio(false);
+      }
+    });
+
+    // Gespeicherte Hörposition prüfen
+    const saved = localStorage.getItem(PROGRESS_KEY);
+    if (saved) {
+      const pos = parseFloat(saved);
+      if (!isNaN(pos) && pos > 10 && pos < durationSeconds - 30) {
+        setSavedPosition(pos);
+        setShowResumeBanner(true);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, productId, audioUrl]);
+
+  // 2. Event Listener für Audio-Element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      const cur = audio.currentTime;
+      setCurrentTime(cur);
+
+      // Aktuelles Kapitel ermitteln
+      for (let i = chapters.length - 1; i >= 0; i--) {
+        if (cur >= chapters[i].startTime) {
+          setActiveChapterId(chapters[i].id);
+          break;
+        }
+      }
+
+      // Fortschritt alle 3 Sekunden in localStorage sichern
+      if (Math.floor(cur) % 3 === 0 && cur > 5) {
+        localStorage.setItem(PROGRESS_KEY, cur.toString());
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration)) {
+        setDuration(audio.duration);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      localStorage.removeItem(PROGRESS_KEY);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [playableUrl, chapters]);
+
+  // 3. Steuerungsfunktionen
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      audio.play().then(() => setIsPlaying(true)).catch((err) => console.warn('Audio play error:', err));
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetTime = parseFloat(e.target.value);
+    setCurrentTime(targetTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = targetTime;
+    }
+  };
+
+  const skipSeconds = (seconds: number) => {
+    if (!audioRef.current) return;
+    const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const jumpToChapter = (chapter: AudiobookChapter) => {
+    if (!audioRef.current) return;
+    audioRef.current.currentTime = chapter.startTime;
+    setCurrentTime(chapter.startTime);
+    setActiveChapterId(chapter.id);
+    if (!isPlaying) {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  };
+
+  const handleResumePosition = () => {
+    if (savedPosition && audioRef.current) {
+      audioRef.current.currentTime = savedPosition;
+      setCurrentTime(savedPosition);
+      setShowResumeBanner(false);
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  };
+
+  const changeSpeed = (speed: number) => {
+    setPlaybackSpeed(speed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+    }
+  };
+
+  const formatTime = (secs: number): string => {
+    if (isNaN(secs)) return '00:00';
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = Math.floor(secs % 60);
+
+    const mStr = m < 10 ? `0${m}` : `${m}`;
+    const sStr = s < 10 ? `0${s}` : `${s}`;
+
+    if (h > 0) {
+      return `${h}:${mStr}:${sStr}`;
+    }
+    return `${mStr}:${sStr}`;
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[220] flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+        onClick={onClose}
+      >
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+
+        {/* Hidden HTML5 Audio Element (Prohibited Download Attributes) */}
+        {playableUrl && (
+          <audio
+            ref={audioRef}
+            src={playableUrl}
+            controlsList="nodownload"
+            preload="metadata"
+          />
+        )}
+
+        {/* Player Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 15 }}
+          transition={{ type: 'spring', damping: 24, stiffness: 280 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-2xl bg-[var(--bg-card)] rounded-3xl shadow-2xl border border-[var(--border)] overflow-hidden flex flex-col my-auto max-h-[92vh]"
+        >
+          {/* Header */}
+          <div className="p-4 sm:p-5 border-b border-[var(--border)] flex items-center justify-between gap-3 bg-[var(--bg-alt)]/60">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent)]">
+              <Sparkles size={16} />
+              <span className="uppercase tracking-wider">Hörbuch Player</span>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition-colors cursor-pointer"
+              aria-label="Player schließen"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Player Scrollable Content */}
+          <div className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1">
+
+            {/* Resume Banner */}
+            {showResumeBanner && savedPosition && (
+              <div className="p-3.5 rounded-2xl bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex items-center justify-between gap-3 text-xs animate-fade-in">
+                <div className="flex items-center gap-2 text-[var(--text-main)]">
+                  <Bookmark size={16} className="text-[var(--accent)] shrink-0" />
+                  <span>Letzte Position bei <strong>{formatTime(savedPosition)}</strong> fortsetzen?</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleResumePosition}
+                    className="px-3 py-1.5 rounded-xl bg-[var(--accent)] text-white font-semibold text-xs hover:bg-[var(--accent-hover)] transition cursor-pointer"
+                  >
+                    Fortsetzen
+                  </button>
+                  <button
+                    onClick={() => setShowResumeBanner(false)}
+                    className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Cover & Meta Display */}
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden shadow-lg border border-[var(--border)] shrink-0 relative group">
+                <img
+                  src={coverImage}
+                  alt={title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                {isPlaying && (
+                  <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] flex items-center justify-center">
+                    <div className="flex items-end gap-1 h-6">
+                      <span className="w-1.5 bg-white rounded-full animate-bounce [animation-delay:0ms] h-full" />
+                      <span className="w-1.5 bg-white rounded-full animate-bounce [animation-delay:150ms] h-3/4" />
+                      <span className="w-1.5 bg-white rounded-full animate-bounce [animation-delay:300ms] h-full" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center sm:text-left space-y-2 flex-1">
+                <span className="px-2.5 py-1 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-[11px] font-semibold uppercase tracking-wider inline-block">
+                  Hörbuch • {formatTime(duration)}
+                </span>
+                <h2 className="font-serif font-semibold text-xl sm:text-2xl text-[var(--text-main)] leading-snug">
+                  {title}
+                </h2>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Gelesen von <strong className="text-[var(--text-main)]">{author}</strong>
+                </p>
+
+                {/* Offline-Speicher Button */}
+                <div className="pt-2">
+                  <OfflineDownloadButton
+                    productId={productId}
+                    audioUrl={audioUrl}
+                    title={title}
+                    variant="button"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Timeline / Zeitstrahl Scrubber */}
+            <div className="p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-3">
+              <div className="relative flex items-center">
+                <input
+                  type="range"
+                  min={0}
+                  max={duration || 100}
+                  step={0.5}
+                  value={currentTime}
+                  onChange={handleSeek}
+                  className="w-full h-2 rounded-lg bg-[var(--border)] appearance-none cursor-pointer accent-[var(--accent)] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs font-mono font-medium text-[var(--text-muted)]">
+                <span>{formatTime(currentTime)}</span>
+                <span className="text-[var(--accent)] font-semibold">
+                  -{formatTime(Math.max(0, duration - currentTime))}
+                </span>
+              </div>
+            </div>
+
+            {/* Playback Controls & Speed */}
+            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
+              {/* Speed Switcher */}
+              <div className="flex items-center gap-1">
+                {[0.8, 1.0, 1.2, 1.5].map((spd) => (
+                  <button
+                    key={spd}
+                    onClick={() => changeSpeed(spd)}
+                    className={`px-2 py-1 rounded-lg text-[11px] font-semibold font-mono transition-colors cursor-pointer ${
+                      playbackSpeed === spd
+                        ? 'bg-[var(--accent)] text-white'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+                    }`}
+                  >
+                    {spd}x
+                  </button>
+                ))}
+              </div>
+
+              {/* Main Play Controls */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => skipSeconds(-15)}
+                  className="p-2.5 rounded-full hover:bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer"
+                  title="15 Sekunden zurückspringen"
+                >
+                  <RotateCcw size={20} />
+                </button>
+
+                <button
+                  onClick={togglePlay}
+                  disabled={isLoadingAudio}
+                  className="w-14 h-14 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer disabled:opacity-50"
+                  aria-label={isPlaying ? 'Pause' : 'Wiedergabe starten'}
+                >
+                  {isLoadingAudio ? (
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : isPlaying ? (
+                    <Pause size={24} />
+                  ) : (
+                    <Play size={24} className="ml-1" />
+                  )}
+                </button>
+
+                <button
+                  onClick={() => skipSeconds(15)}
+                  className="p-2.5 rounded-full hover:bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer"
+                  title="15 Sekunden vorspringen"
+                >
+                  <RotateCw size={20} />
+                </button>
+              </div>
+
+              {/* Mute Toggle */}
+              <button
+                onClick={() => {
+                  if (audioRef.current) {
+                    audioRef.current.muted = !isMuted;
+                    setIsMuted(!isMuted);
+                  }
+                }}
+                className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer"
+                title={isMuted ? 'Ton einschalten' : 'Stummschalten'}
+              >
+                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </button>
+            </div>
+
+            {/* Kapitel-Navigation (Kapitel-Schnellfinder) */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                  <ListMusic size={15} className="text-[var(--accent)]" />
+                  <span>Kapitel-Navigation ({chapters.length} Kapitel)</span>
+                </h4>
+                <span className="text-[11px] text-[var(--text-muted)]">Klick zum Vor- &amp; Zurückspringen</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {chapters.map((ch) => {
+                  const isActive = activeChapterId === ch.id;
+                  return (
+                    <button
+                      key={ch.id}
+                      onClick={() => jumpToChapter(ch)}
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                        isActive
+                          ? 'bg-[var(--accent)]/15 border-[var(--accent)] text-[var(--text-main)] shadow-xs'
+                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40'
+                      }`}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold text-xs block truncate">
+                          {ch.title}
+                        </span>
+                        <span className="text-[11px] font-mono opacity-80 mt-0.5 block">
+                          Startet bei {ch.formattedTime}
+                        </span>
+                      </div>
+
+                      <span className={`px-2 py-1 rounded-lg text-[10px] font-bold font-mono ${
+                        isActive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] border border-[var(--border)]'
+                      }`}>
+                        {ch.formattedTime}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-alt)]/50 text-center">
+            <p className="text-[11px] text-[var(--text-muted)]">
+              🔒 Geschützt im internen App-Speicher hinterlegt • Keine freie MP3-Datei im Dateisystem
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}

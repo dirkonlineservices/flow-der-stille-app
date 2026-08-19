@@ -93,6 +93,8 @@ function ReferralCapture() {
   return null;
 }
 
+import AudiobookPage from './pages/AudiobookPage';
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -142,6 +144,8 @@ export default function App() {
                   <Route path="rechtliches" element={<Rechtliches />} />
                   <Route path="premium" element={<Premium />} />
                   <Route path="premium-dashboard" element={<PremiumDashboard />} />
+                  <Route path="hoerbuch" element={<AudiobookPage />} />
+                  <Route path="hoerbuch/:id" element={<AudiobookPage />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />

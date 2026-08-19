@@ -276,6 +276,9 @@ export default function PremiumShopDashboard() {
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
+    if (id.includes('schmetterling') || id.includes('hoerbuch') || title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch')) {
+      return '/images/products/cover_schmetterling.jpg';
+    }
     if (id.includes('schlaf') || title.includes('schlaf')) {
       return '/images/products/cover_schlaf.jpg';
     }
@@ -316,6 +319,7 @@ export default function PremiumShopDashboard() {
       return '/images/products/cover_herz.jpg';
     }
 
+    if (kat.includes('hörbuch') || kat.includes('hoerbuch')) return '/images/products/cover_schmetterling.jpg';
     if (kat.includes('meditation')) return '/images/products/cover_innere_ruhe.jpg';
     if (kat.includes('hypnose')) return '/images/products/cover_fokus.jpg';
     return '/images/products/cover_loslassen.jpg';
@@ -331,6 +335,8 @@ export default function PremiumShopDashboard() {
 
     if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
+    } else if (activeFilter === 'Hörbücher' || activeFilter === 'Hörbuch') {
+        matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || titleLower.includes('schmetterling');
     } else if (activeFilter === 'Meditation') {
         matchesCategory = catLower.includes('meditation') || titleLower.includes('meditation') || titleLower.includes('herzöffnung') || titleLower.includes('loslassen');
     } else if (activeFilter === 'Entspannungsübungen') {
@@ -371,10 +377,11 @@ export default function PremiumShopDashboard() {
     return `${minutes}:${formattedSec}`;
   };
 
-  const categories = ['Alle', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei', 'Hörprobe'];
+  const categories = ['Alle', 'Hörbücher', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei', 'Hörprobe'];
 
   const getCategoryBadgeStyle = (katStr: string = '') => {
     const k = katStr.toLowerCase();
+    if (k.includes('hörbuch') || k.includes('hoerbuch') || k.includes('schmetterling')) return 'bg-rose-600/90 text-white border border-rose-300/30';
     if (k.includes('meditation')) return 'bg-amber-500/90 text-white border border-amber-300/30';
     if (k.includes('hypnose')) return 'bg-indigo-600/90 text-white border border-indigo-300/30';
     if (k.includes('entspannung') || k.includes('pmr') || k.includes('atem')) return 'bg-teal-600/90 text-white border border-teal-300/30';
@@ -665,17 +672,40 @@ export default function PremiumShopDashboard() {
               {/* Für freigeschaltete Produkte: Audio Player Button */}
               {hatZugriff && user && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
-                    <AudioPlayerButton 
-                      produkt={produkt}  
-                      getUrl={async (p: any) => {
-                        if (p.audio_path && p.audio_path.startsWith('http')) {
-                          return p.audio_path;
-                        }
-                        const supabase = getSupabase();
-                        const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                        return data.publicUrl;
-                      }} 
-                    />
+                    {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch')) ? (
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Link
+                          to={`/hoerbuch/${produkt.id}`}
+                          className="flex-1 py-3 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Sparkles size={16} />
+                          <span>Hörbuch-Player öffnen (58:43 Min &amp; Kapitel)</span>
+                        </Link>
+                        <AudioPlayerButton 
+                          produkt={produkt}  
+                          getUrl={async (p: any) => {
+                            if (p.audio_path && p.audio_path.startsWith('http')) {
+                              return p.audio_path;
+                            }
+                            const supabase = getSupabase();
+                            const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                            return data.publicUrl;
+                          }} 
+                        />
+                      </div>
+                    ) : (
+                      <AudioPlayerButton 
+                        produkt={produkt}  
+                        getUrl={async (p: any) => {
+                          if (p.audio_path && p.audio_path.startsWith('http')) {
+                            return p.audio_path;
+                          }
+                          const supabase = getSupabase();
+                          const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                          return data.publicUrl;
+                        }} 
+                      />
+                    )}
                     <div className="flex justify-end">
                       <ProductDisclaimerTrigger />
                     </div>
