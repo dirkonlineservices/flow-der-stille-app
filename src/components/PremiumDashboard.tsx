@@ -326,6 +326,11 @@ export default function PremiumShopDashboard() {
   };
 
   const filteredProdukte = produkte.filter(prod => {
+    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden
+    if (prod.is_active === false) {
+      return false;
+    }
+
     // Deaktivierte Produkte im Frontend ausblenden (z. B. "meditation_loslassen")
     const pId = (prod.id || '').toLowerCase();
     const pTitle = (prod.titel || '').toLowerCase();
