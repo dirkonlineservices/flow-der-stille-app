@@ -50,6 +50,7 @@ export const verifyGooglePlayPurchase = async ({
       produkt_id: dbProductId,
       preis: price || 1.99,
       waehrung: 'EUR',
+      order_id: dbKey1,
       paypal_order_id: dbKey1,
       created_at: new Date().toISOString(),
       widerruf_verzicht_akzeptiert: true

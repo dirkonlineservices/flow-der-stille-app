@@ -218,7 +218,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                       const { data: existingKauf } = await supabase
                         .from('kaeufe')
                         .select('status')
-                        .eq('paypal_order_id', orderId)
+                        .or(`order_id.eq.${orderId},paypal_order_id.eq.${orderId}`)
                         .maybeSingle();
 
                       if (existingKauf && existingKauf.status === 'completed') {
@@ -232,6 +232,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                             user_id: currentUserId,
                             email: user?.email || '',
                             produkt_id: produkt?.id,
+                            order_id: orderId,
                             paypal_order_id: orderId,
                             preis: priceValue,
                             waehrung: 'EUR',
@@ -239,7 +240,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                             widerruf_verzicht_akzeptiert: true,
                             updated_at: new Date().toISOString()
                           },
-                          { onConflict: 'paypal_order_id' }
+                          { onConflict: 'user_id,produkt_id' }
                         );
 
                       if (upsertError) {
@@ -247,7 +248,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                           'Database Upsert Failure',
                           upsertError,
                           'supabase_db',
-                          { user_id: currentUserId, produkt_id: produkt?.id, paypal_order_id: orderId }
+                          { user_id: currentUserId, produkt_id: produkt?.id, order_id: orderId }
                         );
                       } else {
                         transactionLogger.logSuccess(
