@@ -248,7 +248,6 @@ export async function getPlayableAudioUrl(productId: string, remoteUrl: string, 
       const match = await cache.match(remoteUrl);
       if (match) {
         const blob = await match.blob();
-        console.log(`[OfflineCache] Verwende Offline-Sandbox-Blob für '${title || productId}'`);
         return URL.createObjectURL(blob);
       }
     } catch (e) {

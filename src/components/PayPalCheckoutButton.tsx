@@ -59,21 +59,15 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
     const fetchConfig = async () => {
       try {
         const res = await fetch('/api/config');
-        if (!res.ok) {
-          console.warn(`Runtime config fetch failed with status: ${res.status}`);
-          return;
-        }
+        if (!res.ok) return;
         const contentType = res.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.warn('Runtime config response is not JSON:', contentType);
-          return;
-        }
+        if (!contentType || !contentType.includes('application/json')) return;
         const data = await res.json();
         if (data && data.paypalClientId) {
           setRuntimeClientId(data.paypalClientId);
         }
-      } catch (err) {
-        console.warn('Could not fetch runtime config:', err);
+      } catch {
+        // Safe fallback to env or default clientId
       }
     };
 
