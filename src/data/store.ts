@@ -22,17 +22,7 @@ export const PRODUCTS: Product[] = [
     category: 'meditation',
     audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
-  {
-    id: 'fds_meditation_loslassen',
-    title: 'Meditation Loslassen',
-    description: 'Geführte Meditation zum Loslassen von Sorgen, Stress und alten Gedankenmustern.',
-    highlights: ['Gedankenkarussell stoppen', 'Innere Leichtigkeit finden', 'Tiefenentspannung'],
-    priceNum: 1.99,
-    price: '1,99 €',
-    duration: '25 Minuten Audio',
-    category: 'meditation',
-    audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
-  },
+
   {
     id: 'fds_herzkompass_meditation',
     title: 'Herzkompass Meditation',

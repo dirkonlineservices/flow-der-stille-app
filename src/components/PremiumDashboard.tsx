@@ -326,6 +326,13 @@ export default function PremiumShopDashboard() {
   };
 
   const filteredProdukte = produkte.filter(prod => {
+    // Deaktivierte Produkte im Frontend ausblenden (z. B. "meditation_loslassen")
+    const pId = (prod.id || '').toLowerCase();
+    const pTitle = (prod.titel || '').toLowerCase();
+    if (pId.includes('loslassen') || pTitle.includes('loslassen')) {
+      return false;
+    }
+
     const matchesSearch = prod.titel?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           prod.beschreibung?.toLowerCase().includes(searchQuery.toLowerCase());
     
