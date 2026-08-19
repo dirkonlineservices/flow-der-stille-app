@@ -14,7 +14,8 @@ export const CONSENT_STORAGE_KEY = 'flow_analytics_consent';
 export const isAnalyticsAllowed = (): boolean => {
   if (typeof window === 'undefined') return false;
   const status = localStorage.getItem(CONSENT_STORAGE_KEY);
-  return status === 'accepted' || status === 'all' || status === 'necessary';
+  const cookieStatus = localStorage.getItem('flow_cookie_consent_status');
+  return status === 'accepted' || cookieStatus === 'all' || cookieStatus === 'accepted';
 };
 
 /**
@@ -75,16 +76,24 @@ export const setAnalyticsConsent = (choice: 'accepted' | 'rejected') => {
  */
 export const initConsentState = () => {
   if (typeof window === 'undefined') return;
-  const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem('flow_cookie_consent_status');
-  const isAccepted = storedConsent === 'accepted' || storedConsent === 'all' || storedConsent === 'necessary';
+  const status = localStorage.getItem(CONSENT_STORAGE_KEY);
+  const cookieStatus = localStorage.getItem('flow_cookie_consent_status');
+  const isAccepted = status === 'accepted' || cookieStatus === 'all' || cookieStatus === 'accepted';
 
+  const gtagFn = getGtagFn();
   if (isAccepted) {
-    const gtagFn = getGtagFn();
     gtagFn('consent', 'update', {
       'analytics_storage': 'granted',
       'ad_storage': 'granted',
       'ad_user_data': 'granted',
       'ad_personalization': 'granted'
+    });
+  } else if (status === 'rejected' || cookieStatus === 'necessary' || cookieStatus === 'rejected') {
+    gtagFn('consent', 'update', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
     });
   }
 };

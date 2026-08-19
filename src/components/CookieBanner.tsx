@@ -92,7 +92,7 @@ export default function CookieBanner() {
   // Web Step 1 Choice -> Go to Step 2 (Haftungsausschluss)
   const handleWebChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
-    setAnalyticsConsent(choice === 'rejected' ? 'rejected' : 'accepted');
+    setAnalyticsConsent(choice === 'all' ? 'accepted' : 'rejected');
     setStep(2);
   };
 

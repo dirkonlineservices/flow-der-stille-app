@@ -547,6 +547,9 @@ export default function PremiumShopDashboard() {
             return `${coverNotice} | Klick für KI-Transparenzhinweis`;
           };
 
+          const isSchmetterling = (produkt.id && produkt.id.includes('schmetterling')) || (produkt.titel && produkt.titel.toLowerCase().includes('schmetterling'));
+          const showKIBadge = !isSchmetterling;
+
           return (
             <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden`}>
               
@@ -573,14 +576,16 @@ export default function PremiumShopDashboard() {
                     </span>
                   )}
                 </div>
-                <a 
-                  href="/impressum#ki-transparenz"
-                  onClick={(e) => e.stopPropagation()}
-                  title={getKIBadgeTitle(produkt)}
-                  className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
-                >
-                  ✨ KI-Design
-                </a>
+                {showKIBadge && (
+                  <a 
+                    href="/impressum#ki-transparenz"
+                    onClick={(e) => e.stopPropagation()}
+                    title={getKIBadgeTitle(produkt)}
+                    className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    ✨ KI-Design
+                  </a>
+                )}
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
                     ⏱ {formatDuration(produkt.dauer)} Min.

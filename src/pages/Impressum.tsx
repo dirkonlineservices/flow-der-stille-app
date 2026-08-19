@@ -69,7 +69,7 @@ export default function Impressum() {
               <strong>Hintergrundmusik & Klangwelten:</strong> Die entspannenden Hintergrund-Klangwelten und Musiktitel wurden von <strong>Dirk Schmetzer</strong> mittels KI-Unterstützung komponiert und produziert.
             </li>
             <li>
-              <strong>Visuelles Cover-Design (✨ KI-Design):</strong> Die Produkt-Coverbilder und visuellen Grafiken wurden mit Unterstützung digitaler KI-Bildgeneratoren gestaltet.
+              <strong>Visuelles Cover-Design &amp; Grafiken:</strong> Die Produkt-Coverbilder und Grafiken wurden teils mit Grafikdesign-Software (Canva Pty Ltd) und teils mit Unterstützung digitaler KI-Bildgeneratoren gestaltet.
             </li>
           </ul>
         </section>
