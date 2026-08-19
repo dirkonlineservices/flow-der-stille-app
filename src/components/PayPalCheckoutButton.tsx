@@ -212,7 +212,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                       const { data: existingKauf } = await supabase
                         .from('kaeufe')
                         .select('status')
-                        .or(`order_id.eq.${orderId},paypal_order_id.eq.${orderId}`)
+                        .eq('order_id', orderId)
                         .maybeSingle();
 
                       if (existingKauf && existingKauf.status === 'completed') {
@@ -224,15 +224,10 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                         .upsert(
                           {
                             user_id: currentUserId,
-                            email: user?.email || '',
                             produkt_id: produkt?.id,
                             order_id: orderId,
-                            paypal_order_id: orderId,
                             preis: priceValue,
-                            waehrung: 'EUR',
-                            status: 'completed',
-                            widerruf_verzicht_akzeptiert: true,
-                            updated_at: new Date().toISOString()
+                            waehrung: 'EUR'
                           },
                           { onConflict: 'user_id,produkt_id' }
                         );

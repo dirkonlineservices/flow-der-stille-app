@@ -274,21 +274,16 @@ export default function AdminUnlock() {
     try {
       const supabase = getSupabase();
 
-      // Datensatz in die Tabelle "kaeufe" schreiben
+      // Datensatz in die Tabelle "kaeufe" schreiben (exakt die Felder: user_id, produkt_id, preis, waehrung, order_id)
       const { error: insertError } = await supabase
         .from('kaeufe')
         .upsert(
           {
             user_id: targetUser.id,
-            email: targetUser.email || '',
             produkt_id: selectedProductId,
             preis: 0.00,
             waehrung: 'EUR',
-            order_id: 'GESCHENK',
-            paypal_order_id: 'GESCHENK',
-            widerruf_verzicht_akzeptiert: true,
-            status: 'completed',
-            updated_at: new Date().toISOString()
+            order_id: 'GESCHENK'
           },
           { onConflict: 'user_id,produkt_id' }
         );
