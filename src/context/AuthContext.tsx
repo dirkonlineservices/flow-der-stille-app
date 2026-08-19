@@ -86,15 +86,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   // Hilfsfunktion: Wandelt Supabase-Daten in unser App-Format um
-  const mapAndSetUser = (supabaseUser: any) => {
+  const mapAndSetUser = async (supabaseUser: any) => {
     const metadata = supabaseUser.user_metadata || {};
+    let firstName = metadata.first_name || '';
+    let lastName = metadata.last_name || '';
+
+    // Falls first_name in user_metadata fehlt, versuche aus profiles-Tabelle zu laden
+    if (!firstName) {
+      try {
+        const supabase = getSupabase();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', supabaseUser.id)
+          .maybeSingle();
+
+        if (profile) {
+          if (profile.first_name) firstName = profile.first_name;
+          if (profile.last_name) lastName = profile.last_name;
+        }
+      } catch (e) {
+        console.warn('Could not fetch profile names:', e);
+      }
+    }
+
     setUser({
       id: supabaseUser.id,
       email: supabaseUser.email,
-      first_name: metadata.first_name || '',
-      last_name: metadata.last_name || '',
+      first_name: firstName,
+      last_name: lastName,
       // Nutze den Vornamen, falls vorhanden, sonst den Teil der E-Mail vor dem @
-      username: metadata.first_name || supabaseUser.email?.split('@')[0] || 'Traveler',
+      username: firstName || supabaseUser.email?.split('@')[0] || 'Traveler',
       is_premium: !!metadata.is_premium, 
       newsletter_optin: !!metadata.newsletter_optin,
       purchased_products: metadata.purchased_products || [],

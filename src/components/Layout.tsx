@@ -15,6 +15,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { AppDownloadBanner } from './AppDownloadBanner';
 import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
+import { NamePromptModal } from './NamePromptModal';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -431,6 +432,7 @@ export default function Layout() {
       <AdminTools />
       <NewContentNotification />
       <PlayStoreUpdateModal />
+      <NamePromptModal />
 
     </div>
   );
