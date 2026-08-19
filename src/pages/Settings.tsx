@@ -3,7 +3,8 @@ import { motion } from 'motion/react';
 import { 
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
-  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon, HardDrive, WifiOff 
+  Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon, HardDrive, WifiOff,
+  ShieldCheck, Gift
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,7 @@ export default function Settings() {
   // Offline audio storage state
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [offlineStats, setOfflineStats] = useState({ totalMBFormatted: '0 MB', totalTracks: 0 });
+  const [isAdminUser, setIsAdminUser] = useState(false);
 
   const refreshOfflineStats = () => {
     const summary = getStorageUsageSummary();
@@ -62,6 +64,21 @@ export default function Settings() {
       setLastName(user.last_name || '');
       setNewsletter(!!user.newsletter_optin);
       
+      // Check admin role from public.profiles
+      const supabase = getSupabase();
+      supabase
+        .from('profiles')
+        .select('rolle')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data?.rolle?.toLowerCase() === 'admin') {
+            setIsAdminUser(true);
+          } else {
+            setIsAdminUser(false);
+          }
+        });
+
       // Fetch purchases
       fetchPurchases();
     }
@@ -776,6 +793,29 @@ export default function Settings() {
                 <span className="text-[11px] text-[var(--color-accent-primary)] font-bold">Öffnen →</span>
               </button>
             </div>
+
+            {/* Admin Freischaltung Card (nur für Admins sichtbar) */}
+            {isAdminUser && (
+              <div className="bg-emerald-50/80 dark:bg-emerald-950/40 rounded-3xl p-6 border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
+                <div className="flex items-center gap-2 mb-2 text-emerald-800 dark:text-emerald-300 font-serif font-bold text-base">
+                  <ShieldCheck size={18} className="text-emerald-600 dark:text-emerald-400" />
+                  <span>Admin-Bereich</span>
+                </div>
+                <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
+                  Registrierten Nutzern beliebige Meditationen, Hörbücher oder Hypnosen manuell & kostenlos freischalten.
+                </p>
+                <Link
+                  to="/admin"
+                  className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center justify-between transition-all shadow-sm cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Gift size={14} />
+                    <span>Produkte freischalten</span>
+                  </span>
+                  <span className="text-[11px] font-bold">Öffnen →</span>
+                </Link>
+              </div>
+            )}
 
             {/* Quick Profile Overview Badge */}
             <div className="bg-[var(--color-bg-body)] rounded-3xl p-6 border border-[var(--color-border-main)]/60 text-center">

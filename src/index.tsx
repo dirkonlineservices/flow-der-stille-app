@@ -40,6 +40,7 @@ import RecipeDetail from './pages/RecipeDetail';
 import Blog from './pages/Blog';
 import BlogPostDetail from './pages/BlogPost';
 import BlogEditor from './pages/BlogEditor';
+import AdminUnlock from './pages/AdminUnlock';
 import AuthCallback from './pages/AuthCallback';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -153,6 +154,9 @@ export default function App() {
                   <Route path="blog/new" element={<BlogEditor />} />
                   <Route path="blog/schreiben" element={<BlogEditor />} />
                   <Route path="blog/:slug" element={<BlogPostDetail />} />
+                  <Route path="admin" element={<AdminUnlock />} />
+                  <Route path="admin/freischalten" element={<AdminUnlock />} />
+                  <Route path="admin-freischalten" element={<AdminUnlock />} />
                 </Route>
 
                 {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}
