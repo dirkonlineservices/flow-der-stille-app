@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import { AdminSecurityLock } from '../components/AdminSecurityLock';
+import { isAdminSessionVerified, lockAdminSession } from '../lib/adminSecurity';
 
 interface UserProfile {
   id: string;
@@ -56,6 +58,7 @@ export default function AdminUnlock() {
   const [authChecking, setAuthChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminRole, setAdminRole] = useState<string | null>(null);
+  const [isSessionUnlocked, setIsSessionUnlocked] = useState(false);
 
   // 2. Statistiken
   const [stats, setStats] = useState<AdminStats>({
@@ -139,6 +142,9 @@ export default function AdminUnlock() {
       } else if (profileData && profileData.rolle?.toLowerCase() === 'admin') {
         setIsAdmin(true);
         setAdminRole(profileData.rolle);
+        if (isAdminSessionVerified()) {
+          setIsSessionUnlocked(true);
+        }
         // Nach erfolgreicher Autorisierung Daten & Statistiken laden
         loadProductsAndConfig();
         loadAdminStats();
@@ -508,6 +514,28 @@ export default function AdminUnlock() {
     );
   }
 
+  // 2. STUFE: BIOMETRIE- & 2-FAKTOR-SCHUTZ (Fingerprint / Face ID / PIN)
+  if (!isSessionUnlocked) {
+    return (
+      <div className="py-8 px-4 font-sans min-h-[75vh] flex flex-col justify-center">
+        <SEO title="Admin-Sicherheitsprüfung" description="Biometrie- & 2FA-Schutz für Admins" />
+        <div className="max-w-md mx-auto mb-3 w-full text-left">
+          <Link
+            to="/premium-dashboard"
+            className="p-2 bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors inline-flex items-center gap-1.5 text-xs font-semibold"
+          >
+            <ArrowLeft size={16} />
+            <span>Zurück zum Dashboard</span>
+          </Link>
+        </div>
+        <AdminSecurityLock
+          adminName={user?.first_name || user?.full_name || undefined}
+          onUnlock={() => setIsSessionUnlocked(true)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 space-y-8 font-sans">
       <SEO title="Admin-Bereich – Statistiken & Freischaltungen" description="Internes Verwaltungszentrum für Flow der Stille" />
@@ -539,6 +567,16 @@ export default function AdminUnlock() {
             title="Daten neu laden"
           >
             <RefreshCw size={14} className={loadingStats ? 'animate-spin' : ''} />
+          </button>
+          <button
+            onClick={() => {
+              lockAdminSession();
+              setIsSessionUnlocked(false);
+            }}
+            className="p-2 bg-[var(--bg-card)] hover:bg-red-50 dark:hover:bg-red-950/40 border border-[var(--border)] hover:border-red-300 rounded-full text-[var(--text-muted)] hover:text-red-600 transition-colors cursor-pointer"
+            title="Admin-Sitzung jetzt sperren"
+          >
+            <Lock size={14} />
           </button>
         </div>
       </div>
