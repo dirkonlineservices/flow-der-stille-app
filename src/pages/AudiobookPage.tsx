@@ -49,22 +49,22 @@ export default function AudiobookPage() {
         } else {
           // Fallback Daten
           setProductData({
-            id: 'fds_hoerbuch_schmetterling',
-            titel: 'Hörbuch: Der Tag, an dem der Schmetterling erwachte',
-            beschreibung: 'Ein berührendes und tiefgründiges Hörbuch über innere Verwandlung, Selbstfindung und das Erwachen zu neuem Lebensmut.',
-            audio_url: 'https://vagusnerv-entspannung.de/wp-content/uploads/2026/02/Schmetterling_Hoerbuch.mp3',
-            preis: '1.99',
+            id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+            titel: 'Der Tag, an dem der Schmetterling erwachte.',
+            beschreibung: 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.',
+            audio_path: 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
+            preis: '0',
             dauer: '58:43 Min'
           });
         }
       } catch (e) {
         // Fallback Daten bei Fehler
         setProductData({
-          id: 'fds_hoerbuch_schmetterling',
-          titel: 'Hörbuch: Der Tag, an dem der Schmetterling erwachte',
-          beschreibung: 'Ein berührendes und tiefgründiges Hörbuch über innere Verwandlung, Selbstfindung und das Erwachen zu neuem Lebensmut.',
-          audio_url: 'https://vagusnerv-entspannung.de/wp-content/uploads/2026/02/Schmetterling_Hoerbuch.mp3',
-          preis: '1.99',
+          id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+          titel: 'Der Tag, an dem der Schmetterling erwachte.',
+          beschreibung: 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.',
+          audio_path: 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
+          preis: '0',
           dauer: '58:43 Min'
         });
       } finally {
@@ -75,8 +75,8 @@ export default function AudiobookPage() {
     loadAudiobook();
   }, [productId]);
 
-  const title = productData?.titel || 'Hörbuch: Der Tag, an dem der Schmetterling erwachte';
-  const audioUrl = productData?.audio_url || productData?.hoerprobe_url || 'https://vagusnerv-entspannung.de/wp-content/uploads/2026/02/Schmetterling_Hoerbuch.mp3';
+  const title = productData?.titel || 'Der Tag, an dem der Schmetterling erwachte.';
+  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3';
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10">
@@ -124,19 +124,24 @@ export default function AudiobookPage() {
             </p>
 
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-              {productData?.beschreibung || 'Ein berührendes und tiefgründiges Hörbuch über innere Verwandlung, Selbstfindung und das Erwachen zu neuem Lebensmut.'}
+              {productData?.beschreibung || 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.'}
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch gap-3">
               <button
                 onClick={() => setIsPlayerOpen(true)}
-                className="py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
+                className="flex-1 py-3 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex flex-col items-center justify-center text-center cursor-pointer min-h-[64px]"
               >
-                <Play size={18} className="fill-white" />
-                <span>Hörbuch jetzt anhören (58:43 Min)</span>
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  <Play size={16} className="fill-white" />
+                  <span>Hörbuch jetzt anhören</span>
+                </div>
+                <span className="text-[11px] opacity-90 font-normal mt-0.5">
+                  (58:43 Min)
+                </span>
               </button>
 
-              <div className="sm:w-64">
+              <div className="flex-1 min-h-[64px] flex flex-col justify-center">
                 <OfflineDownloadButton
                   productId={productData?.id || productId}
                   audioUrl={audioUrl}
