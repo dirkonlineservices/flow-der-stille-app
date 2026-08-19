@@ -15,10 +15,30 @@ import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 
 const SCHMETTERLING_CHAPTERS: AudiobookChapter[] = [
-  { id: 'ch1', title: 'Kapitel 1: Der Morgentau & Das Erwachen', startTime: 0, formattedTime: '00:00' },
-  { id: 'ch2', title: 'Kapitel 2: Die Reise ins Verborgene', startTime: 750, formattedTime: '12:30' },
-  { id: 'ch3', title: 'Kapitel 3: Erkenntnis & Innere Verwandlung', startTime: 1575, formattedTime: '26:15' },
-  { id: 'ch4', title: 'Kapitel 4: Ankunft in der vollen Entfaltung', startTime: 2530, formattedTime: '42:10' },
+  { 
+    id: 'ch1', 
+    title: 'Kapitel 1: Warum der Übergang erst der Anfang ist (Und wie wir die Angst davor verlieren)', 
+    startTime: 0, 
+    formattedTime: '00:00' 
+  },
+  { 
+    id: 'ch2', 
+    title: 'Kapitel 2: Der Übergang – Wenn Wissenschaft auf Spiritualität trifft', 
+    startTime: 1147, 
+    formattedTime: '19:07' 
+  },
+  { 
+    id: 'ch3', 
+    title: 'Kapitel 3: Die andere Ebene – Jenseits des schweren Kostüms', 
+    startTime: 2177, 
+    formattedTime: '36:17' 
+  },
+  { 
+    id: 'ch4', 
+    title: 'Kapitel 4: Das Erwachen im Hier und Jetzt – Die Befreiung zum Leben', 
+    startTime: 2975, 
+    formattedTime: '49:35' 
+  },
 ];
 
 export default function AudiobookPage() {
