@@ -73,24 +73,31 @@ export async function verifySupabaseEnv(): Promise<SupabaseEnvStatus> {
   return status;
 }
 
-export async function logSupabaseEnvStatus(): Promise<void> {
-  console.group('🔍 Supabase Environment Verification');
+export async function logSupabaseEnvStatus(force: boolean = false): Promise<void> {
   const status = await verifySupabaseEnv();
-  console.log('VITE_SUPABASE_URL configured:', status.isUrlSet ? '✅ Yes' : '❌ No');
-  console.log('VITE_SUPABASE_ANON_KEY configured:', status.isKeySet ? '✅ Yes' : '❌ No');
-  console.log('Valid Supabase URL format:', status.isValidUrl ? '✅ Yes' : '❌ No');
-  console.log('Using Production Config (Non-Placeholder):', !status.isPlaceholder ? '✅ Yes' : '⚠️ Placeholder Active');
   
-  if (status.supabaseUrl) {
-    console.log('Configured URL:', status.supabaseUrl);
-  }
+  // Im Entwicklungsmodus oder bei explizitem Aufruf loggen
+  if (import.meta.env.DEV || force) {
+    console.group('🔍 Supabase Environment Verification');
+    console.log('VITE_SUPABASE_URL configured:', status.isUrlSet ? '✅ Yes' : '❌ No');
+    console.log('VITE_SUPABASE_ANON_KEY configured:', status.isKeySet ? '✅ Yes' : '❌ No');
+    console.log('Valid Supabase URL format:', status.isValidUrl ? '✅ Yes' : '❌ No');
+    console.log('Using Production Config (Non-Placeholder):', !status.isPlaceholder ? '✅ Yes' : '⚠️ Placeholder Active');
+    
+    if (status.supabaseUrl) {
+      console.log('Configured URL:', status.supabaseUrl);
+    }
 
-  if (status.isConnected) {
-    console.log('Supabase Connection Test: ✅ Connected successfully');
-  } else if (status.errorMessage) {
-    console.warn('Supabase Connection Test:', `⚠️ ${status.errorMessage}`);
+    if (status.isConnected) {
+      console.log('Supabase Connection Test: ✅ Connected successfully');
+    } else if (status.errorMessage) {
+      console.warn('Supabase Connection Test:', `⚠️ ${status.errorMessage}`);
+    }
+    console.groupEnd();
+  } else if (!status.isConnected && status.errorMessage) {
+    // In Production nur warnen, wenn wirklich keine Verbindung aufgebaut werden kann
+    console.warn('Supabase Connection Notice:', status.errorMessage);
   }
-  console.groupEnd();
 }
 
 if (typeof window !== 'undefined') {
