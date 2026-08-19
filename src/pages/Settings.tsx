@@ -194,13 +194,25 @@ export default function Settings() {
 
     try {
       const supabase = getSupabase();
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         data: profileData
       });
 
       if (error) {
         setProfileError(error.message);
       } else {
+        // Synchronisierung in public.profiles – damit AuthContext beim nächsten
+        // Login den aktuellen Namen aus der Profiles-Tabelle lesen kann
+        // und das NamePromptModal nicht erneut erscheint.
+        await supabase.from('profiles').upsert({
+          id: user.id,
+          email: user.email || '',
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim(),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+
         setProfileSuccess('Dein Profil wurde erfolgreich aktualisiert!');
       }
     } catch (err) {
