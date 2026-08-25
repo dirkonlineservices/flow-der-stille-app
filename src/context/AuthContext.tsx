@@ -15,6 +15,7 @@ interface User {
   task_progress?: {
     current_task: number;
     completions: Record<number, number>;
+    week_started_at?: Record<number, string>;
   };
 }
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle, Circle, Trophy, ArrowRight, Lightbulb } from 'lucide-react';
+import { CheckCircle, Trophy, ArrowRight, Lightbulb, Clock, Sparkles, Lock, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { progressiveTasks } from '../data/tasks';
@@ -10,28 +10,65 @@ export default function WeeklyChallenge() {
   const [loading, setLoading] = useState(false);
 
   // Fallback für nicht eingeloggte Nutzer
-  const defaultProgress = { current_task: 0, completions: {} };
+  const defaultProgress = { current_task: 0, completions: {}, week_started_at: {} };
   const taskProgress = user?.task_progress || defaultProgress;
   
-  const currentTaskIndex = Math.min(taskProgress.current_task, progressiveTasks.length - 1);
+  const currentTaskIndex = Math.min(taskProgress.current_task || 0, progressiveTasks.length - 1);
   const task = progressiveTasks[currentTaskIndex];
   
-  const completionCount = taskProgress.completions[currentTaskIndex] || 0;
-  // Wir sagen mal: Ab 3 Wiederholungen KANN man in die nächste Woche springen
-  const canAdvance = completionCount >= 3;
+  const completionCount = taskProgress.completions?.[currentTaskIndex] || 0;
+  
+  // ============================================================================
+  // 7-TAGE-SPERRE & REIFEZEIT LOGIK
+  // ============================================================================
+  const MIN_REPETITIONS = 3;
+  const DAYS_PER_WEEK = 7;
 
+  // Startzeitpunkt der aktuellen Woche (wird bei erster Wiederholung gesetzt)
+  const weekStartedAt = taskProgress.week_started_at?.[currentTaskIndex];
+
+  let daysPassed = 0;
+  let daysRemaining = DAYS_PER_WEEK;
+  let currentDayOfCycle = 1;
+
+  if (weekStartedAt) {
+    const startedMs = new Date(weekStartedAt).getTime();
+    const now = Date.now();
+    const diffMs = Math.max(0, now - startedMs);
+    daysPassed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    daysRemaining = Math.max(0, DAYS_PER_WEEK - daysPassed);
+    currentDayOfCycle = Math.min(DAYS_PER_WEEK, daysPassed + 1);
+  }
+
+  // Bedingungen für die Freischaltung der nächsten Woche:
+  // 1. Mindestens 3 Wiederholungen gemacht
+  // 2. Mindestens 7 Tage seit Beginn der Woche vergangen
+  const hasMinReps = completionCount >= MIN_REPETITIONS;
+  const hasCompleted7Days = weekStartedAt ? daysPassed >= DAYS_PER_WEEK : false;
+  const canAdvance = hasMinReps && hasCompleted7Days;
+
+  // ============================================================================
+  // FOKUS ABSCHLIESSEN (+1 Wiederholung)
+  // ============================================================================
   const handleComplete = async () => {
     if (!user) return;
     setLoading(true);
 
     try {
-      const newCompletions = { ...taskProgress.completions };
+      const newCompletions = { ...(taskProgress.completions || {}) };
       const currentCount = newCompletions[currentTaskIndex] || 0;
       newCompletions[currentTaskIndex] = currentCount + 1;
 
+      // Wenn die Woche noch kein Startdatum hat, jetzt mit der 1. Wiederholung starten
+      const newWeekStartedAt = { ...(taskProgress.week_started_at || {}) };
+      if (!newWeekStartedAt[currentTaskIndex]) {
+        newWeekStartedAt[currentTaskIndex] = new Date().toISOString();
+      }
+
       const newTaskProgress = {
         ...taskProgress,
-        completions: newCompletions
+        completions: newCompletions,
+        week_started_at: newWeekStartedAt
       };
 
       const historyKey = `weekly_challenge_week_${currentTaskIndex + 1}_V${currentCount + 1}_${new Date().toISOString().split('T')[0]}`;
@@ -60,14 +97,23 @@ export default function WeeklyChallenge() {
     }
   };
 
+  // ============================================================================
+  // NÄCHSTE WOCHE FREISCHALTEN (nach 7 Tagen & 3+ Wiederholungen)
+  // ============================================================================
   const handleAdvance = async () => {
-    if (!user || user.task_progress?.current_task >= progressiveTasks.length - 1) return;
+    if (!user || currentTaskIndex >= progressiveTasks.length - 1) return;
     setLoading(true);
 
     try {
+      const nextTaskIndex = currentTaskIndex + 1;
+      const newWeekStartedAt = { ...(taskProgress.week_started_at || {}) };
+      // Startdatum für die nächste Woche setzen
+      newWeekStartedAt[nextTaskIndex] = new Date().toISOString();
+
       const newTaskProgress = {
         ...taskProgress,
-        current_task: taskProgress.current_task + 1
+        current_task: nextTaskIndex,
+        week_started_at: newWeekStartedAt
       };
 
       const supabase = getSupabase();
@@ -97,21 +143,22 @@ export default function WeeklyChallenge() {
       id="weekly-challenge-container"
       className="bg-gradient-to-br from-[var(--color-bg-alt-darker)] to-[var(--color-bg-alt)] text-[var(--color-text-main)] p-6 lg:p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)] relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 p-4 opacity-5 text-[var(--color-accent-primary)]">
+      <div className="absolute top-0 right-0 p-4 opacity-5 text-[var(--color-accent-primary)] pointer-events-none">
         <Trophy size={160} />
       </div>
       
       <div className="relative z-10 flex flex-col h-full">
+        {/* Header mit Woche & Level */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Trophy size={18} className="text-[var(--color-accent-primary)]" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-accent-primary)]">
-              Woche {currentTaskIndex + 1}
+              Woche {currentTaskIndex + 1} von 52
             </span>
           </div>
           {user && (
-            <div className="text-[10px] uppercase font-bold text-[var(--color-accent-primary)] bg-[var(--color-bg-card)] px-2.5 py-1 rounded-full border border-[var(--color-border-main)] shadow-sm">
-              Level {currentTaskIndex + 1}
+            <div className="text-[10px] uppercase font-bold text-[var(--color-accent-primary)] bg-[var(--color-bg-card)] px-3 py-1 rounded-full border border-[var(--color-border-main)] shadow-sm flex items-center gap-1.5">
+              <span>Level {currentTaskIndex + 1}</span>
             </div>
           )}
         </div>
@@ -140,42 +187,83 @@ export default function WeeklyChallenge() {
           </ul>
         </div>
 
-        {/* Progress and Actions */}
-        <div className="mt-auto">
+        {/* Progress & 7-Tage-Sperre Information */}
+        <div className="mt-auto space-y-4">
           {user ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between text-xs font-medium text-[var(--color-accent-primary)] mb-2 px-1">
-                <span>Wiederholungen dieser Woche:</span>
-                <span className="bg-[var(--color-bg-card)] px-2 py-0.5 rounded border border-[var(--color-border-main)]">
-                  {completionCount} / 3+
-                </span>
+            <div className="space-y-3">
+              {/* Status-Leiste: Wiederholungen & Wochentag */}
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-[var(--color-accent-primary)] px-1">
+                <div className="flex items-center gap-1.5">
+                  <span>Wiederholungen:</span>
+                  <span className="bg-[var(--color-bg-card)] px-2.5 py-0.5 rounded-lg border border-[var(--color-border-main)] font-bold">
+                    {completionCount} {completionCount >= MIN_REPETITIONS ? '✓ (Min. 3 erreicht)' : `/ ${MIN_REPETITIONS} Min.`}
+                  </span>
+                </div>
+
+                {weekStartedAt && (
+                  <div className="flex items-center gap-1.5 text-[var(--color-text-muted)] text-[11px]">
+                    <Clock size={13} />
+                    <span>Tag {currentDayOfCycle} von {DAYS_PER_WEEK}</span>
+                  </div>
+                )}
               </div>
+
+              {/* 7-Tage Reifezeit Info-Box */}
+              {hasMinReps && !canAdvance && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3.5 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5"
+                >
+                  <Lock size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="leading-relaxed">
+                    <strong>3 Wiederholungen gemeistert! ✨</strong>
+                    <p className="text-[11px] text-amber-800/90 dark:text-amber-300/90 mt-0.5">
+                      Noch <strong>{daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} Reifezeit</strong>, bis Woche {currentTaskIndex + 2} freigeschaltet wird. Du kannst die Übung diese Woche so oft vertiefen, wie du möchtest!
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Bereit für den Aufstieg */}
+              {canAdvance && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-3.5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2.5 font-medium"
+                >
+                  <Sparkles size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>Woche {currentTaskIndex + 1} vollständig gemeistert! Du kannst jetzt in die nächste Stufe aufsteigen.</span>
+                </motion.div>
+              )}
               
-              <div className="flex flex-col sm:flex-row gap-3">
+              {/* Aktionsbuttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                {/* Fokus abschließen Button (kann beliebig oft gedrückt werden) */}
                 <button 
                   id="btn-complete-weekly-challenge"
                   onClick={handleComplete}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-medium transition-all bg-[var(--color-accent-primary)] text-white hover:bg-[var(--color-accent-hover)] shadow-sm active:scale-95"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-medium transition-all bg-[var(--color-accent-primary)] text-white hover:bg-[var(--color-accent-hover)] shadow-sm active:scale-95 cursor-pointer"
                 >
                   <CheckCircle size={18} />
-                  {loading ? 'Wird gespeichert...' : 'Fokus abgeschlossen (+1)'}
+                  <span>{loading ? 'Wird gespeichert...' : 'Fokus abgeschlossen (+1)'}</span>
                 </button>
 
+                {/* Nächste Woche Button (NUR sichtbar wenn 7 Tage + 3 Wiederholungen) */}
                 <AnimatePresence>
                   {canAdvance && currentTaskIndex < progressiveTasks.length - 1 && (
                     <motion.button
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: 'auto' }}
-                      exit={{ opacity: 0, width: 0 }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
                       onClick={handleAdvance}
                       disabled={loading}
-                      className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-medium transition-all bg-[var(--color-bg-card)] border border-[var(--color-border-main)] text-[var(--color-text-main)] hover:bg-[var(--color-bg-alt)] shadow-sm whitespace-nowrap active:scale-95"
-                      title="Du hast diese Woche gemeistert. Zeit für die nächste Stufe."
+                      className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold transition-all bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-md whitespace-nowrap active:scale-95 cursor-pointer"
+                      title="Woche abgeschlossen. Zeit für das nächste Level!"
                     >
-                      <span className="hidden sm:inline">Nächste Woche</span>
-                      <span className="sm:hidden">Weiter</span>
-                      <ArrowRight size={18} className="text-[var(--color-accent-primary)]" />
+                      <span>Nächste Woche (Level {currentTaskIndex + 2})</span>
+                      <ArrowRight size={18} />
                     </motion.button>
                   )}
                 </AnimatePresence>
