@@ -18,52 +18,58 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // 1. Recovery-Token / PKCE-Code oder Session beim Aufruf prüfen
+  // 1. Recovery-Token beim Aufruf prüfen – NUR wenn Supabase PASSWORD_RECOVERY sendet
+  //    ODER ein PKCE-Code in der URL vorhanden ist.
   useEffect(() => {
     const checkRecoverySession = async () => {
       setSessionChecking(true);
       const supabase = getSupabase();
 
       try {
-        // A: Prüfen ob ein PKCE 'code' Parameter in der URL übergeben wurde
+        // A: PKCE-Code in der URL? (Supabase PKCE-Flow)
         const code = searchParams.get('code');
-        if (code) {
+        const type = searchParams.get('type');
+
+        if (code && type === 'recovery') {
+          // Explizit nur Recovery-Codes tauschen
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) {
-            console.warn('PKCE exchange warning:', exchangeError.message);
+          if (!exchangeError) {
+            setHasValidSession(true);
+            setSessionChecking(false);
+            return;
           }
+          console.warn('PKCE exchange error:', exchangeError.message);
+          setHasValidSession(false);
+          setSessionChecking(false);
+          return;
         }
 
-        // B: Prüfen ob eine gültige Session (aus Recovery-Link oder Hash) vorliegt
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-        if (session && !sessionError) {
-          setHasValidSession(true);
-        } else {
-          // Eventuell auf Auth-State-Change warten (bei Hash-basierten Recovery-Links)
+        // B: Hash-basierter Recovery-Link (älteres Format: #access_token=...&type=recovery)
+        const hash = typeof window !== 'undefined' ? window.location.hash : '';
+        if (hash.includes('type=recovery')) {
+          // Auf PASSWORD_RECOVERY Auth-Event warten
           const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-            if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && newSession)) {
+            if (event === 'PASSWORD_RECOVERY' && newSession) {
               setHasValidSession(true);
               setSessionChecking(false);
+              authListener.subscription.unsubscribe();
             }
           });
 
-          // Kurzer Timeout für Hash-Parsing
-          setTimeout(async () => {
-            const { data: { session: retrySession } } = await supabase.auth.getSession();
-            if (retrySession) {
-              setHasValidSession(true);
-            }
+          // Timeout: Falls nach 3 Sekunden kein Event kam, Link ist ungültig
+          setTimeout(() => {
             setSessionChecking(false);
-          }, 1000);
-
-          return () => {
             authListener.subscription.unsubscribe();
-          };
+          }, 3000);
+          return;
         }
+
+        // C: Weder code noch hash → kein gültiger Recovery-Link
+        setHasValidSession(false);
+        setSessionChecking(false);
       } catch (err) {
         console.error('Session check exception:', err);
-      } finally {
+        setHasValidSession(false);
         setSessionChecking(false);
       }
     };

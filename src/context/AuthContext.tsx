@@ -34,41 +34,63 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthFlow, setAuthFlow] = useState<boolean>(false);
+  // Merkt sich, ob die aktuelle Session ein Passwort-Reset-Link-Login ist.
+  // In diesem Fall soll SIGNED_IN den Nutzer NICHT in die App einloggen –
+  // er soll erst sein neues Passwort auf der ResetPassword-Seite setzen.
+  const isPasswordRecovery = React.useRef(false);
 
   useEffect(() => {
     const supabase = getSupabase();
 
-    // 1. Beim ersten Laden schauen, ob jemand eingeloggt ist
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.warn('Session error:', error.message);
-        if (
-          error.message.includes('Refresh Token') ||
-          error.message.includes('Invalid Refresh Token') ||
-          error.message.includes('refresh_token_not_found')
-        ) {
-          // Nur den spezifischen auth-storage-key löschen (nicht alles)
-          localStorage.removeItem('flow-der-stille-auth');
-          supabase.auth.signOut().catch(() => {});
+    // 1. Beim ersten Laden schauen, ob jemand eingeloggt ist.
+    // ABER: Falls die URL ein Recovery-Redirect ist, NICHT automatisch einloggen.
+    const isRecoveryUrl =
+      typeof window !== 'undefined' && (
+        window.location.hash.includes('type=recovery') ||
+        window.location.search.includes('type=recovery') ||
+        window.location.pathname.includes('reset-password')
+      );
+
+    if (!isRecoveryUrl) {
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (error) {
+          console.warn('Session error:', error.message);
+          if (
+            error.message.includes('Refresh Token') ||
+            error.message.includes('Invalid Refresh Token') ||
+            error.message.includes('refresh_token_not_found')
+          ) {
+            localStorage.removeItem('flow-der-stille-auth');
+            supabase.auth.signOut().catch(() => {});
+          }
+        } else if (session?.user) {
+          mapAndSetUser(session.user);
         }
-      } else if (session?.user) {
-        mapAndSetUser(session.user);
-      }
-    }).catch(err => {
-      console.warn('Get session exception:', err);
-      localStorage.removeItem('flow-der-stille-auth');
-    });
+      }).catch(err => {
+        console.warn('Get session exception:', err);
+        localStorage.removeItem('flow-der-stille-auth');
+      });
+    }
 
     // 2. Echtzeit-Wächter: Reagiert sofort auf Logins oder Logouts!
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        // Bei Password-Recovery-Flow: Session setzen aber nicht navigieren
-        // (das übernimmt die ResetPassword-Seite)
-        if (session?.user) {
-          mapAndSetUser(session.user);
-        }
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        // Token-Refresh: User-State aktualisieren
+        // Recovery-Link wurde geklickt → Flag setzen, NICHT in die App einloggen.
+        // Die ResetPassword-Seite übernimmt ab hier.
+        isPasswordRecovery.current = true;
+        return;
+      }
+
+      if (event === 'SIGNED_IN' && isPasswordRecovery.current) {
+        // Nach einem Recovery-Link feuert Supabase intern auch SIGNED_IN.
+        // Das ignorieren wir – der Nutzer hat sein Passwort noch nicht geändert.
+        return;
+      }
+
+      // Ab hier: normaler Login-Flow
+      isPasswordRecovery.current = false;
+
+      if (event === 'TOKEN_REFRESHED' && session?.user) {
         mapAndSetUser(session.user);
       } else if (event === 'SIGNED_IN' && session?.user) {
         mapAndSetUser(session.user);
