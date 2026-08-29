@@ -72,10 +72,10 @@ export default function AdminUnlock() {
   });
   const [loadingStats, setLoadingStats] = useState(false);
 
-  // 3. Produkte aus Supabase
+  // 3. Produkte aus Supabase & Mehrfachauswahl
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState('');
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   // 4. Nutzersuche für Freischaltung
   const [searchQuery, setSearchQuery] = useState('');
@@ -364,8 +364,48 @@ export default function AdminUnlock() {
   function handleResetSelection() {
     setSelectedUser(null);
     setUserPurchases([]);
+    setSelectedProductIds([]);
     setSearchQuery('');
     setSearchResults([]);
+  }
+
+  // ============================================================================
+  // MULTI-SELECT HILFSFUNKTIONEN FÜR PRODUKTE
+  // ============================================================================
+  function toggleProductSelection(prodId: string) {
+    setSelectedProductIds(prev => 
+      prev.includes(prodId) 
+        ? prev.filter(id => id !== prodId) 
+        : [...prev, prodId]
+    );
+  }
+
+  // Wählt alle Produkte einer bestimmten Kategorie aus (die noch nicht freigeschaltet sind)
+  function selectCategoryProducts(categoryKeyword: string) {
+    const matching = products.filter(p => {
+      const alreadyOwned = userPurchases.some(up => up.produkt_id === p.id);
+      if (alreadyOwned) return false;
+      const cat = (p.kategorie || '').toLowerCase();
+      const tit = (p.titel || '').toLowerCase();
+      return cat.includes(categoryKeyword.toLowerCase()) || tit.includes(categoryKeyword.toLowerCase());
+    });
+
+    const matchingIds = matching.map(p => p.id);
+    setSelectedProductIds(prev => {
+      const combined = new Set([...prev, ...matchingIds]);
+      return Array.from(combined);
+    });
+  }
+
+  // Alle noch nicht besessenen Produkte auswählen
+  function selectAllUnownedProducts() {
+    const unowned = products.filter(p => !userPurchases.some(up => up.produkt_id === p.id));
+    setSelectedProductIds(unowned.map(p => p.id));
+  }
+
+  // Auswahl leeren
+  function clearProductSelection() {
+    setSelectedProductIds([]);
   }
 
   // ============================================================================
@@ -401,40 +441,36 @@ export default function AdminUnlock() {
   }
 
   // ============================================================================
-  // 3. DATENBANKAKTION: KOSTENFREIE FREISCHALTUNG
+  // 3. DATENBANKAKTION: MEHRFACH-FREISCHALTUNG
   // ============================================================================
-  async function handleUnlockProduct(e: React.FormEvent) {
+  async function handleUnlockProducts(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedUser || !selectedProductId || isSubmitting) return;
+    if (!selectedUser || selectedProductIds.length === 0 || isSubmitting) return;
 
     setIsSubmitting(true);
     setErrorMessage('');
     setSuccessMessage('');
 
     const targetUser = selectedUser;
-    const selectedProd = products.find(p => p.id === selectedProductId);
-    const productTitle = selectedProd?.titel || selectedProductId;
+    const count = selectedProductIds.length;
     const userNameDisplay = targetUser.full_name || [targetUser.first_name, targetUser.last_name].filter(Boolean).join(' ') || targetUser.email || targetUser.id;
 
     try {
       const supabase = getSupabase();
 
-      // Eindeutige Bestellnummer generieren, um Unique-Constraint-Fehler bei mehreren Geschenken zu vermeiden
-      const giftOrderId = `GESCHENK_${Date.now()}_${targetUser.id.substring(0, 8)}`;
+      // Datensätze für alle ausgewählten Produkte vorbereiten
+      const rows = selectedProductIds.map((prodId, idx) => ({
+        user_id: targetUser.id,
+        produkt_id: prodId,
+        preis: 0.00,
+        waehrung: 'EUR',
+        order_id: `GESCHENK_${Date.now()}_${idx}_${targetUser.id.substring(0, 6)}`
+      }));
 
-      // Datensatz in die Tabelle "kaeufe" schreiben (exakt die Felder: user_id, produkt_id, preis, waehrung, order_id)
+      // In die Tabelle "kaeufe" schreiben
       const { error: insertError } = await supabase
         .from('kaeufe')
-        .upsert(
-          {
-            user_id: targetUser.id,
-            produkt_id: selectedProductId,
-            preis: 0.00,
-            waehrung: 'EUR',
-            order_id: giftOrderId
-          },
-          { onConflict: 'user_id,produkt_id' }
-        );
+        .upsert(rows, { onConflict: 'user_id,produkt_id' });
 
       if (insertError) {
         console.error('Fehler beim Eintragen in kaeufe:', insertError);
@@ -453,23 +489,28 @@ export default function AdminUnlock() {
         console.warn('Hinweis: Profil is_premium Update übersprungen:', profErr);
       }
 
+      // Titel für die Zusammenfassung
+      const unlockedTitles = selectedProductIds.map(id => products.find(p => p.id === id)?.titel || id);
+
       // Erfolgsmeldung ausgeben
-      setSuccessMessage(`✅ „${productTitle}“ wurde erfolgreich kostenfrei für ${userNameDisplay} freigeschaltet!`);
+      setSuccessMessage(`✅ ${count} Produkt${count > 1 ? 'e' : ''} erfolgreich kostenfrei für ${userNameDisplay} freigeschaltet! (${unlockedTitles.join(', ')})`);
 
       // In Session-Historie aufnehmen
-      setRecentUnlocks(prev => [
-        {
-          userName: userNameDisplay,
-          productTitle: productTitle,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-        },
-        ...prev
-      ]);
+      unlockedTitles.forEach(title => {
+        setRecentUnlocks(prev => [
+          {
+            userName: userNameDisplay,
+            productTitle: title,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          },
+          ...prev
+        ]);
+      });
 
       // Formular & Käufe aktualisieren
       loadPurchasesForUser(targetUser.id);
       loadAdminStats();
-      setSelectedProductId('');
+      setSelectedProductIds([]);
 
     } catch (err: any) {
       console.error('Exception beim Freischalten:', err);
@@ -820,7 +861,7 @@ export default function AdminUnlock() {
       {/* TAB 2: PRODUKTE FREISCHALTEN & ROLLEN                                      */}
       {/* ========================================================================= */}
       {activeTab === 'unlock' && (
-        <form onSubmit={handleUnlockProduct} className="space-y-6">
+        <form onSubmit={handleUnlockProducts} className="space-y-6">
           {/* SCHRITT 1: NUTZER WÄHLEN */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-4">
             <div className="flex items-center justify-between">
@@ -978,79 +1019,169 @@ export default function AdminUnlock() {
             )}
           </div>
 
-          {/* SCHRITT 2: PRODUKTAUSWAHL */}
-          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-                2. Produkt auswählen (Tabelle: <code>produkte</code>)
-              </label>
-              <button
-                type="button"
-                onClick={loadProductsAndConfig}
-                className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <RefreshCw size={12} className={loadingProducts ? 'animate-spin' : ''} /> Aktualisieren
-              </button>
+          {/* SCHRITT 2: PRODUKTAUSWAHL (MEHRFACHAUSWAHL) */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+              <div>
+                <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                  2. Produkte auswählen (Mehrfachauswahl)
+                </label>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
+                  Klicke auf die Produkte oder nutze die Schnellauswahl-Buttons, um mehrere Inhalte auf einmal freizuschalten.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/30">
+                  {selectedProductIds.length} ausgewählt
+                </span>
+                <button
+                  type="button"
+                  onClick={loadProductsAndConfig}
+                  className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw size={12} className={loadingProducts ? 'animate-spin' : ''} /> Aktualisieren
+                </button>
+              </div>
             </div>
 
-            <select
-              value={selectedProductId}
-              onChange={(e) => setSelectedProductId(e.target.value)}
-              className="w-full p-4 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-sm text-[var(--text-main)] focus:ring-2 focus:ring-[var(--accent)] outline-none cursor-pointer"
-              required
-            >
-              <option value="">-- Produkt auswählen --</option>
+            {/* Schnellauswahl nach Kategorien */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs font-semibold text-[var(--text-muted)] mr-1">
+                Schnellauswahl:
+              </span>
+              <button
+                type="button"
+                onClick={() => selectCategoryProducts('meditation')}
+                className="px-3 py-1.5 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--accent)] hover:text-white border border-[var(--border)] text-xs font-medium transition-colors cursor-pointer"
+              >
+                🧘 Alle Meditationen
+              </button>
+              <button
+                type="button"
+                onClick={() => selectCategoryProducts('selbsthypnose')}
+                className="px-3 py-1.5 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--accent)] hover:text-white border border-[var(--border)] text-xs font-medium transition-colors cursor-pointer"
+              >
+                🧠 Alle Selbsthypnosen
+              </button>
+              <button
+                type="button"
+                onClick={() => selectCategoryProducts('hörbuch')}
+                className="px-3 py-1.5 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--accent)] hover:text-white border border-[var(--border)] text-xs font-medium transition-colors cursor-pointer"
+              >
+                📖 Hörbuch
+              </button>
+              <button
+                type="button"
+                onClick={selectAllUnownedProducts}
+                className="px-3 py-1.5 rounded-xl bg-[var(--accent)]/10 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white border border-[var(--accent)]/30 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                ✨ Alle verfügbaren
+              </button>
+              {selectedProductIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearProductSelection}
+                  className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 hover:bg-red-100 border border-red-200 dark:border-red-800/40 text-xs font-medium transition-colors cursor-pointer ml-auto"
+                >
+                  ✕ Auswahl leeren
+                </button>
+              )}
+            </div>
+
+            {/* Produkt-Kacheln Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
               {products.map((p) => {
                 const alreadyOwned = userPurchases.some(up => up.produkt_id === p.id);
+                const isSelected = selectedProductIds.includes(p.id);
+
                 return (
-                  <option key={p.id} value={p.id}>
-                    {alreadyOwned ? '✓ (Bereits freigeschaltet) ' : ''}
-                    {p.titel} {p.kategorie ? `[${p.kategorie}]` : ''} – Regulär: {p.preis ?? '0.00'} € (ID: {p.id})
-                  </option>
+                  <div
+                    key={p.id}
+                    onClick={() => {
+                      if (!alreadyOwned) {
+                        toggleProductSelection(p.id);
+                      }
+                    }}
+                    className={`p-4 rounded-2xl border transition-all flex items-start gap-3 select-none ${
+                      alreadyOwned
+                        ? 'bg-[var(--bg-alt)]/40 border-[var(--border)] opacity-60 cursor-not-allowed'
+                        : isSelected
+                        ? 'bg-[var(--accent)]/10 border-[var(--accent)] shadow-sm cursor-pointer ring-1 ring-[var(--accent)]'
+                        : 'bg-[var(--bg-alt)] border-[var(--border)] hover:border-[var(--accent)]/50 cursor-pointer'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={alreadyOwned || isSelected}
+                      disabled={alreadyOwned}
+                      onChange={() => {}} // Klick wird vom Parent div behandelt
+                      className="mt-1 w-4 h-4 rounded border-[var(--border)] accent-[var(--accent)] cursor-pointer shrink-0"
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className={`font-semibold text-xs sm:text-sm truncate ${isSelected ? 'text-[var(--accent)]' : 'text-[var(--text-main)]'}`}>
+                          {p.titel}
+                        </h4>
+                        <span className="text-[11px] font-mono text-[var(--text-muted)] shrink-0">
+                          {p.preis ? `${p.preis} €` : 'Kostenfrei'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-1.5">
+                        {p.kategorie && (
+                          <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-muted)] font-medium">
+                            {p.kategorie}
+                          </span>
+                        )}
+                        <span className="text-[10px] font-mono text-[var(--text-muted)] truncate">
+                          ID: {p.id}
+                        </span>
+                      </div>
+
+                      {alreadyOwned && (
+                        <div className="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                          <CheckCircle2 size={12} /> Bereits freigeschaltet
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
-            </select>
-
-            {selectedProductId && (
-              <div className="p-4 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] text-xs text-[var(--text-muted)] space-y-1">
-                {(() => {
-                  const selProd = products.find(p => p.id === selectedProductId);
-                  if (!selProd) return null;
-                  return (
-                    <>
-                      <div><strong>Titel:</strong> {selProd.titel}</div>
-                      <div><strong>Produkt-ID:</strong> <code>{selProd.id}</code></div>
-                      <div><strong>Kategorie:</strong> {selProd.kategorie || 'Standard'}</div>
-                      <div><strong>Regulärer Preis:</strong> {selProd.preis ?? '0.00'} EUR</div>
-                    </>
-                  );
-                })()}
-              </div>
-            )}
+            </div>
           </div>
 
           {/* SCHRITT 3: AKTION / SPEICHERN */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-                <div><strong>Datenbank-Ziel:</strong> Tabelle <code>public.kaeufe</code></div>
-                <div><strong>Eintrag:</strong> <code>user_id</code>: {selectedUser ? selectedUser.id.substring(0, 8) + '...' : '-'} | <code>produkt_id</code>: {selectedProductId || '-'} | <code>preis</code>: 0.00 EUR | <code>order_id</code>: 'GESCHENK'</div>
+                <div><strong>Datenbank-Ziel:</strong> Tabelle <code>public.kaeufe</code> (Batch-Insert)</div>
+                <div>
+                  <strong>Auswahl:</strong> {selectedProductIds.length} Produkt{selectedProductIds.length !== 1 ? 'e' : ''} für{' '}
+                  <span className="font-semibold text-[var(--text-main)]">
+                    {selectedUser ? (selectedUser.full_name || selectedUser.email || selectedUser.id.substring(0, 8)) : '(Kein Nutzer gewählt)'}
+                  </span>
+                </div>
               </div>
 
               <button
                 type="submit"
-                disabled={!selectedUser || !selectedProductId || isSubmitting}
+                disabled={!selectedUser || selectedProductIds.length === 0 || isSubmitting}
                 className="w-full sm:w-auto px-8 py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl text-sm transition-all shadow-md hover:shadow-lg active:scale-98 flex items-center justify-center gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="animate-spin" size={18} />
-                    <span>Wird freigeschaltet...</span>
+                    <span>Schalte {selectedProductIds.length} Produkte frei...</span>
                   </>
                 ) : (
                   <>
                     <Gift size={18} />
-                    <span>Kostenfrei freischalten</span>
+                    <span>
+                      {selectedProductIds.length > 0 
+                        ? `${selectedProductIds.length} Produkt${selectedProductIds.length > 1 ? 'e' : ''} kostenfrei freischalten` 
+                        : 'Produkte auswählen'}
+                    </span>
                   </>
                 )}
               </button>
