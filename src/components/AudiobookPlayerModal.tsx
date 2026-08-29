@@ -13,7 +13,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X, Play, Pause, RotateCcw, RotateCw, Volume2, VolumeX,
-  Bookmark, CheckCircle2, ListMusic, Sparkles, HardDrive, WifiOff, Clock
+  Bookmark, CheckCircle2, ListMusic, Sparkles, HardDrive, WifiOff, Clock,
+  Lock, AlertCircle, Shield
 } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
@@ -21,8 +22,9 @@ import { OfflineDownloadButton } from './OfflineDownloadButton';
 export interface AudiobookChapter {
   id: string;
   title: string;
-  startTime: number; // in Sekunden (z. B. 0, 750, 1575, 2530)
-  formattedTime: string; // z. B. "00:00", "12:30", "26:15", "42:10"
+  startTime: number; // in Sekunden (z. B. 0, 79, 1147, 2177, 2975)
+  formattedTime: string; // z. B. "00:00", "01:19", "19:07", "36:17", "49:35"
+  duration?: string; // z. B. "1:19 Min", "17:48 Min"
 }
 
 interface Props {
@@ -40,28 +42,39 @@ interface Props {
 
 const DEFAULT_CHAPTERS: AudiobookChapter[] = [
   { 
-    id: 'ch1', 
-    title: 'Kapitel 1: Warum der Übergang erst der Anfang ist (Und wie wir die Angst davor verlieren)', 
+    id: 'intro', 
+    title: 'Einleitung und rechtlicher Hinweis', 
     startTime: 0, 
-    formattedTime: '00:00' 
+    formattedTime: '00:00',
+    duration: '1:19 Min'
+  },
+  { 
+    id: 'ch1', 
+    title: 'Kapitel 1: Warum der Übergang erst der Anfang ist', 
+    startTime: 79, 
+    formattedTime: '01:19',
+    duration: '17:48 Min'
   },
   { 
     id: 'ch2', 
-    title: 'Kapitel 2: Der Übergang – Wenn Wissenschaft auf Spiritualität trifft', 
+    title: 'Kapitel 2: Der Übergang: Wenn Wissenschaft auf Spiritualität trifft', 
     startTime: 1147, 
-    formattedTime: '19:07' 
+    formattedTime: '19:07',
+    duration: '17:10 Min'
   },
   { 
     id: 'ch3', 
-    title: 'Kapitel 3: Die andere Ebene – Jenseits des schweren Kostüms', 
+    title: 'Kapitel 3: Die andere Ebene: Jenseits des schweren Kostüms', 
     startTime: 2177, 
-    formattedTime: '36:17' 
+    formattedTime: '36:17',
+    duration: '13:18 Min'
   },
   { 
     id: 'ch4', 
-    title: 'Kapitel 4: Das Erwachen im Hier und Jetzt – Die Befreiung zum Leben', 
+    title: 'Kapitel 4: Das Erwachen im Hier und Jetzt: Die Befreiung zum Leben', 
     startTime: 2975, 
-    formattedTime: '49:35' 
+    formattedTime: '49:35',
+    duration: '9:08 Min'
   },
 ];
 
@@ -90,6 +103,14 @@ export function AudiobookPlayerModal({
   const [savedPosition, setSavedPosition] = useState<number | null>(null);
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
+
+  // Schutz-Mechanismus für den rechtlichen Hinweis (Disclaimer bis 01:19 Min. = 79 Sek.)
+  const DISCLAIMER_DURATION = 79;
+  const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
+  const [hasListenedDisclaimer, setHasListenedDisclaimer] = useState<boolean>(() => {
+    return localStorage.getItem(DISCLAIMER_KEY) === 'true';
+  });
+  const [disclaimerNotice, setDisclaimerNotice] = useState<string | null>(null);
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
 
@@ -186,6 +207,12 @@ export function AudiobookPlayerModal({
           setActiveChapterId(chapters[i].id);
           break;
         }
+      }
+
+      // Disclaimer Prüfung: Ab Sekunde 79 (01:19 Min.) gilt der rechtliche Hinweis als gehört
+      if (cur >= DISCLAIMER_DURATION && !hasListenedDisclaimer) {
+        setHasListenedDisclaimer(true);
+        localStorage.setItem(DISCLAIMER_KEY, 'true');
       }
 
       // GA4 Meilenstein-Tracking (25%, 50%, 75%)
@@ -322,6 +349,12 @@ export function AudiobookPlayerModal({
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const targetTime = parseFloat(e.target.value);
+    // Wenn der rechtliche Hinweis noch nie komplett angehört wurde und der Nutzer vorspulen will
+    if (!hasListenedDisclaimer && targetTime > DISCLAIMER_DURATION && currentTime < DISCLAIMER_DURATION) {
+      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach kannst du frei spulen.');
+      setTimeout(() => setDisclaimerNotice(null), 4500);
+      return;
+    }
     setCurrentTime(targetTime);
     if (audioRef.current) {
       audioRef.current.currentTime = targetTime;
@@ -331,11 +364,21 @@ export function AudiobookPlayerModal({
   const skipSeconds = (seconds: number) => {
     if (!audioRef.current) return;
     const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
+    if (!hasListenedDisclaimer && newTime > DISCLAIMER_DURATION && currentTime < DISCLAIMER_DURATION && seconds > 0) {
+      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach kannst du frei spulen.');
+      setTimeout(() => setDisclaimerNotice(null), 4500);
+      return;
+    }
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const jumpToChapter = (chapter: AudiobookChapter) => {
+    if (!hasListenedDisclaimer && chapter.startTime >= DISCLAIMER_DURATION) {
+      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach werden alle Kapitel zur Direktauswahl freigeschaltet.');
+      setTimeout(() => setDisclaimerNotice(null), 4500);
+      return;
+    }
     if (!audioRef.current) return;
     audioRef.current.currentTime = chapter.startTime;
     setCurrentTime(chapter.startTime);
@@ -347,6 +390,10 @@ export function AudiobookPlayerModal({
 
   const handleResumePosition = () => {
     if (savedPosition && audioRef.current) {
+      if (savedPosition >= DISCLAIMER_DURATION) {
+        setHasListenedDisclaimer(true);
+        localStorage.setItem(DISCLAIMER_KEY, 'true');
+      }
       audioRef.current.currentTime = savedPosition;
       setCurrentTime(savedPosition);
       setShowResumeBanner(false);
@@ -513,7 +560,32 @@ export function AudiobookPlayerModal({
                   -{formatTime(Math.max(0, duration - currentTime))}
                 </span>
               </div>
+
+              {/* Einmaliger rechtlicher Hinweis bis 1:19 Min. */}
+              {!hasListenedDisclaimer && (
+                <div className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                  <Shield size={13} className="shrink-0 text-amber-600" />
+                  <span>Rechtlicher Hinweis aktiv: Wird bis 1:19 Min. einmalig abgespielt.</span>
+                </div>
+              )}
             </div>
+
+            {/* Warn-Hinweis wenn Nutzer während des Disclaimers vorspulen will */}
+            <AnimatePresence>
+              {disclaimerNotice && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 shadow-sm"
+                >
+                  <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                  <div className="flex-1 leading-relaxed">
+                    <strong>Hinweis:</strong> {disclaimerNotice}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Playback Controls & Speed */}
             <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
@@ -588,7 +660,7 @@ export function AudiobookPlayerModal({
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
                   <ListMusic size={15} className="text-[var(--accent)]" />
-                  <span>Kapitel-Navigation ({chapters.length} Kapitel)</span>
+                  <span>Kapitel-Navigation ({chapters.length} Abschnitte)</span>
                 </h4>
                 <span className="text-[11px] text-[var(--text-muted)]">Klick zum Vor- &amp; Zurückspringen</span>
               </div>
@@ -596,6 +668,8 @@ export function AudiobookPlayerModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {chapters.map((ch) => {
                   const isActive = activeChapterId === ch.id;
+                  const isLocked = !hasListenedDisclaimer && ch.startTime >= DISCLAIMER_DURATION;
+
                   return (
                     <button
                       key={ch.id}
@@ -603,6 +677,8 @@ export function AudiobookPlayerModal({
                       className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
                         isActive
                           ? 'bg-[var(--accent)]/15 border-[var(--accent)] text-[var(--text-main)] shadow-xs'
+                          : isLocked
+                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] hover:border-amber-400/50'
                           : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40'
                       }`}
                     >
@@ -611,15 +687,22 @@ export function AudiobookPlayerModal({
                           {ch.title}
                         </span>
                         <span className="text-[11px] font-mono opacity-80 mt-0.5 block">
-                          Startet bei {ch.formattedTime}
+                          Startet ab {ch.formattedTime} {ch.duration ? `• Dauer: ${ch.duration}` : ''}
                         </span>
                       </div>
 
-                      <span className={`px-2 py-1 rounded-lg text-[10px] font-bold font-mono ${
-                        isActive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] border border-[var(--border)]'
-                      }`}>
-                        {ch.formattedTime}
-                      </span>
+                      {isLocked ? (
+                        <span className="px-2 py-1 rounded-lg text-[10px] font-bold font-mono bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center gap-1">
+                          <Lock size={10} />
+                          <span>Gesperrt</span>
+                        </span>
+                      ) : (
+                        <span className={`px-2 py-1 rounded-lg text-[10px] font-bold font-mono ${
+                          isActive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] border border-[var(--border)]'
+                        }`}>
+                          {ch.formattedTime}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

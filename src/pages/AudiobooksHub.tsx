@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Headphones, Sparkles, Play, Pause, ShieldCheck, 
@@ -355,7 +355,7 @@ export default function AudiobooksHub() {
             <div className="space-y-4 flex-1 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs font-mono text-[var(--text-muted)]">
                 <Clock size={13} className="text-[var(--accent)]" />
-                <span>58:43 Minuten • 4 Kapitel</span>
+                <span>58:43 Minuten Gesamtlaufzeit</span>
               </div>
 
               <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
@@ -366,26 +366,37 @@ export default function AudiobooksHub() {
                 Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.
               </p>
 
-              {/* Kapitel-Übersicht im Akkordeon-Stil */}
-              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 border border-[var(--border)] text-left text-xs space-y-2">
-                <div className="font-semibold text-[var(--text-main)] mb-1">Enthaltene Kapitel:</div>
-                <div className="space-y-1.5 text-[var(--text-muted)]">
-                  <div className="flex justify-between">
-                    <span>1. Warum der Übergang erst der Anfang ist</span>
-                    <span className="font-mono text-[11px]">19:07 Min</span>
+              {/* Kapitel-Übersicht mit Startzeiten und Dauer */}
+              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 border border-[var(--border)] text-left text-xs space-y-2.5">
+                <div className="flex items-center justify-between font-semibold text-[var(--text-main)] mb-1 pb-1.5 border-b border-[var(--border)]">
+                  <span>Kapitel und Abschnitte</span>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Startzeit und Dauer</span>
+                </div>
+                <div className="space-y-2 text-[var(--text-muted)]">
+                  <div className="flex justify-between items-start gap-2">
+                    <span>• Einleitung und rechtlicher Hinweis</span>
+                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">00:00 (Dauer 1:19 Min.)</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>2. Der Übergang – Wenn Wissenschaft auf Spiritualität trifft</span>
-                    <span className="font-mono text-[11px]">17:10 Min</span>
+                  <div className="flex justify-between items-start gap-2">
+                    <span>• 1. Warum der Übergang erst der Anfang ist</span>
+                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 01:19 (Dauer 17:48 Min.)</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>3. Die andere Ebene – Jenseits des schweren Kostüms</span>
-                    <span className="font-mono text-[11px]">13:18 Min</span>
+                  <div className="flex justify-between items-start gap-2">
+                    <span>• 2. Der Übergang: Wenn Wissenschaft auf Spiritualität trifft</span>
+                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 19:07 (Dauer 17:10 Min.)</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>4. Das Erwachen im Hier und Jetzt</span>
-                    <span className="font-mono text-[11px]">09:08 Min</span>
+                  <div className="flex justify-between items-start gap-2">
+                    <span>• 3. Die andere Ebene: Jenseits des schweren Kostüms</span>
+                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 36:17 (Dauer 13:18 Min.)</span>
                   </div>
+                  <div className="flex justify-between items-start gap-2">
+                    <span>• 4. Das Erwachen im Hier und Jetzt: Die Befreiung zum Leben</span>
+                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 49:35 (Dauer 9:08 Min.)</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-[var(--border)] flex justify-between items-center text-[11px] font-semibold text-[var(--text-main)]">
+                  <span>Gesamtlaufzeit:</span>
+                  <span className="font-mono text-[var(--accent)]">58:43 Minuten</span>
                 </div>
               </div>
 

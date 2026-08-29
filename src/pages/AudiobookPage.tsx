@@ -16,28 +16,39 @@ import { getSupabase } from '../lib/supabaseClient';
 
 const SCHMETTERLING_CHAPTERS: AudiobookChapter[] = [
   { 
-    id: 'ch1', 
-    title: 'Kapitel 1: Warum der Übergang erst der Anfang ist (Und wie wir die Angst davor verlieren)', 
+    id: 'intro', 
+    title: 'Einleitung und rechtlicher Hinweis', 
     startTime: 0, 
-    formattedTime: '00:00' 
+    formattedTime: '00:00',
+    duration: '1:19 Min'
+  },
+  { 
+    id: 'ch1', 
+    title: 'Kapitel 1: Warum der Übergang erst der Anfang ist', 
+    startTime: 79, 
+    formattedTime: '01:19',
+    duration: '17:48 Min'
   },
   { 
     id: 'ch2', 
-    title: 'Kapitel 2: Der Übergang – Wenn Wissenschaft auf Spiritualität trifft', 
+    title: 'Kapitel 2: Der Übergang: Wenn Wissenschaft auf Spiritualität trifft', 
     startTime: 1147, 
-    formattedTime: '19:07' 
+    formattedTime: '19:07',
+    duration: '17:10 Min'
   },
   { 
     id: 'ch3', 
-    title: 'Kapitel 3: Die andere Ebene – Jenseits des schweren Kostüms', 
+    title: 'Kapitel 3: Die andere Ebene: Jenseits des schweren Kostüms', 
     startTime: 2177, 
-    formattedTime: '36:17' 
+    formattedTime: '36:17',
+    duration: '13:18 Min'
   },
   { 
     id: 'ch4', 
-    title: 'Kapitel 4: Das Erwachen im Hier und Jetzt – Die Befreiung zum Leben', 
+    title: 'Kapitel 4: Das Erwachen im Hier und Jetzt: Die Befreiung zum Leben', 
     startTime: 2975, 
-    formattedTime: '49:35' 
+    formattedTime: '49:35',
+    duration: '9:08 Min'
   },
 ];
 
@@ -204,7 +215,7 @@ export default function AudiobookPage() {
               </p>
             </div>
             <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-alt)] px-3 py-1.5 rounded-full border border-[var(--border)]">
-              4 Kapitel
+              {SCHMETTERLING_CHAPTERS.length} Abschnitte
             </span>
           </div>
 
@@ -226,7 +237,7 @@ export default function AudiobookPage() {
                     {ch.title}
                   </span>
                   <span className="text-[11px] text-[var(--text-muted)] font-mono block mt-1">
-                    Startet ab {ch.formattedTime}
+                    Startet ab {ch.formattedTime} {ch.duration ? `(Dauer: ${ch.duration})` : ''}
                   </span>
                 </div>
                 <div className="p-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors shrink-0">
