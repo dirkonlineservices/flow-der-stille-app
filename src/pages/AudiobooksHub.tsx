@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Headphones, Sparkles, Play, Pause, ShieldCheck, 
   Moon, Clock, Heart, Volume2, ArrowRight, CheckCircle2, 
-  HelpCircle, Shield, ArrowLeft, Loader2, Award, User
+  HelpCircle, Shield, ArrowLeft, Loader2, Award, User, Gift
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';

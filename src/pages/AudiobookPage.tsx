@@ -84,7 +84,11 @@ export default function AudiobookPage() {
   const productId = id || 'fds_hoerbuch_schmetterling';
   const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
   const [hasListenedDisclaimer, setHasListenedDisclaimer] = useState<boolean>(() => {
-    return localStorage.getItem(DISCLAIMER_KEY) === 'true';
+    try {
+      return typeof window !== 'undefined' && window.localStorage?.getItem(DISCLAIMER_KEY) === 'true';
+    } catch {
+      return false;
+    }
   });
   const [initialChapterTime, setInitialChapterTime] = useState<number>(0);
   const [showDisclaimerRequiredModal, setShowDisclaimerRequiredModal] = useState<boolean>(false);
@@ -605,7 +609,9 @@ export default function AudiobookPage() {
           isOpen={isPlayerOpen}
           onClose={() => {
             setIsPlayerOpen(false);
-            setHasListenedDisclaimer(localStorage.getItem(DISCLAIMER_KEY) === 'true');
+            try {
+              setHasListenedDisclaimer(localStorage.getItem(DISCLAIMER_KEY) === 'true');
+            } catch {}
           }}
           productId={productData?.id || productId}
           title={title}

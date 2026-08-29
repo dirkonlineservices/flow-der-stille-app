@@ -110,7 +110,11 @@ export function AudiobookPlayerModal({
   const DISCLAIMER_DURATION = 79;
   const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
   const [hasListenedDisclaimer, setHasListenedDisclaimer] = useState<boolean>(() => {
-    return localStorage.getItem(DISCLAIMER_KEY) === 'true';
+    try {
+      return typeof window !== 'undefined' && window.localStorage?.getItem(DISCLAIMER_KEY) === 'true';
+    } catch {
+      return false;
+    }
   });
   const [disclaimerNotice, setDisclaimerNotice] = useState<string | null>(null);
 

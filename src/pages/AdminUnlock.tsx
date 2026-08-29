@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, ShieldAlert, Search, Gift, CheckCircle2, 
   AlertCircle, Loader2, User, ArrowLeft, RefreshCw, Sparkles, X, Check,
-  Users, TrendingUp, Calendar, Award, Clock, ArrowRight, UserCheck, Shield
+  Users, TrendingUp, Calendar, Award, Clock, ArrowRight, UserCheck, Shield, Lock
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';

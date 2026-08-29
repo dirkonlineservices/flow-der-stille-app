@@ -96,6 +96,7 @@ function ReferralCapture() {
 
 import AudiobookPage from './pages/AudiobookPage';
 import AudiobooksHub from './pages/AudiobooksHub';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   return (
@@ -109,9 +110,10 @@ export default function App() {
               <CartSidebar />
               <TransactionErrorOverlay />
               <CookieBanner />
-              <Routes>
-                                {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
-                <Route path="/" element={<Layout />}>
+              <ErrorBoundary>
+                <Routes>
+                  {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
+                  <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="exercises" element={<Exercises />} />
                   <Route path="exercises/:id" element={<ExerciseDetail />} />
@@ -175,6 +177,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
 
               </Routes>
+              </ErrorBoundary>
             </BrowserRouter>
           </LanguageProvider>
         </CartProvider>
