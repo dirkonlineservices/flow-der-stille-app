@@ -13,9 +13,7 @@ export default function AudiobooksHub() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // 1. Admin-Prüfung (Seite ist aktuell exklusiv nur für Admins freigeschaltet)
-  const [checkingAuth, setCheckingAuth] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  // 1. Besitzprüfung für das aktuelle Hörbuch
   const [isAudiobookOwned, setIsAudiobookOwned] = useState(false);
 
   // 2. Audio-Probe Zustand (Start bei 1:19 Min. = 79 Sek. für genau 90 Sekunden)
@@ -32,28 +30,14 @@ export default function AudiobooksHub() {
   const SAMPLE_AUDIO_URL = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3';
 
   useEffect(() => {
-    async function verifyAdmin() {
-      setCheckingAuth(true);
+    async function checkOwnership() {
       if (!user) {
-        setIsAdmin(false);
-        setCheckingAuth(false);
+        setIsAudiobookOwned(false);
         return;
       }
 
       try {
         const supabase = getSupabase();
-        const { data } = await supabase
-          .from('profiles')
-          .select('rolle')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (data?.rolle?.toLowerCase() === 'admin') {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-
         // Prüfen ob Hörbuch im Besitz ist
         const { data: purchase } = await supabase
           .from('kaeufe')
@@ -64,14 +48,12 @@ export default function AudiobooksHub() {
 
         setIsAudiobookOwned(!!purchase);
       } catch (err) {
-        console.error('Fehler bei Admin-Verifizierung:', err);
-        setIsAdmin(false);
-      } finally {
-        setCheckingAuth(false);
+        console.error('Fehler bei Hörbuch-Besitzprüfung:', err);
+        setIsAudiobookOwned(false);
       }
     }
 
-    verifyAdmin();
+    checkOwnership();
   }, [user]);
 
   // Audio Snippet Steuerung (Startet ab 1:19 Min. und läuft für 90 Sek.)
@@ -100,52 +82,7 @@ export default function AudiobooksHub() {
   };
 
   // =========================================================================
-  // A) Ladeanzeige während der Admin-Prüfung
-  // =========================================================================
-  if (checkingAuth) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-main)] flex items-center justify-center p-6 text-[var(--text-main)]">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 size={32} className="animate-spin text-[var(--accent)]" />
-          <span className="text-xs text-[var(--text-muted)] font-mono">Prüfe Administrator-Berechtigung...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // =========================================================================
-  // B) Zugriff verwehrt (Wenn kein Admin)
-  // =========================================================================
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-8 text-center space-y-5 shadow-xl">
-          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
-            <Shield size={32} />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-              Vorschau-Modus
-            </span>
-            <h2 className="text-2xl font-serif font-bold mt-3">Nur für Administratoren</h2>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-2 leading-relaxed">
-              Die neue Hörbuch-Themenseite wird aktuell vorbereitet und ist vor der Veröffentlichung ausschließlich für das Flow der Stille Team einsehbar.
-            </p>
-          </div>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold transition-all shadow-md active:scale-95"
-          >
-            <ArrowLeft size={16} />
-            <span>Zurück zur Startseite</span>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  // =========================================================================
-  // C) Hauptansicht für Admins
+  // Hauptansicht für alle Besucher
   // =========================================================================
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-20 selection:bg-[var(--accent)] selection:text-white">
@@ -153,14 +90,6 @@ export default function AudiobooksHub() {
         title="Die Hörbuch-Welt von Flow der Stille – Achtsamkeit, Trost & Innere Ruhe"
         description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten, die dein Nervensystem sanft entspannen."
       />
-
-      {/* Admin-Hinweisleiste oben */}
-      <div className="bg-emerald-600 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2 shadow-inner">
-        <Sparkles size={14} className="shrink-0" />
-        <span>
-          <strong>Admin-Vorschau aktiv:</strong> Diese Seite ist aktuell nur für dich und autorisierte Administratoren sichtbar.
-        </span>
-      </div>
 
       {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek.) */}
       <audio

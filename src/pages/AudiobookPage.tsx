@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Play, Pause, Sparkles, BookOpen, Clock, ShieldCheck, 
   ListMusic, Bookmark, HardDrive, AlertCircle, Lock, Gift, 
@@ -68,6 +68,10 @@ export default function AudiobookPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isPurchasedRedirect = searchParams.get('purchased') === 'true';
+  const shouldAutoPlay = searchParams.get('play') === 'true' || isPurchasedRedirect;
+  const [showPurchaseCelebration, setShowPurchaseCelebration] = useState(isPurchasedRedirect);
 
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [productData, setProductData] = useState<any>(null);
@@ -133,8 +137,13 @@ export default function AudiobookPage() {
               .eq('produkt_id', data.id)
               .maybeSingle();
 
-            setIsOwned(!!purchaseData);
+            const hasPurchased = !!purchaseData;
+            setIsOwned(hasPurchased);
             setCheckingOwnership(false);
+
+            if (hasPurchased && shouldAutoPlay) {
+              setIsPlayerOpen(true);
+            }
           } else {
             setIsOwned(false);
             setCheckingOwnership(false);
@@ -214,6 +223,27 @@ export default function AudiobookPage() {
       )}
 
       <div className="max-w-4xl mx-auto space-y-6">
+
+        {/* Erfolgsmeldung nach Kaufabschluss */}
+        {showPurchaseCelebration && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-3 shadow-md">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div>
+                <span className="font-bold text-xs sm:text-sm block">Herzlichen Glückwunsch zum Kauf!</span>
+                <span className="text-[11px] sm:text-xs opacity-90 block">Dein Hörbuch wurde erfolgreich freigeschaltet. Der Player und alle Kapitel stehen dir ab sofort bereit.</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowPurchaseCelebration(false)}
+              className="text-emerald-700 hover:text-emerald-900 p-1.5 rounded-lg hover:bg-emerald-500/10 cursor-pointer transition-colors shrink-0"
+              title="Meldung schließen"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
 
         {/* Back Button */}
         <Link

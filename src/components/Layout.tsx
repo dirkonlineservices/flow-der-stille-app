@@ -359,25 +359,23 @@ export default function Layout() {
                   </Link>
                 )}
 
-                {/* Hörbücher-Themenseite (Aktuell nur für Admins freigeschaltet) */}
-                {isAdmin && (
-                  <Link
-                    to="/hoerbuecher"
-                    onClick={() => handleMenuClick('Hörbücher (Admin)')}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
-                  >
-                    <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                      <BookOpen size={22} />
+                {/* Hörbücher-Themenseite (Für alle Nutzer freigeschaltet) */}
+                <Link
+                  to="/hoerbuecher"
+                  onClick={() => handleMenuClick('Hörbücher')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <BookOpen size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
+                      <span>Hörbücher</span>
+                      <span className="text-[9px] bg-[var(--accent)] text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Neu</span>
                     </div>
-                    <div>
-                      <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
-                        <span>Hörbücher</span>
-                        <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Admin</span>
-                      </div>
-                      <div className="text-xs text-[var(--text-muted)]">Die Hörbuch-Welt von Flow der Stille</div>
-                    </div>
-                  </Link>
-                )}
+                    <div className="text-xs text-[var(--text-muted)]">Die Hörbuch-Welt von Flow der Stille</div>
+                  </div>
+                </Link>
 
                 {/* Admin-Bereich (NUR für Administratoren mit rolle = 'admin' in profiles sichtbar) */}
                 {isAdmin && (

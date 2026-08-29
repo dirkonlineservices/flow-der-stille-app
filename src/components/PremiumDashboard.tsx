@@ -4,19 +4,19 @@ import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowL
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer } from '../lib/billing';
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [produkte, setProdukte] = useState<any[]>([]);
   const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -268,6 +268,21 @@ export default function PremiumShopDashboard() {
       setLoading(false);
     }
   }
+
+  const handleProductPurchaseSuccess = async (prod: any) => {
+    await loadShopData();
+    const id = prod?.id?.toLowerCase() || '';
+    const title = prod?.titel?.toLowerCase() || '';
+    const kat = prod?.kategorie?.toLowerCase() || '';
+    const isAudiobook = id.includes('schmetterling') || id.includes('hoerbuch') || 
+                        title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch') ||
+                        kat.includes('hörbuch') || kat.includes('hoerbuch');
+    if (isAudiobook) {
+      setTimeout(() => {
+        navigate(`/hoerbuch/${prod.id || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte'}?purchased=true&play=true`);
+      }, 1500);
+    }
+  };
 
   const getProductCoverImage = (prod: any) => {
     if (prod.image_url) return prod.image_url;
@@ -632,14 +647,14 @@ export default function PremiumShopDashboard() {
                                       produkt={produkt}
                                       user={user}
                                       setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={loadShopData}
+                                      onSuccess={() => handleProductPurchaseSuccess(produkt)}
                                     />
                                 ) : (
                                     <PayPalCheckoutButton 
                                       produkt={produkt} 
                                       user={user} 
                                       setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={loadShopData} 
+                                      onSuccess={() => handleProductPurchaseSuccess(produkt)} 
                                       paypalClientId={PAYPAL_CLIENT_ID}
                                     />
                                 )}
