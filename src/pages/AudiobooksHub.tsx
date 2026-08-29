@@ -17,10 +17,11 @@ export default function AudiobooksHub() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // 2. Audio-Probe Zustand
+  // 2. Audio-Probe Zustand (Start bei 1:19 Min. = 79 Sek. für genau 90 Sekunden)
+  const SNIPPET_START_TIME = 79;
+  const SNIPPET_DURATION = 90;
   const [isPlayingSnippet, setIsPlayingSnippet] = useState(false);
-  const [snippetCurrentTime, setSnippetCurrentTime] = useState(0);
-  const [snippetDuration, setSnippetDuration] = useState(90); // ~90 Sekunden Teaser
+  const [snippetCurrentTime, setSnippetCurrentTime] = useState(79);
   const snippetAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // 3. FAQ Accordion State
@@ -62,7 +63,7 @@ export default function AudiobooksHub() {
     verifyAdmin();
   }, [user]);
 
-  // Audio Snippet Steuerung
+  // Audio Snippet Steuerung (Startet ab 1:19 Min. und läuft für 90 Sek.)
   const togglePlaySnippet = () => {
     const audio = snippetAudioRef.current;
     if (!audio) return;
@@ -71,6 +72,11 @@ export default function AudiobooksHub() {
       audio.pause();
       setIsPlayingSnippet(false);
     } else {
+      // Wenn die Position außerhalb des 90-Sekunden-Bereichs liegt, zurück zu 1:19 Min. springen
+      if (audio.currentTime < SNIPPET_START_TIME || audio.currentTime >= SNIPPET_START_TIME + SNIPPET_DURATION) {
+        audio.currentTime = SNIPPET_START_TIME;
+        setSnippetCurrentTime(SNIPPET_START_TIME);
+      }
       audio.play().then(() => setIsPlayingSnippet(true)).catch(() => {});
     }
   };
@@ -145,29 +151,27 @@ export default function AudiobooksHub() {
         </span>
       </div>
 
-      {/* Audio-Element für die Klangprobe */}
+      {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek.) */}
       <audio
         ref={snippetAudioRef}
         src={SAMPLE_AUDIO_URL}
         preload="none"
         onTimeUpdate={() => {
           if (snippetAudioRef.current) {
-            setSnippetCurrentTime(snippetAudioRef.current.currentTime);
-            // Stopp nach 90 Sekunden Teaser
-            if (snippetAudioRef.current.currentTime >= 90) {
+            const cur = snippetAudioRef.current.currentTime;
+            setSnippetCurrentTime(cur);
+            // Stopp nach 90 Sekunden ab 1:19 Min. (also bei 2:49 Min. = 169 Sek.)
+            if (cur >= SNIPPET_START_TIME + SNIPPET_DURATION) {
               snippetAudioRef.current.pause();
+              snippetAudioRef.current.currentTime = SNIPPET_START_TIME;
+              setSnippetCurrentTime(SNIPPET_START_TIME);
               setIsPlayingSnippet(false);
             }
           }
         }}
-        onLoadedMetadata={() => {
-          if (snippetAudioRef.current?.duration) {
-            setSnippetDuration(snippetAudioRef.current.duration);
-          }
-        }}
         onEnded={() => {
           setIsPlayingSnippet(false);
-          setSnippetCurrentTime(0);
+          setSnippetCurrentTime(SNIPPET_START_TIME);
         }}
       />
 
@@ -246,10 +250,10 @@ export default function AudiobooksHub() {
             <div className="flex-1 w-full space-y-2 text-left">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[var(--text-main)]">
-                  Hörprobe: Der Übergang als Neubeginn
+                  Hörprobe: Kapitel 1 (Auszug nach der Einleitung)
                 </span>
                 <span className="font-mono text-[var(--text-muted)]">
-                  {formatTime(snippetCurrentTime)} / {formatTime(Math.min(snippetDuration, 90))}
+                  {formatTime(Math.max(0, snippetCurrentTime - SNIPPET_START_TIME))} / {formatTime(SNIPPET_DURATION)}
                 </span>
               </div>
 
@@ -257,7 +261,7 @@ export default function AudiobooksHub() {
               <div className="h-2 rounded-full bg-[var(--border)] overflow-hidden relative">
                 <div
                   className="h-full bg-[var(--accent)] transition-all duration-300 rounded-full"
-                  style={{ width: `${(snippetCurrentTime / Math.min(snippetDuration, 90)) * 100}%` }}
+                  style={{ width: `${Math.min(100, (Math.max(0, snippetCurrentTime - SNIPPET_START_TIME) / SNIPPET_DURATION) * 100)}%` }}
                 />
               </div>
 
