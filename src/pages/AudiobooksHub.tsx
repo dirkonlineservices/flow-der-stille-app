@@ -16,6 +16,7 @@ export default function AudiobooksHub() {
   // 1. Admin-Prüfung (Seite ist aktuell exklusiv nur für Admins freigeschaltet)
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAudiobookOwned, setIsAudiobookOwned] = useState(false);
 
   // 2. Audio-Probe Zustand (Start bei 1:19 Min. = 79 Sek. für genau 90 Sekunden)
   const SNIPPET_START_TIME = 79;
@@ -52,6 +53,16 @@ export default function AudiobooksHub() {
         } else {
           setIsAdmin(false);
         }
+
+        // Prüfen ob Hörbuch im Besitz ist
+        const { data: purchase } = await supabase
+          .from('kaeufe')
+          .select('id')
+          .eq('user_id', user.id)
+          .ilike('produkt_id', '%schmetterling%')
+          .maybeSingle();
+
+        setIsAudiobookOwned(!!purchase);
       } catch (err) {
         console.error('Fehler bei Admin-Verifizierung:', err);
         setIsAdmin(false);
@@ -370,54 +381,111 @@ export default function AudiobooksHub() {
                 Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.
               </p>
 
-              {/* Kapitel-Übersicht mit Startzeiten und Dauer */}
-              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 border border-[var(--border)] text-left text-xs space-y-2.5">
-                <div className="flex items-center justify-between font-semibold text-[var(--text-main)] mb-1 pb-1.5 border-b border-[var(--border)]">
+              {/* Kapitel-Übersicht: Harmonisch & synchron mit sauberer Unterzeile */}
+              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] text-left space-y-3">
+                <div className="flex items-center justify-between font-semibold text-xs text-[var(--text-main)] pb-2 border-b border-[var(--border)]">
                   <span>Kapitel und Abschnitte</span>
-                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Startzeit und Dauer</span>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start &amp; Dauer</span>
                 </div>
-                <div className="space-y-2 text-[var(--text-muted)]">
-                  <div className="flex justify-between items-start gap-2">
-                    <span>• Einleitung und rechtlicher Hinweis</span>
-                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">00:00 (Dauer 1:19 Min.)</span>
-                  </div>
-                  <div className="flex justify-between items-start gap-2">
-                    <span>• 1. Warum der Übergang erst der Anfang ist</span>
-                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 01:19 (Dauer 17:48 Min.)</span>
-                  </div>
-                  <div className="flex justify-between items-start gap-2">
-                    <span>• 2. Der Übergang: Wenn Wissenschaft auf Spiritualität trifft</span>
-                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 19:07 (Dauer 17:10 Min.)</span>
-                  </div>
-                  <div className="flex justify-between items-start gap-2">
-                    <span>• 3. Die andere Ebene: Jenseits des schweren Kostüms</span>
-                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 36:17 (Dauer 13:18 Min.)</span>
-                  </div>
-                  <div className="flex justify-between items-start gap-2">
-                    <span>• 4. Das Erwachen im Hier und Jetzt: Die Befreiung zum Leben</span>
-                    <span className="font-mono text-[11px] shrink-0 text-[var(--text-main)]">ab 49:35 (Dauer 9:08 Min.)</span>
-                  </div>
+
+                <div className="space-y-3">
+                  {[
+                    {
+                      num: 'Einleitung',
+                      title: 'Rechtlicher Hinweis und Einstimmung',
+                      sub: 'Wichtige Orientierung vor Beginn der Hörreise',
+                      start: '00:00',
+                      dur: '1:19 Min.'
+                    },
+                    {
+                      num: 'Kapitel 1',
+                      title: 'Warum der Übergang erst der Anfang ist',
+                      sub: 'Wie wir die Angst vor dem Wandel verlieren',
+                      start: 'ab 01:19',
+                      dur: '17:48 Min.'
+                    },
+                    {
+                      num: 'Kapitel 2',
+                      title: 'Der Übergang',
+                      sub: 'Wenn Wissenschaft auf Spiritualität trifft',
+                      start: 'ab 19:07',
+                      dur: '17:10 Min.'
+                    },
+                    {
+                      num: 'Kapitel 3',
+                      title: 'Die andere Ebene',
+                      sub: 'Jenseits des schweren Kostüms',
+                      start: 'ab 36:17',
+                      dur: '13:18 Min.'
+                    },
+                    {
+                      num: 'Kapitel 4',
+                      title: 'Das Erwachen im Hier und Jetzt',
+                      sub: 'Die Befreiung zum bewussten Leben',
+                      start: 'ab 49:35',
+                      dur: '9:08 Min.'
+                    }
+                  ].map((ch, idx) => (
+                    <div key={idx} className="flex items-start justify-between gap-3 text-xs">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono font-bold text-[var(--accent)] bg-[var(--accent)]/10 px-1.5 py-0.5 rounded border border-[var(--accent)]/20">
+                            {ch.num}
+                          </span>
+                          <span className="font-semibold text-[var(--text-main)]">{ch.title}</span>
+                        </div>
+                        <p className="text-[11px] text-[var(--text-muted)] italic pl-1">
+                          {ch.sub}
+                        </p>
+                      </div>
+                      <div className="text-right font-mono text-[11px] shrink-0">
+                        <div className="text-[var(--text-main)] font-medium">{ch.start}</div>
+                        <div className="text-[var(--text-muted)] text-[10px]">Dauer: {ch.dur}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="pt-2 border-t border-[var(--border)] flex justify-between items-center text-[11px] font-semibold text-[var(--text-main)]">
+
+                <div className="pt-2.5 border-t border-[var(--border)] flex justify-between items-center text-xs font-semibold text-[var(--text-main)]">
                   <span>Gesamtlaufzeit:</span>
                   <span className="font-mono text-[var(--accent)]">58:43 Minuten</span>
                 </div>
               </div>
 
               {/* Preisanker & Kauf-Verlinkung */}
-              <div className="pt-3 flex flex-col sm:flex-row items-center gap-4">
+              <div className="pt-3 flex flex-col sm:flex-row items-center gap-3">
                 <div className="text-center sm:text-left">
                   <div className="text-2xl font-bold text-[var(--text-main)]">4,99 €</div>
-                  <div className="text-[11px] text-[var(--text-muted)]">Einmalig • Lebenslanger Zugriff</div>
+                  <div className="text-[11px] text-[var(--text-muted)]">Einmalig • Kein Abo</div>
                 </div>
 
-                <Link
-                  to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
-                  className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <BookOpen size={16} />
-                  <span>Hörbuch-Seite öffnen & anhören</span>
-                </Link>
+                {isAudiobookOwned ? (
+                  <Link
+                    to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                    className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Play size={16} className="fill-white" />
+                    <span>Vollständiges Hörbuch abspielen</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/premium#product-hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Gift size={16} />
+                      <span>Hörbuch für 4,99 € freischalten</span>
+                    </Link>
+
+                    <Link
+                      to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <BookOpen size={14} />
+                      <span>Details</span>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
