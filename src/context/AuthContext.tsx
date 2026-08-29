@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getSupabase } from '../lib/supabaseClient'; 
+import { getSupabase } from '../lib/supabaseClient';
+import { syncConsentAfterLogin } from '../lib/consentManager';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -94,6 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mapAndSetUser(session.user);
       } else if (event === 'SIGNED_IN' && session?.user) {
         mapAndSetUser(session.user);
+        // Gast-Consent mit echter user_id verknüpfen (fire-and-forget)
+        syncConsentAfterLogin(session.user.id).catch(() => {});
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       } else if (session?.user) {

@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Headphones } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
+import { useAudioConsentGate } from './AudioConsentModal';
 
 interface Props {
   /** Das komplette Produkt-Objekt aus Supabase */
@@ -29,6 +30,9 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  // Consent-Gate: öffnet sich beim ersten Klick wenn noch nicht zugestimmt
+  const { gate, requestPlay } = useAudioConsentGate();
 
   useEffect(() => {
     let isMounted = true;
@@ -59,12 +63,19 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     const audio = audioRef.current;
     if (!audio) return;
 
+    if (!audio.paused) {
+      // Pause ist kein Consent-pflichtig – direkt ausführen
+      audio.pause();
+      return;
+    }
+
     // Alle anderen Audio-Elemente pausieren
     document.querySelectorAll('audio').forEach((el) => {
       if (el !== audio) el.pause();
     });
 
-    if (audio.paused) {
+    // Über das Consent-Gate routen (öffnet Modal beim ersten Mal)
+    requestPlay('sample', produkt.titel, () => {
       audio.play().catch(() => {});
       if ((window as any).dataLayer) {
         (window as any).dataLayer.push({
@@ -73,9 +84,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           audio_category: produkt.kategorie,
         });
       }
-    } else {
-      audio.pause();
-    }
+    });
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -101,7 +110,11 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   };
 
   return (
-    <div className={`w-full rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
+    <>
+      {/* Consent-Gate Modal (rendert nur wenn nötig) */}
+      {gate}
+
+      <div className={`w-full rounded-2xl border border-[var(--color-border-main)] bg-[var(--color-bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
       {/* Header-Zeile mit Titel, Offline-Icon und optionalem "Zum Produkt"-Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
         <div className="flex items-start sm:items-center gap-2 flex-1 min-w-0">
@@ -194,5 +207,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         }}
       />
     </div>
+    </>
   );
 }
