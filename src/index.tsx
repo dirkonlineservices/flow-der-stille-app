@@ -95,6 +95,7 @@ function ReferralCapture() {
 }
 
 import AudiobookPage from './pages/AudiobookPage';
+import AudiobooksHub from './pages/AudiobooksHub';
 
 export default function App() {
   return (
@@ -147,6 +148,8 @@ export default function App() {
                   <Route path="premium-dashboard" element={<PremiumDashboard />} />
                   <Route path="hoerbuch" element={<AudiobookPage />} />
                   <Route path="hoerbuch/:id" element={<AudiobookPage />} />
+                  <Route path="hoerbuecher" element={<AudiobooksHub />} />
+                  <Route path="audiobooks" element={<AudiobooksHub />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
