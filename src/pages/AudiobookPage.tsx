@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Sparkles, BookOpen, Clock, ShieldCheck, ListMusic, Bookmark, HardDrive } from 'lucide-react';
+import { ArrowLeft, Play, Sparkles, BookOpen, Clock, ShieldCheck, ListMusic, Bookmark, HardDrive, AlertCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import { AudiobookPlayerModal, AudiobookChapter } from '../components/AudiobookPlayerModal';
 import { OfflineDownloadButton } from '../components/OfflineDownloadButton';
@@ -49,44 +49,38 @@ export default function AudiobookPage() {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [productData, setProductData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const productId = id || 'fds_hoerbuch_schmetterling';
 
   useEffect(() => {
     async function loadAudiobook() {
       setLoading(true);
+      setLoadError(null);
       try {
         const supabase = getSupabase();
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('produkte')
           .select('*')
           .or(`id.eq.${productId},titel.ilike.%schmetterling%,titel.ilike.%hörbuch%`)
           .limit(1)
-          .single();
+          .maybeSingle();
 
-        if (data) {
+        if (error) {
+          console.error('Supabase query error:', error);
+          setLoadError('Produktdaten konnten nicht geladen werden.');
+        } else if (data) {
+          const resolvedAudio = data.audio_path || data.audio_url || data.hoerprobe_url;
+          if (!resolvedAudio) {
+            setLoadError('Für dieses Hörbuch ist aktuell noch kein Audio-Link hinterlegt.');
+          }
           setProductData(data);
         } else {
-          // Fallback Daten
-          setProductData({
-            id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
-            titel: 'Der Tag, an dem der Schmetterling erwachte.',
-            beschreibung: 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.',
-            audio_path: 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
-            preis: '0',
-            dauer: '58:43 Min'
-          });
+          setLoadError('Das gewünschte Hörbuch wurde in der Datenbank nicht gefunden.');
         }
       } catch (e) {
-        // Fallback Daten bei Fehler
-        setProductData({
-          id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
-          titel: 'Der Tag, an dem der Schmetterling erwachte.',
-          beschreibung: 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.',
-          audio_path: 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
-          preis: '0',
-          dauer: '58:43 Min'
-        });
+        console.error('Error loading audiobook:', e);
+        setLoadError('Verbindungsfehler beim Laden des Hörbuchs.');
       } finally {
         setLoading(false);
       }
@@ -95,8 +89,8 @@ export default function AudiobookPage() {
     loadAudiobook();
   }, [productId]);
 
-  const title = productData?.titel || 'Der Tag, an dem der Schmetterling erwachte.';
-  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || 'https://pub-7745440a8d654d998eec7b0501fd2992.r2.dev/hoerbuecher%20flow%20der%20stille/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3';
+  const title = productData?.titel || 'Der Tag, an dem der Schmetterling erwachte';
+  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10">
@@ -147,28 +141,52 @@ export default function AudiobookPage() {
               {productData?.beschreibung || 'Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.'}
             </p>
 
+            {/* Usability-freundlicher Fehlerhinweis falls keine Audio-URL vorliegt */}
+            {loadError && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-sm flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Audio-Inhalt momentan nicht verfügbar</p>
+                  <p className="mt-0.5 text-xs opacity-90">
+                    {loadError} Wenn dieser Fehler bestehen bleibt, wende dich bitte an unseren Support unter{' '}
+                    <a href="mailto:support@flow-der-stille.de" className="underline font-medium hover:opacity-80">support@flow-der-stille.de</a>.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="pt-2 flex flex-col sm:flex-row items-stretch gap-3">
               <button
-                onClick={() => setIsPlayerOpen(true)}
-                className="flex-1 py-3 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 flex flex-col items-center justify-center text-center cursor-pointer min-h-[64px]"
+                onClick={() => {
+                  if (!audioUrl) return;
+                  setIsPlayerOpen(true);
+                }}
+                disabled={!audioUrl}
+                className={`flex-1 py-3 px-6 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] ${
+                  audioUrl 
+                    ? 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white cursor-pointer hover:shadow-lg' 
+                    : 'bg-neutral-300 dark:bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                }`}
               >
                 <div className="flex items-center gap-2 text-sm font-bold">
-                  <Play size={16} className="fill-white" />
-                  <span>Hörbuch jetzt anhören</span>
+                  <Play size={16} className={audioUrl ? 'fill-white' : 'fill-neutral-500'} />
+                  <span>{audioUrl ? 'Hörbuch jetzt anhören' : 'Aktuell nicht verfügbar'}</span>
                 </div>
                 <span className="text-[11px] opacity-90 font-normal mt-0.5">
                   (58:43 Min)
                 </span>
               </button>
 
-              <div className="flex-1 min-h-[64px] flex flex-col justify-center">
-                <OfflineDownloadButton
-                  productId={productData?.id || productId}
-                  audioUrl={audioUrl}
-                  title={title}
-                  variant="button"
-                />
-              </div>
+              {audioUrl && (
+                <div className="flex-1 min-h-[64px] flex flex-col justify-center">
+                  <OfflineDownloadButton
+                    productId={productData?.id || productId}
+                    audioUrl={audioUrl}
+                    title={title}
+                    variant="button"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -194,8 +212,14 @@ export default function AudiobookPage() {
             {SCHMETTERLING_CHAPTERS.map((ch) => (
               <button
                 key={ch.id}
-                onClick={() => setIsPlayerOpen(true)}
-                className="p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] transition-all cursor-pointer flex items-center justify-between gap-3 text-left group"
+                onClick={() => {
+                  if (!audioUrl) return;
+                  setIsPlayerOpen(true);
+                }}
+                disabled={!audioUrl}
+                className={`p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] transition-all flex items-center justify-between gap-3 text-left group ${
+                  audioUrl ? 'hover:border-[var(--accent)] cursor-pointer' : 'opacity-60 cursor-not-allowed'
+                }`}
               >
                 <div>
                   <span className="font-semibold text-xs text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors block">

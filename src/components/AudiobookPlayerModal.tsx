@@ -78,6 +78,7 @@ export function AudiobookPlayerModal({
   chapters = DEFAULT_CHAPTERS
 }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const milestonesRef = useRef({ 25: false, 50: false, 75: false, 100: false });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -122,7 +123,55 @@ export function AudiobookPlayerModal({
     };
   }, [isOpen, productId, audioUrl]);
 
-  // 2. Event Listener für Audio-Element
+  // 2. MediaSession API (Hintergrund-Wiedergabe, Sperrbildschirm & Einschlaf-Kompatibilität)
+  useEffect(() => {
+    if (!isOpen || typeof window === 'undefined' || !('mediaSession' in navigator)) return;
+
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title,
+        artist: `${author} • Sprecherin: ${reader}`,
+        album: 'Flow der Stille',
+        artwork: [
+          { src: coverImage, sizes: '512x512', type: 'image/jpeg' },
+          { src: coverImage, sizes: '256x256', type: 'image/jpeg' }
+        ]
+      });
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (audioRef.current && audioRef.current.paused) {
+          audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+        }
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      });
+
+      navigator.mediaSession.setActionHandler('seekbackward', () => {
+        skipSeconds(-15);
+      });
+
+      navigator.mediaSession.setActionHandler('seekforward', () => {
+        skipSeconds(15);
+      });
+
+      navigator.mediaSession.setActionHandler('stop', () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+          setIsPlaying(false);
+        }
+      });
+    } catch (e) {
+      console.warn('MediaSession initialization warning:', e);
+    }
+  }, [isOpen, title, author, reader, coverImage]);
+
+  // 3. Event Listener für Audio-Element & GA4-Milestone Tracking
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -139,6 +188,29 @@ export function AudiobookPlayerModal({
         }
       }
 
+      // GA4 Meilenstein-Tracking (25%, 50%, 75%)
+      if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+        const pct = Math.round((cur / audio.duration) * 100);
+        ([25, 50, 75] as const).forEach((m) => {
+          if (pct >= m && !milestonesRef.current[m]) {
+            milestonesRef.current[m] = true;
+            if ((window as any).dataLayer) {
+              (window as any).dataLayer.push({
+                event: 'fds_audio_progress',
+                audio_action: `progress_${m}`,
+                audio_id: productId,
+                audio_title: title,
+                audio_category: 'Hörbuch',
+                audio_percent: m,
+                audio_current_time: Math.round(cur),
+                audio_duration: Math.round(audio.duration),
+                timestamp: new Date().toISOString()
+              });
+            }
+          }
+        });
+      }
+
       // Fortschritt alle 3 Sekunden in localStorage sichern
       if (Math.floor(cur) % 3 === 0 && cur > 5) {
         localStorage.setItem(PROGRESS_KEY, cur.toString());
@@ -151,23 +223,63 @@ export function AudiobookPlayerModal({
       }
     };
 
+    const handlePlayEvent = () => {
+      setIsPlaying(true);
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'playing';
+      }
+    };
+
+    const handlePauseEvent = () => {
+      setIsPlaying(false);
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+      }
+    };
+
+    // Ende des Hörbuchs: Garantierter Einmal-Durchlauf (kein Endlos-Loop)
     const handleEnded = () => {
       setIsPlaying(false);
       localStorage.removeItem(PROGRESS_KEY);
+
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'none';
+      }
+
+      // GA4 Complete Event
+      milestonesRef.current[100] = true;
+      if ((window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'fds_audio_interaction',
+          audio_action: 'complete',
+          audio_id: productId,
+          audio_title: title,
+          audio_category: 'Hörbuch',
+          audio_percent: 100,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Reset für nächsten Start
+      milestonesRef.current = { 25: false, 50: false, 75: false, 100: false };
     };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('play', handlePlayEvent);
+    audio.addEventListener('pause', handlePauseEvent);
     audio.addEventListener('ended', handleEnded);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('play', handlePlayEvent);
+      audio.removeEventListener('pause', handlePauseEvent);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [playableUrl, chapters]);
+  }, [playableUrl, chapters, productId, title]);
 
-  // 3. Steuerungsfunktionen
+  // 4. Steuerungsfunktionen
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -184,7 +296,19 @@ export function AudiobookPlayerModal({
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
-          .then(() => setIsPlaying(true))
+          .then(() => {
+            setIsPlaying(true);
+            if ((window as any).dataLayer) {
+              (window as any).dataLayer.push({
+                event: 'fds_audio_interaction',
+                audio_action: 'play',
+                audio_id: productId,
+                audio_title: title,
+                audio_category: 'Hörbuch',
+                timestamp: new Date().toISOString()
+              });
+            }
+          })
           .catch((err) => {
             console.warn('Playback fallback to direct audioUrl:', err);
             if (audioUrl && audio.src !== audioUrl) {
@@ -266,12 +390,13 @@ export function AudiobookPlayerModal({
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
-        {/* Hidden HTML5 Audio Element – src erst beim ersten Play gesetzt, kein preload */}
+        {/* Hidden HTML5 Audio Element – kein preload, kein Loop (stoppt nach einmaligem Hören) */}
         <audio
           ref={audioRef}
           src={playableUrl || audioUrl}
           controlsList="nodownload"
           preload="none"
+          loop={false}
         />
 
         {/* Player Modal Window */}
