@@ -136,15 +136,22 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
 
     if (audio.src !== targetUrl) {
       audio.src = targetUrl;
-      audio.load();
-      audio.oncanplay = () => {
-        setIsLoading(false);
-        audio.play().catch(err => console.error("Autoplay geblockt:", err));
-        audio.oncanplay = null;
-      };
-    } else if (audio.paused) {
+    }
+    
+    setIsLoading(true);
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsLoading(false);
+          setIsPlaying(true);
+        })
+        .catch(err => {
+          console.error("Playback Fehler:", err);
+          setIsLoading(false);
+        });
+    } else {
       setIsLoading(false);
-      audio.play().catch(err => console.error("Playback Fehler:", err));
     }
 
     if ((window as any).dataLayer) {
@@ -209,8 +216,8 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
           />
         )}
         
-        {/* Audio-Element ohne src + preload=none → kein Byte-Transfer bis Play */}
-        <audio ref={audioRef} className="hidden" preload="none" controlsList="nodownload" />
+        {/* Audio-Element mit preload=none → kein Byte-Transfer vor Klick auf Play */}
+        <audio ref={audioRef} src={url || undefined} className="hidden" preload="none" controlsList="nodownload" />
         
         {/* Dynamisches KI-Label */}
         {produkt.audio_hinweis && (

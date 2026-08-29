@@ -24,8 +24,7 @@ interface Props {
 
 export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
   const rawUrl: string = produkt?.hoerprobe_url ?? '';
-  // audioUrl wird erst beim ersten Play gesetzt – kein Egress-Verbrauch beim Rendern
-  const [audioUrl, setAudioUrl] = useState<string>('');
+  const [audioUrl, setAudioUrl] = useState<string>(rawUrl);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,7 +41,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
       if (!rawUrl) return;
       try {
         const playable = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, rawUrl, `Hörprobe: ${produkt.titel}`);
-        if (isMounted) setAudioUrl(playable);
+        if (isMounted && playable) setAudioUrl(playable);
       } catch (e) {
         console.warn('Could not resolve offline audio for hoerprobe:', e);
       }
@@ -63,11 +62,12 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   const togglePlay = () => {
     const audio = audioRef.current;
-    if (!audio || isLoading) return;
+    if (!audio) return;
 
     if (!audio.paused) {
       // Pause ist nicht Consent-pflichtig – direkt ausführen
       audio.pause();
+      setIsPlaying(false);
       return;
     }
 
@@ -77,26 +77,29 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     });
 
     // Über das Consent-Gate routen (öffnet Modal beim ersten Mal)
-    requestPlay('sample', produkt.titel, async () => {
-      // Lazy: URL erst jetzt holen (kein preload, kein Egress-Verbrauch vorab)
-      if (!audioUrl) {
-        setIsLoading(true);
-        try {
-          const resolved = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, rawUrl, produkt.titel);
-          setAudioUrl(resolved);
-          audio.src = resolved;
-          audio.load();
-          audio.oncanplay = () => {
+    requestPlay('sample', produkt.titel, () => {
+      const srcToPlay = audioUrl || rawUrl;
+      if (!audio.src || audio.src === '' || audio.src === window.location.href) {
+        audio.src = srcToPlay;
+      }
+
+      setIsLoading(true);
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
             setIsLoading(false);
-            audio.play().catch(() => {});
-            audio.oncanplay = null;
-          };
-        } catch (e) {
-          console.warn('Audio konnte nicht geladen werden:', e);
-          setIsLoading(false);
-        }
-      } else {
-        audio.play().catch(() => {});
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.error('Audio play error:', err);
+            setIsLoading(false);
+            // Fallback auf die direkte Roh-URL falls Blob fehlschlägt
+            if (rawUrl && audio.src !== rawUrl) {
+              audio.src = rawUrl;
+              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
+            }
+          });
       }
 
       if ((window as any).dataLayer) {
@@ -217,9 +220,10 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         </div>
       </div>
 
-      {/* Audio-Element: kein src + preload=none → null Bytes bis Play gedrückt */}
+      {/* Audio-Element mit preload="none" – kein Byte-Download bis Play geklickt wird */}
       <audio
         ref={audioRef}
+        src={audioUrl || rawUrl}
         controlsList="nodownload"
         preload="none"
         className="hidden"

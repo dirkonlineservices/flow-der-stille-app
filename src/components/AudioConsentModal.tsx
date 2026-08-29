@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AudioConsentModal.tsx
  *
  * Einmaliges Consent-Gate vor dem ersten Audio-Abspielen.
@@ -59,12 +59,23 @@ export function useAudioConsentGate() {
     []
   );
 
-  const handleAccept = useCallback(async () => {
+  const handleAccept = useCallback(() => {
     if (!state.callback) return;
     const cb = state.callback;
+    const { category, title } = state;
     setState(INITIAL); // Modal sofort schließen
-    await confirmAudioConsent(state.category, state.title, user?.id ?? null);
-    cb(); // Audio starten
+
+    // 1. Audio SOFORT synchron starten (User-Gesture bleibt im Browser aktiv!)
+    try {
+      cb();
+    } catch (err) {
+      console.error('Play callback failed:', err);
+    }
+
+    // 2. Consent asynchron und blockierungsfrei im Hintergrund speichern
+    confirmAudioConsent(category, title, user?.id ?? null).catch((e) => {
+      console.warn('Consent save error:', e);
+    });
   }, [state, user]);
 
   const handleClose = useCallback(() => {
