@@ -467,7 +467,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v5.0.0
+                    Flow der Stille v5.1.0
                   </span>
                 </div>
               </div>

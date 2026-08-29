@@ -16,7 +16,7 @@ import { getSupabase } from '../lib/supabaseClient';
 
 // Fallback für den lokalen Build-Code, falls CapApp.getInfo() im Web-Browser aufgerufen wird
 const CURRENT_LOCAL_VERSION_CODE = 95;
-const CURRENT_LOCAL_VERSION_NAME = "5.0.0";
+const CURRENT_LOCAL_VERSION_NAME = "5.1.0";
 
 export function GooglePlayBadgeIcon({ className = "w-6 h-6" }: { className?: string }) {
   return (
