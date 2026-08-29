@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Headphones } from 'lucide-react';
+import { Play, Pause, Headphones, Loader2 } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
 import { useAudioConsentGate } from './AudioConsentModal';
@@ -24,10 +24,12 @@ interface Props {
 
 export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
   const rawUrl: string = produkt?.hoerprobe_url ?? '';
-  const [audioUrl, setAudioUrl] = useState<string>(rawUrl);
+  // audioUrl wird erst beim ersten Play gesetzt – kein Egress-Verbrauch beim Rendern
+  const [audioUrl, setAudioUrl] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -61,10 +63,10 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   const togglePlay = () => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || isLoading) return;
 
     if (!audio.paused) {
-      // Pause ist kein Consent-pflichtig – direkt ausführen
+      // Pause ist nicht Consent-pflichtig – direkt ausführen
       audio.pause();
       return;
     }
@@ -75,8 +77,28 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     });
 
     // Über das Consent-Gate routen (öffnet Modal beim ersten Mal)
-    requestPlay('sample', produkt.titel, () => {
-      audio.play().catch(() => {});
+    requestPlay('sample', produkt.titel, async () => {
+      // Lazy: URL erst jetzt holen (kein preload, kein Egress-Verbrauch vorab)
+      if (!audioUrl) {
+        setIsLoading(true);
+        try {
+          const resolved = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, rawUrl, produkt.titel);
+          setAudioUrl(resolved);
+          audio.src = resolved;
+          audio.load();
+          audio.oncanplay = () => {
+            setIsLoading(false);
+            audio.play().catch(() => {});
+            audio.oncanplay = null;
+          };
+        } catch (e) {
+          console.warn('Audio konnte nicht geladen werden:', e);
+          setIsLoading(false);
+        }
+      } else {
+        audio.play().catch(() => {});
+      }
+
       if ((window as any).dataLayer) {
         (window as any).dataLayer.push({
           event: 'hoerprobe_play',
@@ -147,22 +169,29 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
       {/* Audio-Steuerung: Play Button + Vollbreiten-Fortschrittsbalken */}
       <div className="flex items-center gap-3 w-full">
-        {/* Play/Pause Button */}
+        {/* Play/Pause Button mit Lade-Indikator */}
         <button
           onClick={togglePlay}
-          aria-label={isPlaying ? 'Pause' : 'Hörprobe abspielen'}
-          className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white cursor-pointer ${
-            isPlaying ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)]'
+          disabled={isLoading}
+          aria-label={isLoading ? 'Wird geladen…' : isPlaying ? 'Pause' : 'Hörprobe abspielen'}
+          className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white ${
+            isLoading
+              ? 'bg-[var(--color-accent-primary)]/60 cursor-not-allowed'
+              : isPlaying
+              ? 'bg-emerald-700 hover:bg-emerald-800 cursor-pointer'
+              : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] cursor-pointer'
           }`}
         >
-          {isPlaying ? (
+          {isLoading ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : isPlaying ? (
             <Pause size={16} fill="white" stroke="none" />
           ) : (
             <Play size={16} className="ml-0.5" fill="white" stroke="none" />
           )}
         </button>
 
-        {/* Fortschrittsbalken + Zeit (Füllt die gesamte verbleibende Breite perfekt aus) */}
+        {/* Fortschrittsbalken + Zeit */}
         <div className="flex-1 w-full min-w-0">
           <div
             className="relative h-2.5 bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] rounded-full cursor-pointer overflow-hidden mb-1.5"
@@ -172,24 +201,27 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
             aria-valuemin={0}
             aria-valuemax={100}
           >
+            {/* Ladepuls-Animation wenn noch kein Buffer */}
+            {isLoading && (
+              <div className="absolute inset-0 bg-[var(--color-accent-primary)]/30 animate-pulse rounded-full" />
+            )}
             <div
               className="absolute left-0 top-0 h-full bg-[var(--color-accent-primary)] rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
           <div className="flex justify-between text-[11px] text-[var(--color-text-muted)] font-mono font-medium">
-            <span>{formatTime(currentTime)}</span>
+            <span>{isLoading ? 'Lädt…' : formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
         </div>
       </div>
 
-      {/* Verstecktes Audio-Element */}
+      {/* Audio-Element: kein src + preload=none → null Bytes bis Play gedrückt */}
       <audio
         ref={audioRef}
-        src={audioUrl || rawUrl}
         controlsList="nodownload"
-        preload="metadata"
+        preload="none"
         className="hidden"
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}

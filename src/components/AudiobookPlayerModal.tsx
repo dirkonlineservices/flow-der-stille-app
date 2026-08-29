@@ -266,12 +266,12 @@ export function AudiobookPlayerModal({
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
-        {/* Hidden HTML5 Audio Element (Prohibited Download Attributes) */}
+        {/* Hidden HTML5 Audio Element – src erst beim ersten Play gesetzt, kein preload */}
         <audio
           ref={audioRef}
           src={playableUrl || audioUrl}
           controlsList="nodownload"
-          preload="auto"
+          preload="none"
         />
 
         {/* Player Modal Window */}
