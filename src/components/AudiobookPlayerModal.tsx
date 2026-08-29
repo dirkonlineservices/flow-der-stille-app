@@ -38,6 +38,7 @@ interface Props {
   audioUrl: string;
   durationSeconds?: number; // z. B. 3523 für 58:43 Min
   chapters?: AudiobookChapter[];
+  initialStartTime?: number;
 }
 
 const DEFAULT_CHAPTERS: AudiobookChapter[] = [
@@ -88,7 +89,8 @@ export function AudiobookPlayerModal({
   coverImage = '/images/products/cover_schmetterling.jpg',
   audioUrl,
   durationSeconds = 3523,
-  chapters = DEFAULT_CHAPTERS
+  chapters = DEFAULT_CHAPTERS,
+  initialStartTime
 }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const milestonesRef = useRef({ 25: false, 50: false, 75: false, 100: false });
@@ -114,7 +116,7 @@ export function AudiobookPlayerModal({
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
 
-  // 1. Audio-URL auflösen (Sandbox Cache oder Direkt-URL)
+  // 1. Audio-URL auflösen (Sandbox Cache oder Direkt-URL) & Startposition
   useEffect(() => {
     if (!isOpen || !audioUrl) return;
 
@@ -129,20 +131,38 @@ export function AudiobookPlayerModal({
       if (isMounted) setPlayableUrl(audioUrl);
     });
 
-    // Gespeicherte Hörposition prüfen
-    const saved = localStorage.getItem(PROGRESS_KEY);
-    if (saved) {
-      const pos = parseFloat(saved);
-      if (!isNaN(pos) && pos > 10 && pos < durationSeconds - 30) {
-        setSavedPosition(pos);
-        setShowResumeBanner(true);
+    const isDisclaimerListened = localStorage.getItem(DISCLAIMER_KEY) === 'true';
+
+    // Falls initialStartTime mitgegeben wurde und Disclaimer schon gehört: direkt anspringen
+    if (initialStartTime && initialStartTime > 0 && isDisclaimerListened) {
+      setCurrentTime(initialStartTime);
+      if (audioRef.current) {
+        audioRef.current.currentTime = initialStartTime;
+      }
+    } else {
+      // Wenn der Disclaimer noch nicht gehört wurde: ZWINGEND bei 00:00 starten!
+      if (!isDisclaimerListened) {
+        setCurrentTime(0);
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+        }
+      } else {
+        // Gespeicherte Hörposition NUR anbieten, wenn Disclaimer schon gehört wurde
+        const saved = localStorage.getItem(PROGRESS_KEY);
+        if (saved) {
+          const pos = parseFloat(saved);
+          if (!isNaN(pos) && pos > 10 && pos < durationSeconds - 30) {
+            setSavedPosition(pos);
+            setShowResumeBanner(true);
+          }
+        }
       }
     }
 
     return () => {
       isMounted = false;
     };
-  }, [isOpen, productId, audioUrl]);
+  }, [isOpen, productId, audioUrl, initialStartTime]);
 
   // 2. MediaSession API (Hintergrund-Wiedergabe, Sperrbildschirm & Einschlaf-Kompatibilität)
   useEffect(() => {
@@ -348,13 +368,12 @@ export function AudiobookPlayerModal({
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const targetTime = parseFloat(e.target.value);
-    // Wenn der rechtliche Hinweis noch nie komplett angehört wurde und der Nutzer vorspulen will
-    if (!hasListenedDisclaimer && targetTime > DISCLAIMER_DURATION && currentTime < DISCLAIMER_DURATION) {
-      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach kannst du frei spulen.');
+    if (!hasListenedDisclaimer) {
+      setDisclaimerNotice('Du musst dir zuerst den rechtlichen Hinweis (1:19 Min.) einmalig anhören. Danach kannst du frei spulen.');
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
+    const targetTime = parseFloat(e.target.value);
     setCurrentTime(targetTime);
     if (audioRef.current) {
       audioRef.current.currentTime = targetTime;
@@ -363,19 +382,19 @@ export function AudiobookPlayerModal({
 
   const skipSeconds = (seconds: number) => {
     if (!audioRef.current) return;
-    const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
-    if (!hasListenedDisclaimer && newTime > DISCLAIMER_DURATION && currentTime < DISCLAIMER_DURATION && seconds > 0) {
-      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach kannst du frei spulen.');
+    if (!hasListenedDisclaimer && seconds > 0) {
+      setDisclaimerNotice('Vorspulen ist während des rechtlichen Hinweises (erste 1:19 Min.) gesperrt. Du musst ihn dir einmalig anhören.');
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
+    const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const jumpToChapter = (chapter: AudiobookChapter) => {
-    if (!hasListenedDisclaimer && chapter.startTime >= DISCLAIMER_DURATION) {
-      setDisclaimerNotice('Bitte lausche dem rechtlichen Hinweis zu Beginn einmalig bis zum Ende (1:19 Min.). Danach werden alle Kapitel zur Direktauswahl freigeschaltet.');
+    if (!hasListenedDisclaimer && chapter.id !== 'intro' && chapter.startTime >= DISCLAIMER_DURATION) {
+      setDisclaimerNotice('Du musst dir zuerst den rechtlichen Hinweis (1:19 Min.) einmalig anhören. Danach kannst du in den Kapiteln hüpfen.');
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
@@ -390,9 +409,9 @@ export function AudiobookPlayerModal({
 
   const handleResumePosition = () => {
     if (savedPosition && audioRef.current) {
-      if (savedPosition >= DISCLAIMER_DURATION) {
-        setHasListenedDisclaimer(true);
-        localStorage.setItem(DISCLAIMER_KEY, 'true');
+      if (!hasListenedDisclaimer && savedPosition >= DISCLAIMER_DURATION) {
+        setShowResumeBanner(false);
+        return;
       }
       audioRef.current.currentTime = savedPosition;
       setCurrentTime(savedPosition);
@@ -546,26 +565,40 @@ export function AudiobookPlayerModal({
                 <input
                   type="range"
                   min={0}
-                  max={duration || 100}
+                  max={hasListenedDisclaimer ? (duration || 100) : DISCLAIMER_DURATION}
                   step={0.5}
-                  value={currentTime}
+                  value={hasListenedDisclaimer ? currentTime : Math.min(currentTime, DISCLAIMER_DURATION)}
                   onChange={handleSeek}
-                  className="w-full h-2 rounded-lg bg-[var(--border)] appearance-none cursor-pointer accent-[var(--accent)] focus:outline-none"
+                  disabled={!hasListenedDisclaimer}
+                  className={`w-full h-2 rounded-lg appearance-none focus:outline-none ${
+                    hasListenedDisclaimer 
+                      ? 'bg-[var(--border)] cursor-pointer accent-[var(--accent)]' 
+                      : 'bg-amber-500/20 cursor-not-allowed accent-amber-500 opacity-80'
+                  }`}
                 />
               </div>
 
               <div className="flex items-center justify-between text-xs font-mono font-medium text-[var(--text-muted)]">
                 <span>{formatTime(currentTime)}</span>
-                <span className="text-[var(--accent)] font-semibold">
-                  -{formatTime(Math.max(0, duration - currentTime))}
-                </span>
+                {!hasListenedDisclaimer ? (
+                  <span className="text-amber-600 dark:text-amber-400 font-sans text-[11px] font-semibold flex items-center gap-1">
+                    <Lock size={12} />
+                    <span>Rechtlicher Hinweis läuft (Spulen gesperrt bis 01:19)</span>
+                  </span>
+                ) : (
+                  <span className="text-[var(--accent)] font-semibold">
+                    -{formatTime(Math.max(0, duration - currentTime))}
+                  </span>
+                )}
               </div>
 
               {/* Einmaliger rechtlicher Hinweis bis 1:19 Min. */}
               {!hasListenedDisclaimer && (
                 <div className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-1.5 flex items-center gap-2">
-                  <Shield size={13} className="shrink-0 text-amber-600" />
-                  <span>Rechtlicher Hinweis aktiv: Wird bis 1:19 Min. einmalig abgespielt.</span>
+                  <Lock size={13} className="shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span>
+                    <strong>Rechtlicher Hinweis:</strong> Bitte lausche der Einleitung einmalig bis 1:19 Min. Danach werden alle Kapitel und das Vor- &amp; Zurückspulen für dich freigeschaltet.
+                  </span>
                 </div>
               )}
             </div>
@@ -668,18 +701,18 @@ export function AudiobookPlayerModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {chapters.map((ch) => {
                   const isActive = activeChapterId === ch.id;
-                  const isLocked = !hasListenedDisclaimer && ch.startTime >= DISCLAIMER_DURATION;
+                  const isLocked = !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= DISCLAIMER_DURATION;
 
                   return (
                     <button
                       key={ch.id}
                       onClick={() => jumpToChapter(ch)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
                         isActive
-                          ? 'bg-[var(--accent)]/15 border-[var(--accent)] text-[var(--text-main)] shadow-xs'
+                          ? 'bg-[var(--accent)]/15 border-[var(--accent)] text-[var(--text-main)] shadow-xs cursor-pointer'
                           : isLocked
-                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] hover:border-amber-400/50'
-                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40'
+                          ? 'bg-[var(--bg-alt)]/50 border-[var(--border)] text-[var(--text-muted)] opacity-75 cursor-not-allowed hover:border-amber-400/50'
+                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40 cursor-pointer'
                       }`}
                     >
                       <div className="min-w-0 flex-1">

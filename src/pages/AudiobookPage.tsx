@@ -80,14 +80,21 @@ export default function AudiobookPage() {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [selectedLockedChapter, setSelectedLockedChapter] = useState<FormattedAudiobookChapter | null>(null);
 
+  // Disclaimer-Status (Erst nach 1:19 Min. darf in den Kapiteln gehüpft werden)
+  const productId = id || 'fds_hoerbuch_schmetterling';
+  const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
+  const [hasListenedDisclaimer, setHasListenedDisclaimer] = useState<boolean>(() => {
+    return localStorage.getItem(DISCLAIMER_KEY) === 'true';
+  });
+  const [initialChapterTime, setInitialChapterTime] = useState<number>(0);
+  const [showDisclaimerRequiredModal, setShowDisclaimerRequiredModal] = useState<boolean>(false);
+
   // 90 Sekunden Hörprobe (ab 1:19 Min. = 79 Sek.)
   const SNIPPET_START_TIME = 79;
   const SNIPPET_DURATION = 90;
   const [isPlayingSnippet, setIsPlayingSnippet] = useState(false);
   const [snippetCurrentTime, setSnippetCurrentTime] = useState(79);
   const snippetAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  const productId = id || 'fds_hoerbuch_schmetterling';
 
   useEffect(() => {
     async function loadAudiobook() {
@@ -280,6 +287,7 @@ export default function AudiobookPage() {
                   <button
                     onClick={() => {
                       if (!audioUrl) return;
+                      setInitialChapterTime(0);
                       setIsPlayerOpen(true);
                     }}
                     disabled={!audioUrl}
@@ -287,10 +295,16 @@ export default function AudiobookPage() {
                   >
                     <div className="flex items-center gap-2 text-sm font-bold">
                       <Play size={16} className="fill-white" />
-                      <span>Vollständiges Hörbuch abspielen</span>
+                      <span>
+                        {!hasListenedDisclaimer 
+                          ? 'Hörbuch starten (mit rechtlichem Hinweis)' 
+                          : 'Vollständiges Hörbuch abspielen'}
+                      </span>
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
-                      (58:43 Min. • Unbegrenzt hören)
+                      {!hasListenedDisclaimer
+                        ? '1:19 Min. Hinweis anhören, danach freies Kapitel-Hüpfen'
+                        : '58:43 Min. • Alle Kapitel & freies Spulen aktiv'}
                     </span>
                   </button>
 
@@ -389,61 +403,87 @@ export default function AudiobookPage() {
             </span>
           </div>
 
+          {/* Hinweis wenn Disclaimer noch nicht angehört wurde */}
+          {isOwned && !hasListenedDisclaimer && (
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-xs">
+              <Lock size={16} className="text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <span className="font-semibold block">Einmaliger rechtlicher Hinweis erforderlich (00:00 bis 01:19 Min.)</span>
+                <span className="text-[11px] opacity-90 block">
+                  Bitte lausche zu Beginn der Einleitung einmalig bis zum Ende (1:19 Min.). Erst danach werden alle weiteren Kapitel zur Direktauswahl freigeschaltet.
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Saubere Liste der Kapitel */}
           <div className="space-y-3">
-            {SCHMETTERLING_CHAPTERS.map((ch) => (
-              <div
-                key={ch.id}
-                onClick={() => {
-                  if (isOwned) {
-                    setIsPlayerOpen(true);
-                  } else {
-                    setSelectedLockedChapter(ch);
-                    setShowBuyModal(true);
-                  }
-                }}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left cursor-pointer ${
-                  isOwned
-                    ? 'bg-[var(--bg-alt)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-xs'
-                    : 'bg-[var(--bg-alt)]/60 border-[var(--border)] hover:border-amber-400/50'
-                }`}
-              >
-                {/* Titel und Untertitel sauber untereinander */}
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-md border border-[var(--accent)]/20">
-                      {ch.number}
-                    </span>
-                    <h4 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
-                      {ch.title}
-                    </h4>
-                  </div>
-                  <p className="text-xs text-[var(--text-muted)] italic pl-1">
-                    {ch.subtitle}
-                  </p>
-                </div>
+            {SCHMETTERLING_CHAPTERS.map((ch) => {
+              const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= 79;
+              const isAvailable = isOwned && (hasListenedDisclaimer || ch.id === 'intro');
 
-                {/* Zeit, Dauer und Status sauber rechts ausgerichtet */}
-                <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--border)]">
-                  <div className="text-left sm:text-right font-mono text-xs">
-                    <span className="font-semibold text-[var(--text-main)] block">
-                      Start: {ch.formattedTime}
-                    </span>
-                    <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
-                      Dauer: {ch.duration}
-                    </span>
+              return (
+                <div
+                  key={ch.id}
+                  onClick={() => {
+                    if (!isOwned) {
+                      setSelectedLockedChapter(ch);
+                      setShowBuyModal(true);
+                    } else if (isLockedByDisclaimer) {
+                      setSelectedLockedChapter(ch);
+                      setShowDisclaimerRequiredModal(true);
+                    } else {
+                      setInitialChapterTime(ch.startTime);
+                      setIsPlayerOpen(true);
+                    }
+                  }}
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left cursor-pointer ${
+                    isAvailable
+                      ? 'bg-[var(--bg-alt)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-xs'
+                      : isLockedByDisclaimer
+                      ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] opacity-85 hover:border-amber-400/60'
+                      : 'bg-[var(--bg-alt)]/60 border-[var(--border)] hover:border-amber-400/50'
+                  }`}
+                >
+                  {/* Titel und Untertitel sauber untereinander */}
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-md border border-[var(--accent)]/20">
+                        {ch.number}
+                      </span>
+                      <h4 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                        {ch.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-[var(--text-muted)] italic pl-1">
+                      {ch.subtitle}
+                    </p>
                   </div>
 
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                    isOwned
-                      ? 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--accent)]'
-                      : 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
-                  }`}>
-                    {isOwned ? <Play size={14} className="fill-current ml-0.5" /> : <Lock size={14} />}
+                  {/* Zeit, Dauer und Status sauber rechts ausgerichtet */}
+                  <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--border)]">
+                    <div className="text-left sm:text-right font-mono text-xs">
+                      <span className="font-semibold text-[var(--text-main)] block">
+                        Start: {ch.formattedTime}
+                      </span>
+                      <span className="text-[11px] text-[var(--text-muted)] block mt-0.5">
+                        Dauer: {ch.duration}
+                      </span>
+                    </div>
+
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      isAvailable
+                        ? 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--accent)]'
+                        : isLockedByDisclaimer
+                        ? 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
+                        : 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
+                    }`}>
+                      {isAvailable ? <Play size={14} className="fill-current ml-0.5" /> : <Lock size={14} />}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -459,6 +499,52 @@ export default function AudiobookPage() {
         </div>
 
       </div>
+
+      {/* Disclaimer-Pflicht Modal (wenn Kapitel angeklickt wird, bevor Disclaimer gehört wurde) */}
+      {showDisclaimerRequiredModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-5">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+              <Lock size={28} />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono uppercase font-bold text-amber-600 dark:text-amber-400">
+                {selectedLockedChapter?.number || 'Kapitel gesperrt'}
+              </span>
+              <h3 className="font-serif font-bold text-xl text-[var(--text-main)]">
+                Rechtlicher Hinweis erforderlich
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Du musst dir zuerst die Einleitung und den rechtlichen Hinweis (1:19 Min.) einmalig vollständig anhören. Danach werden alle Kapitel zur Direktauswahl freigeschaltet und du kannst frei in den Kapiteln hüpfen.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDisclaimerRequiredModal(false);
+                  setInitialChapterTime(0);
+                  setIsPlayerOpen(true);
+                }}
+                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Play size={15} className="fill-white" />
+                <span>Jetzt Einleitung starten (00:00)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowDisclaimerRequiredModal(false)}
+                className="text-xs text-[var(--text-muted)] hover:underline pt-1 cursor-pointer"
+              >
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Kauf-Hinweis Modal (wenn nicht freigeschaltet und Kapitel angeklickt wird) */}
       {showBuyModal && (
@@ -517,7 +603,10 @@ export default function AudiobookPage() {
       {isOwned && (
         <AudiobookPlayerModal
           isOpen={isPlayerOpen}
-          onClose={() => setIsPlayerOpen(false)}
+          onClose={() => {
+            setIsPlayerOpen(false);
+            setHasListenedDisclaimer(localStorage.getItem(DISCLAIMER_KEY) === 'true');
+          }}
           productId={productData?.id || productId}
           title={title}
           author="Jacqueline Schmetzer"
@@ -526,6 +615,7 @@ export default function AudiobookPage() {
           coverImage="/images/products/cover_schmetterling.jpg"
           durationSeconds={3523}
           chapters={SCHMETTERLING_CHAPTERS}
+          initialStartTime={hasListenedDisclaimer ? initialChapterTime : 0}
         />
       )}
     </div>
