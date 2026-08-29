@@ -239,7 +239,7 @@ export default function AudiobooksHub() {
                 Worte, die tragen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Geschrieben von <strong>Jacqueline Schmetzer</strong> aus jahrelanger Achtsamkeitspraxis. Jede Zeile zielt darauf ab, sanften Trost zu spenden, Ängste vor Veränderung aufzulösen und innere Kraftquellen zu aktivieren.
+                Geschrieben von <strong>Jacqueline</strong> aus jahrelanger Achtsamkeitspraxis. Jede Zeile zielt darauf ab, sanften Trost zu spenden, Ängste vor Veränderung aufzulösen und innere Kraftquellen zu aktivieren.
               </p>
             </div>
 
@@ -252,7 +252,7 @@ export default function AudiobooksHub() {
                 Eine Stimme, die ankommt
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Eingesprochen von <strong>Lisa Ragusa</strong> mit einer warmen, tief geerdeten Stimmfarbe. Ihr sanftes Lesetempo verlangsamt den Atemrhythmus und vermittelt ein Gefühl von Geborgenheit und Sicherheit.
+                Eingesprochen von <strong>Lisa</strong> mit einer warmen, tief geerdeten Stimmfarbe. Ihr sanftes Lesetempo verlangsamt den Atemrhythmus und vermittelt ein Gefühl von Geborgenheit und Sicherheit.
               </p>
             </div>
 
@@ -265,7 +265,7 @@ export default function AudiobooksHub() {
                 Akustische Harmonie
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Produziert von <strong>Dirk Schmetzer</strong>. Abgestimmt auf eine sanfte Dynamik ohne laute Spitzen oder störende Nebengeräusche – perfekt zum Abschalten am Abend oder für den erholsamen Mittagsschlaf.
+                Produziert von <strong>Dirk</strong>. Abgestimmt auf eine sanfte Dynamik ohne laute Spitzen oder störende Nebengeräusche – perfekt zum Abschalten am Abend oder für den erholsamen Mittagsschlaf.
               </p>
             </div>
           </div>
