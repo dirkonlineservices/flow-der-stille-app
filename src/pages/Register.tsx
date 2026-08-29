@@ -106,8 +106,9 @@ export default function Register() {
         return;
       }
 
-      // Profile in public.profiles anlegen / aktualisieren mit Vor- und Zunamen
+      // Profile in public.profiles anlegen / aktualisieren mit Vor- und Zunamen & Haftungsausschluss-Zeitstempel
       if (data?.user?.id) {
+        const nowIso = new Date().toISOString();
         try {
           await supabase.from('profiles').upsert({
             id: data.user.id,
@@ -115,12 +116,17 @@ export default function Register() {
             first_name: firstName,
             last_name: lastName,
             full_name: `${firstName} ${lastName}`.trim(),
-            updated_at: new Date().toISOString()
+            disclaimer_accepted_at: nowIso,
+            updated_at: nowIso
           }, { onConflict: 'id' });
         } catch (profileErr) {
           console.warn('Profile upsert warning:', profileErr);
         }
       }
+
+      // Lokale Flags setzen, damit der registrierte Nutzer niemals erneut blockiert wird
+      localStorage.setItem('flow_disclaimer_accepted', 'true');
+      localStorage.setItem('fds_audio_consent_granted', 'true');
 
       // 2. Newsletter Logik isoliert ausführen (Nur wenn Checkbox aktiv ist)
       if (newsletter) {
@@ -376,7 +382,7 @@ export default function Register() {
                   required
                 />
                 <span className="text-xs text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
-                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung elektronisch erhoben und gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert. *
+                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung elektronisch erhoben und gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert sowie den <Link to="/rechtliches" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Haftungsausschluss für Meditation &amp; Selbsthypnose</Link> zur Kenntnis genommen und stimme der Nutzung auf eigene Verantwortung zu. *
                 </span>
               </label>
             </div>

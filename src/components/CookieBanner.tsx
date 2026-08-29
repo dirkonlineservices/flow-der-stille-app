@@ -60,13 +60,9 @@ export default function CookieBanner() {
     }
 
     const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem(COOKIE_STORAGE_KEY);
-    const disclaimerAccepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
 
     if (!storedConsent) {
       setStep(1);
-      setIsVisible(true);
-    } else if (!disclaimerAccepted) {
-      setStep(2);
       setIsVisible(true);
     } else {
       setIsVisible(false);
@@ -83,20 +79,20 @@ export default function CookieBanner() {
     };
   }, [location.pathname, isPublicRoute]);
 
-  // App Step 1 Choice -> Go to Step 2 (Haftungsausschluss)
+  // App Choice -> Sofort schließen (Haftungsausschluss kommt erst beim Audio-Play)
   const handleAppChoice = (choice: 'accepted' | 'rejected') => {
     setAnalyticsConsent(choice);
-    setStep(2);
+    setIsVisible(false);
   };
 
-  // Web Step 1 Choice -> Go to Step 2 (Haftungsausschluss)
+  // Web Choice -> Sofort schließen (Haftungsausschluss kommt erst beim Audio-Play)
   const handleWebChoice = (choice: 'all' | 'necessary' | 'rejected') => {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
     setAnalyticsConsent(choice === 'all' ? 'accepted' : 'rejected');
-    setStep(2);
+    setIsVisible(false);
   };
 
-  // Step 2 Disclaimer Confirmation (both Web & App)
+  // Step 2 Disclaimer Confirmation (Fallback)
   const handleDisclaimerConfirm = () => {
     if (!disclaimerChecked) return;
     localStorage.setItem('flow_disclaimer_accepted', 'true');
@@ -138,7 +134,7 @@ export default function CookieBanner() {
             <div>
               <div className="flex items-center justify-between mb-4 pt-2">
                 <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
-                  Schritt 1 von 2: App-Datenschutz
+                  App-Datenschutz &amp; Analyse
                 </span>
               </div>
 
@@ -195,14 +191,14 @@ export default function CookieBanner() {
                   className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all shadow-md active:scale-95 text-white bg-[var(--accent)] hover:opacity-90 cursor-pointer"
                 >
                   <CheckCircle2 size={18} />
-                  <span>Zustimmen &amp; Weiter zu Schritt 2 →</span>
+                  <span>Zustimmen &amp; App starten</span>
                 </button>
 
                 <button
                   onClick={() => handleAppChoice('rejected')}
                   className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-medium text-xs transition-all border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-muted)] hover:bg-[var(--bg-alt)] active:scale-95 cursor-pointer"
                 >
-                  <span>Ablehnen &amp; Weiter zu Schritt 2 →</span>
+                  <span>Ablehnen &amp; App starten</span>
                 </button>
               </div>
 
@@ -300,7 +296,7 @@ export default function CookieBanner() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
-                Schritt 1 von 2: Web-Cookies &amp; Datenschutz
+                Cookie- &amp; Datenschutz-Einstellungen
               </span>
             </div>
 
@@ -360,7 +356,7 @@ export default function CookieBanner() {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-opacity shadow-sm hover:opacity-90 text-white bg-[var(--accent)] cursor-pointer"
               >
                 <CheckCircle2 size={16} />
-                <span>Alle akzeptieren &amp; Weiter →</span>
+                <span>Alle akzeptieren</span>
               </button>
 
               <button
@@ -368,7 +364,7 @@ export default function CookieBanner() {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-sm transition-colors border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-main)] hover:bg-[var(--bg-alt)] cursor-pointer"
               >
                 <Shield size={16} />
-                <span>Nur notwendige &amp; Weiter →</span>
+                <span>Nur notwendige Cookies</span>
               </button>
             </div>
 
@@ -378,7 +374,7 @@ export default function CookieBanner() {
                 className="text-xs font-medium hover:underline px-3 py-1.5 transition-colors flex items-center gap-1.5 text-red-600 cursor-pointer"
               >
                 <XCircle size={14} />
-                <span>Ablehnen &amp; Weiter →</span>
+                <span>Ablehnen</span>
               </button>
             </div>
 
