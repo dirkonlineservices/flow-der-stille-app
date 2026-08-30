@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones, MessageCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -358,15 +358,25 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-8 mb-2 text-center flex justify-center items-center">
+        <section className="mt-8 mb-2 text-center flex flex-col sm:flex-row justify-center items-center gap-3.5 max-w-xl mx-auto px-4">
           <a 
             href="https://t.me/+ccWPbkn00zs4Zjc6" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-sm sm:text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
           >
-            <Send size={20} className="group-hover:translate-x-0.5 transition-transform" />
+            <Send size={19} className="group-hover:translate-x-0.5 transition-transform" />
             <span>Folge uns auf Telegram</span>
+          </a>
+
+          <a 
+            href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-sm sm:text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
+          >
+            <MessageCircle size={19} className="group-hover:scale-110 transition-transform" />
+            <span>Folge uns auf WhatsApp</span>
           </a>
         </section>
       </div>
