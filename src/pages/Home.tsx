@@ -360,7 +360,7 @@ export default function Home() {
 
         <section className="mt-8 mb-2 text-center flex justify-center items-center">
           <a 
-            href="https://t.me/+figVxVO_tkw4MGJi" 
+            href="https://t.me/+ccWPbkn00zs4Zjc6" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group"
