@@ -100,8 +100,8 @@ export default function AdminUnlock() {
   }[]>([]);
 
   // 6. App-Update Remote-Konfiguration
-  const [remoteVersionCode, setRemoteVersionCode] = useState('98');
-  const [remoteVersionName, setRemoteVersionName] = useState('5.2.0');
+  const [remoteVersionCode, setRemoteVersionCode] = useState('99');
+  const [remoteVersionName, setRemoteVersionName] = useState('5.2.1');
   const [updateTitleInput, setUpdateTitleInput] = useState('App-Aktualisierung verfügbar! 🚀');
   const [updateMessageInput, setUpdateMessageInput] = useState('Eine neue Version von Flow der Stille steht jetzt für dich im Google Play Store bereit.');
   const [savingAppConfig, setSavingAppConfig] = useState(false);

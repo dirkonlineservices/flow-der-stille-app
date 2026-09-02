@@ -896,7 +896,7 @@ export default function Settings() {
               {/* Version Info */}
               <div className="mt-6 pt-4 border-t border-[var(--color-border-main)] text-center">
                 <span className="text-[11px] font-mono text-[var(--color-text-muted)] opacity-80">
-                  App-Version: v5.2.0
+                  App-Version: v5.2.1
                 </span>
               </div>
             </div>
