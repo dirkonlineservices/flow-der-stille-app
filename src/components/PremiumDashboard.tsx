@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -25,6 +25,22 @@ export default function PremiumShopDashboard() {
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
   const [searchParams] = useSearchParams();
+
+  // ─── Gekaufte Produktkarten: standardmäßig eingeklappt ───────────────────
+  // Set enthält die IDs der aktuell AUFGEKLAPPTEN Karten
+  const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+
+  const toggleProductExpand = (productId: string) => {
+    setExpandedProducts(prev => {
+      const next = new Set(prev);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
+      return next;
+    });
+  };
 
   // URL-Filter-Parameter beim ersten Laden auslesen (?filter=Meditation etc.)
   useEffect(() => {
@@ -565,9 +581,80 @@ export default function PremiumShopDashboard() {
           const isSchmetterling = (produkt.id && produkt.id.includes('schmetterling')) || (produkt.titel && produkt.titel.toLowerCase().includes('schmetterling'));
           const showKIBadge = !isSchmetterling;
 
+          // ─── Eingeklappte Compact-Ansicht für gekaufte Produkte ──────────
+          const isExpanded = expandedProducts.has(produkt.id);
+          if (hatZugriff && !istKostenlos && !isExpanded) {
+            return (
+              <div
+                key={produkt.id}
+                id={`product-${produkt.id}`}
+                className="bg-[var(--bg-card)] border border-emerald-300 dark:border-emerald-800 rounded-2xl overflow-hidden transition hover:shadow-md"
+              >
+                <button
+                  onClick={() => toggleProductExpand(produkt.id)}
+                  className="w-full flex items-center gap-4 p-3 sm:p-4 text-left group cursor-pointer"
+                  aria-expanded={false}
+                  aria-label={`${produkt.titel} aufklappen`}
+                >
+                  {/* Mini-Cover */}
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                    <img
+                      src={getProductCoverImage(produkt)}
+                      alt={produkt.titel}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Titel + Badges */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-300 px-2 py-0.5 rounded-md">
+                        <CheckCircle2 size={11} />
+                        Freigeschaltet
+                      </span>
+                      <span className={`px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-md uppercase ${getCategoryBadgeStyle(produkt.kategorie)}`}>
+                        {produkt.kategorie || 'Kategorie'}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-[var(--text-main)] break-words leading-snug">
+                      {produkt.titel}
+                    </p>
+                    {produkt.dauer && (
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)} Min.</p>
+                    )}
+                  </div>
+
+                  {/* Aufklappen-Indikator */}
+                  <div className="shrink-0 flex flex-col items-center gap-0.5 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors pr-1">
+                    <ChevronDown size={20} />
+                    <span className="text-[10px] font-medium hidden sm:block">Aufklappen</span>
+                  </div>
+                </button>
+              </div>
+            );
+          }
+
           return (
-            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl p-5 lg:p-7 flex flex-col transition hover:shadow-lg overflow-hidden`}>
+            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl overflow-hidden transition hover:shadow-lg`}>
               
+              {/* Einklapp-Leiste oben für aufgeklappte gekaufte Produkte */}
+              {hatZugriff && !istKostenlos && (
+                <button
+                  onClick={() => toggleProductExpand(produkt.id)}
+                  className="w-full flex items-center justify-between gap-3 px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-b border-emerald-200 dark:border-emerald-800 cursor-pointer group hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+                  aria-expanded={true}
+                  aria-label={`${produkt.titel} einklappen`}
+                >
+                  <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+                    <CheckCircle2 size={14} />
+                    <span className="text-xs font-semibold">Freigeschaltet – Einklappen</span>
+                  </div>
+                  <ChevronUp size={16} className="text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-800 transition-colors" />
+                </button>
+              )}
+
+              <div className="p-5 lg:p-7 flex flex-col">
+
               {/* Cover Image Header Banner */}
               <div className="relative h-48 sm:h-56 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
                 <img 
@@ -749,6 +836,7 @@ export default function PremiumShopDashboard() {
                   <ProductDisclaimerTrigger />
                 </div>
               )}
+              </div>{/* Ende: innerer p-5/p-7 Container */}
             </div>
           );
         })}
