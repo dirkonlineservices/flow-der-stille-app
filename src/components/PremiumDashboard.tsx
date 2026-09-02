@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -12,6 +12,7 @@ import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
+import { offlineManager } from '../lib/offlineAudioService';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -26,7 +27,10 @@ export default function PremiumShopDashboard() {
   const [sortBy, setSortBy] = useState('Standard');
   const [searchParams] = useSearchParams();
 
-  // ─── Gekaufte Produktkarten: standardmäßig eingeklappt ───────────────────
+  // ─── Menü für gekaufte Produkte: standardmäßig eingeklappt ───────────────
+  const [isPurchasedMenuOpen, setIsPurchasedMenuOpen] = useState(false);
+
+  // ─── Gekaufte Produktkarten im Katalog: standardmäßig eingeklappt ─────────
   // Set enthält die IDs der aktuell AUFGEKLAPPTEN Karten
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
@@ -40,6 +44,20 @@ export default function PremiumShopDashboard() {
       }
       return next;
     });
+  };
+
+  const expandAllPurchased = () => {
+    const allPurchasedIds = produkte
+      .filter(p => {
+        const playId = getPlayStoreProductId(p.id);
+        return isVip || gekauftIds.has(p.id) || gekauftIds.has(playId) || offlineManager.isPurchasedOffline(p.id);
+      })
+      .map(p => p.id);
+    setExpandedProducts(new Set(allPurchasedIds));
+  };
+
+  const collapseAllPurchased = () => {
+    setExpandedProducts(new Set());
   };
 
   // URL-Filter-Parameter beim ersten Laden auslesen (?filter=Meditation etc.)
@@ -243,12 +261,33 @@ export default function PremiumShopDashboard() {
             });
           }
 
+          // Offline gespeicherte Käufe hinzunehmen (für Flugmodus & Web-Offline)
+          const offlineIds = offlineManager.getPurchasedProducts();
+          offlineIds.forEach((offId) => {
+            ids.add(offId);
+            const pId = getPlayStoreProductId(offId);
+            ids.add(pId);
+            const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[offId] || REVERSE_PLAY_STORE_PRODUCT_MAP[pId];
+            if (dbId) ids.add(dbId);
+          });
+
+          // Nach erfolgreicher Prüfung den Stand lokal sichern
+          if (ids.size > 0) {
+            offlineManager.savePurchasedProducts(Array.from(ids));
+          }
+
           gekaufteSet = ids;
           if (!vipRes.error && vipRes.data) {
             userIsVip = vipRes.data.length > 0;
           }
         } catch (e) {
           console.warn('Could not fetch purchases or VIP status:', e);
+        }
+      } else {
+        // Nicht eingeloggt oder offline: Offline-Käufe prüfen
+        const offlineIds = offlineManager.getPurchasedProducts();
+        if (offlineIds.length > 0) {
+          offlineIds.forEach((id) => gekaufteSet.add(id));
         }
       }
       
@@ -356,6 +395,14 @@ export default function PremiumShopDashboard() {
     return '/images/products/cover_loslassen.jpg';
   };
 
+  const isProductPurchased = (prod: any) => {
+    if (!prod) return false;
+    const playId = getPlayStoreProductId(prod.id);
+    return isVip || gekauftIds.has(prod.id) || gekauftIds.has(playId) || offlineManager.isPurchasedOffline(prod.id);
+  };
+
+  const purchasedProductsCount = produkte.filter(p => isProductPurchased(p) && parseFloat(p.preis) > 0).length;
+
   const filteredProdukte = produkte.filter(prod => {
     // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden
     if (prod.is_active === false) {
@@ -376,7 +423,9 @@ export default function PremiumShopDashboard() {
     const catLower = prod.kategorie?.toLowerCase() || '';
     const titleLower = prod.titel?.toLowerCase() || '';
 
-    if (activeFilter === 'Kostenfrei') {
+    if (activeFilter === 'Gekaufte Produkte' || activeFilter === 'Gekauft') {
+        matchesCategory = isProductPurchased(prod) && parseFloat(prod.preis) > 0;
+    } else if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
     } else if (activeFilter === 'Hörbücher' || activeFilter === 'Hörbuch') {
         matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || titleLower.includes('schmetterling');
@@ -420,7 +469,16 @@ export default function PremiumShopDashboard() {
     return `${minutes}:${formattedSec}`;
   };
 
-  const categories = ['Alle', 'Hörbücher', 'Meditation', 'Selbsthypnose', 'Entspannungsübungen', 'Kostenfrei', 'Hörprobe'];
+  const categories = [
+    'Alle',
+    ...(user || purchasedProductsCount > 0 ? ['Gekaufte Produkte'] : []),
+    'Hörbücher',
+    'Meditation',
+    'Selbsthypnose',
+    'Entspannungsübungen',
+    'Kostenfrei',
+    'Hörprobe'
+  ];
 
   const getCategoryBadgeStyle = (katStr: string = '') => {
     const k = katStr.toLowerCase();
@@ -468,20 +526,66 @@ export default function PremiumShopDashboard() {
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveFilter(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                activeFilter === cat 
-                  ? 'bg-[var(--accent)] text-white shadow-sm' 
-                  : 'bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          {categories.map(cat => {
+            const isGekauft = cat === 'Gekaufte Produkte';
+            const isActive = activeFilter === cat;
+            const badgeText = isGekauft && purchasedProductsCount > 0 ? ` (${purchasedProductsCount})` : '';
+
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveFilter(cat)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isActive 
+                    ? isGekauft
+                      ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400/40'
+                      : 'bg-[var(--accent)] text-white shadow-sm' 
+                    : isGekauft
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
+                      : 'bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
+                }`}
+                aria-pressed={isActive}
+              >
+                {isGekauft && (
+                  <CheckCircle2 size={15} className={isActive ? 'text-white' : 'text-emerald-600 dark:text-emerald-400'} />
+                )}
+                <span>{isGekauft ? `Gekaufte Produkte${badgeText}` : cat}</span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Status-Banner wenn "Gekaufte Produkte" Filter aktiv ist */}
+        {activeFilter === 'Gekaufte Produkte' && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm shadow-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+              <span>
+                Aktiver Filter: <strong>Gekaufte Produkte ({filteredProdukte.length} freigeschaltet)</strong>
+              </span>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={expandAllPurchased}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 text-xs font-semibold hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-700 transition cursor-pointer shadow-xs"
+              >
+                Alle aufklappen
+              </button>
+              <button
+                onClick={collapseAllPurchased}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 text-xs font-semibold hover:bg-emerald-100 border border-emerald-200 dark:border-emerald-700 transition cursor-pointer shadow-xs"
+              >
+                Alle zuklappen
+              </button>
+              <button
+                onClick={() => setActiveFilter('Alle')}
+                className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline cursor-pointer ml-1"
+              >
+                Filter zurücksetzen
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Kompakter Bereich für kostenlose Hörproben (oben vor gekauften Produkten) */}
@@ -511,42 +615,125 @@ export default function PremiumShopDashboard() {
       })()}
 
       {user && (
-        <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 mb-8 shadow-sm">
-          <h3 className="text-lg font-medium text-[var(--text-main)] mb-4">Meine gekauften Produkte</h3>
-          
-          {loadingPurchases ? (
-            <p className="text-sm text-[var(--text-muted)] animate-pulse">Lade gekaufte Inhalte...</p>
-          ) : myPurchases.length === 0 ? (
-            <p className="text-sm text-[var(--text-muted)]">Du hast noch keine Produkte erworben.</p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {myPurchases.map((purchase) => {
-                const prod = produkte.find(p => p.id === purchase.produkt_id || getPlayStoreProductId(p.id) === purchase.produkt_id);
-                return (
-                  <div key={purchase.id || purchase.produkt_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)]">
-                    <div>
-                      <p className="font-medium text-sm text-[var(--text-main)]">{prod?.titel || purchase.produkt_id}</p>
-                      <p className="text-xs text-[var(--text-muted)]">Kaufdatum: {new Date(purchase.created_at || Date.now()).toLocaleDateString('de-DE')}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <a
-                        href={`#product-${purchase.produkt_id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const el = document.getElementById(`product-${purchase.produkt_id}`) || document.getElementById(`product-${prod?.id}`);
-                          if (el) {
-                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            window.location.hash = `product-${purchase.produkt_id}`;
-                          }
-                        }}
-                        className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-main)] text-xs font-semibold rounded-lg text-[var(--text-main)] transition-all"
-                      >
-                        Zum Produkt
-                      </a>
-                    </div>
-                  </div>
-                );
-              })}
+        <div className="w-full bg-[var(--bg-card)] border border-emerald-300/80 dark:border-emerald-800/80 rounded-2xl overflow-hidden mb-8 shadow-xs">
+          <button
+            onClick={() => setIsPurchasedMenuOpen(!isPurchasedMenuOpen)}
+            className="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-emerald-50/70 dark:bg-emerald-950/30 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 transition-colors cursor-pointer"
+            aria-expanded={isPurchasedMenuOpen}
+            aria-label="Meine gekauften Produkte Menü aufklappen oder zuklappen"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <CheckCircle2 size={22} />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-base sm:text-lg font-semibold text-[var(--text-main)] truncate">
+                    Meine gekauften Produkte
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                    {purchasedProductsCount > 0 ? `${purchasedProductsCount} freigeschaltet` : 'Übersicht'}
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  {isPurchasedMenuOpen 
+                    ? 'Klicke hier zum Zuklappen des Menüs' 
+                    : 'Klicke hier, um deine freigeschalteten Einkäufe aufzuklappen'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-semibold text-xs sm:text-sm shrink-0 pl-2">
+              <span className="hidden sm:inline">{isPurchasedMenuOpen ? 'Menü zuklappen' : 'Menü aufklappen'}</span>
+              {isPurchasedMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+          </button>
+
+          {isPurchasedMenuOpen && (
+            <div className="p-4 sm:p-6 border-t border-emerald-200/60 dark:border-emerald-800/60 bg-[var(--bg-card)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[var(--border)]">
+                <p className="text-xs text-[var(--text-muted)]">
+                  Schnellzugriff auf deine freigeschalteten Inhalte:
+                </p>
+                <button
+                  onClick={() => {
+                    setActiveFilter('Gekaufte Produkte');
+                    const el = document.getElementById('products-catalog-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 px-3 py-1.5 rounded-xl hover:bg-emerald-100 transition cursor-pointer"
+                >
+                  <span>Nur gekaufte Produkte in der Liste filtern</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {loadingPurchases ? (
+                <p className="text-sm text-[var(--text-muted)] animate-pulse">Lade gekaufte Inhalte...</p>
+              ) : myPurchases.length === 0 && purchasedProductsCount === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-sm text-[var(--text-muted)] mb-2">Du hast noch keine Produkte erworben.</p>
+                  <button
+                    onClick={() => setActiveFilter('Alle')}
+                    className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer"
+                  >
+                    Alle Inhalte im Shop entdecken
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {myPurchases.map((purchase) => {
+                    const prod = produkte.find(p => p.id === purchase.produkt_id || getPlayStoreProductId(p.id) === purchase.produkt_id);
+                    const isAudiobook = (prod?.id && prod.id.includes('schmetterling')) || (prod?.titel && prod.titel.toLowerCase().includes('schmetterling'));
+                    return (
+                      <div key={purchase.id || purchase.produkt_id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)]">
+                        <div className="flex items-center gap-3">
+                          {prod && (
+                            <img 
+                              src={getProductCoverImage(prod)} 
+                              alt={prod.titel} 
+                              className="w-12 h-12 rounded-lg object-cover shrink-0 shadow-xs"
+                            />
+                          )}
+                          <div>
+                            <p className="font-semibold text-sm text-[var(--text-main)] leading-snug">{prod?.titel || purchase.produkt_id}</p>
+                            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                              Kaufdatum: {new Date(purchase.created_at || Date.now()).toLocaleDateString('de-DE')}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 sm:self-center self-end">
+                          {isAudiobook ? (
+                            <Link
+                              to={`/hoerbuch/${prod?.id || purchase.produkt_id}`}
+                              className="px-3 py-1.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold rounded-lg transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+                            >
+                              <Sparkles size={12} />
+                              <span>Hörbuch öffnen</span>
+                            </Link>
+                          ) : null}
+                          <button
+                            onClick={() => {
+                              if (prod?.id) {
+                                setExpandedProducts(prev => new Set(prev).add(prod.id));
+                              }
+                              const el = document.getElementById(`product-${purchase.produkt_id}`) || document.getElementById(`product-${prod?.id}`);
+                              if (el) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                window.location.hash = `product-${purchase.produkt_id}`;
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-main)] text-xs font-semibold rounded-lg text-[var(--text-main)] transition-all cursor-pointer"
+                          >
+                            Details & Player
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -554,7 +741,7 @@ export default function PremiumShopDashboard() {
 
 
 
-      <div className="space-y-6">
+      <div id="products-catalog-section" className="space-y-6">
         {showUnlockBanner && <UnlockBanner />}
         
         {produkte.length === 0 && !loading && (
@@ -564,10 +751,25 @@ export default function PremiumShopDashboard() {
           </div>
         )}
 
+        {/* Leerer Zustand wenn der Filter "Gekaufte Produkte" aktiv ist aber keine da sind */}
+        {activeFilter === 'Gekaufte Produkte' && sortedProdukte.length === 0 && !loading && (
+          <div className="text-center p-10 border border-dashed border-emerald-300 dark:border-emerald-800 rounded-2xl bg-[var(--bg-card)]">
+            <CheckCircle2 size={32} className="mx-auto text-emerald-600 mb-3 opacity-80" />
+            <h3 className="text-lg font-medium text-[var(--text-main)] mb-1">Keine gekauften Produkte gefunden</h3>
+            <p className="text-xs text-[var(--text-muted)] mb-4">Du hast aktuell noch keine bezahlten Inhalte freigeschaltet.</p>
+            <button
+              onClick={() => setActiveFilter('Alle')}
+              className="px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-xs font-semibold shadow-xs hover:bg-[var(--accent-hover)] transition cursor-pointer"
+            >
+              Alle Produkte anzeigen
+            </button>
+          </div>
+        )}
+
         {activeFilter !== 'Hörprobe' && sortedProdukte.map((produkt: any) => {
           const istKostenlos = parseFloat(produkt.preis) === 0;
           const playId = getPlayStoreProductId(produkt.id);
-          const hatZugriff = isVip || gekauftIds.has(produkt.id) || gekauftIds.has(playId) || istKostenlos;
+          const hatZugriff = isVip || gekauftIds.has(produkt.id) || gekauftIds.has(playId) || offlineManager.isPurchasedOffline(produkt.id) || istKostenlos;
 
           const getKIBadgeTitle = (p: any) => {
             const dbHinweis = p.audio_hinweis ? p.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '') : '';
@@ -624,10 +826,10 @@ export default function PremiumShopDashboard() {
                     )}
                   </div>
 
-                  {/* Aufklappen-Indikator */}
-                  <div className="shrink-0 flex flex-col items-center gap-0.5 text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors pr-1">
-                    <ChevronDown size={20} />
-                    <span className="text-[10px] font-medium hidden sm:block">Aufklappen</span>
+                  {/* Aufklappen-Indikator als klarer Button */}
+                  <div className="shrink-0 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-semibold text-xs bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-xl group-hover:bg-emerald-100 transition-colors mr-1">
+                    <span>Aufklappen</span>
+                    <ChevronDown size={16} />
                   </div>
                 </button>
               </div>
