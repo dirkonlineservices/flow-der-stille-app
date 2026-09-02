@@ -58,9 +58,14 @@ export function useDisclaimerStatus() {
       }
     }
 
+    // Aufgabe 3: Korrekter GA4 Event-Name + user_id
     if (typeof window !== 'undefined') {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'disclaimer_accepted_db', timestamp });
+      window.dataLayer.push({
+        event: 'disclaimer_accepted',
+        user_id: user?.id ?? null,
+        timestamp
+      });
     }
   };
 

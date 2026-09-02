@@ -1,4 +1,4 @@
-/* =========================================================================================
+﻿/* =========================================================================================
 🚨 AI SYSTEM INSTRUCTION - STRICT GUARDRAIL - DO NOT MODIFY 🚨
 This component contains critical, cross-component audio logic.
 CRITICAL SYSTEMS INSIDE:
@@ -21,10 +21,10 @@ import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
   const { user } = useAuth();
-  const [url, setUrl] = useState('');
   const [rawUrl, setRawUrl] = useState('');
+  const [resolvedUrl, setResolvedUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Ladeindikator beim ersten Play
+  const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -38,23 +38,21 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Nur die raw URL vorab holen (für Offline-Button Status-Check) –
-  // KEINE signed URL prefetchen, kein src-Setzen → kein Egress-Verbrauch
   useEffect(() => {
     let isMounted = true;
-    async function initRawUrl() {
+    async function initUrls() {
       if (!produkt) return;
       try {
         const fetchedUrl = await getUrl(produkt);
-        if (fetchedUrl && isMounted) {
-          setRawUrl(fetchedUrl);
-          // url bleibt leer – wird erst bei erstem Play gesetzt
-        }
+        if (!fetchedUrl || !isMounted) return;
+        setRawUrl(fetchedUrl);
+        const playable = await getPlayableAudioUrl(produkt.id, fetchedUrl, produkt.titel);
+        if (isMounted && playable) setResolvedUrl(playable);
       } catch (e) {
-        console.warn("Could not pre-fetch raw audio URL:", e);
+        console.warn("Could not pre-fetch audio URL:", e);
       }
     }
-    initRawUrl();
+    initUrls();
     return () => { isMounted = false; };
   }, [produkt, getUrl]);
 
@@ -63,25 +61,23 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     if (!audio) return;
 
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-    };
-    
-    // ⚡ FIX: Globale Pause-Logik! Stoppt alle anderen Player auf der Webseite.
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+
     const handlePlay = () => {
       setIsPlaying(true);
-      const allAudios = document.querySelectorAll('audio');
-      allAudios.forEach((el) => {
-        if (el !== audio) {
-          el.pause();
-        }
+      setIsLoading(false);
+      document.querySelectorAll('audio').forEach((el) => {
+        if (el !== audio) el.pause();
       });
     };
 
     const handlePause = () => setIsPlaying(false);
+    const handleWaiting = () => setIsLoading(true);
+    const handlePlaying = () => setIsLoading(false);
 
     const handleEnded = () => {
       setIsPlaying(false);
+      setIsLoading(false);
       setCurrentTime(0);
       if ((window as any).dataLayer) {
         (window as any).dataLayer.push({ event: "audio_complete", audio_title: produkt.titel, audio_category: produkt.kategorie });
@@ -92,6 +88,8 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
+    audio.addEventListener('waiting', handleWaiting);
+    audio.addEventListener('playing', handlePlaying);
     audio.addEventListener('ended', handleEnded);
 
     return () => {
@@ -99,63 +97,39 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('waiting', handleWaiting);
+      audio.removeEventListener('playing', handlePlaying);
       audio.removeEventListener('ended', handleEnded);
     };
   }, [produkt.titel, produkt.kategorie]);
 
-  const togglePlay = async () => {
+  const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Pause → direkt, kein Laden nötig
     if (!audio.paused) {
       audio.pause();
       return;
     }
 
-    let targetUrl = url;
-    if (!targetUrl) {
-      setIsLoading(true);
-      try {
-        const activeUrl = rawUrl || await getUrl(produkt);
-        if (!activeUrl) {
-          console.error("Keine gültige Audio-URL gefunden.");
-          setIsLoading(false);
-          return;
-        }
-        setRawUrl(activeUrl);
-        // ⚡ Sichere Sandbox-Auflösung (lokaler Blob im Flugmodus oder Remote-URL mit Cache)
-        targetUrl = await getPlayableAudioUrl(produkt.id, activeUrl, produkt.titel);
-        setUrl(targetUrl);
-      } catch (error) {
-        console.error("Ladefehler:", error);
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    if (audio.src !== targetUrl) {
+    const targetUrl = resolvedUrl || rawUrl;
+    if (targetUrl && (!audio.src || audio.src === window.location.href)) {
       audio.src = targetUrl;
     }
-    
-    setIsLoading(true);
+
     const playPromise = audio.play();
     if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsLoading(false);
-          setIsPlaying(true);
-        })
-        .catch(err => {
-          console.error("Playback Fehler:", err);
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
+      playPromise.catch((err) => {
+        console.error("Playback Fehler:", err);
+        if (rawUrl && audio.src !== rawUrl) {
+          audio.src = rawUrl;
+          audio.play().catch((e) => console.error("Fallback play fehlgeschlagen:", e));
+        }
+      });
     }
 
     if ((window as any).dataLayer) {
-      (window as any).dataLayer.push({ event: "audio_play", audio_title: produkt.titel, audio_category: produkt.kategorie });
+      (window as any).dataLayer.push({ event: 'audio_play_start', product_id: produkt.id, audio_title: produkt.titel });
     }
   };
 
@@ -174,18 +148,18 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center p-5 sm:p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm">
+      <div className="flex flex-col items-center justify-center p-5 sm:p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm min-h-[8rem] h-auto">
         <button 
           onClick={handlePlayClick}
           disabled={isLoading}
-          className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] ${
+          className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] shrink-0 ${
             isLoading
               ? 'bg-[var(--accent)]/70 cursor-not-allowed'
               : isPlaying 
               ? 'bg-[#ef4444] hover:bg-[#dc2626] hover:ring-4 hover:ring-red-200' 
               : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] hover:ring-4 hover:ring-emerald-100'
           }`}
-          aria-label={isLoading ? "Wird geladen…" : isPlaying ? "Pause" : "Abspielen"}
+          aria-label={isLoading ? "Wird geladen..." : isPlaying ? "Pause" : "Abspielen"}
         >
           {isLoading ? (
             <Loader2 size={32} className="animate-spin" />
@@ -199,14 +173,13 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
         <div className="mt-4 text-center select-none w-full">
           <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
             {isLoading
-              ? <span className="text-sm font-medium text-[var(--text-muted)]">Audio wird geladen…</span>
+              ? <span className="text-sm font-medium text-[var(--text-muted)]">Audio wird geladen...</span>
               : <>{formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration > 0 && isFinite(duration) ? duration : (produkt.dauer || 0))}</span></>
             }
           </div>
-          <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] mx-auto truncate">{produkt.titel}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] mx-auto break-words leading-normal">{produkt.titel}</div>
         </div>
 
-        {/* Schalter für Offline-Verfügbarkeit im Flugmodus */}
         {rawUrl && (
           <OfflineDownloadButton
             productId={produkt.id}
@@ -216,12 +189,10 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
           />
         )}
         
-        {/* Audio-Element mit preload=none → kein Byte-Transfer vor Klick auf Play */}
-        <audio ref={audioRef} src={url || undefined} className="hidden" preload="none" controlsList="nodownload" />
+        <audio ref={audioRef} className="hidden" preload="none" controlsList="nodownload" />
         
-        {/* Dynamisches KI-Label */}
         {produkt.audio_hinweis && (
-          <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal border-t border-[var(--border)] pt-2 w-full">
+          <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal break-words border-t border-[var(--border)] pt-2 w-full">
             {produkt.audio_hinweis}
           </p>
         )}

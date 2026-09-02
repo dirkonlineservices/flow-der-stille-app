@@ -8,6 +8,7 @@ import {
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
+import { offlineManager } from '../lib/offlineAudioService';
 
 export default function AudiobooksHub() {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ export default function AudiobooksHub() {
   // 1. Besitzprüfung für das aktuelle Hörbuch
   const [isAudiobookOwned, setIsAudiobookOwned] = useState(false);
 
-  // 2. Audio-Probe Zustand (Start bei 1:19 Min. = 79 Sek. für genau 90 Sekunden)
+  // 2. Audio-Probe Zustand (Startet ab 1:19 Min. = 79 Sek. für genau 90 Sekunden)
   const SNIPPET_START_TIME = 79;
   const SNIPPET_DURATION = 90;
   const [isPlayingSnippet, setIsPlayingSnippet] = useState(false);
@@ -32,8 +33,16 @@ export default function AudiobooksHub() {
   useEffect(() => {
     async function checkOwnership() {
       if (!user) {
-        setIsAudiobookOwned(false);
+        // Aufgabe 2: Offline-Fallback prüfen – falls Kaufstatus lokal gecacht ist
+        const isOfflineOwned = offlineManager.isPurchasedOffline('schmetterling');
+        setIsAudiobookOwned(isOfflineOwned);
         return;
+      }
+
+      // Aufgabe 2: Immer auch Offline-Cache prüfen (Flugmodus-Schutz)
+      const isOfflineOwned = offlineManager.isPurchasedOffline('schmetterling');
+      if (isOfflineOwned) {
+        setIsAudiobookOwned(true);
       }
 
       try {
@@ -46,10 +55,16 @@ export default function AudiobooksHub() {
           .ilike('produkt_id', '%schmetterling%')
           .maybeSingle();
 
-        setIsAudiobookOwned(!!purchase);
+        const owned = !!purchase;
+        setIsAudiobookOwned(owned);
+
+        // Aufgabe 2: Nach erfolgreicher Online-Prüfung den Kaufstatus lokal sichern
+        if (owned) {
+          offlineManager.savePurchasedProducts(['schmetterling', 'fds_hoerbuch_schmetterling']);
+        }
       } catch (err) {
-        console.error('Fehler bei Hörbuch-Besitzprüfung:', err);
-        setIsAudiobookOwned(false);
+        console.error('Fehler bei Hörbuch-Besitzprüfung (ggf. offline):', err);
+        // Offline-Fallback bereits oben gesetzt – kein Überschreiben auf false
       }
     }
 

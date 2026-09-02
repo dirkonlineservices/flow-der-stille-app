@@ -67,7 +67,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     if (!audio.paused) {
       // Pause ist nicht Consent-pflichtig – direkt ausführen
       audio.pause();
-      setIsPlaying(false);
       return;
     }
 
@@ -83,23 +82,17 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         audio.src = srcToPlay;
       }
 
-      setIsLoading(true);
+      // ⚡ Synchroner play()-Aufruf im User-Gesture-Kontext (Autoplay-Policy)
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsLoading(false);
-            setIsPlaying(true);
-          })
-          .catch((err) => {
-            console.error('Audio play error:', err);
-            setIsLoading(false);
-            // Fallback auf die direkte Roh-URL falls Blob fehlschlägt
-            if (rawUrl && audio.src !== rawUrl) {
-              audio.src = rawUrl;
-              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
-            }
-          });
+        playPromise.catch((err) => {
+          console.error('Audio play error:', err);
+          // Fallback auf die direkte Roh-URL falls Blob fehlschlägt
+          if (rawUrl && audio.src !== rawUrl) {
+            audio.src = rawUrl;
+            audio.play().catch((e) => console.error('Fallback play failed:', e));
+          }
+        });
       }
 
       if ((window as any).dataLayer) {
@@ -229,10 +222,13 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         className="hidden"
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => { setIsPlaying(true); setIsLoading(false); }}
         onPause={() => setIsPlaying(false)}
+        onWaiting={() => setIsLoading(true)}
+        onPlaying={() => setIsLoading(false)}
         onEnded={() => {
           setIsPlaying(false);
+          setIsLoading(false);
           setCurrentTime(0);
           if ((window as any).dataLayer) {
             (window as any).dataLayer.push({
