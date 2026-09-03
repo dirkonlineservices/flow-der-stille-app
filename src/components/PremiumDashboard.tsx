@@ -958,9 +958,15 @@ export default function PremiumShopDashboard() {
                         <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
                         <div className="leading-relaxed">
                           <span className="font-semibold text-[var(--text-main)] block mb-0.5">
-                            {produkt.kategorie === 'Kostenfreie Anwendungen' ? '🌿 Schnupper-Übung' : '🌿 Herzenswerk & Klangkunst'}
+                            {istKostenlos ? '🌿 Kostenfreie Anwendung (nach Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
                           </span>
-                          <span className="whitespace-pre-line leading-relaxed">{produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '')}</span>
+                          <span className="whitespace-pre-line leading-relaxed">
+                            {istKostenlos 
+                              ? (produkt.audio_hinweis.includes('Vollständig') 
+                                  ? 'Selbst verfasster Übungstext, vertont zur sanften Beruhigung des Nervensystems. Nach kostenloser Registrierung sofort für dich freigeschaltet.'
+                                  : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, ''))
+                              : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '')}
+                          </span>
                         </div>
                       </div>
                     )}

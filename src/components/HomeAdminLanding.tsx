@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Wind, Utensils, BookOpen, Headphones, Play, Pause, Sparkles, 
   Smartphone, ArrowRight, Eye, RefreshCw, Check
@@ -148,13 +148,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             />
           </div>
 
-          {/* Ehrlicher Nutzen-Absatz: Warum Technologie = Fairer Preis */}
+          {/* Ehrlicher Nutzen-Absatz: Eigene Texte, echte Stimmen & kostenlose Freischaltung nach Registrierung */}
           <div className="p-4 bg-[var(--bg-main)]/60 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3">
             <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
             <span>
-              <strong>Echte Handarbeit &amp; faire Preise:</strong> Jedes Audio und jedes Hörbuch wird von uns persönlich geschrieben und mit echter Stimme eingesprochen. 
-              Moderne KI nutzen wir bewusst als Werkzeug für meditative Klangwelten – und weil wir so keine teuren Studios bezahlen müssen, 
-              erhältst du unsere Premium-Inhalte <strong>ab 1,99 € einmalig statt teurer Monats-Abos</strong>.
+              <strong>Eigene Texte &amp; faire Preise:</strong> Alle Übungen, Meditationen und Hörbücher verfassen wir selbst mit viel Erfahrung und Herzblut. 
+              Unsere Premium-Inhalte werden von echten Stimmen (wie Lisa Ragusa) persönlich eingesprochen. 
+              Nach deiner kostenlosen Registrierung sind unsere <strong>kostenfreien Schnupper-Übungen sowie eine geführte Meditation sofort für dich freigeschaltet</strong> – und alle weiteren Premium-Inhalte gibt es dauerhaft günstig <strong>ab 1,99 € einmalig ganz ohne Abo</strong>.
             </span>
           </div>
         </div>
@@ -310,13 +310,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <div>
               <span className="text-2xl mb-2 block">🌿</span>
               <h3 className="font-semibold text-sm text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
-                Schnupper-Übungen
+                Kostenfreie Übungen
               </h3>
               <p className="text-xs text-[var(--text-muted)] mt-1 leading-normal">
-                Kompakte Übungen mit KI-Klangwelten – sofort ohne Anmeldung testen.
+                Geführte Atem- &amp; Entspannungsübungen – nach Registrierung sofort freigeschaltet.
               </p>
             </div>
-            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-3 block">100 % Kostenlos</span>
+            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-3 block">100 % Kostenfrei</span>
           </Link>
         </div>
       </section>
