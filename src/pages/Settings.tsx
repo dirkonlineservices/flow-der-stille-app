@@ -931,7 +931,7 @@ export default function Settings() {
                     <h2 className="text-xl sm:text-2xl font-serif text-[var(--color-text-main)]">
                       Meine gekauften Produkte
                     </h2>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
+                    <span className="px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-700 dark:bg-emerald-600 text-white shadow-xs">
                       {purchases.length} {purchases.length === 1 ? 'Inhalt' : 'Inhalte'}
                     </span>
                   </div>
@@ -966,7 +966,7 @@ export default function Settings() {
                         >
                           <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                             <div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-700 text-white shadow-2xs">
                                 Aktiviert
                               </span>
                               <h3 className="text-base sm:text-lg font-serif text-[var(--color-text-main)] mt-1.5 font-bold">

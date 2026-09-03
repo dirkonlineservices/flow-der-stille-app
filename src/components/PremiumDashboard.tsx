@@ -684,7 +684,7 @@ export default function PremiumShopDashboard() {
                   <h3 className="text-base sm:text-lg font-semibold text-[var(--text-main)] truncate">
                     Meine gekauften Produkte
                   </h3>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                  <span className="px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-700 dark:bg-emerald-600 text-white shadow-xs">
                     {purchasedProductsCount > 0 ? `${purchasedProductsCount} freigeschaltet` : 'Übersicht'}
                   </span>
                 </div>
@@ -696,7 +696,7 @@ export default function PremiumShopDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-semibold text-xs sm:text-sm shrink-0 pl-2">
+            <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-200 font-bold text-xs sm:text-sm shrink-0 pl-2">
               <span className="hidden sm:inline">{isPurchasedMenuOpen ? 'Menü zuklappen' : 'Menü aufklappen'}</span>
               {isPurchasedMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -836,23 +836,23 @@ export default function PremiumShopDashboard() {
           const isSchmetterling = (produkt.id && produkt.id.includes('schmetterling')) || (produkt.titel && produkt.titel.toLowerCase().includes('schmetterling'));
           const showKIBadge = !isSchmetterling;
 
-          // ─── Eingeklappte Compact-Ansicht für gekaufte Produkte ──────────
+          // ─── Eingeklappte Compact-Ansicht für gekaufte Produkte mit kräftigem Kontrast ──────────
           const isExpanded = expandedProducts.has(produkt.id);
           if (hatZugriff && !istKostenlos && !isExpanded) {
             return (
               <div
                 key={produkt.id}
                 id={`product-${produkt.id}`}
-                className="bg-[var(--bg-card)] border border-emerald-300 dark:border-emerald-800 rounded-2xl overflow-hidden transition hover:shadow-md"
+                className="bg-[var(--bg-card)] border-2 border-emerald-600/35 dark:border-emerald-700/50 rounded-2xl overflow-hidden transition hover:shadow-md hover:border-emerald-600"
               >
                 <button
                   onClick={() => toggleProductExpand(produkt.id)}
-                  className="w-full flex items-center gap-4 p-3 sm:p-4 text-left group cursor-pointer"
+                  className="w-full flex items-center gap-4 p-3.5 sm:p-4 text-left group cursor-pointer"
                   aria-expanded={false}
                   aria-label={`${produkt.titel} aufklappen`}
                 >
                   {/* Mini-Cover */}
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 shadow-sm relative">
                     <img
                       src={getProductCoverImage(produkt)}
                       alt={produkt.titel}
@@ -860,18 +860,18 @@ export default function PremiumShopDashboard() {
                     />
                   </div>
 
-                  {/* Titel + Badges */}
+                  {/* Titel + Badges mit maximalem Kontrast */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-300 px-2 py-0.5 rounded-md">
-                        <CheckCircle2 size={11} />
-                        Freigeschaltet
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-emerald-700 dark:bg-emerald-600 px-2.5 py-0.5 rounded-md shadow-xs">
+                        <CheckCircle2 size={12} className="text-emerald-200" />
+                        <span>Freigeschaltet</span>
                       </span>
                       <span className={`px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-md uppercase ${getCategoryBadgeStyle(produkt.kategorie)}`}>
                         {produkt.kategorie || 'Kategorie'}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-[var(--text-main)] break-words leading-snug">
+                    <p className="text-sm font-bold text-[var(--text-main)] break-words leading-snug">
                       {produkt.titel}
                     </p>
                     <ProductRating
@@ -887,8 +887,8 @@ export default function PremiumShopDashboard() {
                     )}
                   </div>
 
-                  {/* Aufklappen-Indikator als klarer Button */}
-                  <div className="shrink-0 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-semibold text-xs bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-xl group-hover:bg-emerald-100 transition-colors mr-1">
+                  {/* Aufklappen-Button in sattem, gut leserlichem Waldgrün */}
+                  <div className="shrink-0 flex items-center gap-1.5 text-white font-bold text-xs bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 px-3.5 py-2 rounded-xl shadow-xs transition-colors mr-1">
                     <span>Aufklappen</span>
                     <ChevronDown size={16} />
                   </div>
@@ -898,21 +898,24 @@ export default function PremiumShopDashboard() {
           }
 
           return (
-            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border ${hatZugriff && !istKostenlos ? 'border-emerald-300 dark:border-emerald-800 shadow-emerald-500/5' : 'border-[var(--border)]'} rounded-2xl overflow-hidden transition hover:shadow-lg`}>
+            <div key={produkt.id} id={`product-${produkt.id}`} className={`bg-[var(--bg-card)] border-2 ${hatZugriff && !istKostenlos ? 'border-emerald-700/40 dark:border-emerald-600/50 shadow-emerald-700/5' : 'border-[var(--border)]'} rounded-2xl overflow-hidden transition hover:shadow-lg`}>
               
-              {/* Einklapp-Leiste oben für aufgeklappte gekaufte Produkte */}
+              {/* Einklapp-Leiste oben für aufgeklappte Produkte mit sattem Kontrast & weißer Schrift */}
               {hatZugriff && !istKostenlos && (
                 <button
                   onClick={() => toggleProductExpand(produkt.id)}
-                  className="w-full flex items-center justify-between gap-3 px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-b border-emerald-200 dark:border-emerald-800 cursor-pointer group hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+                  className="w-full flex items-center justify-between gap-3 px-5 py-2.5 bg-emerald-800 hover:bg-emerald-900 dark:bg-emerald-900 dark:hover:bg-emerald-800 text-white transition-colors cursor-pointer group border-b border-emerald-900/40"
                   aria-expanded={true}
                   aria-label={`${produkt.titel} einklappen`}
                 >
-                  <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
-                    <CheckCircle2 size={14} />
-                    <span className="text-xs font-semibold">Freigeschaltet – Einklappen</span>
+                  <div className="flex items-center gap-2 font-bold text-xs text-white">
+                    <CheckCircle2 size={15} className="text-emerald-200" />
+                    <span>✓ Freigeschaltet – Klicke zum Einklappen</span>
                   </div>
-                  <ChevronUp size={16} className="text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-800 transition-colors" />
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-100 font-semibold group-hover:text-white transition-colors">
+                    <span>Zuklappen</span>
+                    <ChevronUp size={16} />
+                  </div>
                 </button>
               )}
 
@@ -936,7 +939,7 @@ export default function PremiumShopDashboard() {
                     </span>
                   )}
                   {hatZugriff && !istKostenlos && (
-                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-emerald-600 text-white uppercase shadow-md flex items-center gap-1">
+                    <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-emerald-700 text-white uppercase shadow-md flex items-center gap-1 border border-emerald-500/40">
                       ✓ Freigeschaltet
                     </span>
                   )}
