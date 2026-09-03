@@ -226,10 +226,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <Moon size={22} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
                 Gedanken abschalten &amp; tief schlafen
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Selbsthypnosen für neuronale Tiefenentspannung &amp; ruhigen, erholsamen Schlaf.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
@@ -247,10 +247,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <Wind size={22} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
                 Akuten Stress &amp; Unruhe abbauen
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Gezielte Atemübungen &amp; PMR zur schnellen Beruhigung des Vagusnervs.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-2.5 inline-flex items-center gap-1">
@@ -268,10 +268,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <Heart size={22} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
                 Innere Stärke &amp; Loslassen
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Geführte Herz- &amp; Seelen-Meditationen, persönlich von Lisa gesprochen.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
@@ -289,10 +289,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <BookOpen size={22} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
                 Achtsam eintauchen &amp; lauschen
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Hörbuch „Der Tag, an dem der Schmetterling erwachte“ (58 Min. mit Kapiteln).
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
@@ -409,60 +409,60 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Vorteil 1: 100% Werbefrei */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
-              <ShieldCheck size={20} />
+              <ShieldCheck size={22} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[var(--text-main)] leading-snug">
                 100 % Werbefrei – Kein Aufschrecken
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Auf YouTube wirst du mitten in der tiefsten Entspannung oft von lauten Werbeclips herausgerissen – außer du zahlst ein teures Monats-Abo. Bei uns genießt du pure, ungestörte Stille.
               </p>
             </div>
           </div>
 
           {/* Vorteil 2: Echter Flugmodus & Display aus */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 mt-0.5">
-              <WifiOff size={20} />
+              <WifiOff size={22} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[var(--text-main)] leading-snug">
                 Flugmodus &amp; Display aus für gesunden Schlaf
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Schalte dein Handy nachts in den Flugmodus. Höre deine Schlafmeditation bei komplett gesperrtem, dunklem Display – ohne Strahlung am Bett und ohne unbemerktes nächtliches Weiterlaufen.
               </p>
             </div>
           </div>
 
           {/* Vorteil 3: Kein Abo-Zwang */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-              <Sparkles size={20} />
+              <Sparkles size={22} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[var(--text-main)] leading-snug">
                 Einmalig ab 1,99 € statt teurer Monats-Abos
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Keine Abofalle mit 60–100 € pro Jahr. Was du einmal freischaltest, gehört für immer dir. Schnupper-Übungen sind nach Registrierung 100 % gratis.
               </p>
             </div>
           </div>
 
           {/* Vorteil 4: Echte Menschen & KI als Werkzeug */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
-              <Heart size={20} />
+              <Heart size={22} />
             </div>
             <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-[var(--text-main)] leading-snug">
                 Herzensprojekt statt Großkonzern
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Von Jacqueline, Lisa &amp; Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen und KI als bewusstes Klangwerkzeug für faire Preise.
               </p>
             </div>
