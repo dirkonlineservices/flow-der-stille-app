@@ -198,15 +198,15 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
 
       <form
         onSubmit={handleSubmit}
-        className={`${isProminent ? 'flex flex-col gap-3 max-w-sm mx-auto' : 'flex flex-col sm:flex-row gap-3'} mt-2`}
+        className={`${isProminent ? 'flex flex-col gap-3 max-w-md mx-auto' : 'flex flex-col sm:flex-row items-center gap-3'} mt-3`}
       >
-        <div className="relative flex-1">
+        <div className="relative flex-1 w-full">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="deine.email@beispiel.de"
-            className="w-full px-4 py-3 rounded-2xl border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-[var(--bg-main)] text-[var(--text-main)] text-sm"
+            className="w-full h-12 px-4 rounded-xl border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-[var(--bg-main)] text-[var(--text-main)] text-sm shadow-2xs transition-all placeholder:text-[var(--text-muted)]/70"
             required
             disabled={loading}
           />
@@ -214,17 +214,17 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-3 bg-[var(--accent)] text-white text-sm font-medium rounded-2xl hover:bg-[var(--accent-hover)] transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 cursor-pointer"
+          className="w-full sm:w-auto h-12 px-7 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2.5 shadow-sm hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer shrink-0"
         >
           {loading ? (
             <>
-              <Loader2 size={16} className="animate-spin" />
+              <Loader2 size={17} className="animate-spin" />
               <span>Anmelden...</span>
             </>
           ) : (
             <>
-              <Mail size={16} />
-              <span>Anmelden</span>
+              <Mail size={17} />
+              <span>Kostenlos anmelden</span>
             </>
           )}
         </button>

@@ -179,8 +179,8 @@ export default function WeeklyChallenge() {
           </div>
           <ul className="space-y-2.5">
             {task.tips.map((tip, idx) => (
-              <li key={idx} className="text-xs text-[#4f5651] flex items-start gap-2 leading-relaxed">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-1.5 shrink-0" />
+              <li key={idx} className="text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-2 leading-relaxed">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-2 shrink-0" />
                 <span>{tip}</span>
               </li>
             ))}
@@ -192,34 +192,38 @@ export default function WeeklyChallenge() {
           {user ? (
             <div className="space-y-3">
               {/* Status-Leiste: Wiederholungen & Wochentag */}
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-[var(--color-accent-primary)] px-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-semibold text-[var(--color-text-main)] px-1">
                 <div className="flex items-center gap-1.5">
                   <span>Wiederholungen:</span>
-                  <span className="bg-[var(--color-bg-card)] px-2.5 py-0.5 rounded-lg border border-[var(--color-border-main)] font-bold">
+                  <span className="bg-[var(--color-bg-card)] px-2.5 py-1 rounded-lg border border-[var(--color-border-main)] font-bold text-[var(--color-text-main)] shadow-2xs">
                     {completionCount} {completionCount >= MIN_REPETITIONS ? '✓ (Min. 3 erreicht)' : `/ ${MIN_REPETITIONS} Min.`}
                   </span>
                 </div>
 
                 {weekStartedAt && (
-                  <div className="flex items-center gap-1.5 text-[var(--color-text-muted)] text-[11px]">
-                    <Clock size={13} />
+                  <div className="flex items-center gap-1.5 text-[var(--color-text-muted)] text-xs font-medium">
+                    <Clock size={14} />
                     <span>Tag {currentDayOfCycle} von {DAYS_PER_WEEK}</span>
                   </div>
                 )}
               </div>
 
-              {/* 7-Tage Reifezeit Info-Box */}
+              {/* 7-Tage Reifezeit Info-Box: Kein Gelb-auf-Gelb, bester Kontrast */}
               {hasMinReps && !canAdvance && (
                 <motion.div 
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-3.5 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5"
+                  className="p-4 bg-[var(--color-bg-card)] border-2 border-emerald-500/30 dark:border-emerald-500/40 rounded-2xl text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-3 shadow-xs"
                 >
-                  <Lock size={16} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                    <Sparkles size={18} />
+                  </div>
                   <div className="leading-relaxed">
-                    <strong>3 Wiederholungen gemeistert! ✨</strong>
-                    <p className="text-[11px] text-amber-800/90 dark:text-amber-300/90 mt-0.5">
-                      Noch <strong>{daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} Reifezeit</strong>, bis Woche {currentTaskIndex + 2} freigeschaltet wird. Du kannst die Übung diese Woche so oft vertiefen, wie du möchtest!
+                    <strong className="text-emerald-800 dark:text-emerald-300 font-semibold block text-sm sm:text-base mb-0.5">
+                      3 Wiederholungen gemeistert! ✨
+                    </strong>
+                    <p className="text-[var(--color-text-muted)] text-xs sm:text-sm">
+                      Noch <strong className="text-[var(--color-text-main)] font-semibold">{daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} Reifezeit</strong> bis Woche {currentTaskIndex + 2}. Vertiefe die Übung gern weiterhin in deinem eigenen Tempo!
                     </p>
                   </div>
                 </motion.div>

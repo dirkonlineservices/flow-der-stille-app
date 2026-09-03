@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
@@ -105,7 +105,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
   };
 
   return (
-    <div className="space-y-9 max-w-3xl mx-auto pb-12">
+    <div className="space-y-8 max-w-4xl lg:max-w-5xl mx-auto pb-0">
       {/* ─── ADMIN-STEUERUNGSLEISTE (Nur für Admins sichtbar) ─────────────── */}
       <div className="bg-emerald-950/80 border border-emerald-500/40 rounded-2xl p-3.5 text-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md backdrop-blur-md">
         <div className="flex items-center gap-2.5 text-sm font-medium">
@@ -283,7 +283,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
             className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all shadow-2xs hover:shadow-sm group flex items-start gap-4"
           >
-            <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
               <BookOpen size={22} />
             </div>
             <div className="flex-1 min-w-0">

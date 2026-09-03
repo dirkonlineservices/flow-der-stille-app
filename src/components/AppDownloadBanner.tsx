@@ -12,8 +12,8 @@ export function AppDownloadBanner() {
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(playStoreUrl)}`;
 
   return (
-    <div id="google-play-download" className="w-full max-w-3xl mx-auto my-6">
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div id="google-play-download" className="w-full max-w-4xl lg:max-w-5xl mx-auto mt-8 mb-6">
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
         
         {/* Linke Seite: Text & Info */}
         <div className="flex-1 text-center sm:text-left min-w-0">
