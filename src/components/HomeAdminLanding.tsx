@@ -397,7 +397,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 4. UNSER VERSPRECHEN: DER UNTERSCHIED ZU YOUTUBE & ABO-APPS ─── */}
+      {/* ─── 4. UNSER VERSPRECHEN: DER UNTERSCHIED ZU WERBE-PLATTFORMEN & ABO-APPS ─── */}
       <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-7 shadow-2xs space-y-4">
         <div className="text-center max-w-xl mx-auto mb-2">
           <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
@@ -407,7 +407,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             Warum Flow der Stille?
           </h2>
           <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
-            Dein Unterschied zu lauten Werbe-Plattformen wie YouTube und teuren Dauer-Abos.
+            Dein Unterschied zu werbefinanzierten Plattformen und teuren Dauer-Abos.
           </p>
         </div>
 
@@ -422,7 +422,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 100 % Werbefrei – Kein Aufschrecken
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Auf YouTube wirst du mitten in der tiefsten Entspannung oft von lauten Werbeclips herausgerissen – außer du zahlst ein teures Monats-Abo. Bei uns genießt du pure, ungestörte Stille.
+                Auf werbefinanzierten Plattformen wie YouTube, Podcasts &amp; Co. wirst du mitten in der Entspannung plötzlich von lauter Werbung herausgerissen – außer du bezahlst ein teures Monats-Abo, nur um die Werbung abzuschalten. Bei uns gibt es niemals Werbung.
               </p>
             </div>
           </div>
@@ -452,7 +452,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Einmalig ab 1,99 € statt teurer Monats-Abos
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Keine Abofalle mit 60–100 € pro Jahr. Was du einmal freischaltest, gehört für immer dir. Schnupper-Übungen sind nach Registrierung 100 % gratis.
+                Gängige Meditations-Apps zwingen dich in teure Dauer-Abos (oft 60–100 € pro Jahr). Kündigst du, ist der Zugang weg oder es läuft Werbung. Bei uns behältst du gekaufte Inhalte für immer.
               </p>
             </div>
           </div>
