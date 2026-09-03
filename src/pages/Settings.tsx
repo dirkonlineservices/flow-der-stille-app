@@ -17,6 +17,7 @@ import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
 import { getStorageUsageSummary } from '../lib/offlineAudioService';
 import { OfflineStorageModal } from '../components/OfflineStorageModal';
+import { FriendInviteWidget } from '../components/FriendInviteWidget';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -749,6 +750,11 @@ export default function Settings() {
                 )}
               </div>
             </section>
+
+            {/* 5. Freunde werben Empfehlungslink */}
+            <div className="mt-8">
+              <FriendInviteWidget />
+            </div>
 
           </div>
 

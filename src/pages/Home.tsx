@@ -292,10 +292,6 @@ export default function Home() {
              </Link>
           </div>
 
-          <div className="mt-6">
-            <FriendInviteWidget />
-          </div>
-
           {/* Kostenlose Hörproben – Premium-Feld im Marken-CI */}
           {hoerprobenList.length > 0 && (
             <motion.div
@@ -431,25 +427,51 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-8 mb-2 text-center flex flex-col sm:flex-row justify-center items-center gap-3.5 max-w-xl mx-auto px-4">
+        <section className="mt-8 mb-4 text-center flex flex-wrap justify-center items-center gap-3 max-w-2xl mx-auto px-4">
           <a 
             href="https://t.me/+ccWPbkn00zs4Zjc6" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-sm sm:text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
+            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
           >
-            <Send size={19} className="group-hover:translate-x-0.5 transition-transform" />
-            <span>Folge uns auf Telegram</span>
+            <Send size={16} className="group-hover:translate-x-0.5 transition-transform" />
+            <span>Telegram</span>
           </a>
 
           <a 
             href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-sm sm:text-base transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
+            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
           >
-            <MessageCircle size={19} className="group-hover:scale-110 transition-transform" />
-            <span>Folge uns auf WhatsApp</span>
+            <MessageCircle size={16} className="group-hover:scale-110 transition-transform" />
+            <span>WhatsApp</span>
+          </a>
+
+          <a 
+            href="https://www.instagram.com/flowderstille" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+            <span>Instagram</span>
+          </a>
+
+          <a 
+            href="https://www.facebook.com/flowderstille" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+            <span>Facebook</span>
           </a>
         </section>
       </div>
