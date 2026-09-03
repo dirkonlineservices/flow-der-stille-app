@@ -157,34 +157,51 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </span>
         </div>
 
-        {/* 🌟 HERZLICHE EINLADUNG: REGISTRIEREN & UNSER PROJEKT UNTERSTÜTZEN (Direkt nach echter Handarbeit) */}
+        {/* 🌟 UNÜBERSEHBARER LOGIN- & REGISTRIERUNGS-BEREICH (Direkt nach echter Handarbeit) */}
         {!user && (
-          <div className="mt-6 p-5 sm:p-7 rounded-2xl bg-[var(--bg-alt)] border-2 border-[var(--accent)]/30 text-center shadow-xs">
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
-              Gemeinsam wachsen &amp; Stille finden
-            </span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)] mt-1 mb-2">
-              Unterstütze unser Herzensprojekt mit deiner Registrierung
+          <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-[var(--bg-main)] border-2 border-[var(--accent)] shadow-md text-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
+              <Sparkles size={16} />
+              <span>In 20 Sekunden startklar – 100 % kostenlos</span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--text-main)] mb-2.5">
+              Jetzt registrieren oder einloggen
             </h3>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-5">
-              Mit deiner kostenlosen Registrierung unterstützt du unsere Arbeit und hilfst uns dabei zu wachsen – damit wir dir und vielen anderen dauerhaft wirksame Entspannung zu fairen Preisen ganz ohne Abo und ohne Werbung anbieten können. Als Dankeschön sind unsere Schnupper-Übungen sowie eine geführte Meditation sofort für dich freigeschaltet!
+
+            <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-6">
+              <strong className="text-[var(--text-main)]">Unterstütze unser Herzensprojekt:</strong> Mit deiner kostenlosen Registrierung unterstützt du unsere tägliche Arbeit und hilfst uns dabei zu wachsen – damit wir dir und vielen anderen Menschen dauerhaft wirksame Entspannung zu fairen Einzelpreisen ganz ohne Abo und ohne Werbung ermöglichen können.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto">
+            {/* Große, extrem leicht verständliche Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto mb-5">
               <Link
                 to="/register"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-base sm:text-lg font-bold shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
               >
-                <span>Kostenlos registrieren &amp; unterstützen</span>
-                <ArrowRight size={17} />
+                <span>👉 Jetzt kostenlos registrieren</span>
+                <ArrowRight size={20} />
               </Link>
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border-2 border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-base sm:text-lg font-bold active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
-                <LogIn size={17} className="text-[var(--accent)]" />
+                <LogIn size={20} className="text-[var(--accent)]" />
                 <span>Bereits registriert? Einloggen</span>
               </Link>
+            </div>
+
+            {/* Vertrauens-Signale */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-[var(--text-muted)] pt-2 border-t border-[var(--border)] max-w-lg mx-auto">
+              <span className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+                <Check size={16} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <Check size={16} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <Check size={16} strokeWidth={2.5} /> 100 % Werbefrei
+              </span>
             </div>
           </div>
         )}
@@ -522,6 +539,34 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
       <section className="pt-1">
         <NewsletterBanner variant="in-content" />
       </section>
+
+      {/* ─── ZUSÄTZLICHER SCHLANKER CALL-TO-ACTION FÜR GÄSTE AM SEITENENDE ─── */}
+      {!user && (
+        <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-6 text-center shadow-sm space-y-3">
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)]">
+            Bereit für deinen persönlichen Ruhepol?
+          </h4>
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
+            Registriere dich jetzt in 20 Sekunden kostenlos – deine erste Meditation ist sofort für dich freigeschaltet.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>👉 Jetzt kostenlos registrieren (0 €)</span>
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              to="/login"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <LogIn size={16} className="text-[var(--accent)]" />
+              <span>Hier einloggen</span>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* ─── 8. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
       <section className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">

@@ -5,7 +5,7 @@ import {
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift
+  ShieldCheck, Gift, User
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -126,17 +126,39 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
-      {/* Top Right Corner Google Play App Button */}
-      {!isNativeApp && (
-        <Link
-          to="/app"
-          className="fixed top-4 right-4 md:right-8 z-40 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-sm cursor-pointer"
-          title="Flow der Stille Android App Seite öffnen"
-        >
-          <GooglePlayIcon className="w-4 h-4 shrink-0" />
-          <span className="hidden sm:inline font-medium">Google Play App</span>
-        </Link>
-      )}
+      {/* Top Right Corner Action Buttons */}
+      <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
+        {!user ? (
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="Jetzt anmelden oder registrieren"
+          >
+            <LogIn size={15} />
+            <span>Anmelden</span>
+          </Link>
+        ) : (
+          <Link
+            to="/settings"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            title="Mein Profil / Einstellungen"
+          >
+            <User size={14} className="text-[var(--accent)]" />
+            <span className="hidden sm:inline">Mein Bereich</span>
+          </Link>
+        )}
+
+        {!isNativeApp && (
+          <Link
+            to="/app"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-xs cursor-pointer"
+            title="Flow der Stille Android App Seite öffnen"
+          >
+            <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="hidden sm:inline font-medium">App</span>
+          </Link>
+        )}
+      </div>
 
       <div className="w-full">
         {/* Desktop Sidebar */}
