@@ -133,10 +133,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
       <section className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] p-5 sm:p-7 md:p-8 shadow-xs relative overflow-hidden text-center">
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        {/* Logo & Sub-Badge kompakt */}
-        <div className="flex flex-col items-center justify-center mb-2">
-          <img src="/logo-transparent.png" alt="Flow der Stille" className="h-10 sm:h-12 mx-auto mb-2" />
-          <span className="px-3 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-[11px] sm:text-xs font-bold tracking-wider uppercase inline-block">
+        {/* Logo & Sub-Badge */}
+        <div className="flex flex-col items-center justify-center mb-3">
+          <img 
+            src="/logo-transparent.png" 
+            alt="Flow der Stille Logo" 
+            className="h-16 sm:h-20 md:h-24 w-auto object-contain mx-auto mb-3 drop-shadow-sm transition-transform hover:scale-105" 
+          />
+          <span className="px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-bold tracking-wider uppercase inline-block">
             Von Herzen für dich gemacht
           </span>
         </div>
@@ -163,55 +167,53 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
 
         {/* 🌟 LOGIN- & REGISTRIERUNGS-BEREICH (Flach, symmetrisch, raumsparend) */}
-        {!user && (
-          <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-              <div className="flex-1 min-w-0">
-                <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
-                  <Sparkles size={13} />
-                  <span>Kostenlos mitmachen &amp; unser Herzensprojekt unterstützen</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
-                  Jetzt registrieren oder einloggen
-                </h3>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
-                  Hilf uns zu wachsen, damit wir echte Entspannung dauerhaft günstig ohne Abo und ohne Werbung anbieten können. Gratis-Meditation sofort aktiv!
-                </p>
+        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
+                <Sparkles size={13} />
+                <span>Kostenlos mitmachen &amp; unser Herzensprojekt unterstützen</span>
               </div>
-
-              {/* Kompakte, symmetrische Buttons direkt daneben auf Desktop */}
-              <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full md:w-auto">
-                <Link
-                  to="/register"
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>Kostenlos registrieren</span>
-                  <ArrowRight size={16} />
-                </Link>
-                <Link
-                  to="/login"
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <LogIn size={16} className="text-[var(--accent)]" />
-                  <span>Einloggen</span>
-                </Link>
-              </div>
+              <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
+                Jetzt registrieren oder einloggen
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                Hilf uns zu wachsen, damit wir echte Entspannung dauerhaft günstig ohne Abo und ohne Werbung anbieten können. Gratis-Meditation sofort aktiv!
+              </p>
             </div>
 
-            {/* Vertrauens-Signale dezent in einer flachen Zeile */}
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
-              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                <Check size={14} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
-              </span>
-              <span className="flex items-center gap-1">
-                <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
-              </span>
-              <span className="flex items-center gap-1">
-                <Check size={14} strokeWidth={2.5} /> 100 % Werbefrei
-              </span>
+            {/* Kompakte, symmetrische Buttons direkt daneben auf Desktop */}
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full md:w-auto">
+              <Link
+                to="/register"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>Kostenlos registrieren</span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/login"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+              >
+                <LogIn size={16} className="text-[var(--accent)]" />
+                <span>Einloggen</span>
+              </Link>
             </div>
           </div>
-        )}
+
+          {/* Vertrauens-Signale dezent in einer flachen Zeile */}
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+              <Check size={14} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
+            </span>
+            <span className="flex items-center gap-1">
+              <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
+            </span>
+            <span className="flex items-center gap-1">
+              <Check size={14} strokeWidth={2.5} /> 100 % Werbefrei
+            </span>
+          </div>
+        </div>
       </section>
 
       {/* ─── 2. CUSTOMER JOURNEY: BEDÜRFNIS-FINDER (FÜR GESTRESSTE NUTZER) ── */}
@@ -644,32 +646,30 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
       </section>
 
       {/* ─── ZUSÄTZLICHER SCHLANKER CALL-TO-ACTION FÜR GÄSTE AM SEITENENDE ─── */}
-      {!user && (
-        <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-6 text-center shadow-sm space-y-3">
-          <h4 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)]">
-            Bereit für deinen persönlichen Ruhepol?
-          </h4>
-          <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
-            Registriere dich jetzt in 20 Sekunden kostenlos – deine erste Meditation ist sofort für dich freigeschaltet.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>👉 Jetzt kostenlos registrieren (0 €)</span>
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-            >
-              <LogIn size={16} className="text-[var(--accent)]" />
-              <span>Hier einloggen</span>
-            </Link>
-          </div>
-        </section>
-      )}
+      <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-6 text-center shadow-sm space-y-3">
+        <h4 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)]">
+          Bereit für deinen persönlichen Ruhepol?
+        </h4>
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
+          Registriere dich jetzt in 20 Sekunden kostenlos – deine erste Meditation ist sofort für dich freigeschaltet.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+          <Link
+            to="/register"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>👉 Jetzt kostenlos registrieren (0 €)</span>
+            <ArrowRight size={16} />
+          </Link>
+          <Link
+            to="/login"
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+          >
+            <LogIn size={16} className="text-[var(--accent)]" />
+            <span>Hier einloggen</span>
+          </Link>
+        </div>
+      </section>
 
       {/* ─── 8. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
       <section className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
