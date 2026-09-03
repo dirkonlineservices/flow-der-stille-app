@@ -20,6 +20,8 @@ import {
   getCachedPurchases, 
   saveCachedPurchases 
 } from '../lib/offlineProductsService';
+import { ProductRating } from './ProductRating';
+import { getAllProductRatings } from '../lib/reviewsService';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -40,6 +42,15 @@ export default function PremiumShopDashboard() {
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
   const [searchParams] = useSearchParams();
+  const [productRatings, setProductRatings] = useState<Record<string, { average: number; count: number }>>({});
+
+  useEffect(() => {
+    getAllProductRatings().then(ratings => {
+      if (ratings && Object.keys(ratings).length > 0) {
+        setProductRatings(ratings);
+      }
+    });
+  }, []);
 
   // ─── Menü für gekaufte Produkte: standardmäßig eingeklappt ───────────────
   const [isPurchasedMenuOpen, setIsPurchasedMenuOpen] = useState(false);
@@ -863,6 +874,13 @@ export default function PremiumShopDashboard() {
                     <p className="text-sm font-semibold text-[var(--text-main)] break-words leading-snug">
                       {produkt.titel}
                     </p>
+                    <ProductRating
+                      produktId={produkt.id}
+                      average={productRatings[produkt.id]?.average}
+                      count={productRatings[produkt.id]?.count}
+                      variant="summary"
+                      className="mt-1"
+                    />
                     {produkt.dauer && (
                       <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)} Min.</p>
                     )}
@@ -943,8 +961,15 @@ export default function PremiumShopDashboard() {
               <div className={`flex flex-col ${!hatZugriff && user ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-10`}>
                 
                 <div className="flex-1 flex flex-col w-full">
-                    <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-2 leading-tight">{produkt.titel}</h3>
+                    <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-1 leading-tight">{produkt.titel}</h3>
                     
+                    <ProductRating
+                      produktId={produkt.id}
+                      average={productRatings[produkt.id]?.average}
+                      count={productRatings[produkt.id]?.count}
+                      variant="summary"
+                      className="mb-3"
+                    />
                     {!hatZugriff && !istKostenlos && (
                         <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-4">
                             {produkt.preis} €
@@ -1096,6 +1121,23 @@ export default function PremiumShopDashboard() {
                         }} 
                       />
                     )}
+
+                    {/* Interaktive Sternebewertung für freigeschaltete Hörer */}
+                    {user && (
+                      <ProductRating
+                        produktId={produkt.id}
+                        average={productRatings[produkt.id]?.average}
+                        count={productRatings[produkt.id]?.count}
+                        variant="interactive"
+                        onRatingChanged={(newAvg, newCount) => {
+                          setProductRatings(prev => ({
+                            ...prev,
+                            [produkt.id]: { average: newAvg, count: newCount }
+                          }));
+                        }}
+                      />
+                    )}
+
                     <div className="flex justify-end">
                       <ProductDisclaimerTrigger />
                     </div>
