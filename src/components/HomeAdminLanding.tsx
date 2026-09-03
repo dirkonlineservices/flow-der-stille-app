@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
@@ -146,53 +146,75 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
         </p>
 
-        {/* 🎙️ VOICE-PLAYER MIT GUT LESBARER SCHRIFT */}
-        <div className="w-full bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-5 text-left shadow-2xs">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3.5">
-              <button
-                onClick={toggleVoicePlay}
-                className="w-12 h-12 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white flex items-center justify-center shadow-md active:scale-95 transition shrink-0 cursor-pointer"
-                aria-label={isPlayingVoice ? "Pause" : "Sprachnachricht abspielen"}
-              >
-                {isPlayingVoice ? <Pause size={20} fill="white" /> : <Play size={20} className="ml-0.5" fill="white" />}
-              </button>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
-                    Persönliche Begrüßung von uns dreien
-                  </h3>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-medium">
-                    35 Sek.
-                  </span>
+        {/* 🌟 LOGIN & REGISTRIERUNGS-CALL-TO-ACTION FÜR BESUCHER */}
+        {!user && (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 my-6 max-w-xl mx-auto">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm sm:text-base font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Kostenlos registrieren &amp; starten</span>
+              <ArrowRight size={18} />
+            </Link>
+            <Link
+              to="/login"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm sm:text-base font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            >
+              <LogIn size={18} className="text-[var(--accent)]" />
+              <span>Bereits Mitglied? Anmelden</span>
+            </Link>
+          </div>
+        )}
+
+        {/* 🎙️ VOICE-PLAYER (Vorerst ausgeblendet, bis die finale Aufnahme von euch dreien verlinkt wird) */}
+        {false && (
+          <div className="w-full bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-5 text-left shadow-2xs">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3.5">
+                <button
+                  onClick={toggleVoicePlay}
+                  className="w-12 h-12 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white flex items-center justify-center shadow-md active:scale-95 transition shrink-0 cursor-pointer"
+                  aria-label={isPlayingVoice ? "Pause" : "Sprachnachricht abspielen"}
+                >
+                  {isPlayingVoice ? <Pause size={20} fill="white" /> : <Play size={20} className="ml-0.5" fill="white" />}
+                </button>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                      Persönliche Begrüßung von uns dreien
+                    </h3>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-medium">
+                      35 Sek.
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 leading-snug">
+                    Höre kurz rein, wer hinter Flow der Stille steht und warum wir für dich da sind.
+                  </p>
                 </div>
-                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 leading-snug">
-                  Höre kurz rein, wer hinter Flow der Stille steht und warum wir für dich da sind.
-                </p>
+              </div>
+
+              <div className="text-xs sm:text-sm text-[var(--text-muted)] font-medium hidden sm:block shrink-0">
+                🎙️ Jacqueline • Lisa • Dirk
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-[var(--text-muted)] font-medium hidden sm:block shrink-0">
-              🎙️ Jacqueline • Lisa • Dirk
+            <div className="w-full bg-[var(--border)] h-1.5 rounded-full mt-3.5 overflow-hidden">
+              <div 
+                className="bg-[var(--accent)] h-full transition-all duration-200"
+                style={{ width: `${voiceProgress}%` }}
+              ></div>
             </div>
-          </div>
 
-          <div className="w-full bg-[var(--border)] h-1.5 rounded-full mt-3.5 overflow-hidden">
-            <div 
-              className="bg-[var(--accent)] h-full transition-all duration-200"
-              style={{ width: `${voiceProgress}%` }}
-            ></div>
+            <audio
+              ref={voiceAudioRef}
+              src={VOICE_INTRO_URL}
+              onTimeUpdate={handleVoiceTimeUpdate}
+              onEnded={handleVoiceEnded}
+              preload="none"
+              className="hidden"
+            />
           </div>
-
-          <audio
-            ref={voiceAudioRef}
-            src={VOICE_INTRO_URL}
-            onTimeUpdate={handleVoiceTimeUpdate}
-            onEnded={handleVoiceEnded}
-            preload="none"
-            className="hidden"
-          />
-        </div>
+        )}
 
         {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten & Bildwelten */}
         <div className="p-4 sm:p-5 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">

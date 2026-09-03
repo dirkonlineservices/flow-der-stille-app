@@ -147,7 +147,7 @@ export default function Home() {
     }
     return false;
   });
-  const [showAdminPreview, setShowAdminPreview] = useState(true);
+  const [showAdminPreview, setShowAdminPreview] = useState(false);
 
   // Prüfen ob der Nutzer Admin-Rechte besitzt
   useEffect(() => {
