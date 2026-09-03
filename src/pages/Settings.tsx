@@ -18,6 +18,7 @@ import { PRODUCTS } from '../data/store';
 import { getStorageUsageSummary } from '../lib/offlineAudioService';
 import { OfflineStorageModal } from '../components/OfflineStorageModal';
 import { FriendInviteWidget } from '../components/FriendInviteWidget';
+import { GamificationRadar } from '../components/GamificationRadar';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -594,6 +595,11 @@ export default function Settings() {
                     <span>Zur Verwaltung →</span>
                   </Link>
                 </div>
+              </div>
+
+              {/* 52-Wochen Gamification Radar & Alarm-Monitor */}
+              <div className="pt-2">
+                <GamificationRadar />
               </div>
             </section>
           )}

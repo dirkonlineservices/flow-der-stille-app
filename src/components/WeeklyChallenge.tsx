@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle, Trophy, ArrowRight, Lightbulb, Clock, Sparkles, Lock, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { progressiveTasks } from '../data/tasks';
+import { syncUserWeekProgress } from '../lib/gamificationMonitorService';
 
 export default function WeeklyChallenge() {
   const { user, login } = useAuth();
@@ -17,6 +18,13 @@ export default function WeeklyChallenge() {
   const task = progressiveTasks[currentTaskIndex];
   
   const completionCount = taskProgress.completions?.[currentTaskIndex] || 0;
+  
+  // Wochenfortschritt des Nutzers mit der Datenbank abgleichen
+  useEffect(() => {
+    if (user?.id) {
+      syncUserWeekProgress(user.id, currentTaskIndex, user.email, user.first_name);
+    }
+  }, [user?.id, currentTaskIndex]);
   
   // ============================================================================
   // 7-TAGE-SPERRE & REIFEZEIT LOGIK
@@ -128,6 +136,7 @@ export default function WeeklyChallenge() {
           ...user,
           task_progress: newTaskProgress
         });
+        syncUserWeekProgress(user.id, nextTaskIndex, user.email, user.first_name);
       }
     } catch (err) {
       console.error("Fehler beim Voranschreiten:", err);

@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { AdminSecurityLock } from '../components/AdminSecurityLock';
 import { isAdminSessionVerified, lockAdminSession } from '../lib/adminSecurity';
+import { GamificationRadar } from '../components/GamificationRadar';
 
 interface UserProfile {
   id: string;
@@ -774,6 +775,9 @@ export default function AdminUnlock() {
               </span>
             </div>
           </div>
+
+          {/* 52-Wochen Gamification Radar & Alarm */}
+          <GamificationRadar />
 
           {/* NEUESTE REGISTRIERUNGEN TABELLE */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm">
