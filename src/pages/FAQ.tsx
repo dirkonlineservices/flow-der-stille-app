@@ -20,7 +20,12 @@ const faqData: FAQItem[] = [
   {
     category: "Über Flow der Stille",
     question: "Welche Rolle spielt KI (Künstliche Intelligenz) bei Flow der Stille?",
-    answer: "Viele Menschen blicken der KI mit Skepsis oder Sorge entgegen. Bei Flow der Stille nutzen wir moderne KI-Technologie als positives Werkzeug für das Gute: Sämtliche Texte, Meditationen und Skripte stammen zu 100 % aus menschlicher Hand von Jacqueline Schmetzer. Die KI unterstützt uns bei der Erschaffung von entspannenden Hintergrund-Klangwelten und visuellen Motiven. Dadurch sparen wir teure Studio- und Produktionskosten ein – und geben diesen Preisvorteil 1:1 an dich weiter. So können wir dir wirksame Entspannungsinhalte in bester Qualität für einen schmalen, für jeden bezahlbaren Preis anbieten."
+    answer: "Transparenz und Ehrlichkeit liegen uns am Herzen: Sämtliche Texte, Meditationen, Selbsthypnosen und Übungen verfasst Jacqueline Schmetzer persönlich von Hand mit fundiertem Fachwissen. Unsere Premium-Meditationen und Hörbücher werden von Lisa Ragusa mit echter, warmer Menschenstimme eingesprochen. Moderne KI-Technologie nutzen wir gezielt als Werkzeug für meditative Hintergrund-Klangwelten und beruhigende Frequenzen. Dadurch sparen wir extrem teure Produktions- und Tonstudiokosten ein – und geben diesen Preisvorteil direkt an dich weiter: Du erhältst erstklassige, wirksame Entspannung ab 1,99 € einmalig statt teurer Monats-Abos."
+  },
+  {
+    category: "Über Flow der Stille",
+    question: "Warum Flow der Stille statt YouTube oder teurer Abo-Apps?",
+    answer: "Flow der Stille vereint die Vorteile beider Welten, ohne deren Nachteile:\n\n1. 100 % Werbefrei: Auf YouTube wirst du mitten in der tiefsten Entspannung oft von lauter Werbung aufgeschreckt – es sei denn, du bezahlst ein teures YouTube-Premium-Abo. Bei uns gibt es niemals Werbung.\n2. Echter Flugmodus & gesunder Schlaf: Du kannst Schlafmeditationen bei komplett gesperrtem, dunklem Display und im Flugmodus anhören. Keine Funkstrahlung am Kopf, kein grelles Bildschirmlicht im Schlafzimmer und kein unbemerktes Weiterlaufen im Dauermodus die ganze Nacht über.\n3. Kein Abo-Zwang: Gängige Meditations-Apps verlangen oft 60–100 € pro Jahr im Dauer-Abo. Bei Flow der Stille kaufst du Inhalte einmalig ab 1,99 € und behältst sie dauerhaft – ohne Kündigungsfristen oder Kostenfallen.\n4. Persönliches Herzensprojekt: Hinter Flow der Stille stehen drei reale Menschen (Jacqueline, Lisa und Dirk), die du jederzeit direkt ansprechen kannst."
   },
 
   // 1. Achtsamkeit, Meditation, Selbsthypnose & Affirmationen

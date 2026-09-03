@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
@@ -190,12 +190,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           />
         </div>
 
-        {/* Nutzen-Hinweis: Gut lesbare Schriftgröße */}
-        <div className="p-4 bg-[var(--bg-main)]/60 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3">
-          <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
+        {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten */}
+        <div className="p-4 sm:p-5 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">
+          <Sparkles className="w-6 h-6 text-[var(--accent)] shrink-0" />
           <span>
-            <strong>Eigene Texte &amp; faire Preise:</strong> Alle Übungen schreiben wir selbst. 
-            Nach deiner kostenlosen Registrierung sind unsere <strong>kostenfreien Übungen sowie eine geführte Meditation sofort freigeschaltet</strong> – und alle weiteren Premium-Inhalte gibt es dauerhaft günstig <strong>ab 1,99 € einmalig ganz ohne Abo</strong>.
+            <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen und Übungstexte verfasst Jacqueline persönlich mit viel Herzblut. 
+            Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
+            Moderne KI nutzen wir transparent als Werkzeug für meditative Klangwelten – so sparen wir teure Studio- und Lizenzkosten ein und bieten dir 
+            <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
           </span>
         </div>
       </section>
@@ -391,7 +393,84 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 4. TAGESIMPULS ÜBER DIE VOLLE BREITE (Schlank & Angenehm groß) ── */}
+      {/* ─── 4. UNSER VERSPRECHEN: DER UNTERSCHIED ZU YOUTUBE & ABO-APPS ─── */}
+      <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-7 shadow-2xs space-y-4">
+        <div className="text-center max-w-xl mx-auto mb-2">
+          <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
+            Unser Versprechen
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif text-[var(--text-main)] font-normal mt-1">
+            Warum Flow der Stille?
+          </h2>
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">
+            Dein Unterschied zu lauten Werbe-Plattformen wie YouTube und teuren Dauer-Abos.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Vorteil 1: 100% Werbefrei */}
+          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 mt-0.5">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                100 % Werbefrei – Kein Aufschrecken
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                Auf YouTube wirst du mitten in der tiefsten Entspannung oft von lauten Werbeclips herausgerissen – außer du zahlst ein teures Monats-Abo. Bei uns genießt du pure, ungestörte Stille.
+              </p>
+            </div>
+          </div>
+
+          {/* Vorteil 2: Echter Flugmodus & Display aus */}
+          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 mt-0.5">
+              <WifiOff size={20} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                Flugmodus &amp; Display aus für gesunden Schlaf
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                Schalte dein Handy nachts in den Flugmodus. Höre deine Schlafmeditation bei komplett gesperrtem, dunklem Display – ohne Strahlung am Bett und ohne unbemerktes nächtliches Weiterlaufen.
+              </p>
+            </div>
+          </div>
+
+          {/* Vorteil 3: Kein Abo-Zwang */}
+          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles size={20} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                Einmalig ab 1,99 € statt teurer Monats-Abos
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                Keine Abofalle mit 60–100 € pro Jahr. Was du einmal freischaltest, gehört für immer dir. Schnupper-Übungen sind nach Registrierung 100 % gratis.
+              </p>
+            </div>
+          </div>
+
+          {/* Vorteil 4: Echte Menschen & KI als Werkzeug */}
+          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+              <Heart size={20} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
+                Herzensprojekt statt Großkonzern
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                Von Jacqueline, Lisa &amp; Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen und KI als bewusstes Klangwerkzeug für faire Preise.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 5. TAGESIMPULS ÜBER DIE VOLLE BREITE (Schlank & Angenehm groß) ── */}
       <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-6 shadow-2xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
@@ -423,7 +502,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 5. KOSTENLOSE HÖRPROBEN (Kompakt & Angenehm lesbar) ───────────── */}
+      {/* ─── 6. KOSTENLOSE HÖRPROBEN (Kompakt & Angenehm lesbar) ───────────── */}
       {hoerprobenList.length > 0 && (
         <section className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-2xl border border-[var(--border)] shadow-2xs space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
@@ -451,12 +530,12 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </section>
       )}
 
-      {/* ─── 6. NEWSLETTER (KOMPAKT & SCHLANK) ────────────────────────────── */}
+      {/* ─── 7. NEWSLETTER (KOMPAKT & SCHLANK) ────────────────────────────── */}
       <section className="pt-1">
         <NewsletterBanner variant="in-content" />
       </section>
 
-      {/* ─── 7. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
+      {/* ─── 8. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
       <section className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div>
           <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
