@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export default function Rechtliches() {
   return (
-    <div className="max-w-3xl mx-auto space-y-8 pb-12">
+    <div className="w-full max-w-4xl lg:max-w-5xl mx-auto space-y-8 pb-12">
       <SEO title="Rechtliches" description="Rechtliche Informationen, Haftungsausschluss und Transparenz." />
       
       <Link to="/" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] mb-6 transition-colors">

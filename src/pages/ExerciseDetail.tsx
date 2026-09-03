@@ -190,7 +190,7 @@ export default function ExerciseDetail() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto pb-12">
+    <div className="w-full max-w-4xl lg:max-w-5xl mx-auto pb-12">
       <SEO title={t(exercise.translationKeyTitle)} description={`Detailansicht für die Übung: ${t(exercise.translationKeyTitle)}`} />
       {/* 1. Guided Player View overlay / fullscreen panel */}
       <AnimatePresence>

@@ -7,7 +7,7 @@ import { openCookieConsentModal } from '../lib/tracking';
 
 export default function Datenschutz() {
   return (
-    <div className="max-w-3xl mx-auto py-12 px-4">
+    <div className="w-full max-w-4xl lg:max-w-5xl mx-auto py-8 px-0 sm:px-4">
       <SEO title="Datenschutzerklärung" description="Datenschutzerklärung gemäß DSGVO für Flow der Stille." />
       <div className="mb-6">
         <Link 

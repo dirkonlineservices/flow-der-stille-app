@@ -129,7 +129,7 @@ export default function FAQ() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 w-full max-w-4xl lg:max-w-5xl mx-auto">
       <SEO 
         title="Häufige Fragen (FAQ) – Meditation, Selbsthypnose & Vagusnerv" 
         description="Antworten auf häufige Fragen zu Meditation, Selbsthypnose, Affirmationen, Vagusnerv-Aktivierung, App-Nutzung und Käufen bei Flow der Stille." 
