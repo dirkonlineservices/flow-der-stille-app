@@ -8,6 +8,7 @@ export interface GamificationUserProgress {
   percentage: number;
   phase: number;
   lastActive?: string;
+  appVersion?: string;
 }
 
 export interface GamificationStats {
@@ -142,7 +143,7 @@ export async function fetchGamificationDistribution(): Promise<GamificationStats
   try {
     const { data: profiles, error } = await supabase
       .from('profiles')
-      .select('id, email, first_name, last_name, full_name, message_count, updated_at, created_at');
+      .select('id, email, first_name, last_name, full_name, message_count, updated_at, created_at, premium_type');
 
     if (error || !profiles) {
       throw error || new Error('No profiles returned');
@@ -183,7 +184,8 @@ export async function fetchGamificationDistribution(): Promise<GamificationStats
         week,
         percentage: Math.round((week / 52) * 100),
         phase: week <= 13 ? 1 : week <= 26 ? 2 : week <= 39 ? 3 : 4,
-        lastActive: p.updated_at || p.created_at
+        lastActive: p.updated_at || p.created_at,
+        appVersion: p.premium_type || undefined
       };
 
       if (week >= maxWeek) {

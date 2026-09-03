@@ -22,6 +22,7 @@ interface UserProfile {
   is_premium?: boolean | null;
   created_at?: string | null;
   updated_at?: string | null;
+  premium_type?: string | null;
 }
 
 interface ProductItem {
@@ -172,7 +173,7 @@ export default function AdminUnlock() {
       // 1. Alle Profile abfragen (inkl. Registrierungsdatum & Rollen)
       const { data: allProfiles, error: profError } = await supabase
         .from('profiles')
-        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at, updated_at')
+        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at, updated_at, premium_type')
         .order('created_at', { ascending: false });
 
       // 2. Käufe zählen
@@ -836,6 +837,22 @@ export default function AdminUnlock() {
                           </div>
                           <div className="text-xs text-[var(--text-muted)] font-mono">
                             {u.email || 'Keine E-Mail'}
+                          </div>
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            {u.premium_type ? (
+                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-semibold border flex items-center gap-1 ${
+                                u.premium_type.includes('Android') 
+                                  ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/30' 
+                                  : 'bg-stone-500/10 text-stone-700 dark:text-stone-300 border-stone-500/30'
+                              }`}>
+                                <span>{u.premium_type.includes('Android') ? '📱' : '🌐'}</span>
+                                <span>{u.premium_type}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-[var(--text-muted)] opacity-60">
+                                Version: Web / Vor Versionstracking
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

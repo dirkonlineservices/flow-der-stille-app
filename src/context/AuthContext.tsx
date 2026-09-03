@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { syncConsentAfterLogin } from '../lib/consentManager';
+import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -168,17 +170,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.warn('Could not cache user locally:', e);
     }
 
-    // Letzten Login / Aktivitäts-Zeitstempel in profiles festhalten
+    // Letzten Login / Aktivitäts-Zeitstempel & installierte App-Version in profiles festhalten
     if (supabaseUser.id) {
-      try {
-        const supabase = getSupabase();
-        const lastLoginTime = supabaseUser.last_sign_in_at || new Date().toISOString();
-        supabase
-          .from('profiles')
-          .update({ updated_at: lastLoginTime })
-          .eq('id', supabaseUser.id)
-          .then();
-      } catch (e) {}
+      (async () => {
+        try {
+          const supabase = getSupabase();
+          const lastLoginTime = supabaseUser.last_sign_in_at || new Date().toISOString();
+
+          // Ermittle exakte App-Version des Handys / Browsers
+          let clientVersion = 'Web v5.2.1';
+          try {
+            if (Capacitor.isNativePlatform()) {
+              const info = await CapApp.getInfo();
+              clientVersion = `Android App v${info.version}`;
+            } else {
+              const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+              clientVersion = isMobile ? 'Mobile Web v5.2.1' : 'Desktop Web v5.2.1';
+            }
+          } catch (e) {
+            clientVersion = 'Web v5.2.1';
+          }
+
+          await supabase
+            .from('profiles')
+            .update({ 
+              updated_at: lastLoginTime,
+              premium_type: clientVersion
+            })
+            .eq('id', supabaseUser.id);
+        } catch (e) {}
+      })();
     }
 
     setUser(mappedUser);

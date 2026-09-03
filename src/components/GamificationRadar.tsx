@@ -350,9 +350,21 @@ export function GamificationRadar() {
                     <div className="text-[11px] text-[var(--color-text-muted)] truncate font-mono">
                       {u.email}
                     </div>
-                    <div className="text-[10px] text-emerald-700 dark:text-emerald-400 mt-1 flex items-center gap-1 font-mono">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 inline-block"></span>
-                      <span>Letzter Login / Aktiv: {u.lastActive ? new Date(u.lastActive).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht wieder aktiv'}</span>
+                    <div className="mt-1 flex items-center gap-2 flex-wrap">
+                      <div className="text-[10px] text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-mono">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 inline-block"></span>
+                        <span>Letzter Login: {u.lastActive ? new Date(u.lastActive).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht wieder aktiv'}</span>
+                      </div>
+                      {u.appVersion && (
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-semibold border flex items-center gap-0.5 ${
+                          u.appVersion.includes('Android')
+                            ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/30'
+                            : 'bg-stone-500/10 text-stone-700 dark:text-stone-300 border-stone-500/30'
+                        }`}>
+                          <span>{u.appVersion.includes('Android') ? '📱' : '🌐'}</span>
+                          <span>{u.appVersion}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
