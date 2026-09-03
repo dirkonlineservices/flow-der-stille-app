@@ -13,6 +13,7 @@ import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { getOfflineHoerproben } from '../lib/offlineProductsService';
+import { HomeAdminLanding } from '../components/HomeAdminLanding';
 
 const dailyWisdoms = [
   { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
@@ -140,6 +141,58 @@ export default function Home() {
     }
   }, [user]);
 
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('flow_admin_preview') === 'true';
+    }
+    return false;
+  });
+  const [showAdminPreview, setShowAdminPreview] = useState(true);
+
+  // Prüfen ob der Nutzer Admin-Rechte besitzt
+  useEffect(() => {
+    if (!user) {
+      if (localStorage.getItem('flow_admin_preview') !== 'true') {
+        setIsAdmin(false);
+      }
+      return;
+    }
+    const supabase = getSupabase();
+    supabase
+      .from('profiles')
+      .select('rolle')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.rolle?.toLowerCase() === 'admin') {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+
+  // Für Admins: Vorgeschaltete Startseite mit Entstehungsgeschichte, Themen & Sprachnachricht
+  if (isAdmin && showAdminPreview) {
+    return (
+      <>
+        <SEO 
+          title="Meditation, Achtsamkeit & Vagusnerv-Entspannung" 
+          description="Finde innere Ruhe bei Flow der Stille. Geführte Meditationen, Selbsthypnosen & Achtsamkeits-Übungen zur Stressreduktion und Vagusnerv-Aktivierung." 
+          keywords="Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Stressreduktion, Selbsthypnose, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Flow der Stille"
+        />
+        <HomeAdminLanding 
+          user={user}
+          onTogglePreview={() => setShowAdminPreview(false)}
+          todaysWisdom={todaysWisdom}
+          isCompleted={isCompleted}
+          handleCompleteWisdom={handleCompleteWisdom}
+          loading={loading}
+          hoerprobenList={hoerprobenList}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <SEO 
@@ -148,6 +201,17 @@ export default function Home() {
         keywords="Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Stressreduktion, Selbsthypnose, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Flow der Stille"
       />
       <div className="space-y-8">
+        {isAdmin && !showAdminPreview && (
+          <div className="p-3.5 bg-emerald-950/80 border border-emerald-500/40 rounded-2xl text-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-md">
+            <span>👁️ <strong>Admin-Modus:</strong> Du betrachtest aktuell die Standard-Startseite.</span>
+            <button 
+              onClick={() => setShowAdminPreview(true)}
+              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition cursor-pointer shrink-0"
+            >
+              Vorgeschaltete Startseite anzeigen
+            </button>
+          </div>
+        )}
         <header className="mb-12 flex flex-col items-center">
           <img src="/logo-transparent.png" alt="Logo" className="h-16 mb-4" />
           <motion.h1 

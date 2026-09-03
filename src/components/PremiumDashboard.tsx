@@ -927,9 +927,9 @@ export default function PremiumShopDashboard() {
                     href="/impressum#ki-transparenz"
                     onClick={(e) => e.stopPropagation()}
                     title={getKIBadgeTitle(produkt)}
-                    className="absolute bottom-3 left-3 z-10 text-[10px] font-bold tracking-wide text-white/95 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-md hover:bg-black/85 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
+                    className="absolute bottom-3 left-3 z-10 text-[10px] font-medium tracking-wide text-white/90 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/15 shadow-sm hover:bg-black/75 hover:scale-105 transition-all flex items-center gap-1 cursor-pointer"
                   >
-                    ✨ KI-Design
+                    🎨 Digital Art
                   </a>
                 )}
                 {produkt.dauer && (
@@ -954,9 +954,14 @@ export default function PremiumShopDashboard() {
                     <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
 
                     {produkt.audio_hinweis && (
-                      <div className="mt-4 p-3 bg-[var(--bg-alt)] border border-[var(--border)] rounded-xl text-xs text-[var(--text-muted)] flex items-start gap-2">
+                      <div className="mt-4 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] flex items-start gap-3 shadow-2xs">
                         <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
-                        <span className="leading-snug whitespace-pre-line">{produkt.audio_hinweis}</span>
+                        <div className="leading-relaxed">
+                          <span className="font-semibold text-[var(--text-main)] block mb-0.5">
+                            {produkt.kategorie === 'Kostenfreie Anwendungen' ? '🌿 Schnupper-Übung' : '🌿 Herzenswerk & Klangkunst'}
+                          </span>
+                          <span className="whitespace-pre-line leading-relaxed">{produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '')}</span>
+                        </div>
                       </div>
                     )}
 
