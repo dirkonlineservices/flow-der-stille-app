@@ -33,7 +33,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const CACHED_USER_KEY = 'flow_cached_user';
+
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const cached = localStorage.getItem('flow_cached_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isAuthFlow, setAuthFlow] = useState<boolean>(false);
   // Merkt sich, ob die aktuelle Session ein Passwort-Reset-Link-Login ist.
   // In diesem Fall soll SIGNED_IN den Nutzer NICHT in die App einloggen –
@@ -62,14 +72,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             error.message.includes('refresh_token_not_found')
           ) {
             localStorage.removeItem('flow-der-stille-auth');
+            localStorage.removeItem('flow_cached_user');
             supabase.auth.signOut().catch(() => {});
+            setUser(null);
           }
         } else if (session?.user) {
           mapAndSetUser(session.user);
         }
       }).catch(err => {
-        console.warn('Get session exception:', err);
-        localStorage.removeItem('flow-der-stille-auth');
+        console.warn('Get session exception (evtl. Offline / Flugmodus):', err);
+        // Im Flugmodus Session NICHT löschen, cached user bleibt aktiv!
       });
     }
 
@@ -136,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setUser({
+    const mappedUser: User = {
       id: supabaseUser.id,
       email: supabaseUser.email,
       first_name: firstName,
@@ -148,10 +160,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       purchased_products: metadata.purchased_products || [],
       completed_tasks: metadata.completed_tasks || [],
       task_progress: metadata.task_progress || { current_task: 0, completions: {} },
-    });
+    };
+
+    try {
+      localStorage.setItem('flow_cached_user', JSON.stringify(mappedUser));
+    } catch (e) {
+      console.warn('Could not cache user locally:', e);
+    }
+
+    setUser(mappedUser);
   };
 
   const login = (userData: User) => {
+    try {
+      localStorage.setItem('flow_cached_user', JSON.stringify(userData));
+    } catch (e) {}
     setUser(userData);
   };
 
@@ -166,8 +189,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     const supabase = getSupabase();
+    try {
+      localStorage.removeItem('flow_cached_user');
+      localStorage.removeItem('flow-der-stille-auth');
+    } catch (e) {}
     // Sicherer Logout über Supabase
-    await supabase.auth.signOut();
+    await supabase.auth.signOut().catch(() => {});
     setUser(null);
   };
 

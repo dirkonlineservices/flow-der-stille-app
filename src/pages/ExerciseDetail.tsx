@@ -6,6 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { exercises } from '../data/exercises';
 import { getSupabase } from '../lib/supabaseClient';
+import { getOfflineProductById } from '../lib/offlineProductsService';
 import SEO from '../components/SEO';
 import { AudioPlayerButton } from '../components/AudioPlayerButton';
 import AuthRequiredModal from '../components/AuthRequiredModal';
@@ -70,18 +71,32 @@ export default function ExerciseDetail() {
 
   useEffect(() => {
     async function fetchAudioData() {
-        if (exercise?.audioId) {
-            const supabase = getSupabase();
-            const { data } = await supabase
-                .from('produkte')
-                .select('audio_hinweis, audio_path')
-                .eq('id', exercise.audioId)
-                .single();
-            if (data) {
-                setAudioHinweis(data.audio_hinweis || '');
-                setAudioPath(data.audio_path || '');
-            }
+      if (exercise?.audioId) {
+        // 1. Zuerst sofort offline nachschlagen (Flugmodus-Schutz)
+        const off = getOfflineProductById(exercise.audioId);
+        if (off) {
+          if (off.audio_hinweis) setAudioHinweis(off.audio_hinweis);
+          if (off.audio_path) setAudioPath(off.audio_path);
         }
+
+        try {
+          const supabase = getSupabase();
+          const res: any = await Promise.race([
+            supabase
+              .from('produkte')
+              .select('audio_hinweis, audio_path')
+              .eq('id', exercise.audioId)
+              .maybeSingle(),
+            new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 3000))
+          ]);
+          if (res?.data) {
+            if (res.data.audio_hinweis) setAudioHinweis(res.data.audio_hinweis);
+            if (res.data.audio_path) setAudioPath(res.data.audio_path);
+          }
+        } catch {
+          // Im Flugmodus bleiben die Offline-Audiodaten erhalten
+        }
+      }
     }
     fetchAudioData();
   }, [exercise?.audioId]);

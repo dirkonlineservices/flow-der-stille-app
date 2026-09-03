@@ -10,6 +10,8 @@ import { AudiobookPlayerModal, AudiobookChapter } from '../components/AudiobookP
 import { OfflineDownloadButton } from '../components/OfflineDownloadButton';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
+import { offlineManager } from '../lib/offlineAudioService';
+import { getOfflineProductById } from '../lib/offlineProductsService';
 
 export interface FormattedAudiobookChapter extends AudiobookChapter {
   number: string;
@@ -108,52 +110,78 @@ export default function AudiobookPage() {
     async function loadAudiobook() {
       setLoading(true);
       setLoadError(null);
+
+      // 1. Zuerst sofort aus Offline-Katalog laden (Flugmodus-Schutz)
+      const offlineProd = getOfflineProductById(productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte');
+      if (offlineProd) {
+        setProductData(offlineProd);
+      }
+
+      // 2. Offline-Kaufstatus sofort prüfen
+      const isOfflineOwned = offlineManager.isPurchasedOffline(productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') ||
+                             offlineManager.isPurchasedOffline('schmetterling') ||
+                             offlineManager.isPurchasedOffline('fds_schmetterling');
+      if (isOfflineOwned) {
+        setIsOwned(true);
+        if (shouldAutoPlay) {
+          setIsPlayerOpen(true);
+        }
+      }
+
       try {
         const supabase = getSupabase();
-        const { data, error } = await supabase
-          .from('produkte')
-          .select('*')
-          .or(`id.eq.${productId},titel.ilike.%schmetterling%,titel.ilike.%hörbuch%`)
-          .limit(1)
-          .maybeSingle();
+        const res: any = await Promise.race([
+          supabase
+            .from('produkte')
+            .select('*')
+            .or(`id.eq.${productId},titel.ilike.%schmetterling%,titel.ilike.%hörbuch%`)
+            .limit(1)
+            .maybeSingle(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Audiobook Timeout')), 3000))
+        ]);
 
-        if (error) {
-          console.error('Supabase query error:', error);
-          setLoadError('Produktdaten konnten nicht geladen werden.');
-        } else if (data) {
-          const resolvedAudio = data.audio_path || data.audio_url || data.hoerprobe_url;
-          if (!resolvedAudio) {
-            setLoadError('Für dieses Hörbuch ist aktuell noch kein Audio-Link hinterlegt.');
-          }
+        const { data, error } = res || {};
+
+        if (!error && data) {
           setProductData(data);
 
           // Kaufstatus für diesen Nutzer prüfen
           if (user) {
             setCheckingOwnership(true);
-            const { data: purchaseData } = await supabase
-              .from('kaeufe')
-              .select('id')
-              .eq('user_id', user.id)
-              .eq('produkt_id', data.id)
-              .maybeSingle();
+            try {
+              const { data: purchaseData } = await Promise.race([
+                supabase
+                  .from('kaeufe')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .eq('produkt_id', data.id)
+                  .maybeSingle(),
+                new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 2500))
+              ]);
 
-            const hasPurchased = !!purchaseData;
-            setIsOwned(hasPurchased);
-            setCheckingOwnership(false);
-
-            if (hasPurchased && shouldAutoPlay) {
-              setIsPlayerOpen(true);
+              const hasPurchased = !!purchaseData || isOfflineOwned;
+              setIsOwned(hasPurchased);
+              if (hasPurchased) {
+                offlineManager.savePurchasedProducts([data.id, 'schmetterling', 'fds_schmetterling']);
+              }
+              if (hasPurchased && shouldAutoPlay) {
+                setIsPlayerOpen(true);
+              }
+            } catch {
+              // Netzwerkfehler bei Kaufstatusprüfung: Offline-Status beibehalten
+              setIsOwned(isOfflineOwned);
+            } finally {
+              setCheckingOwnership(false);
             }
-          } else {
-            setIsOwned(false);
-            setCheckingOwnership(false);
           }
-        } else {
-          setLoadError('Das gewünschte Hörbuch wurde in der Datenbank nicht gefunden.');
+        } else if (!offlineProd) {
+          setLoadError('Das gewünschte Hörbuch wurde nicht gefunden.');
         }
       } catch (e) {
-        console.error('Error loading audiobook:', e);
-        setLoadError('Verbindungsfehler beim Laden des Hörbuchs.');
+        console.log('[OfflineMode] Verwende Offline-Hörbuchdaten');
+        if (!offlineProd) {
+          setLoadError('Verbindungsfehler beim Laden des Hörbuchs.');
+        }
       } finally {
         setLoading(false);
       }

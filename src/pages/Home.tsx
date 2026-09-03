@@ -12,6 +12,7 @@ import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
+import { getOfflineHoerproben } from '../lib/offlineProductsService';
 
 const dailyWisdoms = [
   { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
@@ -40,22 +41,30 @@ export default function Home() {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
-  const [hoerprobenCount, setHoerprobenCount] = useState(0);
-  const [hoerprobenList, setHoerprobenList] = useState<any[]>([]);
+  const initialHoerproben = getOfflineHoerproben();
+  const [hoerprobenCount, setHoerprobenCount] = useState(initialHoerproben.length);
+  const [hoerprobenList, setHoerprobenList] = useState<any[]>(initialHoerproben);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.() || (window as any).CdvPurchase);
 
-  // Hörproben aus Supabase laden
+  // Hörproben aus Supabase laden (aktualisieren wenn online)
   useEffect(() => {
-    getSupabase()
-      .from('produkte')
-      .select('*')
-      .not('hoerprobe_url', 'is', null)
-      .neq('hoerprobe_url', '')
-      .then(({ data }) => {
+    Promise.race([
+      getSupabase()
+        .from('produkte')
+        .select('*')
+        .not('hoerprobe_url', 'is', null)
+        .neq('hoerprobe_url', ''),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+    ])
+      .then((res: any) => {
+        const data = res?.data;
         if (data && data.length > 0) {
           setHoerprobenList(data);
           setHoerprobenCount(data.length);
         }
+      })
+      .catch(() => {
+        // Im Offline-Modus bleiben initialHoerproben aktiv!
       });
   }, []);
 

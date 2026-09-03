@@ -13,14 +13,28 @@ import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { offlineManager } from '../lib/offlineAudioService';
+import { 
+  getOfflineProducts, 
+  saveOfflineProducts, 
+  getOfflineProductById, 
+  getCachedPurchases, 
+  saveCachedPurchases 
+} from '../lib/offlineProductsService';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [produkte, setProdukte] = useState<any[]>([]);
-  const [gekauftIds, setGekauftIds] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+
+  // ⚡ Sofortige Offline-Verfügbarkeit für den Flugmodus (0ms Ladezeit)
+  const initialProducts = getOfflineProducts();
+  const [produkte, setProdukte] = useState<any[]>(initialProducts);
+  const [gekauftIds, setGekauftIds] = useState<Set<string>>(() => {
+    const set = new Set<string>();
+    offlineManager.getPurchasedProducts().forEach(id => set.add(id));
+    return set;
+  });
+  const [loading, setLoading] = useState(initialProducts.length === 0);
   const [showUnlockBanner, setShowUnlockBanner] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
@@ -126,11 +140,32 @@ export default function PremiumShopDashboard() {
   }, [user, gekauftIds]);
 
   const fetchMyPurchases = async () => {
-    if (!user) return;
-    try {
-      setLoadingPurchases(true);
-      const supabase = getSupabase();
+    // 1. Sofort aus lokalem Cache laden (0ms Ladezeit im Flugmodus)
+    const cached = getCachedPurchases();
+    if (cached && cached.length > 0) {
+      setMyPurchases(cached);
+      setLoadingPurchases(false);
+    }
 
+    // Falls keine DB-Käufe im Cache, aber offlineManager hat IDs:
+    const offlineIds = offlineManager.getPurchasedProducts();
+    if ((!cached || cached.length === 0) && offlineIds.length > 0) {
+      const fallbackList = offlineIds.map(id => ({
+        id: `offline_${id}`,
+        produkt_id: id,
+        created_at: new Date().toISOString()
+      }));
+      setMyPurchases(fallbackList);
+      setLoadingPurchases(false);
+    }
+
+    if (!user) {
+      setLoadingPurchases(false);
+      return;
+    }
+
+    try {
+      const supabase = getSupabase();
       const targetUserIds: string[] = [user.id];
       const cleanEmail = (user.email || '').toLowerCase().trim();
       let aliasEmail: string | null = null;
@@ -141,33 +176,33 @@ export default function PremiumShopDashboard() {
       }
 
       if (aliasEmail) {
-        const { data: aliasProfiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .in('email', [cleanEmail, aliasEmail]);
-
-        if (aliasProfiles && aliasProfiles.length > 0) {
-          aliasProfiles.forEach((p: any) => {
-            if (p.id && !targetUserIds.includes(p.id)) {
-              targetUserIds.push(p.id);
-            }
-          });
-        }
+        try {
+          const { data: aliasProfiles } = await Promise.race([
+            supabase.from('profiles').select('id').in('email', [cleanEmail, aliasEmail]),
+            new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 2500))
+          ]);
+          if (aliasProfiles && aliasProfiles.length > 0) {
+            aliasProfiles.forEach((p: any) => {
+              if (p.id && !targetUserIds.includes(p.id)) {
+                targetUserIds.push(p.id);
+              }
+            });
+          }
+        } catch {}
       }
 
-      const { data, error } = await supabase
-        .from('kaeufe')
-        .select('*')
-        .in('user_id', targetUserIds)
-        .order('created_at', { ascending: false });
+      // Schneller Timeout gegen Netzwerk-Hänger im Flugmodus
+      const { data, error } = await Promise.race([
+        supabase.from('kaeufe').select('*').in('user_id', targetUserIds).order('created_at', { ascending: false }),
+        new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 3000))
+      ]);
 
-      if (error) {
-        console.error('Fehler beim Laden meiner Einkäufe:', error);
-      } else {
-        setMyPurchases(data || []);
+      if (!error && data) {
+        setMyPurchases(data);
+        saveCachedPurchases(data);
       }
     } catch (e) {
-      console.error('Exception beim Laden meiner Einkäufe:', e);
+      console.log('[OfflineMode] Verwende gecachte Einkäufe im Flugmodus');
     } finally {
       setLoadingPurchases(false);
     }
@@ -204,16 +239,37 @@ export default function PremiumShopDashboard() {
 
   async function loadShopData() {
     try {
+      // 1. Zuerst immer den gebündelten / gecachten Offline-Katalog laden (sofort sichtbar!)
+      let finalProdukte = getOfflineProducts();
+      setProdukte(finalProdukte);
+
       const supabase = getSupabase();
-      const { data: prodData, error: prodError } = await supabase.from('produkte').select('*');
-      
-      let finalProdukte = [];
-      if (!prodError && prodData && prodData.length > 0) {
-        finalProdukte = prodData;
+      try {
+        const prodRes: any = await Promise.race([
+          supabase.from('produkte').select('*'),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Products Timeout')), 3500))
+        ]);
+        if (!prodRes.error && prodRes.data && prodRes.data.length > 0) {
+          finalProdukte = prodRes.data;
+          saveOfflineProducts(prodRes.data);
+          setProdukte(finalProdukte);
+        }
+      } catch (netErr) {
+        console.log('[OfflineMode] Supabase Produkte nicht erreichbar, nutze Offline-Katalog:', netErr);
       }
 
       let gekaufteSet: Set<string> = new Set();
       let userIsVip = false;
+
+      // Offline gespeicherte Käufe hinzunehmen (für Flugmodus & Web-Offline)
+      const offlineIds = offlineManager.getPurchasedProducts();
+      offlineIds.forEach((offId) => {
+        gekaufteSet.add(offId);
+        const pId = getPlayStoreProductId(offId);
+        gekaufteSet.add(pId);
+        const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[offId] || REVERSE_PLAY_STORE_PRODUCT_MAP[pId];
+        if (dbId) gekaufteSet.add(dbId);
+      });
 
       if (user) {
         try {
@@ -228,66 +284,52 @@ export default function PremiumShopDashboard() {
           }
 
           if (aliasEmail) {
-            const { data: aliasProfiles } = await supabase
-              .from('profiles')
-              .select('id')
-              .in('email', [cleanEmail, aliasEmail]);
-
-            if (aliasProfiles && aliasProfiles.length > 0) {
-              aliasProfiles.forEach((p: any) => {
-                if (p.id && !targetUserIds.includes(p.id)) {
-                  targetUserIds.push(p.id);
-                }
-              });
-            }
+            try {
+              const aliasRes: any = await Promise.race([
+                supabase.from('profiles').select('id').in('email', [cleanEmail, aliasEmail]),
+                new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 2500))
+              ]);
+              if (aliasRes?.data && aliasRes.data.length > 0) {
+                aliasRes.data.forEach((p: any) => {
+                  if (p.id && !targetUserIds.includes(p.id)) {
+                    targetUserIds.push(p.id);
+                  }
+                });
+              }
+            } catch {}
           }
 
-          const [kaufRes, vipRes] = await Promise.all([
-            supabase.from('kaeufe').select('produkt_id').in('user_id', targetUserIds),
-            supabase.from('vip_zugang').select('user_id').in('user_id', targetUserIds)
+          const [kaufRes, vipRes]: any = await Promise.race([
+            Promise.all([
+              supabase.from('kaeufe').select('produkt_id').in('user_id', targetUserIds),
+              supabase.from('vip_zugang').select('user_id').in('user_id', targetUserIds)
+            ]),
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Purchases Timeout')), 3500))
           ]);
-          const ids = new Set<string>();
 
-          if (!kaufRes.error && kaufRes.data) {
+          if (!kaufRes?.error && kaufRes?.data) {
             kaufRes.data.forEach((k: any) => {
               const rawId = k.produkt_id;
               if (rawId) {
-                ids.add(rawId);
+                gekaufteSet.add(rawId);
                 const playId = getPlayStoreProductId(rawId);
-                ids.add(playId);
+                gekaufteSet.add(playId);
                 const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[rawId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playId];
-                if (dbId) ids.add(dbId);
+                if (dbId) gekaufteSet.add(dbId);
               }
             });
           }
 
-          // Offline gespeicherte Käufe hinzunehmen (für Flugmodus & Web-Offline)
-          const offlineIds = offlineManager.getPurchasedProducts();
-          offlineIds.forEach((offId) => {
-            ids.add(offId);
-            const pId = getPlayStoreProductId(offId);
-            ids.add(pId);
-            const dbId = REVERSE_PLAY_STORE_PRODUCT_MAP[offId] || REVERSE_PLAY_STORE_PRODUCT_MAP[pId];
-            if (dbId) ids.add(dbId);
-          });
-
           // Nach erfolgreicher Prüfung den Stand lokal sichern
-          if (ids.size > 0) {
-            offlineManager.savePurchasedProducts(Array.from(ids));
+          if (gekaufteSet.size > 0) {
+            offlineManager.savePurchasedProducts(Array.from(gekaufteSet));
           }
 
-          gekaufteSet = ids;
-          if (!vipRes.error && vipRes.data) {
+          if (!vipRes?.error && vipRes?.data) {
             userIsVip = vipRes.data.length > 0;
           }
         } catch (e) {
-          console.warn('Could not fetch purchases or VIP status:', e);
-        }
-      } else {
-        // Nicht eingeloggt oder offline: Offline-Käufe prüfen
-        const offlineIds = offlineManager.getPurchasedProducts();
-        if (offlineIds.length > 0) {
-          offlineIds.forEach((id) => gekaufteSet.add(id));
+          console.log('[OfflineMode] Verwende Offline-Kaufstatus im Flugmodus');
         }
       }
       
@@ -953,7 +995,7 @@ export default function PremiumShopDashboard() {
                 )}
               </div>
 
-              {!user && (
+              {!hatZugriff && !user && (
                 <div className="mt-6 md:mt-8 bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-5 sm:p-6 text-[var(--text-main)] shadow-sm">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                     <div className="flex items-center gap-3">
@@ -990,8 +1032,8 @@ export default function PremiumShopDashboard() {
                 </div>
               )}
 
-              {/* Für freigeschaltete Produkte: Audio Player Button */}
-              {hatZugriff && user && (
+              {/* Für freigeschaltete Produkte: Audio Player Button (auch im Flugmodus sofort verfügbar) */}
+              {hatZugriff && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
                     {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch')) ? (
                       <div className="flex flex-col sm:flex-row gap-3">
@@ -1008,9 +1050,17 @@ export default function PremiumShopDashboard() {
                             if (p.audio_path && p.audio_path.startsWith('http')) {
                               return p.audio_path;
                             }
-                            const supabase = getSupabase();
-                            const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                            return data.publicUrl;
+                            const off = getOfflineProductById(p.id);
+                            if (off?.audio_path && off.audio_path.startsWith('http')) {
+                              return off.audio_path;
+                            }
+                            try {
+                              const supabase = getSupabase();
+                              const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                              return data?.publicUrl || '';
+                            } catch {
+                              return '';
+                            }
                           }} 
                         />
                       </div>
@@ -1021,9 +1071,17 @@ export default function PremiumShopDashboard() {
                           if (p.audio_path && p.audio_path.startsWith('http')) {
                             return p.audio_path;
                           }
-                          const supabase = getSupabase();
-                          const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                          return data.publicUrl;
+                          const off = getOfflineProductById(p.id);
+                          if (off?.audio_path && off.audio_path.startsWith('http')) {
+                            return off.audio_path;
+                          }
+                          try {
+                            const supabase = getSupabase();
+                            const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                            return data?.publicUrl || '';
+                          } catch {
+                            return '';
+                          }
                         }} 
                       />
                     )}

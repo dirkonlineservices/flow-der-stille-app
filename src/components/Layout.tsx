@@ -13,6 +13,7 @@ import { useTheme } from '../context/ThemeContext';
 import { AdminTools } from './AdminTools';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { getSupabase } from '../lib/supabaseClient';
+import { getOfflineHoerproben } from '../lib/offlineProductsService';
 import { AppDownloadBanner } from './AppDownloadBanner';
 import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
@@ -76,16 +77,23 @@ export default function Layout() {
       .catch(() => setIsAdmin(false));
   }, [user]);
 
-  // Dynamisch prüfen ob Hörproben in Supabase existieren
+  // Dynamisch prüfen ob Hörproben existieren (offline sofort aktiv)
   useEffect(() => {
-    getSupabase()
-      .from('produkte')
-      .select('id', { count: 'exact', head: false })
-      .not('hoerprobe_url', 'is', null)
-      .neq('hoerprobe_url', '')
-      .then(({ count }) => {
-        if (count && count > 0) setHasHoerproben(true);
-      });
+    if (getOfflineHoerproben().length > 0) {
+      setHasHoerproben(true);
+    }
+    Promise.race([
+      getSupabase()
+        .from('produkte')
+        .select('id', { count: 'exact', head: false })
+        .not('hoerprobe_url', 'is', null)
+        .neq('hoerprobe_url', ''),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+    ])
+      .then((res: any) => {
+        if (res?.count && res.count > 0) setHasHoerproben(true);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

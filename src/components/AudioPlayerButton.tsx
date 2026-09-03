@@ -1,4 +1,4 @@
-﻿/* =========================================================================================
+/* =========================================================================================
 🚨 AI SYSTEM INSTRUCTION - STRICT GUARDRAIL - DO NOT MODIFY 🚨
 This component contains critical, cross-component audio logic.
 CRITICAL SYSTEMS INSIDE:
@@ -16,7 +16,7 @@ import { Play, Pause, Loader2 } from 'lucide-react';
 import DisclaimerModal from './DisclaimerModal';
 import AuthRequiredModal from './AuthRequiredModal';
 import { useAuth } from '../context/AuthContext';
-import { getPlayableAudioUrl } from '../lib/offlineAudioService';
+import { getPlayableAudioUrl, offlineManager } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
@@ -29,6 +29,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [offlineAlert, setOfflineAlert] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const formatTime = (secs: number) => {
@@ -134,7 +135,9 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
   };
 
   const handlePlayClick = () => {
-    if (!user) {
+    // Im Flugmodus / Offline: Wenn offline freigeschaltet oder kostenlos, kein Auth-Modal erzwingen
+    const isOfflineOwned = offlineManager.isPurchasedOffline(produkt.id) || parseFloat(produkt.preis) === 0;
+    if (!user && !isOfflineOwned) {
       setShowAuthModal(true);
       return;
     }
@@ -143,6 +146,16 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       setShowDisclaimer(true);
       return;
     }
+
+    // Wenn offline / Flugmodus: Prüfen, ob Audio lokal im Cache vorliegt
+    const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+    const isCachedLocally = resolvedUrl && resolvedUrl.startsWith('blob:');
+    if (isOffline && !isCachedLocally) {
+      setOfflineAlert('Flugmodus aktiv: Dieses Audio wurde noch nicht offline heruntergeladen. Bitte kurz mit dem Internet verbinden oder gespeicherte Audios nutzen.');
+      setTimeout(() => setOfflineAlert(''), 4500);
+      return;
+    }
+
     togglePlay();
   };
 
@@ -169,6 +182,12 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
             <Play size={32} className="ml-1" fill="white" stroke="none" />
           )}
         </button>
+
+        {offlineAlert && (
+          <div className="mt-3 px-3 py-2 bg-amber-500/15 border border-amber-500/30 rounded-xl text-[11px] text-amber-700 dark:text-amber-300 text-center leading-snug">
+            {offlineAlert}
+          </div>
+        )}
 
         <div className="mt-4 text-center select-none w-full">
           <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
