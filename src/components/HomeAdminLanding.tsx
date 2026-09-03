@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
@@ -55,6 +55,9 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
   // Toast für Teilen-Aktion
   const [shareToast, setShareToast] = useState('');
+
+  // Modal für Reflexions-Fortschritt bei unregistrierten Gästen
+  const [showWisdomProgressModal, setShowWisdomProgressModal] = useState(false);
 
   // Platzhalter-Audio (kann sofort durch die finale Begrüßung ersetzt werden)
   const VOICE_INTRO_URL = "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3";
@@ -496,8 +499,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
           <div className="shrink-0 sm:self-center">
             <button
-              onClick={handleCompleteWisdom}
-              disabled={loading || isCompleted}
+              onClick={() => {
+                handleCompleteWisdom();
+                if (!user) {
+                  setShowWisdomProgressModal(true);
+                }
+              }}
+              disabled={loading}
               className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
                 isCompleted 
                   ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' 
@@ -510,6 +518,61 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
         </div>
       </section>
+
+      {/* 🌟 DIALOG: FORTSCHRITT SPEICHERN NACH REFLEXION FÜR GÄSTE */}
+      {showWisdomProgressModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[var(--accent)] text-center relative">
+            <button
+              onClick={() => setShowWisdomProgressModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition cursor-pointer"
+              aria-label="Schließen"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
+              <Check size={28} strokeWidth={2.5} />
+            </div>
+
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
+              Täglicher Impuls reflektiert
+            </span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)] mt-1 mb-2.5">
+              Fortschritt dauerhaft speichern?
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+              Wunderbar, du hast dir heute einen Moment der Stille geschenkt! 
+              Dein täglicher Reflexions-Fortschritt und deine Serie (Streak) können dauerhaft in deinem Profil gespeichert werden, sobald du dich kostenlos registriert hast.
+            </p>
+
+            <div className="space-y-2.5">
+              <Link
+                to="/register"
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>👉 Jetzt kostenlos registrieren &amp; Fortschritt sichern</span>
+                <ArrowRight size={17} />
+              </Link>
+              <Link
+                to="/login"
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="w-full py-3 px-6 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <LogIn size={16} className="text-[var(--accent)]" />
+                <span>Bereits registriert? Hier einloggen</span>
+              </Link>
+              <button
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] pt-2 transition cursor-pointer"
+              >
+                Schließen (ohne Speichern fortfahren)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── 6. KOSTENLOSE HÖRPROBEN (Kompakt & Angenehm lesbar) ───────────── */}
       {hoerprobenList.length > 0 && (

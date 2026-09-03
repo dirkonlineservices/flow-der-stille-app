@@ -96,8 +96,8 @@ export default function Login() {
         user_id: data?.user?.id || 'unknown'
       });
 
-      // Dynamische Weiterleitung: Zurück zur ursprünglichen Stelle oder zum Dashboard
-      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/premium-dashboard';
+      // Dynamische Weiterleitung: Zurück zur ursprünglichen Stelle oder zum persönlichen Dashboard
+      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/dashboard';
       sessionStorage.removeItem('auth_return_url');
       navigate(returnUrl, { replace: true });
     } catch (err) {

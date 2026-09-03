@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import PremiumDashboard from './components/PremiumDashboard';
 import NotFound from './components/NotFound';
 import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 import Exercises from './pages/Exercises';
 import ExerciseDetail from './pages/ExerciseDetail';
 import Recipes from './pages/Recipes';
@@ -115,6 +116,9 @@ export default function App() {
                   {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
                   <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
+                  <Route path="start" element={<Home />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="mein-bereich" element={<Dashboard />} />
                   <Route path="exercises" element={<Exercises />} />
                   <Route path="exercises/:id" element={<ExerciseDetail />} />
                   <Route path="recipes" element={<Recipes />} />

@@ -168,7 +168,7 @@ export default function Layout() {
           </Link>
           
           <div className="flex flex-col gap-6 w-full">
-            <NavLink to="/" icon={<Home />} label={t('nav.home')} onClick={() => handleBottomNavClick('Start')} />
+            <NavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : t('nav.home')} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
             <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
             <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
             <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
@@ -188,7 +188,7 @@ export default function Layout() {
 
         {/* Mobile Bottom Bar (unter 768px): App-ähnlich fixiert am unteren Rand */}
         <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
-          <MobileNavLink to="/" icon={<Home />} label="Start" onClick={() => handleBottomNavClick('Start')} />
+          <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
           <MobileNavLink to="/exercises" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
           <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
           <button 
