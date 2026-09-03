@@ -460,7 +460,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Einmalig ab 1,99 € statt teurer Monats-Abos
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Gängige Meditations-Apps zwingen dich in teure Dauer-Abos (oft 60–100 € pro Jahr). Kündigst du, ist der Zugang weg oder es läuft Werbung. Bei uns behältst du gekaufte Inhalte für immer.
+                Gängige Meditations-Apps zwingen dich in teure Dauer-Abos (oft 60–100 € pro Jahr). Kündigst du, ist der Zugang weg oder es läuft Werbung. Bei uns kannst du auf deine gekauften Inhalte zugreifen, solange du ein registriertes Konto bei uns hast – ohne monatliche Folgekosten oder Abo-Zwang.
               </p>
             </div>
           </div>
