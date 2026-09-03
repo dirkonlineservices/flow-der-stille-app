@@ -876,6 +876,7 @@ export default function PremiumShopDashboard() {
                     </p>
                     <ProductRating
                       produktId={produkt.id}
+                      produktTitel={produkt.titel}
                       average={productRatings[produkt.id]?.average}
                       count={productRatings[produkt.id]?.count}
                       variant="summary"
@@ -965,6 +966,7 @@ export default function PremiumShopDashboard() {
                     
                     <ProductRating
                       produktId={produkt.id}
+                      produktTitel={produkt.titel}
                       average={productRatings[produkt.id]?.average}
                       count={productRatings[produkt.id]?.count}
                       variant="summary"
@@ -1126,6 +1128,7 @@ export default function PremiumShopDashboard() {
                     {user && (
                       <ProductRating
                         produktId={produkt.id}
+                        produktTitel={produkt.titel}
                         average={productRatings[produkt.id]?.average}
                         count={productRatings[produkt.id]?.count}
                         variant="interactive"
