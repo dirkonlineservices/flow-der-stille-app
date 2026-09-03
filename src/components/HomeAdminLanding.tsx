@@ -324,10 +324,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {/* Kategorie 1: Meditationen */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm sm:text-base text-[var(--text-main)]">🧘‍♀️ Geführte Meditationen</span>
+                <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🧘‍♀️ Geführte Meditationen</span>
                 <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">ab 1,99 €</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Herzkompass, Loslassen &amp; Innere Ruhe (Lisa Ragusa)</p>
@@ -341,10 +341,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
 
           {/* Kategorie 2: Selbsthypnosen */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm sm:text-base text-[var(--text-main)]">🌀 Selbsthypnosen</span>
+                <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🌀 Selbsthypnosen</span>
                 <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">ab 2,49 €</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Tiefer Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung</p>
@@ -358,10 +358,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
 
           {/* Kategorie 3: Hörbuch */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm sm:text-base text-[var(--text-main)]">🎧 Hörbücher</span>
+                <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🎧 Hörbücher</span>
                 <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">4,99 €</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Der Schmetterling (58:43 Min. inkl. Kapitel-Navigation)</p>
@@ -375,10 +375,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
 
           {/* Kategorie 4: Kostenfreie Schnupper-Übungen */}
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm sm:text-base text-[var(--text-main)]">🌿 Schnupper-Übungen</span>
+                <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🌿 Schnupper-Übungen</span>
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded">100 % Gratis</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Geführte Atemübung &amp; Progressive Muskelentspannung</p>

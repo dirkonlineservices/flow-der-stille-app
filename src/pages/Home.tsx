@@ -287,8 +287,8 @@ export default function Home() {
 
           <div className="mt-6">
              <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] dark:hover:border-stone-400 hover:shadow-md transition-all group">
-                <h3 className="font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors">Premium-Bereich: Übungen & Meditationen</h3>
-                <p className="text-[var(--color-text-muted)] text-sm">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
+                <h3 className="text-xl font-serif font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors mb-1.5">Premium-Bereich: Übungen &amp; Meditationen</h3>
+                <p className="text-[var(--color-text-muted)] text-sm sm:text-base leading-relaxed">Entdecke exklusive Premium-Inhalte wie Meditationen, Entspannungsübungen und Selbsthypnosen.</p>
              </Link>
           </div>
 
@@ -303,10 +303,10 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-border-main)]">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white">
+                    <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white">
                       Kostenlos reinschnuppern
                     </span>
-                    <h3 className="font-serif font-semibold text-lg text-[var(--color-text-main)]">
+                    <h3 className="font-serif font-bold text-xl text-[var(--color-text-main)]">
                       Kostenlose Hörproben
                     </h3>
                   </div>
@@ -493,8 +493,8 @@ function QuickActionCard({ title, description, icon, delay, to }: { title: strin
             {React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}
           </div>
         </div>
-        <h3 className="text-xl font-medium text-[var(--color-text-main)] mb-2 font-sans group-hover:text-[var(--color-accent-primary)] transition-colors">{title}</h3>
-        <p className="text-[var(--color-text-muted)] text-sm leading-relaxed">{description}</p>
+        <h3 className="text-xl font-bold font-serif text-[var(--color-text-main)] mb-2 group-hover:text-[var(--color-accent-primary)] transition-colors">{title}</h3>
+        <p className="text-[var(--color-text-muted)] text-sm sm:text-base leading-relaxed">{description}</p>
       </motion.div>
     </Link>
   );

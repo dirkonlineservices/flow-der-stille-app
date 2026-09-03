@@ -183,112 +183,60 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
     );
   }
 
-  // Kompakte Leiste für In-Content
-  if (!isProminent) {
-    return (
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-2xs">
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col lg:flex-row items-center justify-between gap-4"
-        >
-          {/* Linke Seite: Icon & Text */}
-          <div className="flex items-center gap-3.5 w-full lg:w-auto text-left">
-            <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center shrink-0">
-              <Mail size={20} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)] leading-snug">
-                Achtsamkeits-Impulse per E-Mail
-              </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-                Kostenlos &amp; jederzeit mit einem Klick abmeldbar.
-              </p>
-            </div>
-          </div>
-
-          {/* Rechte Seite: E-Mail-Feld & Button */}
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto flex-1 lg:justify-end">
-            <div className="relative w-full sm:w-64">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Deine E-Mail-Adresse"
-                className="w-full h-11 px-3.5 rounded-xl border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-[var(--bg-main)] text-[var(--text-main)] text-sm shadow-2xs placeholder:text-[var(--text-muted)]/70 transition-all"
-                required
-                disabled={loading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full sm:w-auto h-11 px-5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer shrink-0"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={15} className="animate-spin" />
-                  <span>Anmelden...</span>
-                </>
-              ) : (
-                <span>Zum Newsletter anmelden</span>
-              )}
-            </button>
-          </div>
-        </form>
-
-        {errorMessage && (
-          <p className="mt-2 text-xs text-red-600 font-medium text-center lg:text-right">{errorMessage}</p>
-        )}
-      </div>
-    );
-  }
-
-  // Standard: Prominentes Anmeldeformular
+  // Kompakte Leiste als Standard für alle Seiten
   return (
-    <div className={wrapperClass}>
-      <h2 className="text-2xl md:text-3xl font-serif text-[var(--text-main)] mb-2">
-        Finde Momente der Stille in deiner Inbox
-      </h2>
-      <p className="text-[var(--text-muted)] text-sm mb-6 max-w-lg mx-auto leading-relaxed">
-        Erhalte sanfte Impulse, Tipps für Achtsamkeit und exklusive Einblicke – direkt in dein Postfach.
-      </p>
-
+    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-2xs">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-3 max-w-md mx-auto mt-3"
+        className="flex flex-col lg:flex-row items-center justify-between gap-4"
       >
-        <div className="relative flex-1 w-full">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Deine E-Mail-Adresse"
-            className="w-full h-12 px-4 rounded-xl border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-[var(--bg-main)] text-[var(--text-main)] text-sm shadow-2xs transition-all placeholder:text-[var(--text-muted)]/70"
-            required
-            disabled={loading}
-          />
+        {/* Linke Seite: Icon & Text */}
+        <div className="flex items-center gap-3.5 w-full lg:w-auto text-left">
+          <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center shrink-0">
+            <Mail size={20} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-base sm:text-lg text-[var(--text-main)] leading-snug">
+              Achtsamkeits-Impulse per E-Mail
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+              Kostenlos &amp; jederzeit mit einem Klick abmeldbar.
+            </p>
+          </div>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-12 px-7 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2.5 shadow-sm hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer shrink-0"
-        >
-          {loading ? (
-            <>
-              <Loader2 size={17} className="animate-spin" />
-              <span>Anmelden...</span>
-            </>
-          ) : (
-            <>
-              <Mail size={17} />
+
+        {/* Rechte Seite: E-Mail-Feld & Button */}
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto flex-1 lg:justify-end">
+          <div className="relative w-full sm:w-64">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Deine E-Mail-Adresse"
+              className="w-full h-11 px-3.5 rounded-xl border border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-[var(--bg-main)] text-[var(--text-main)] text-sm shadow-2xs placeholder:text-[var(--text-muted)]/70 transition-all"
+              required
+              disabled={loading}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full sm:w-auto h-11 px-5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-xs hover:shadow active:scale-95 disabled:opacity-60 cursor-pointer shrink-0"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                <span>Anmelden...</span>
+              </>
+            ) : (
               <span>Zum Newsletter anmelden</span>
-            </>
-          )}
-        </button>
+            )}
+          </button>
+        </div>
       </form>
 
       {errorMessage && (
-        <p className="mt-3 text-xs text-red-600 font-medium text-center">{errorMessage}</p>
+        <p className="mt-2 text-xs text-red-600 font-medium text-center lg:text-right">{errorMessage}</p>
       )}
     </div>
   );
