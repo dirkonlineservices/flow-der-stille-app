@@ -244,8 +244,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Selbsthypnosen für neuronale Tiefenentspannung &amp; ruhigen, erholsamen Schlaf.
               </p>
-              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
-                Zu den Selbsthypnosen (ab 2,49 €) <ArrowRight size={14} />
+              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1 whitespace-nowrap">
+                Zu den Selbsthypnosen (ab 2,49&nbsp;€) <ArrowRight size={14} />
               </span>
             </div>
           </Link>
@@ -265,8 +265,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Gezielte Atemübungen &amp; PMR zur schnellen Beruhigung des Vagusnervs.
               </p>
-              <span className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-2.5 inline-flex items-center gap-1">
-                Kostenlos starten (0 €) <ArrowRight size={14} />
+              <span className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-2.5 inline-flex items-center gap-1 whitespace-nowrap">
+                Kostenlos starten (0&nbsp;€) <ArrowRight size={14} />
               </span>
             </div>
           </Link>
@@ -286,8 +286,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Geführte Herz- &amp; Seelen-Meditationen, persönlich von Lisa gesprochen.
               </p>
-              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
-                Meditationen entdecken (ab 1,99 €) <ArrowRight size={14} />
+              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1 whitespace-nowrap">
+                Meditationen entdecken (ab 1,99&nbsp;€) <ArrowRight size={14} />
               </span>
             </div>
           </Link>
@@ -307,8 +307,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Hörbuch „Der Tag, an dem der Schmetterling erwachte“ (58 Min. mit Kapiteln).
               </p>
-              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
-                Hörbuch öffnen (ab 4,99 €) <ArrowRight size={14} />
+              <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1 whitespace-nowrap">
+                Hörbuch öffnen (ab 4,99&nbsp;€) <ArrowRight size={14} />
               </span>
             </div>
           </Link>
@@ -334,70 +334,78 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="flex flex-col gap-3">
           {/* Kategorie 1: Meditationen */}
-          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:border-[var(--accent)] transition-all">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🧘‍♀️ Geführte Meditationen</span>
-                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">ab 1,99 €</span>
+                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0">
+                  ab 1,99&nbsp;€
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Herzkompass, Loslassen &amp; Innere Ruhe (Lisa Ragusa)</p>
             </div>
             <Link
               to="/premium?filter=Meditation"
-              className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
             >
               Ansehen
             </Link>
           </div>
 
           {/* Kategorie 2: Selbsthypnosen */}
-          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:border-[var(--accent)] transition-all">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🌀 Selbsthypnosen</span>
-                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">ab 2,49 €</span>
+                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0">
+                  ab 2,49&nbsp;€
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Tiefer Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung</p>
             </div>
             <Link
               to="/premium?filter=Selbsthypnose"
-              className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
             >
               Ansehen
             </Link>
           </div>
 
           {/* Kategorie 3: Hörbuch */}
-          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:border-[var(--accent)] transition-all">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🎧 Hörbücher</span>
-                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded">4,99 €</span>
+                <span className="text-xs text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0">
+                  4,99&nbsp;€
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Der Schmetterling (58:43 Min. inkl. Kapitel-Navigation)</p>
             </div>
             <Link
               to="/premium?filter=H%C3%B6rbuch"
-              className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
             >
               Ansehen
             </Link>
           </div>
 
           {/* Kategorie 4: Kostenfreie Schnupper-Übungen */}
-          <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 hover:border-emerald-500/50 transition-all">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="font-bold text-base sm:text-lg text-[var(--text-main)]">🌿 Schnupper-Übungen</span>
-                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded">100 % Gratis</span>
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0">
+                  100 % Gratis
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1">Geführte Atemübung &amp; Progressive Muskelentspannung</p>
             </div>
             <Link
               to="/premium?filter=Kostenfreie%20Anwendungen"
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
             >
               Starten
             </Link>
