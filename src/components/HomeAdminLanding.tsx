@@ -10,6 +10,7 @@ import { HoerprobenPlayer } from './HoerprobenPlayer';
 
 interface HomeAdminLandingProps {
   user: any;
+  isAdmin?: boolean;
   onTogglePreview: () => void;
   todaysWisdom: { title: string; text: string };
   isCompleted: boolean;
@@ -39,6 +40,7 @@ function FacebookIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
   user,
+  isAdmin,
   onTogglePreview,
   todaysWisdom,
   isCompleted,
@@ -106,21 +108,23 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
   return (
     <div className="space-y-8 max-w-4xl lg:max-w-5xl mx-auto pb-0">
-      {/* ─── ADMIN-STEUERUNGSLEISTE (Nur für Admins sichtbar) ─────────────── */}
-      <div className="bg-emerald-950/80 border border-emerald-500/40 rounded-2xl p-3.5 text-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md backdrop-blur-md">
-        <div className="flex items-center gap-2.5 text-sm font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-          <Eye size={17} className="text-emerald-300 shrink-0" />
-          <span><strong>Admin-Vorschau aktiv:</strong> Neue Startseite (nur für Admins sichtbar)</span>
+      {/* ─── ADMIN-STEUERUNGSLEISTE (Nur für eingeloggte Admins sichtbar) ─────────────── */}
+      {user && isAdmin && (
+        <div className="bg-emerald-950/80 border border-emerald-500/40 rounded-2xl p-3.5 text-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md backdrop-blur-md">
+          <div className="flex items-center gap-2.5 text-sm font-medium">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <Eye size={17} className="text-emerald-300 shrink-0" />
+            <span><strong>Admin-Vorschau aktiv:</strong> Gast-Startseite</span>
+          </div>
+          <button
+            onClick={onTogglePreview}
+            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition border border-white/20 cursor-pointer shrink-0"
+          >
+            <RefreshCw size={14} />
+            Persönliches Dashboard anzeigen
+          </button>
         </div>
-        <button
-          onClick={onTogglePreview}
-          className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition border border-white/20 cursor-pointer shrink-0"
-        >
-          <RefreshCw size={14} />
-          Standard-Ansicht
-        </button>
-      </div>
+      )}
 
       {/* ─── 1. HERO & PERSÖNLICHE BEGRÜSSUNG ─────────────────────────────── */}
       <section className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] p-6 sm:p-9 shadow-sm relative overflow-hidden text-center">
@@ -133,10 +137,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </span>
 
         <h1 className="text-3xl sm:text-5xl font-serif text-[var(--text-main)] font-normal leading-tight mb-4">
-          Finde deine innere Ruhe im Flow der Stille
+          Finde deine innere Ruhe.
         </h1>
 
-        <p className="text-[var(--text-muted)] text-base sm:text-lg leading-relaxed mb-6 font-light max-w-xl mx-auto">
+        <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-6">
           Schön, dass du da bist. Wir sind <strong className="text-[var(--text-main)] font-semibold">Jacqueline, Lisa und Dirk</strong>. 
           Wir haben dieses Projekt ins Leben gerufen, weil echte Entspannung, 
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
@@ -190,13 +194,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           />
         </div>
 
-        {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten */}
+        {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten & Bildwelten */}
         <div className="p-4 sm:p-5 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">
           <Sparkles className="w-6 h-6 text-[var(--accent)] shrink-0" />
           <span>
             <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen und Übungstexte verfasst Jacqueline persönlich mit viel Herzblut. 
             Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
-            Moderne KI nutzen wir transparent als Werkzeug für meditative Klangwelten – so sparen wir teure Studio- und Lizenzkosten ein und bieten dir 
+            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – so sparen wir extrem teure Studio- und Produktionskosten ein und bieten dir 
             <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
           </span>
         </div>
@@ -463,7 +467,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Herzensprojekt statt Großkonzern
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Von Jacqueline, Lisa &amp; Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen und KI als bewusstes Klangwerkzeug für faire Preise.
+                Von Jacqueline, Lisa &amp; Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen sowie KI als bewusstes Werkzeug für Klangwelten und visuelle Bildwelten &amp; Designs für dauerhaft faire Preise.
               </p>
             </div>
           </div>

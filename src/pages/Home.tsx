@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones, MessageCircle } from 'lucide-react';
+import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones, MessageCircle, Share2, Eye, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -163,16 +163,44 @@ export default function Home() {
       .select('rolle')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data }) => {
-        if (data?.rolle?.toLowerCase() === 'admin') {
-          setIsAdmin(true);
-        }
-      })
-      .catch(() => {});
+      .then(
+        ({ data }) => {
+          if (data?.rolle?.toLowerCase() === 'admin') {
+            setIsAdmin(true);
+          }
+        },
+        () => {}
+      );
   }, [user]);
 
-  // Für Admins: Vorgeschaltete Startseite mit Entstehungsgeschichte, Themen & Sprachnachricht
-  if (isAdmin && showAdminPreview) {
+  const [shareToast, setShareToast] = useState('');
+
+  const handleShareApp = async () => {
+    const shareData = {
+      title: 'Flow der Stille',
+      text: 'Entdecke Flow der Stille: Meditation, Vagusnerv-Entspannung & Achtsamkeit ohne teures Abo.',
+      url: window.location.origin
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.origin);
+        setShareToast('Link in die Zwischenablage kopiert!');
+        setTimeout(() => setShareToast(''), 3500);
+      } catch {
+        setShareToast('Teilen fehlgeschlagen');
+        setTimeout(() => setShareToast(''), 2500);
+      }
+    }
+  };
+
+  // Neuer Nutzer / Gast (nicht eingeloggt) ODER Admin im Vorschau-Modus:
+  // Zeige die neue Startseite (Landing Page)
+  if (!user || (isAdmin && showAdminPreview)) {
     return (
       <>
         <SEO 
@@ -182,6 +210,7 @@ export default function Home() {
         />
         <HomeAdminLanding 
           user={user}
+          isAdmin={isAdmin}
           onTogglePreview={() => setShowAdminPreview(false)}
           todaysWisdom={todaysWisdom}
           isCompleted={isCompleted}
@@ -202,13 +231,17 @@ export default function Home() {
       />
       <div className="space-y-8">
         {isAdmin && !showAdminPreview && (
-          <div className="p-3.5 bg-emerald-950/80 border border-emerald-500/40 rounded-2xl text-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-md">
-            <span>👁️ <strong>Admin-Modus:</strong> Du betrachtest aktuell die Standard-Startseite.</span>
+          <div className="bg-emerald-950/80 border border-emerald-500/40 rounded-2xl p-3.5 text-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md backdrop-blur-md">
+            <div className="flex items-center gap-2.5 text-sm font-medium">
+              <Eye size={17} className="text-emerald-300 shrink-0" />
+              <span><strong>Admin-Modus:</strong> Du siehst dein persönliches Nutzer-Dashboard</span>
+            </div>
             <button 
               onClick={() => setShowAdminPreview(true)}
-              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition cursor-pointer shrink-0"
+              className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition border border-white/20 cursor-pointer shrink-0"
             >
-              Vorgeschaltete Startseite anzeigen
+              <RefreshCw size={14} />
+              <span>Gast-Startseite anzeigen</span>
             </button>
           </div>
         )}
@@ -427,53 +460,89 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-8 mb-4 text-center flex flex-wrap justify-center items-center gap-3 max-w-2xl mx-auto px-4">
-          <a 
-            href="https://t.me/+ccWPbkn00zs4Zjc6" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
-          >
-            <Send size={16} className="group-hover:translate-x-0.5 transition-transform" />
-            <span>Telegram</span>
-          </a>
+        {/* ─── SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
+        <section className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left mt-8">
+          <div>
+            <h4 className="text-base sm:text-lg font-semibold text-[var(--color-text-main)]">
+              Verbinde dich mit unserer Community
+            </h4>
+            <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-0.5">
+              Tägliche Inspirationen &amp; Austausch auf deinen Lieblings-Kanälen
+            </p>
+          </div>
 
-          <a 
-            href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
-          >
-            <MessageCircle size={16} className="group-hover:scale-110 transition-transform" />
-            <span>WhatsApp</span>
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {/* Telegram */}
+            <a 
+              href="https://t.me/+ccWPbkn00zs4Zjc6" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+              title="Folge uns auf Telegram"
+            >
+              <Send size={15} className="text-sky-500" />
+              <span>Telegram</span>
+            </a>
 
-          <a 
-            href="https://www.instagram.com/flowderstille" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
-          >
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-            </svg>
-            <span>Instagram</span>
-          </a>
+            {/* WhatsApp */}
+            <a 
+              href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+              title="Folge uns auf WhatsApp"
+            >
+              <MessageCircle size={15} className="text-emerald-500" />
+              <span>WhatsApp</span>
+            </a>
 
-          <a 
-            href="https://www.facebook.com/flowderstille" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-[var(--color-bg-card)] border-2 border-[var(--color-accent-primary)] text-[var(--color-accent-primary)] font-semibold text-xs sm:text-sm transition-all hover:bg-[var(--color-accent-primary)] hover:text-white active:scale-95 shadow-md group cursor-pointer"
-          >
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-            </svg>
-            <span>Facebook</span>
-          </a>
+            {/* Instagram */}
+            <a 
+              href="https://www.instagram.com/flowderstille" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+              title="Folge uns auf Instagram"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+              <span>Instagram</span>
+            </a>
+
+            {/* Facebook */}
+            <a 
+              href="https://www.facebook.com/flowderstille" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+              title="Folge uns auf Facebook"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-blue-600" fill="currentColor">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <span>Facebook</span>
+            </a>
+
+            {/* App weiterempfehlen / Teilen */}
+            <button
+              onClick={handleShareApp}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-semibold transition shadow-2xs cursor-pointer active:scale-95"
+              title="Flow der Stille mit Freunden teilen"
+            >
+              <Share2 size={15} />
+              <span>Teilen</span>
+            </button>
+          </div>
         </section>
+
+        {shareToast && (
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2.5 bg-stone-900 text-white text-xs sm:text-sm font-medium rounded-xl shadow-lg z-50 animate-fade-in flex items-center gap-2">
+            <span>✓ {shareToast}</span>
+          </div>
+        )}
       </div>
     </>
   );

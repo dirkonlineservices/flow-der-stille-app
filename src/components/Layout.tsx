@@ -67,14 +67,16 @@ export default function Layout() {
       .select('rolle')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data }) => {
-        if (data?.rolle?.toLowerCase() === 'admin') {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
-      })
-      .catch(() => setIsAdmin(false));
+      .then(
+        ({ data }) => {
+          if (data?.rolle?.toLowerCase() === 'admin') {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        },
+        () => setIsAdmin(false)
+      );
   }, [user]);
 
   // Dynamisch prüfen ob Hörproben existieren (offline sofort aktiv)

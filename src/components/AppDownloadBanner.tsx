@@ -12,28 +12,28 @@ export function AppDownloadBanner() {
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(playStoreUrl)}`;
 
   return (
-    <div id="google-play-download" className="w-full max-w-4xl lg:max-w-5xl mx-auto mt-8 mb-6">
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div id="google-play-download" className="w-full max-w-5xl mx-auto my-6">
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] hover:border-black dark:hover:border-stone-200 rounded-2xl p-5 sm:p-6 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row items-center justify-between gap-4 group">
         
         {/* Linke Seite: Text & Info */}
         <div className="flex-1 text-center sm:text-left min-w-0">
-          <div className="flex items-center justify-center sm:justify-start gap-1.5 mb-1">
-            <span className="w-5 h-5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center shrink-0">
-              <Smartphone size={12} />
+          <div className="flex items-center justify-center sm:justify-start gap-1.5 mb-1.5">
+            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors flex items-center justify-center shrink-0">
+              <Smartphone size={13} />
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] group-hover:text-black dark:group-hover:text-white transition-colors">
               Android App verfügbar
             </span>
           </div>
-          <h3 className="font-serif font-semibold text-base sm:text-lg text-[var(--text-main)] leading-tight mb-1">
+          <h3 className="font-serif font-bold text-lg sm:text-xl text-[var(--text-main)] leading-tight mb-1">
             Flow der Stille als App nutzen
           </h3>
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-2">
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-2">
             Lade dir unsere kostenlose App direkt im Google Play Store herunter<span className="hidden md:inline"> oder scanne den QR-Code</span>.
           </p>
           <Link 
             to="/app" 
-            className="text-[11px] font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1"
+            className="text-xs font-semibold text-[var(--accent)] group-hover:text-black dark:group-hover:text-white hover:underline inline-flex items-center gap-1 transition-colors"
           >
             Alle App-Features &amp; Details ansehen →
           </Link>
@@ -58,7 +58,7 @@ export function AppDownloadBanner() {
           </a>
 
           {/* QR Code (Nur auf Tablet/Desktop sichtbar) */}
-          <div className="hidden md:flex flex-col items-center gap-1 p-2 bg-white dark:bg-stone-900 rounded-xl border border-[var(--border)] shadow-2xs">
+          <div className="hidden md:flex flex-col items-center gap-1 p-2 bg-white dark:bg-stone-900 rounded-xl border border-[var(--border)] group-hover:border-black dark:group-hover:border-stone-200 transition-colors shadow-2xs">
             <img 
               src={qrCodeUrl} 
               alt="QR-Code" 

@@ -44,8 +44,7 @@ export function NewContentNotification() {
             return () => clearTimeout(timer);
           }
         }
-      })
-      .catch(() => {});
+      }, () => {});
   }, []);
 
   const handleDismissProduct = () => {

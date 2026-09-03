@@ -570,7 +570,7 @@ export default function AdminUnlock() {
           </Link>
         </div>
         <AdminSecurityLock
-          adminName={user?.first_name || user?.full_name || undefined}
+          adminName={(user as any)?.first_name || (user as any)?.full_name || (user?.user_metadata?.full_name) || undefined}
           onUnlock={() => setIsSessionUnlocked(true)}
         />
       </div>

@@ -48,8 +48,7 @@ export function AdminWelcomeModal() {
           }, 800);
           return () => clearTimeout(timer);
         }
-      })
-      .catch(() => setIsAdmin(false));
+      }, () => setIsAdmin(false));
   }, [user, location.pathname]);
 
   const handleDismiss = () => {
@@ -69,7 +68,7 @@ export function AdminWelcomeModal() {
 
   if (!isOpen || !isAdmin) return null;
 
-  const displayName = user?.first_name || user?.full_name || 'Admin';
+  const displayName = (user as any)?.first_name || (user as any)?.full_name || (user?.user_metadata?.full_name) || 'Admin';
 
   return (
     <AnimatePresence>
