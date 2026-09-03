@@ -458,7 +458,7 @@ export default function Settings() {
           </div>
         </div>
       ) : (
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto space-y-8 transition-all duration-300">
           
           {/* 1. Quick Profile Overview & Dashboard Navigation Banner */}
           <div className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] shadow-xs flex flex-col md:flex-row items-center justify-between gap-5">

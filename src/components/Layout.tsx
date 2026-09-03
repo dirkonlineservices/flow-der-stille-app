@@ -203,8 +203,8 @@ export default function Layout() {
           </button>
         </nav>
 
-        {/* Main Content Area */}
-        <main className="max-w-5xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6">
+        {/* Main Content Area: Dynamisch responsiv skalierend zwischen Laptop (max-w-5xl) und großem Desktop-Bildschirm (2xl:max-w-7xl) */}
+        <main className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6 transition-all duration-300">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -227,7 +227,7 @@ export default function Layout() {
       )}
 
       {/* FOOTER */}
-      <footer className="w-full max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
         {[
           { to: '/contact', label: 'Kontakt', isButton: true },
           { to: '/app', label: 'Android App' },

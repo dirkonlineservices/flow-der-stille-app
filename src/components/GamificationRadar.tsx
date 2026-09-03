@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Trophy, AlertTriangle, Bell, CheckCircle2, Users, 
   Sparkles, RefreshCw, ChevronDown, ChevronUp, Search, Info
@@ -114,7 +114,7 @@ export function GamificationRadar() {
               <div className="font-bold text-sm flex items-center gap-2">
                 <span>Frühwarn-Status:</span>
                 <span className="uppercase tracking-wider text-xs font-semibold px-2 py-0.5 rounded-full bg-white/70 dark:bg-black/30">
-                  {stats?.alertLevel === 'green' ? '🟢 Alles im Plan' : stats?.alertLevel === 'yellow' ? '🟡 Frühwarnung (Woche 30+)' : stats?.alertLevel === 'orange' ? '🟠 Endspurt (Woche 40+)' : '🚨 Dringender Vorlaufbedarf'}
+                  {stats?.alertLevel === 'green' ? '🟢 Alles im Plan (> 8 Wochen Vorlauf)' : stats?.alertLevel === 'yellow' ? '🟡 Frühwarnung aktiv (7–8 Wochen Vorlaufzeit)' : stats?.alertLevel === 'orange' ? '🟠 Endspurt (Woche 48+)' : '🏆 Kursabschluss'}
                 </span>
               </div>
               <p className="text-xs mt-1 leading-relaxed opacity-95">
@@ -272,7 +272,7 @@ export function GamificationRadar() {
         {/* Schnellwahl-Buttons für häufig geprüfte Meilensteine */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
           <span className="text-[11px] font-semibold text-[var(--color-text-muted)] mr-1">Wichtige Meilensteine:</span>
-          {[1, 13, 26, 30, 35, 40, 45, 50, 52].map((w) => (
+          {[1, 13, 26, 39, 44, 48, 50, 52].map((w) => (
             <button
               key={w}
               onClick={() => setSelectedWeek(w)}
@@ -282,7 +282,7 @@ export function GamificationRadar() {
                   : 'bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] border border-[var(--color-border-main)]'
               }`}
             >
-              Woche {w} ({stats?.weekDistribution[w] || 0})
+              {w === 44 ? `Woche 44 (7-8 W. Vorlauf)` : `Woche ${w} (${stats?.weekDistribution[w] || 0})`}
             </button>
           ))}
         </div>
@@ -341,22 +341,26 @@ export function GamificationRadar() {
               {filteredUsers.map((u) => (
                 <div
                   key={u.id}
-                  className="p-3 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-xl flex items-center justify-between gap-3 text-xs"
+                  className="p-3 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0">
                     <div className="font-semibold text-[var(--color-text-main)] truncate">
                       {u.name}
                     </div>
-                    <div className="text-[11px] text-[var(--color-text-muted)] truncate">
+                    <div className="text-[11px] text-[var(--color-text-muted)] truncate font-mono">
                       {u.email}
+                    </div>
+                    <div className="text-[10px] text-emerald-700 dark:text-emerald-400 mt-1 flex items-center gap-1 font-mono">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 inline-block"></span>
+                      <span>Letzter Login / Aktiv: {u.lastActive ? new Date(u.lastActive).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Noch nicht wieder aktiv'}</span>
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0">
+                  <div className="text-left sm:text-right shrink-0 pt-1 sm:pt-0">
                     <span className="font-bold text-[var(--color-accent-primary)] text-sm">
                       Woche {u.week} <span className="text-[10px] text-[var(--color-text-muted)]">/ 52</span>
                     </span>
-                    <div className="w-28 bg-[var(--color-bg-alt)] rounded-full h-1.5 mt-1 border border-[var(--color-border-main)] overflow-hidden">
+                    <div className="w-32 bg-[var(--color-bg-alt)] rounded-full h-1.5 mt-1 border border-[var(--color-border-main)] overflow-hidden">
                       <div
                         className="bg-[var(--color-accent-primary)] h-full rounded-full transition-all"
                         style={{ width: `${u.percentage}%` }}

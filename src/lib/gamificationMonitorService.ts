@@ -1,4 +1,4 @@
-﻿import { getSupabase } from './supabaseClient';
+import { getSupabase } from './supabaseClient';
 
 export interface GamificationUserProgress {
   id: string;
@@ -26,16 +26,17 @@ export interface GamificationStats {
   users: GamificationUserProgress[];
 }
 
-// Schwellenwerte für Frühwarnung per E-Mail
-const ALERT_MILESTONES = [25, 30, 35, 40, 45, 48, 50, 52];
+// Schwellenwerte für Frühwarnung per E-Mail:
+// Dirk & Team benötigen 7 bis 8 Wochen Vorlaufzeit (Woche 44/45), Endspurt (Woche 48) und Abschluss (Woche 52)
+const ALERT_MILESTONES = [44, 48, 52];
 
 /**
  * Synchronisiert den Wochenfortschritt des Nutzers in Supabase (profiles)
- * und löst bei Erreichen kritischer Wochen (z.B. Woche 30, 40, 45+) automatisch einen E-Mail-Alarm aus.
+ * und löst bei Erreichen von 7-8 Wochen Vorlaufzeit (Woche 44/45) oder Endspurt automatisch einen E-Mail-Alarm aus.
  */
 export async function syncUserWeekProgress(
   userId: string,
-  weekIndex: number, // 0-basiert (0 = Woche 1, 29 = Woche 30, etc.)
+  weekIndex: number, // 0-basiert (0 = Woche 1, 43 = Woche 44, etc.)
   userEmail?: string,
   userName?: string
 ): Promise<void> {
@@ -89,15 +90,15 @@ export async function sendWeekThresholdAlert(
   let urgencyPrefix = 'ℹ️ INFORMATION';
   let urgencyLevel = 'Frühzeitige Information';
 
-  if (weekNumber >= 48) {
-    urgencyPrefix = '🚨 DRINGENDER ALARM';
-    urgencyLevel = 'Höchste Dringlichkeit! Nutzer steht kurz vor Abschluss (Woche 52).';
-  } else if (weekNumber >= 40) {
+  if (weekNumber >= 52) {
+    urgencyPrefix = '🏆 MEISTERSCHAFT VOLLENDET';
+    urgencyLevel = 'Nutzer hat alle 52 Wochen absolviert!';
+  } else if (weekNumber >= 48) {
     urgencyPrefix = '🟠 ERHÖHTE AUFMERKSAMKEIT';
-    urgencyLevel = 'Endspurt! Nur noch wenige Wochen Vorlaufzeit.';
-  } else if (weekNumber >= 30) {
-    urgencyPrefix = '⚠️ FRÜHWARNUNG GAMIFICATION';
-    urgencyLevel = 'Frühwarnung aktiv: Noch ausreichend Vorlaufzeit für neue Inhalte.';
+    urgencyLevel = `Endspurt! Nur noch ${remainingWeeks} Wochen Vorlaufzeit bis zum Kursende.`;
+  } else if (weekNumber >= 44) {
+    urgencyPrefix = '⚠️ FRÜHWARNUNG GAMIFICATION (7-8 WOCHEN VORLAUF)';
+    urgencyLevel = `Genau 7 bis 8 Wochen Vorlaufzeit (${remainingWeeks} Wochen verbleibend). Perfektes Zeitfenster zur Erstellung neuer Inhalte!`;
   }
 
   try {
@@ -196,19 +197,19 @@ export async function fetchGamificationDistribution(): Promise<GamificationStats
     // Nutzer nach Fortschritt absteigend sortieren
     users.sort((a, b) => b.week - a.week);
 
-    // Alarm-Stufe berechnen
+    // Alarm-Stufe berechnen (Basis: 7 bis 8 Wochen Vorlaufzeit)
     let alertLevel: 'green' | 'yellow' | 'orange' | 'red' = 'green';
-    let alertMessage = 'Alles entspannt. Alle Nutzer befinden sich in den ersten Phasen.';
+    let alertMessage = `🟢 Alles im grünen Bereich: Spitzenreiter ist in Woche ${maxWeek}/52. Mehr als 8 Wochen Vorlaufzeit verbleiben.`;
 
-    if (maxWeek >= 48) {
+    if (maxWeek >= 52) {
       alertLevel = 'red';
-      alertMessage = `🚨 Dringend: ${phaseCounts.phase4} Nutzer in Phase 4! Spitzenreiter ist in Woche ${maxWeek}/52. Neue Übungen jetzt anlegen!`;
-    } else if (maxWeek >= 40) {
+      alertMessage = `🏆 Kursende erreicht: Nutzer haben alle 52 Wochen absolviert!`;
+    } else if (maxWeek >= 48) {
       alertLevel = 'orange';
-      alertMessage = `🟠 Aufmerksamkeit: Nutzer haben Phase 4 erreicht (Woche ${maxWeek}/52). Nur noch ${52 - maxWeek} Wochen verbleibend.`;
-    } else if (maxWeek >= 30) {
+      alertMessage = `🟠 Erhöhte Aufmerksamkeit: Spitzenreiter in Woche ${maxWeek}/52. Nur noch ${52 - maxWeek} Wochen verbleibend bis zum Kursende.`;
+    } else if (maxWeek >= 44) {
       alertLevel = 'yellow';
-      alertMessage = `⚠️ Frühwarnung aktiv: ${weekDistribution[30] || 1} Nutzer in Woche ${maxWeek}! Noch ausreichend Zeit zur Vorbereitung neuer Inhalte.`;
+      alertMessage = `⚠️ Frühwarnung aktiv (7–8 Wochen Vorlaufzeit): Spitzenreiter in Woche ${maxWeek}/52! Genau das ideale Zeitfenster (${52 - maxWeek} Wochen Vorlauf) zur Vorbereitung neuer Übungen.`;
     }
 
     return {

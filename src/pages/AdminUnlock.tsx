@@ -21,6 +21,7 @@ interface UserProfile {
   rolle?: string | null;
   is_premium?: boolean | null;
   created_at?: string | null;
+  updated_at?: string | null;
 }
 
 interface ProductItem {
@@ -171,7 +172,7 @@ export default function AdminUnlock() {
       // 1. Alle Profile abfragen (inkl. Registrierungsdatum & Rollen)
       const { data: allProfiles, error: profError } = await supabase
         .from('profiles')
-        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at')
+        .select('id, email, first_name, last_name, full_name, rolle, is_premium, created_at, updated_at')
         .order('created_at', { ascending: false });
 
       // 2. Käufe zählen
@@ -579,7 +580,7 @@ export default function AdminUnlock() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 space-y-8 font-sans">
+    <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto py-8 sm:py-12 px-4 space-y-8 font-sans transition-all duration-300">
       <SEO title="Admin-Bereich – Statistiken & Freischaltungen" description="Internes Verwaltungszentrum für Flow der Stille" />
 
       {/* TOP BAR / NAVIGATION */}
@@ -809,9 +810,13 @@ export default function AdminUnlock() {
               <div className="divide-y divide-[var(--border)] -mx-6 sm:-mx-8 px-6 sm:px-8">
                 {stats.recentUsers.map((u) => {
                   const displayName = u.full_name || [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Ohne Name';
-                  const formattedDate = u.created_at 
-                    ? new Date(u.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                  const formattedRegistered = u.created_at 
+                    ? new Date(u.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
                     : '-';
+                  const lastActiveTime = u.updated_at ? new Date(u.updated_at) : null;
+                  const formattedLastLogin = lastActiveTime
+                    ? lastActiveTime.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : 'Noch nicht wieder aktiv';
 
                   return (
                     <div key={u.id} className="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[var(--bg-alt)]/40 transition-colors rounded-xl px-2">
@@ -835,17 +840,23 @@ export default function AdminUnlock() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 self-end sm:self-center">
-                        <span className="text-[11px] text-[var(--text-muted)] font-mono">
-                          {formattedDate}
-                        </span>
+                      <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 self-end sm:self-center">
+                        <div className="text-right text-xs font-mono">
+                          <div className="text-[11px] text-[var(--text-muted)]">
+                            <span className="opacity-75">Registriert:</span> {formattedRegistered}
+                          </div>
+                          <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 flex items-center justify-end gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                            <span className="opacity-75">Letzter Login:</span> {formattedLastLogin}
+                          </div>
+                        </div>
 
                         <button
                           onClick={() => {
                             handleSelectUser(u);
                             setActiveTab('unlock');
                           }}
-                          className="px-3 py-1.5 bg-[var(--accent)]/10 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                          className="px-3 py-1.5 bg-[var(--accent)]/10 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer shrink-0"
                           title="Für diesen Nutzer ein Produkt freischalten"
                         >
                           <Gift size={13} />

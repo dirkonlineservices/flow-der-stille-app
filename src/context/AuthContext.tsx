@@ -168,6 +168,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.warn('Could not cache user locally:', e);
     }
 
+    // Letzten Login / Aktivitäts-Zeitstempel in profiles festhalten
+    if (supabaseUser.id) {
+      try {
+        const supabase = getSupabase();
+        const lastLoginTime = supabaseUser.last_sign_in_at || new Date().toISOString();
+        supabase
+          .from('profiles')
+          .update({ updated_at: lastLoginTime })
+          .eq('id', supabaseUser.id)
+          .then();
+      } catch (e) {}
+    }
+
     setUser(mappedUser);
   };
 
