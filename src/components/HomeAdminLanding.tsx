@@ -126,81 +126,85 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       )}
 
-      {/* ─── 1. HERO & PERSÖNLICHE BEGRÜSSUNG ─────────────────────────────── */}
-      <section className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] p-6 sm:p-9 shadow-sm relative overflow-hidden text-center">
+      {/* ─── 1. HERO & PERSÖNLICHE BEGRÜSSUNG (Flach, symmetrisch, in die Breite gezogen) ─── */}
+      <section className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] p-5 sm:p-7 md:p-8 shadow-xs relative overflow-hidden text-center">
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <img src="/logo-transparent.png" alt="Flow der Stille" className="h-16 mx-auto mb-4" />
-        
-        <span className="px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs sm:text-sm font-semibold tracking-wider uppercase inline-block mb-3">
-          Von Herzen für dich gemacht
-        </span>
+        {/* Logo & Sub-Badge kompakt */}
+        <div className="flex flex-col items-center justify-center mb-2">
+          <img src="/logo-transparent.png" alt="Flow der Stille" className="h-10 sm:h-12 mx-auto mb-2" />
+          <span className="px-3 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-[11px] sm:text-xs font-bold tracking-wider uppercase inline-block">
+            Von Herzen für dich gemacht
+          </span>
+        </div>
 
-        <h1 className="text-3xl sm:text-5xl font-serif text-[var(--text-main)] font-normal leading-tight mb-4">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif text-[var(--text-main)] font-normal leading-tight mb-2.5">
           Finde deine innere Ruhe.
         </h1>
 
-        <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-6">
+        <p className="text-xs sm:text-sm md:text-base text-[var(--text-muted)] max-w-3xl mx-auto leading-relaxed mb-4">
           Schön, dass du da bist. Wir sind <strong className="text-[var(--text-main)] font-semibold">Jacqueline, Lisa und Dirk</strong>. 
           Wir haben dieses Projekt ins Leben gerufen, weil echte Entspannung, 
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
         </p>
 
-        {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten & Bildwelten */}
-        <div className="p-4 sm:p-5 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">
-          <Sparkles className="w-6 h-6 text-[var(--accent)] shrink-0" />
-          <span>
-            <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen und Übungstexte verfasst Jacqueline persönlich mit viel Herzblut. 
+        {/* Unser Versprechen: Echte Handarbeit – flach und in die Breite gezogen */}
+        <div className="p-3 sm:p-4 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-2xs">
+          <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
+          <span className="flex-1">
+            <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
             Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
-            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – so sparen wir extrem teure Studio- und Produktionskosten ein und bieten dir 
+            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – für 
             <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
           </span>
         </div>
 
-        {/* 🌟 UNÜBERSEHBARER LOGIN- & REGISTRIERUNGS-BEREICH (Direkt nach echter Handarbeit) */}
+        {/* 🌟 LOGIN- & REGISTRIERUNGS-BEREICH (Flach, symmetrisch, raumsparend) */}
         {!user && (
-          <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-[var(--bg-main)] border-2 border-[var(--accent)] shadow-md text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs sm:text-sm font-bold uppercase tracking-wider mb-3">
-              <Sparkles size={16} />
-              <span>In 20 Sekunden startklar – 100 % kostenlos</span>
+          <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+              <div className="flex-1 min-w-0">
+                <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
+                  <Sparkles size={13} />
+                  <span>Kostenlos mitmachen &amp; unser Herzensprojekt unterstützen</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
+                  Jetzt registrieren oder einloggen
+                </h3>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
+                  Hilf uns zu wachsen, damit wir echte Entspannung dauerhaft günstig ohne Abo und ohne Werbung anbieten können. Gratis-Meditation sofort aktiv!
+                </p>
+              </div>
+
+              {/* Kompakte, symmetrische Buttons direkt daneben auf Desktop */}
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full md:w-auto">
+                <Link
+                  to="/register"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Kostenlos registrieren</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <Link
+                  to="/login"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                >
+                  <LogIn size={16} className="text-[var(--accent)]" />
+                  <span>Einloggen</span>
+                </Link>
+              </div>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--text-main)] mb-2.5">
-              Jetzt registrieren oder einloggen
-            </h3>
-
-            <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-6">
-              <strong className="text-[var(--text-main)]">Unterstütze unser Herzensprojekt:</strong> Mit deiner kostenlosen Registrierung unterstützt du unsere tägliche Arbeit und hilfst uns dabei zu wachsen – damit wir dir und vielen anderen Menschen dauerhaft wirksame Entspannung zu fairen Einzelpreisen ganz ohne Abo und ohne Werbung ermöglichen können.
-            </p>
-
-            {/* Große, extrem leicht verständliche Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto mb-5">
-              <Link
-                to="/register"
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-base sm:text-lg font-bold shadow-lg hover:shadow-xl active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
-              >
-                <span>👉 Jetzt kostenlos registrieren</span>
-                <ArrowRight size={20} />
-              </Link>
-              <Link
-                to="/login"
-                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border-2 border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-base sm:text-lg font-bold active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-              >
-                <LogIn size={20} className="text-[var(--accent)]" />
-                <span>Bereits registriert? Einloggen</span>
-              </Link>
-            </div>
-
-            {/* Vertrauens-Signale */}
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-[var(--text-muted)] pt-2 border-t border-[var(--border)] max-w-lg mx-auto">
-              <span className="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
-                <Check size={16} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
+            {/* Vertrauens-Signale dezent in einer flachen Zeile */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                <Check size={14} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <Check size={16} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
+              <span className="flex items-center gap-1">
+                <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <Check size={16} strokeWidth={2.5} /> 100 % Werbefrei
+              <span className="flex items-center gap-1">
+                <Check size={14} strokeWidth={2.5} /> 100 % Werbefrei
               </span>
             </div>
           </div>
