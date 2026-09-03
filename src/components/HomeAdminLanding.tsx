@@ -146,76 +146,6 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
         </p>
 
-        {/* 🌟 LOGIN & REGISTRIERUNGS-CALL-TO-ACTION FÜR BESUCHER */}
-        {!user && (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 my-6 max-w-xl mx-auto">
-            <Link
-              to="/register"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm sm:text-base font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Kostenlos registrieren &amp; starten</span>
-              <ArrowRight size={18} />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm sm:text-base font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-            >
-              <LogIn size={18} className="text-[var(--accent)]" />
-              <span>Bereits Mitglied? Anmelden</span>
-            </Link>
-          </div>
-        )}
-
-        {/* 🎙️ VOICE-PLAYER (Vorerst ausgeblendet, bis die finale Aufnahme von euch dreien verlinkt wird) */}
-        {false && (
-          <div className="w-full bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-5 text-left shadow-2xs">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3.5">
-                <button
-                  onClick={toggleVoicePlay}
-                  className="w-12 h-12 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white flex items-center justify-center shadow-md active:scale-95 transition shrink-0 cursor-pointer"
-                  aria-label={isPlayingVoice ? "Pause" : "Sprachnachricht abspielen"}
-                >
-                  {isPlayingVoice ? <Pause size={20} fill="white" /> : <Play size={20} className="ml-0.5" fill="white" />}
-                </button>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
-                      Persönliche Begrüßung von uns dreien
-                    </h3>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-medium">
-                      35 Sek.
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 leading-snug">
-                    Höre kurz rein, wer hinter Flow der Stille steht und warum wir für dich da sind.
-                  </p>
-                </div>
-              </div>
-
-              <div className="text-xs sm:text-sm text-[var(--text-muted)] font-medium hidden sm:block shrink-0">
-                🎙️ Jacqueline • Lisa • Dirk
-              </div>
-            </div>
-
-            <div className="w-full bg-[var(--border)] h-1.5 rounded-full mt-3.5 overflow-hidden">
-              <div 
-                className="bg-[var(--accent)] h-full transition-all duration-200"
-                style={{ width: `${voiceProgress}%` }}
-              ></div>
-            </div>
-
-            <audio
-              ref={voiceAudioRef}
-              src={VOICE_INTRO_URL}
-              onTimeUpdate={handleVoiceTimeUpdate}
-              onEnded={handleVoiceEnded}
-              preload="none"
-              className="hidden"
-            />
-          </div>
-        )}
-
         {/* Unser Versprechen: Echte Texte, echte Stimme & transparente KI-Klangwelten & Bildwelten */}
         <div className="p-4 sm:p-5 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3.5 shadow-2xs">
           <Sparkles className="w-6 h-6 text-[var(--accent)] shrink-0" />
@@ -226,6 +156,38 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
           </span>
         </div>
+
+        {/* 🌟 HERZLICHE EINLADUNG: REGISTRIEREN & UNSER PROJEKT UNTERSTÜTZEN (Direkt nach echter Handarbeit) */}
+        {!user && (
+          <div className="mt-6 p-5 sm:p-7 rounded-2xl bg-[var(--bg-alt)] border-2 border-[var(--accent)]/30 text-center shadow-xs">
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
+              Gemeinsam wachsen &amp; Stille finden
+            </span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)] mt-1 mb-2">
+              Unterstütze unser Herzensprojekt mit deiner Registrierung
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed mb-5">
+              Mit deiner kostenlosen Registrierung unterstützt du unsere Arbeit und hilfst uns dabei zu wachsen – damit wir dir und vielen anderen dauerhaft wirksame Entspannung zu fairen Preisen ganz ohne Abo und ohne Werbung anbieten können. Als Dankeschön sind unsere Schnupper-Übungen sowie eine geführte Meditation sofort für dich freigeschaltet!
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto">
+              <Link
+                to="/register"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Kostenlos registrieren &amp; unterstützen</span>
+                <ArrowRight size={17} />
+              </Link>
+              <Link
+                to="/login"
+                className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+              >
+                <LogIn size={17} className="text-[var(--accent)]" />
+                <span>Bereits registriert? Einloggen</span>
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ─── 2. CUSTOMER JOURNEY: BEDÜRFNIS-FINDER (FÜR GESTRESSTE NUTZER) ── */}
