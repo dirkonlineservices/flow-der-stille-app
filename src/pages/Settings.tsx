@@ -4,7 +4,7 @@ import {
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
   Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon, HardDrive, WifiOff,
-  ShieldCheck, Gift
+  ShieldCheck, Gift, ChevronDown, ChevronUp, RefreshCw, BarChart3, Users
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -51,6 +51,50 @@ export default function Settings() {
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [offlineStats, setOfflineStats] = useState({ totalMBFormatted: '0 MB', totalTracks: 0 });
   const [isAdminUser, setIsAdminUser] = useState(false);
+  const [isPurchasesOpen, setIsPurchasesOpen] = useState(false);
+
+  // Admin Live-Statistiken State
+  const [adminStats, setAdminStats] = useState<{
+    totalUsers: number;
+    newUsers7Days: number;
+    totalPurchases: number;
+    totalReviews: number;
+    averageRating: number;
+  } | null>(null);
+  const [loadingAdminStats, setLoadingAdminStats] = useState(false);
+
+  const loadAdminStats = async () => {
+    setLoadingAdminStats(true);
+    try {
+      const supabase = getSupabase();
+      const [profilesRes, purchasesRes, reviewsRes] = await Promise.all([
+        supabase.from('profiles').select('created_at'),
+        supabase.from('kaeufe').select('*', { count: 'exact', head: true }),
+        supabase.from('produkt_bewertungen').select('sterne')
+      ]);
+
+      const allProfiles = profilesRes.data || [];
+      const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const new7Days = allProfiles.filter(p => p.created_at && new Date(p.created_at).getTime() >= sevenDaysAgo).length;
+
+      const reviews = reviewsRes.data || [];
+      const avgRating = reviews.length > 0 
+        ? Number((reviews.reduce((acc: number, r: any) => acc + (r.sterne || 0), 0) / reviews.length).toFixed(1))
+        : 5.0;
+
+      setAdminStats({
+        totalUsers: allProfiles.length,
+        newUsers7Days: new7Days,
+        totalPurchases: purchasesRes.count || 0,
+        totalReviews: reviews.length,
+        averageRating: avgRating
+      });
+    } catch (e) {
+      console.warn('Fehler beim Laden der Admin-Statistiken:', e);
+    } finally {
+      setLoadingAdminStats(false);
+    }
+  };
 
   const refreshOfflineStats = () => {
     const summary = getStorageUsageSummary();
@@ -75,6 +119,7 @@ export default function Settings() {
         .then(({ data }) => {
           if (data?.rolle?.toLowerCase() === 'admin') {
             setIsAdminUser(true);
+            loadAdminStats();
           } else {
             setIsAdminUser(false);
           }
@@ -412,10 +457,149 @@ export default function Settings() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-5xl mx-auto space-y-8">
           
-          {/* Main settings options */}
-          <div className="lg:col-span-2 space-y-8">
+          {/* 1. Quick Profile Overview & Dashboard Navigation Banner */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] shadow-xs flex flex-col md:flex-row items-center justify-between gap-5">
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--color-accent-primary)] text-white flex items-center justify-center text-2xl font-serif font-bold shrink-0 shadow-xs">
+                {(user.first_name || user.username || user.email || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-[var(--color-text-main)]">
+                    Hallo, {user.first_name || user.username || 'Achtsamkeits-Freund'}!
+                  </h2>
+                  {isAdminUser && (
+                    <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                      Admin
+                    </span>
+                  )}
+                  <span className="text-[10px] bg-[var(--color-bg-border)] text-[var(--color-text-muted)] px-2 py-0.5 rounded-full font-semibold uppercase">
+                    Mitglied seit {new Date().getFullYear()}
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+              <Link
+                to="/dashboard"
+                className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition flex items-center justify-center gap-2"
+              >
+                <span>👉 Zum persönlichen Dashboard</span>
+                <ArrowRight size={14} />
+              </Link>
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] transition cursor-pointer border border-[var(--color-border-main)] shrink-0"
+                title={theme === 'dark' ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'}
+                aria-label="Design umschalten"
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Admin-Bereich & Live-Statistiken (nur für Admins sichtbar) */}
+          {isAdminUser && (
+            <section className="bg-emerald-50/80 dark:bg-emerald-950/30 rounded-3xl p-6 sm:p-7 border border-emerald-300 dark:border-emerald-800/60 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-200/60 dark:border-emerald-800/60">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <ShieldCheck size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-emerald-950 dark:text-emerald-100">
+                        Admin-Bereich &amp; Live-Statistiken
+                      </h2>
+                      <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                        Admin
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-0.5">
+                      Echtzeit-Statistiken, Nutzerzahlen &amp; Freischaltungen direkt vom Rechner aus
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={loadAdminStats}
+                    disabled={loadingAdminStats}
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-semibold border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition flex items-center gap-1.5 cursor-pointer"
+                    title="Statistiken neu laden"
+                  >
+                    <RefreshCw size={13} className={loadingAdminStats ? 'animate-spin' : ''} />
+                    <span>Aktualisieren</span>
+                  </button>
+                  <Link
+                    to="/admin"
+                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Admin-Zentrale öffnen</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* 4 Live-Statistik Kacheln */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                    👥 Nutzer gesamt
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                    {adminStats?.totalUsers ?? '...'}
+                  </div>
+                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
+                    +{adminStats?.newUsers7Days ?? 0} letzte 7 Tage
+                  </span>
+                </div>
+
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                    💎 Käufe gesamt
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                    {adminStats?.totalPurchases ?? '...'}
+                  </div>
+                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
+                    Verifizierte Käufe
+                  </span>
+                </div>
+
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                    ⭐ Bewertungen
+                  </span>
+                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                    {adminStats?.totalReviews ?? 0}
+                  </div>
+                  <span className="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5 block font-semibold">
+                    Ø {adminStats?.averageRating ?? '5.0'} Sterne
+                  </span>
+                </div>
+
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                    🎁 Freischaltungen
+                  </span>
+                  <Link
+                    to="/admin"
+                    className="mt-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>Zur Verwaltung →</span>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* 3. Persönliche Daten & Passwort nebeneinander */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             
             {/* 1. Profile information */}
             <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
@@ -581,9 +765,10 @@ export default function Settings() {
                 </div>
               </form>
             </section>
+          </div>
 
-            {/* 3. Meine gemeisterten Aufgaben */}
-            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
+          {/* 4. Meine gemeisterten Aufgaben (Mein Achtsamkeits-Fortschritt) */}
+          <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="text-[var(--color-accent-primary)] w-6 h-6" />
                 <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Mein Achtsamkeits-Fortschritt</h2>
@@ -692,103 +877,131 @@ export default function Settings() {
               )}
             </section>
 
-            {/* 4. My purchased products */}
-            <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] p-6 md:p-8">
-              <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="text-[var(--color-accent-primary)] w-6 h-6" />
-                <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Meine gekauften Produkte</h2>
+          {/* 5. Meine gekauften Produkte (Aufklappbar!) */}
+          <section className="bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setIsPurchasesOpen(!isPurchasesOpen)}
+              className="w-full p-6 md:p-8 flex items-center justify-between text-left hover:bg-[var(--color-bg-alt)]/50 transition-colors cursor-pointer"
+              aria-expanded={isPurchasesOpen}
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)] flex items-center justify-center shrink-0">
+                  <ShoppingBag size={24} />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-serif text-[var(--color-text-main)]">
+                      Meine gekauften Produkte
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">
+                      {purchases.length} {purchases.length === 1 ? 'Inhalt' : 'Inhalte'}
+                    </span>
+                  </div>
+                  <p className="text-[var(--color-text-muted)] text-xs mt-0.5">
+                    {isPurchasesOpen 
+                      ? 'Klicke hier zum Zuklappen' 
+                      : 'Klicke hier zum Aufklappen deiner freigeschalteten Kurse & Meditationen'}
+                  </p>
+                </div>
               </div>
-              <p className="text-[var(--color-text-muted-light)] text-xs mb-6">
-                Deine verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung deiner Käufe.
-              </p>
 
-              <div className="space-y-4">
+              <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-accent-primary)] shrink-0 pl-3">
+                <span className="hidden sm:inline">{isPurchasesOpen ? 'Zuklappen' : 'Aufklappen'}</span>
+                {isPurchasesOpen ? <ChevronUp size={22} /> : <ChevronDown size={22} />}
+              </div>
+            </button>
+
+            {isPurchasesOpen && (
+              <div className="p-6 md:p-8 pt-2 border-t border-[var(--color-border-main)]/60 space-y-4 animate-fade-in">
+                <p className="text-[var(--color-text-muted-light)] text-xs mb-2">
+                  Deine verifizierten Angebote und freigeschalteten Kurse. Verwaltet über die Supabase-Datenbank zur lückenlosen Absicherung deiner Käufe.
+                </p>
+
                 {purchases.length > 0 ? (
-                  purchases.map((kauf: any) => {
-                    const course = kauf.produkt;
-                    return (
-                      <div 
-                        key={kauf.id}
-                        className="p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
-                          <div>
-                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                              Aktiviert
-                            </span>
-                            <h3 className="text-lg font-serif text-[var(--color-text-main)] mt-1.5">{course?.titel || 'Unbekanntes Produkt'}</h3>
+                  <div className="space-y-3">
+                    {purchases.map((kauf: any) => {
+                      const course = kauf.produkt;
+                      return (
+                        <div 
+                          key={kauf.id}
+                          className="p-4 sm:p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                            <div>
+                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                Aktiviert
+                              </span>
+                              <h3 className="text-base sm:text-lg font-serif text-[var(--color-text-main)] mt-1.5 font-bold">
+                                {course?.titel || 'Unbekanntes Produkt'}
+                              </h3>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm font-semibold text-[var(--color-text-main)] block">{kauf.preis} €</span>
+                              <span className="text-xs text-[var(--color-text-muted-light)] block">{new Date(kauf.created_at).toLocaleDateString()}</span>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <span className="text-sm font-semibold text-[var(--color-text-main)] block">{kauf.preis} €</span>
-                            <span className="text-xs text-[var(--color-text-muted-light)] block">{new Date(kauf.created_at).toLocaleDateString()}</span>
+
+                          <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-3">{course?.beschreibung}</p>
+
+                          <div className="flex items-center justify-end pt-2 border-t border-[var(--color-border-main)]">
+                            <Link 
+                              to={`/premium-dashboard#product-${course?.id || kauf.produkt_id}`}
+                              className="px-4 py-1.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow-xs"
+                            >
+                              <Eye size={13} />
+                              <span>Zum Produkt / Anhören</span>
+                            </Link>
                           </div>
                         </div>
+                      );
+                    })}
 
-                        <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">{course?.beschreibung}</p>
-
-                        <div className="flex items-center justify-end pt-2 border-t border-[var(--color-border-main)]">
-                           <Link 
-                             to={`/premium#product-${course?.id || kauf.produkt_id}`}
-                             className="px-4 py-1.5 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
-                           >
-                             <Eye size={12} /> Zum Produkt
-                           </Link>
-                        </div>
-                      </div>
-                    );
-                  })
+                    <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] font-semibold text-sm text-right">
+                      Gesamtausgaben: <span className="text-[var(--color-accent-primary)]">{totalSpent.toFixed(2)} €</span>
+                    </div>
+                  </div>
                 ) : (
                   <div className="text-[var(--color-text-muted)] text-center p-6 border border-dashed border-[var(--color-border-main)] rounded-2xl">
-                    <p className="mb-4">Noch keine Premium-Kurse erworben.</p>
-                  </div>
-                )}
-                
-                {purchases.length > 0 && (
-                  <div className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] font-semibold text-sm text-right">
-                    Gesamtausgaben: <span className="text-[var(--color-accent-primary)]">{totalSpent.toFixed(2)} €</span>
+                    <p className="mb-2 text-sm">Noch keine Inhalte erworben.</p>
+                    <Link
+                      to="/premium-dashboard"
+                      className="text-xs font-bold text-[var(--color-accent-primary)] hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>In der Mediathek stöbern →</span>
+                    </Link>
                   </div>
                 )}
               </div>
-            </section>
+            )}
+          </section>
 
-            {/* 5. Freunde werben Empfehlungslink */}
-            <div className="mt-8">
-              <FriendInviteWidget />
-            </div>
-
+          {/* 6. Freunde werben Empfehlungslink (In voller Breite) */}
+          <div>
+            <FriendInviteWidget />
           </div>
 
-          {/* Sidebar Area with session, GDPR, logout */}
-          <div className="space-y-6">
+          {/* 7. Speicher, Datenschutz & Abmelden (3 Spalten Footer) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             
-             {/* Theme Toggle */}
-            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm">
-                <button
-                   onClick={toggleTheme}
-                   className="w-full flex items-center justify-between p-4 bg-[var(--color-bg-alt)] rounded-xl hover:bg-[var(--color-bg-border)] transition-all"
-                >
-                   <span className="font-semibold text-sm">Design-Modus</span>
-                   <div className="p-2 rounded-lg bg-[var(--color-bg-body)]">
-                     {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-                   </div>
-                </button>
-            </div>
-
             {/* Flugmodus & Offline-Speicher Card */}
-            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold flex items-center gap-2">
-                  <WifiOff size={18} className="text-[var(--color-accent-primary)]" />
-                  <span>Flugmodus-Speicher</span>
-                </h4>
-                <span className="text-xs font-mono font-semibold text-[var(--color-accent-primary)] bg-[var(--color-bg-alt)] px-2.5 py-1 rounded-full border border-[var(--color-border-main)]">
-                  {offlineStats.totalMBFormatted}
-                </span>
+            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold flex items-center gap-2">
+                    <WifiOff size={18} className="text-[var(--color-accent-primary)]" />
+                    <span>Flugmodus-Speicher</span>
+                  </h4>
+                  <span className="text-xs font-mono font-semibold text-[var(--color-accent-primary)] bg-[var(--color-bg-alt)] px-2.5 py-1 rounded-full border border-[var(--color-border-main)]">
+                    {offlineStats.totalMBFormatted}
+                  </span>
+                </div>
+                <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
+                  Sicher im geschützten App-Speicher hinterlegt ({offlineStats.totalTracks} {offlineStats.totalTracks === 1 ? 'Audio' : 'Audios'}).
+                </p>
               </div>
-              <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
-                Sicher im geschützten App-Speicher hinterlegt ({offlineStats.totalTracks} {offlineStats.totalTracks === 1 ? 'Audio' : 'Audios'}).
-              </p>
               <button
+                type="button"
                 onClick={() => setShowOfflineModal(true)}
                 className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center justify-between transition-all cursor-pointer"
               >
@@ -800,113 +1013,79 @@ export default function Settings() {
               </button>
             </div>
 
-            {/* Admin Freischaltung Card (nur für Admins sichtbar) */}
-            {isAdminUser && (
-              <div className="bg-emerald-50/80 dark:bg-emerald-950/40 rounded-3xl p-6 border border-emerald-200 dark:border-emerald-800/50 shadow-sm">
-                <div className="flex items-center gap-2 mb-2 text-emerald-800 dark:text-emerald-300 font-serif font-bold text-base">
-                  <ShieldCheck size={18} className="text-emerald-600 dark:text-emerald-400" />
-                  <span>Admin-Bereich</span>
-                </div>
+            {/* GDPR Box */}
+            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold mb-2 flex items-center gap-2">
+                  <Shield size={18} className="text-[var(--color-accent-primary)]" />
+                  <span>Datenschutz &amp; DSGVO</span>
+                </h4>
                 <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
-                  Registrierten Nutzern beliebige Meditationen, Hörbücher oder Hypnosen manuell & kostenlos freischalten.
+                  Sämtliche Kommunikation und Datensätze sind nach DSGVO geschützt.
                 </p>
-                <Link
-                  to="/admin"
-                  className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl flex items-center justify-between transition-all shadow-sm cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <Gift size={14} />
-                    <span>Produkte freischalten</span>
-                  </span>
-                  <span className="text-[11px] font-bold">Öffnen →</span>
-                </Link>
               </div>
-            )}
-
-            {/* Quick Profile Overview Badge */}
-            <div className="bg-[var(--color-bg-body)] rounded-3xl p-6 border border-[var(--color-border-main)]/60 text-center">
-              <div className="w-20 h-20 rounded-full bg-[var(--color-accent-primary)] text-white flex items-center justify-center text-3xl font-serif mx-auto mb-4 shadow-sm">
-                {(user.first_name || user.username || 'T').charAt(0).toUpperCase()}
-              </div>
-              <h3 className="text-xl font-serif text-[var(--color-text-main)]">
-                {user.first_name ? `${user.first_name} ${user.last_name || ''}` : user.username}
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted-light)] mt-1">{user.email}</p>
-              
-              <div className="mt-4 flex flex-wrap gap-1.5 justify-center">
-                <span className="px-2 py-0.5 bg-[var(--color-bg-border)] text-[var(--color-text-muted)] text-[10px] rounded-full uppercase font-semibold">
-                  Mitglied seit {new Date().getFullYear()}
-                </span>
-                {user.newsletter_optin ? (
-                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] rounded-full uppercase font-semibold border border-emerald-100/50">
-                    Newsletter Ja
-                  </span>
-                ) : (
-                  <span className="px-2 py-0.5 bg-[var(--color-bg-border)] text-[var(--color-text-muted-light)] text-[10px] rounded-full uppercase font-semibold">
-                    Newsletter Nein
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-[var(--color-border-main)]/60">
+              <div className="space-y-2">
                 <button
-                  onClick={handleLogout}
-                  className="w-full py-3 bg-[var(--color-bg-border)] hover:bg-stone-200 text-[var(--color-text-main)] font-medium rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
+                  type="button"
+                  onClick={handleExportData}
+                  className="w-full py-2 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all"
                 >
-                  <LogOut size={14} />
-                  <span>Abmelden (Sitzung beenden)</span>
+                  <Download size={13} />
+                  <span>Daten exportieren (JSON)</span>
                 </button>
+                <Link
+                  to="/datenschutz"
+                  className="w-full py-2 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all block text-center"
+                >
+                  <FileText size={13} />
+                  <span>Datenschutzerklärung</span>
+                </Link>
               </div>
             </div>
 
-            {/* GDPR Box */}
-            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm">
-              <h4 className="font-serif text-[var(--color-text-main)] text-lg mb-2 flex items-center gap-1.5">
-                <Shield size={16} className="text-[var(--color-accent-primary)]" />
-                Datenschutz & DSGVO
-              </h4>
-              <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
-                Sämtliche Kommunikation und Datensätze sind gänzlich nach Bestimmungen der Datenschutz-Grundverordnung abgesichert. Du behältst die volle Kontrolle über deine Daten.
-              </p>
-              
-              <div className="space-y-3">
+            {/* Konto & Abmelden Card */}
+            <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold mb-2 flex items-center gap-2">
+                  <User size={18} className="text-[var(--color-accent-primary)]" />
+                  <span>Sitzung &amp; Konto</span>
+                </h4>
+                <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
+                  Beende deine aktuelle Sitzung oder verwalte deinen Kontostatus.
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <button
-                  onClick={handleExportData}
-                  className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all"
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full py-2.5 px-3 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-semibold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Download size={14} />
-                  <span>Daten herunterladen (JSON)</span>
+                  <LogOut size={14} />
+                  <span>Abmelden (Logout)</span>
                 </button>
-
-                <Link
-                  to="/datenschutz"
-                  className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center gap-2 transition-all block text-left"
-                >
-                  <FileText size={14} />
-                  <span>Datenschutzerklärung einsehen</span>
-                </Link>
-
                 <button
+                  type="button"
                   onClick={() => {
                     (window as any).dataLayer = (window as any).dataLayer || [];
                     (window as any).dataLayer.push({ event: 'account_deletion_intent', user_id: user.id });
                     setShowDeleteModal(true);
                   }}
-                  className="w-full py-2 px-3 text-[var(--color-text-muted)] hover:text-red-600 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1 mt-4"
+                  className="w-full py-1 text-[var(--color-text-muted)] hover:text-red-600 text-[10px] uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <Trash2 size={12} />
+                  <Trash2 size={11} />
                   <span>Account löschen</span>
                 </button>
               </div>
-
-              {/* Version Info */}
-              <div className="mt-6 pt-4 border-t border-[var(--color-border-main)] text-center">
-                <span className="text-[11px] font-mono text-[var(--color-text-muted)] opacity-80">
-                  App-Version: v5.2.1
-                </span>
-              </div>
             </div>
 
+          </div>
+
+          {/* App Version Info Footer */}
+          <div className="pt-2 text-center">
+            <span className="text-[11px] font-mono text-[var(--color-text-muted)] opacity-70">
+              Flow der Stille • Version v5.2.2
+            </span>
           </div>
 
         </div>
