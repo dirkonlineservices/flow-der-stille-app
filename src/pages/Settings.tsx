@@ -53,6 +53,7 @@ export default function Settings() {
   const [offlineStats, setOfflineStats] = useState({ totalMBFormatted: '0 MB', totalTracks: 0 });
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isPurchasesOpen, setIsPurchasesOpen] = useState(false);
+  const [isAdminSectionOpen, setIsAdminSectionOpen] = useState(false);
 
   // Admin Live-Statistiken State
   const [adminStats, setAdminStats] = useState<{
@@ -503,17 +504,17 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* 2. Admin-Bereich & Live-Statistiken (nur für Admins sichtbar) */}
+          {/* 2. Admin-Bereich & Live-Statistiken (nur für Admins sichtbar, standardmäßig ZUGEKLAPPT zum Schutz personenbezogener Daten) */}
           {isAdminUser && (
-            <section className="bg-emerald-50/80 dark:bg-emerald-950/30 rounded-3xl p-6 sm:p-7 border border-emerald-300 dark:border-emerald-800/60 shadow-xs space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-200/60 dark:border-emerald-800/60">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
-                    <ShieldCheck size={22} />
+            <section className="bg-emerald-50/80 dark:bg-emerald-950/30 rounded-3xl border border-emerald-300 dark:border-emerald-800/60 shadow-xs overflow-hidden transition-all duration-300">
+              <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <ShieldCheck size={24} />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl sm:text-2xl font-serif font-bold text-emerald-950 dark:text-emerald-100">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-lg sm:text-xl font-serif font-bold text-emerald-950 dark:text-emerald-100">
                         Admin-Bereich &amp; Live-Statistiken
                       </h2>
                       <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
@@ -521,86 +522,116 @@ export default function Settings() {
                       </span>
                     </div>
                     <p className="text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-0.5">
-                      Echtzeit-Statistiken, Nutzerzahlen &amp; Freischaltungen direkt vom Rechner aus
+                      {isAdminSectionOpen 
+                        ? 'Live-Statistiken & Gamification-Radar geöffnet. Zum Schutz hier wieder zuklappen.' 
+                        : 'Zum Schutz personenbezogener Daten standardmäßig eingeklappt.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={loadAdminStats}
-                    disabled={loadingAdminStats}
-                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-semibold border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition flex items-center gap-1.5 cursor-pointer"
-                    title="Statistiken neu laden"
-                  >
-                    <RefreshCw size={13} className={loadingAdminStats ? 'animate-spin' : ''} />
-                    <span>Aktualisieren</span>
-                  </button>
+                <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
                   <Link
                     to="/admin"
-                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-white dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-bold border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    title="Geschützte Admin-Zentrale mit PIN-Sperre & Nutzerverwaltung öffnen"
                   >
                     <span>Admin-Zentrale öffnen</span>
                     <ArrowRight size={14} />
                   </Link>
-                </div>
-              </div>
 
-              {/* 4 Live-Statistik Kacheln */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
-                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
-                    👥 Nutzer gesamt
-                  </span>
-                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
-                    {adminStats?.totalUsers ?? '...'}
-                  </div>
-                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
-                    +{adminStats?.newUsers7Days ?? 0} letzte 7 Tage
-                  </span>
-                </div>
-
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
-                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
-                    💎 Käufe gesamt
-                  </span>
-                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
-                    {adminStats?.totalPurchases ?? '...'}
-                  </div>
-                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
-                    Verifizierte Käufe
-                  </span>
-                </div>
-
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
-                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
-                    ⭐ Bewertungen
-                  </span>
-                  <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
-                    {adminStats?.totalReviews ?? 0}
-                  </div>
-                  <span className="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5 block font-semibold">
-                    Ø {adminStats?.averageRating ?? '5.0'} Sterne
-                  </span>
-                </div>
-
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs flex flex-col justify-between">
-                  <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
-                    🎁 Freischaltungen
-                  </span>
-                  <Link
-                    to="/admin"
-                    className="mt-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !isAdminSectionOpen;
+                      setIsAdminSectionOpen(next);
+                      if (next && !adminStats) loadAdminStats();
+                    }}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    aria-expanded={isAdminSectionOpen}
                   >
-                    <span>Zur Verwaltung →</span>
-                  </Link>
+                    <span>{isAdminSectionOpen ? 'Bereich zuklappen' : 'Statistiken aufklappen'}</span>
+                    {isAdminSectionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
                 </div>
               </div>
 
-              {/* 52-Wochen Gamification Radar & Alarm-Monitor */}
-              <div className="pt-2">
-                <GamificationRadar />
-              </div>
+              {/* Aufgeklappter Inhalt (Statistiken & Gamification-Radar) */}
+              {isAdminSectionOpen && (
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-emerald-200/60 dark:border-emerald-800/60 space-y-5 animate-fade-in">
+                  
+                  {/* Statuszeile mit Aktualisieren-Button */}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-emerald-900/80 dark:text-emerald-200/80 font-medium">
+                      Echtzeit-Kennzahlen &amp; 52-Wochen Gamification Monitor
+                    </span>
+                    <button
+                      onClick={loadAdminStats}
+                      disabled={loadingAdminStats}
+                      className="px-3 py-1.5 rounded-xl bg-white dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-semibold border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition flex items-center gap-1.5 cursor-pointer"
+                      title="Statistiken neu laden"
+                    >
+                      <RefreshCw size={13} className={loadingAdminStats ? 'animate-spin' : ''} />
+                      <span>Aktualisieren</span>
+                    </button>
+                  </div>
+
+                  {/* 4 Live-Statistik Kacheln */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                      <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                        👥 Nutzer gesamt
+                      </span>
+                      <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                        {adminStats?.totalUsers ?? '...'}
+                      </div>
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
+                        +{adminStats?.newUsers7Days ?? 0} letzte 7 Tage
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                      <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                        💎 Käufe gesamt
+                      </span>
+                      <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                        {adminStats?.totalPurchases ?? '...'}
+                      </div>
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5 block">
+                        Verifizierte Käufe
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs">
+                      <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                        ⭐ Bewertungen
+                      </span>
+                      <div className="text-2xl sm:text-3xl font-bold font-serif text-emerald-950 dark:text-white mt-1">
+                        {adminStats?.totalReviews ?? 0}
+                      </div>
+                      <span className="text-[10px] text-amber-700 dark:text-amber-300 mt-0.5 block font-semibold">
+                        Ø {adminStats?.averageRating ?? '5.0'} Sterne
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 shadow-2xs flex flex-col justify-between">
+                      <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
+                        🎁 Freischaltungen
+                      </span>
+                      <Link
+                        to="/admin"
+                        className="mt-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>Zur Verwaltung →</span>
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* 52-Wochen Gamification Radar & Alarm-Monitor */}
+                  <div className="pt-2">
+                    <GamificationRadar />
+                  </div>
+                </div>
+              )}
             </section>
           )}
 
