@@ -8,6 +8,9 @@ import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
 import SEO from '../components/SEO';
 import { checkConsentForAuth } from '../components/CookieBanner';
 
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
+
 function getFriendlyErrorMessage(rawError: string) {
   const lower = rawError.toLowerCase();
   if (lower.includes('invalid login credentials') || lower.includes('invalid_credentials') || lower.includes('wrong password') || lower.includes('invalid email')) {
@@ -131,18 +134,41 @@ export default function Login() {
         ? 'app.flowderstille.de://auth/callback'
         : `${window.location.origin}/auth/callback`;
 
-      const { error: ssoError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectTo,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'select_account',
+      if (isNative) {
+        // NATIV (Android App): URL anfordern und im sicheren System-Browser öffnen
+        // Dies verhindert Googles 'disallowed_useragent' Fehler im WebView!
+        const { data, error: ssoError } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectTo,
+            skipBrowserRedirect: true,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'select_account',
+            }
           }
-        }
-      });
+        });
 
-      if (ssoError) throw ssoError;
+        if (ssoError) throw ssoError;
+
+        if (data?.url) {
+          await Browser.open({ url: data.url, windowName: '_system' });
+        }
+      } else {
+        // WEB: Standard Browser-Redirect
+        const { error: ssoError } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectTo,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'select_account',
+            }
+          }
+        });
+
+        if (ssoError) throw ssoError;
+      }
     } catch (err: any) {
       setError(err.message || 'Google-Anmeldung konnte nicht gestartet werden.');
       setLoading(false);

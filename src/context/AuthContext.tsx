@@ -3,6 +3,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { syncConsentAfterLogin } from '../lib/consentManager';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -120,8 +121,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // 3. Nativer Deep-Link Listener (z. B. für Google SSO Rückkehr in die Android App)
+    let urlListenerHandle: any = null;
+    if (Capacitor.isNativePlatform()) {
+      CapApp.addListener('appUrlOpen', async (data) => {
+        try {
+          // Schließe den System-Browser (Custom Tab), falls er noch offen ist
+          await Browser.close().catch(() => {});
+
+          const rawUrl = data.url || '';
+          if (rawUrl.includes('auth/callback') || rawUrl.includes('access_token') || rawUrl.includes('code=')) {
+            const normalized = rawUrl.replace('app.flowderstille.de://', 'https://flow-der-stille.de/');
+            const parsed = new URL(normalized);
+
+            // A: PKCE Flow (code=...)
+            const code = parsed.searchParams.get('code');
+            if (code) {
+              const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+              if (!exchangeError && exchangeData?.session?.user) {
+                mapAndSetUser(exchangeData.session.user);
+              }
+              return;
+            }
+
+            // B: Hash Flow (#access_token=...&refresh_token=...)
+            const hash = parsed.hash.startsWith('#') ? parsed.hash.substring(1) : '';
+            const hashParams = new URLSearchParams(hash);
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+
+            if (accessToken && refreshToken) {
+              const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+              });
+              if (!sessionError && sessionData?.session?.user) {
+                mapAndSetUser(sessionData.session.user);
+              }
+            }
+          }
+        } catch (deepLinkErr) {
+          console.warn('Deep link auth error:', deepLinkErr);
+        }
+      }).then(handle => {
+        urlListenerHandle = handle;
+      });
+    }
+
     // Wächter beim Verlassen aufräumen
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (urlListenerHandle?.remove) {
+        urlListenerHandle.remove();
+      }
+    };
   }, []);
 
 
