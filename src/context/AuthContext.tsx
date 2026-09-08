@@ -128,8 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Hilfsfunktion: Wandelt Supabase-Daten in unser App-Format um
   const mapAndSetUser = async (supabaseUser: any) => {
     const metadata = supabaseUser.user_metadata || {};
-    let firstName = metadata.first_name || '';
-    let lastName = metadata.last_name || '';
+    let firstName = metadata.first_name || metadata.given_name || metadata.full_name?.split(' ')[0] || '';
+    let lastName = metadata.last_name || metadata.family_name || metadata.full_name?.split(' ').slice(1).join(' ') || '';
 
     // Falls first_name in user_metadata fehlt, versuche aus profiles-Tabelle zu laden
     if (!firstName) {

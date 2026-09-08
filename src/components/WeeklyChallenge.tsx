@@ -160,13 +160,13 @@ export default function WeeklyChallenge() {
         {/* Header mit Woche & Level */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Trophy size={18} className="text-[var(--color-accent-primary)]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-accent-primary)]">
+            <Trophy size={18} className="text-emerald-700 dark:text-emerald-400" />
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 dark:text-emerald-300">
               Woche {currentTaskIndex + 1} von 52
             </span>
           </div>
           {user && (
-            <div className="text-[10px] uppercase font-bold text-[var(--color-accent-primary)] bg-[var(--color-bg-card)] px-3 py-1 rounded-full border border-[var(--color-border-main)] shadow-sm flex items-center gap-1.5">
+            <div className="text-xs uppercase font-bold text-white bg-emerald-800 dark:bg-emerald-700 px-3 py-1 rounded-full border border-emerald-900/30 shadow-xs flex items-center gap-1.5">
               <span>Level {currentTaskIndex + 1}</span>
             </div>
           )}
@@ -181,15 +181,15 @@ export default function WeeklyChallenge() {
         </p>
 
         {/* Tipps Section */}
-        <div className="bg-[var(--color-bg-card)]/60 backdrop-blur-sm rounded-2xl p-4 sm:p-5 border border-[var(--color-border-main)] mb-6 shadow-sm">
+        <div className="bg-[var(--color-bg-card)] rounded-2xl p-4 sm:p-5 border-2 border-[var(--color-border-main)] mb-6 shadow-sm">
           <div className="flex items-center gap-2 mb-3">
-            <Lightbulb size={16} className="text-[var(--color-accent-primary)]" />
-            <h4 className="text-xs sm:text-sm uppercase tracking-wider font-bold text-[var(--color-accent-primary)]">Schritt-für-Schritt Fokus</h4>
+            <Lightbulb size={17} className="text-amber-600 dark:text-amber-400" />
+            <h4 className="text-xs sm:text-sm uppercase tracking-wider font-bold text-emerald-900 dark:text-emerald-200">Schritt-für-Schritt Fokus</h4>
           </div>
           <ul className="space-y-2.5">
             {task.tips.map((tip, idx) => (
-              <li key={idx} className="text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-2.5 leading-relaxed">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-primary)] mt-2 shrink-0" />
+              <li key={idx} className="text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-2.5 leading-relaxed font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-700 dark:bg-emerald-400 mt-1.5 shrink-0" />
                 <span>{tip}</span>
               </li>
             ))}
@@ -217,42 +217,42 @@ export default function WeeklyChallenge() {
                 )}
               </div>
 
-              {/* 7-Tage Reifezeit Info-Box: Edles, sattes Dunkelgrün */}
+              {/* 7-Tage Reifezeit Info-Box: Höchster Kontrast mit weißem Hintergrund & smaragdgrünem Akzent */}
               {hasMinReps && !canAdvance && (
                 <motion.div 
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 sm:p-5 bg-emerald-950/10 dark:bg-emerald-950/40 border-2 border-emerald-800/50 dark:border-emerald-700/60 rounded-2xl text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-3.5 shadow-sm"
+                  className="p-4 sm:p-5 bg-white dark:bg-stone-900 border-2 border-emerald-600 dark:border-emerald-500 rounded-2xl text-xs sm:text-sm text-[var(--color-text-main)] flex items-start gap-3.5 shadow-sm"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-emerald-800 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     <Sparkles size={18} />
                   </div>
                   <div className="leading-relaxed">
-                    <strong className="text-emerald-950 dark:text-emerald-100 font-bold block text-sm sm:text-base mb-1">
+                    <strong className="text-emerald-900 dark:text-emerald-100 font-bold block text-sm sm:text-base mb-1">
                       3 Wiederholungen gemeistert! ✨
                     </strong>
-                    <p className="text-emerald-900/90 dark:text-emerald-200/90 text-xs sm:text-sm leading-relaxed">
-                      Noch <strong className="text-emerald-950 dark:text-white font-bold">{daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} Reifezeit</strong> bis Woche {currentTaskIndex + 2}. Vertiefe die Übung gern weiterhin in deinem eigenen Rhythmus!
+                    <p className="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed">
+                      Noch <strong className="text-emerald-800 dark:text-emerald-300 font-bold">{daysRemaining} {daysRemaining === 1 ? 'Tag' : 'Tage'} Reifezeit</strong> bis Woche {currentTaskIndex + 2}. Vertiefe die Übung gern weiterhin in deinem eigenen Rhythmus!
                     </p>
                   </div>
                 </motion.div>
               )}
 
-              {/* Bereit für den Aufstieg: Edles, sattes Dunkelgrün */}
+              {/* Bereit für den Aufstieg: Höchster Kontrast mit weißem Hintergrund & smaragdgrünem Akzent */}
               {canAdvance && (
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 sm:p-5 bg-emerald-950/15 dark:bg-emerald-950/50 border-2 border-emerald-800/60 dark:border-emerald-600/70 rounded-2xl text-xs sm:text-sm flex items-start gap-3.5 shadow-sm"
+                  className="p-4 sm:p-5 bg-white dark:bg-stone-900 border-2 border-emerald-600 dark:border-emerald-500 rounded-2xl text-xs sm:text-sm flex items-start gap-3.5 shadow-sm"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-emerald-800 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     <Trophy size={18} />
                   </div>
                   <div className="leading-relaxed">
-                    <strong className="text-emerald-950 dark:text-emerald-100 font-bold block text-sm sm:text-base mb-1">
+                    <strong className="text-emerald-900 dark:text-emerald-100 font-bold block text-sm sm:text-base mb-1">
                       Woche {currentTaskIndex + 1} vollständig gemeistert! 🏆
                     </strong>
-                    <p className="text-emerald-900/90 dark:text-emerald-200/90 text-xs sm:text-sm leading-relaxed">
+                    <p className="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed">
                       Großartige Leistung. Du bist bereit für die nächste Stufe und kannst nun in Woche {currentTaskIndex + 2} aufsteigen.
                     </p>
                   </div>
@@ -266,7 +266,7 @@ export default function WeeklyChallenge() {
                   id="btn-complete-weekly-challenge"
                   onClick={handleComplete}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-semibold transition-all bg-[var(--color-accent-primary)] text-white hover:bg-[var(--color-accent-hover)] shadow-sm active:scale-95 cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-sm font-bold transition-all bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm active:scale-95 cursor-pointer"
                 >
                   <CheckCircle size={18} />
                   <span>{loading ? 'Wird gespeichert...' : 'Fokus abgeschlossen (+1)'}</span>

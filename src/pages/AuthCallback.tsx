@@ -16,6 +16,19 @@ export default function AuthCallback() {
 
     const handleAuthCallback = async () => {
       try {
+        const hash = typeof window !== 'undefined' ? window.location.hash : '';
+        const search = typeof window !== 'undefined' ? window.location.search : '';
+        const params = new URLSearchParams(search);
+        const type = params.get('type');
+
+        // WICHTIG: Wenn der Callback durch einen Passwort-Reset (Recovery) ausgelöst wurde,
+        // leiten wir SOFORT auf die Seite /reset-password weiter!
+        // Der Nutzer MUSS sein neues Passwort dort 2x eingeben und wird NICHT einfach direkt eingeloggt!
+        if (type === 'recovery' || hash.includes('type=recovery')) {
+          navigate(`/reset-password${search}${hash}`, { replace: true });
+          return;
+        }
+
         // Check session from URL hash or storage
         const { data, error } = await supabase.auth.getSession();
 
@@ -27,6 +40,30 @@ export default function AuthCallback() {
         }
 
         if (data.session) {
+          // Falls User über Google SSO kam, Profil in public.profiles initialisieren
+          try {
+            const authUser = data.session.user;
+            const meta = authUser.user_metadata || {};
+            const firstName = meta.first_name || meta.given_name || meta.full_name?.split(' ')[0] || '';
+            const lastName = meta.last_name || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || '';
+            const nowIso = new Date().toISOString();
+
+            await supabase.from('profiles').upsert({
+              id: authUser.id,
+              email: authUser.email,
+              first_name: firstName,
+              last_name: lastName,
+              full_name: `${firstName} ${lastName}`.trim() || authUser.email,
+              disclaimer_accepted_at: nowIso,
+              updated_at: nowIso
+            }, { onConflict: 'id' });
+
+            localStorage.setItem('flow_disclaimer_accepted', 'true');
+            localStorage.setItem('fds_audio_consent_granted', 'true');
+          } catch (profileSyncErr) {
+            console.warn('Profile sync in callback warning:', profileSyncErr);
+          }
+
           setIsSuccess(true);
           setStatusText('Erfolgreich bestätigt! Willkommen bei Flow der Stille.');
 
@@ -35,7 +72,7 @@ export default function AuthCallback() {
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
               event: 'sign_up',
-              method: 'email_double_opt_in',
+              method: 'auth_callback',
               status: 'success'
             });
           }
@@ -47,8 +84,34 @@ export default function AuthCallback() {
           }, 1800);
         } else {
           // If no session immediately, listen to auth state change or wait briefly
-          const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+          const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+              navigate(`/reset-password${search}${hash}`, { replace: true });
+              return;
+            }
+
             if (session) {
+              try {
+                const authUser = session.user;
+                const meta = authUser.user_metadata || {};
+                const firstName = meta.first_name || meta.given_name || meta.full_name?.split(' ')[0] || '';
+                const lastName = meta.last_name || meta.family_name || meta.full_name?.split(' ').slice(1).join(' ') || '';
+                const nowIso = new Date().toISOString();
+
+                await supabase.from('profiles').upsert({
+                  id: authUser.id,
+                  email: authUser.email,
+                  first_name: firstName,
+                  last_name: lastName,
+                  full_name: `${firstName} ${lastName}`.trim() || authUser.email,
+                  disclaimer_accepted_at: nowIso,
+                  updated_at: nowIso
+                }, { onConflict: 'id' });
+
+                localStorage.setItem('flow_disclaimer_accepted', 'true');
+                localStorage.setItem('fds_audio_consent_granted', 'true');
+              } catch (e) {}
+
               setIsSuccess(true);
               setStatusText('Erfolgreich bestätigt! Willkommen bei Flow der Stille.');
 

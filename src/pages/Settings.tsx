@@ -891,12 +891,12 @@ export default function Settings() {
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full">
                           <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-xl shrink-0 ${isWeekly ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                            <div className={`p-2 rounded-xl shrink-0 ${isWeekly ? 'bg-amber-500 text-white shadow-xs' : 'bg-emerald-700 text-white shadow-xs'}`}>
                               <CheckCircle2 size={16} />
                             </div>
                             <div>
-                              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted-light)] block tracking-wider">{type}</span>
-                              <h4 className="text-sm font-medium text-[var(--color-text-main)]">{title}</h4>
+                              <span className="text-[11px] uppercase font-bold text-[var(--color-text-muted)] block tracking-wider">{type}</span>
+                              <h4 className="text-sm font-semibold text-[var(--color-text-main)]">{title}</h4>
                             </div>
                           </div>
                           <span className="text-xs text-[var(--color-text-muted)] italic shrink-0 sm:text-right">{desc}</span>

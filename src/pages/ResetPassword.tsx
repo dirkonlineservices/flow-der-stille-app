@@ -5,6 +5,20 @@ import SEO from '../components/SEO';
 import { Eye, EyeOff, Lock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 
+function getPasswordStrength(pwd: string): { score: number; label: string; color: string; width: string } {
+  if (!pwd) return { score: 0, label: '', color: 'bg-stone-200 dark:bg-stone-700', width: '0%' };
+  let score = 0;
+  if (pwd.length >= 6) score += 1;
+  if (pwd.length >= 8) score += 1;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score += 1;
+  if (/[0-9]/.test(pwd) || /[^A-Za-z0-9]/.test(pwd)) score += 1;
+
+  if (score <= 1) return { score, label: 'Schwach (mind. 6 Zeichen)', color: 'bg-red-500', width: '25%' };
+  if (score === 2) return { score, label: 'Mäßig (Tipp: Großbuchstaben & Zahlen)', color: 'bg-amber-500', width: '50%' };
+  if (score === 3) return { score, label: 'Gut', color: 'bg-emerald-600', width: '75%' };
+  return { score, label: 'Sehr stark ✨', color: 'bg-emerald-700', width: '100%' };
+}
+
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,20 +32,16 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // 1. Recovery-Token beim Aufruf prüfen – NUR wenn Supabase PASSWORD_RECOVERY sendet
-  //    ODER ein PKCE-Code in der URL vorhanden ist.
+  // 1. Recovery-Token beim Aufruf prüfen (PKCE-Code, Hash oder bestehende Recovery-Session)
   useEffect(() => {
     const checkRecoverySession = async () => {
       setSessionChecking(true);
       const supabase = getSupabase();
 
       try {
-        // A: PKCE-Code in der URL? (Supabase PKCE-Flow)
+        // A: PKCE-Code in der URL?
         const code = searchParams.get('code');
-        const type = searchParams.get('type');
-
-        if (code && type === 'recovery') {
-          // Explizit nur Recovery-Codes tauschen
+        if (code) {
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
           if (!exchangeError) {
             setHasValidSession(true);
@@ -39,32 +49,38 @@ export default function ResetPassword() {
             return;
           }
           console.warn('PKCE exchange error:', exchangeError.message);
-          setHasValidSession(false);
-          setSessionChecking(false);
-          return;
         }
 
-        // B: Hash-basierter Recovery-Link (älteres Format: #access_token=...&type=recovery)
+        // B: Hash-basierter Recovery-Link (#access_token=...&type=recovery)
         const hash = typeof window !== 'undefined' ? window.location.hash : '';
-        if (hash.includes('type=recovery')) {
-          // Auf PASSWORD_RECOVERY Auth-Event warten
+        if (hash.includes('type=recovery') || hash.includes('access_token')) {
           const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-            if (event === 'PASSWORD_RECOVERY' && newSession) {
+            if (newSession) {
               setHasValidSession(true);
               setSessionChecking(false);
               authListener.subscription.unsubscribe();
             }
           });
 
-          // Timeout: Falls nach 3 Sekunden kein Event kam, Link ist ungültig
-          setTimeout(() => {
+          setTimeout(async () => {
+            const { data: current } = await supabase.auth.getSession();
+            if (current.session) {
+              setHasValidSession(true);
+            }
             setSessionChecking(false);
             authListener.subscription.unsubscribe();
-          }, 3000);
+          }, 2000);
           return;
         }
 
-        // C: Weder code noch hash → kein gültiger Recovery-Link
+        // C: Bereits eine authentifizierte Session aktiv?
+        const { data: existingSession } = await supabase.auth.getSession();
+        if (existingSession?.session) {
+          setHasValidSession(true);
+          setSessionChecking(false);
+          return;
+        }
+
         setHasValidSession(false);
         setSessionChecking(false);
       } catch (err) {
@@ -238,7 +254,7 @@ export default function ResetPassword() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
-              Neues Passwort (mind. 6 Zeichen)
+              Neues Passwort (mind. 6 Zeichen) *
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
@@ -269,11 +285,30 @@ export default function ResetPassword() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
+            {/* Live Passwort-Stärke-Anzeige */}
+            {password && (() => {
+              const strength = getPasswordStrength(password);
+              return (
+                <div className="mt-2 space-y-1">
+                  <div className="w-full h-1.5 bg-stone-200 dark:bg-stone-700 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full ${strength.color} transition-all duration-300 rounded-full`}
+                      style={{ width: strength.width }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[11px] text-[var(--text-muted)]">
+                    <span>Sicherheit:</span>
+                    <span className="font-semibold">{strength.label}</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
-              Passwort bestätigen
+              Passwort bestätigen (erneut eingeben) *
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-muted)] opacity-60">
@@ -304,12 +339,29 @@ export default function ResetPassword() {
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
+            {/* Live Abgleich-Meldung */}
+            {confirmPassword && (
+              <div className="mt-2">
+                {password === confirmPassword ? (
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                    <CheckCircle2 size={15} />
+                    <span>Passwörter stimmen überein ✓</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400 font-medium">
+                    <AlertCircle size={15} />
+                    <span>Passwörter stimmen noch nicht überein</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-4 flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-full font-semibold transition-all shadow-md active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed mt-6 cursor-pointer"
+            disabled={loading || password.length < 6 || password !== confirmPassword}
+            className="w-full py-4 flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full font-bold transition-all shadow-md active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed mt-6 cursor-pointer"
           >
             {loading ? (
               <>
