@@ -231,17 +231,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const lastLoginTime = supabaseUser.last_sign_in_at || new Date().toISOString();
 
           // Ermittle exakte App-Version des Handys / Browsers
-          let clientVersion = 'Web v5.2.1';
+          let clientVersion = 'Web v5.3.0';
           try {
             if (Capacitor.isNativePlatform()) {
               const info = await CapApp.getInfo();
               clientVersion = `Android App v${info.version}`;
             } else {
               const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-              clientVersion = isMobile ? 'Mobile Web v5.2.1' : 'Desktop Web v5.2.1';
+              clientVersion = isMobile ? 'Mobile Web v5.3.0' : 'Desktop Web v5.3.0';
             }
           } catch (e) {
-            clientVersion = 'Web v5.2.1';
+            clientVersion = 'Web v5.3.0';
           }
 
           await supabase
