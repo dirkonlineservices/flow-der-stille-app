@@ -2,13 +2,32 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const META_VERIFY_TOKEN = Deno.env.get('META_VERIFY_TOKEN');
+
+// Instagram Access Token (beginnt oft mit IGAAPIb...)
 const RAW_META_PAGE_ACCESS_TOKEN = Deno.env.get('META_PAGE_ACCESS_TOKEN') || '';
-// Whitespace and quotes trimming in case the secret was pasted with quotes/newlines
 const META_PAGE_ACCESS_TOKEN = RAW_META_PAGE_ACCESS_TOKEN.trim().replace(/^["']|["']$/g, '').trim();
+
+// Facebook Page Access Token (beginnt oft mit EAAB...)
+const RAW_FB_PAGE_ACCESS_TOKEN = Deno.env.get('FB_PAGE_ACCESS_TOKEN') || Deno.env.get('FACEBOOK_PAGE_ACCESS_TOKEN') || '';
+const FB_PAGE_ACCESS_TOKEN = RAW_FB_PAGE_ACCESS_TOKEN.trim().replace(/^["']|["']$/g, '').trim() || 
+  (META_PAGE_ACCESS_TOKEN.startsWith('EAA') ? META_PAGE_ACCESS_TOKEN : '');
+
 const GRAPH_API_VERSION = 'v21.0';
 
 // Ziel-Link für die Registrierung
 const REGISTER_URL = Deno.env.get('REGISTER_URL') || 'https://www.flow-der-stille.de/register';
+
+// Keyword-Filter (Standard: "ruhe"). Bei "*" oder "all" wird auf JEDEN Kommentar geantwortet.
+const TRIGGER_KEYWORD = Deno.env.get('TRIGGER_KEYWORD') || 'ruhe';
+
+function matchesKeyword(text: string): boolean {
+  if (!text) return false;
+  const trimmedTrigger = TRIGGER_KEYWORD.trim().toLowerCase();
+  if (trimmedTrigger === '*' || trimmedTrigger === 'all') return true;
+  
+  const keywords = TRIGGER_KEYWORD.split(',').map(k => k.trim()).filter(Boolean);
+  return keywords.some(k => new RegExp(`(^|\\s|\\W)${k}(\\W|\\s|$)`, 'i').test(text) || new RegExp(k, 'i').test(text));
+}
 
 // Standard-Nachrichtentexte
 const DEFAULT_COMMENT_REPLY = 
@@ -17,8 +36,12 @@ const DEFAULT_COMMENT_REPLY =
 const DEFAULT_DM_TEXT = 
   `Hallo! 🧘‍♂️\n\nSchön, dass du den Impuls für mehr innere Ruhe setzt.\n\nHier ist dein persönlicher Zugang zu deinem Raum der Stille:\n\n👉 ${REGISTER_URL}\n\nErstelle dir in wenigen Augenblicken deinen kostenlosen Account und entdecke geführte Meditationen, Atemübungen und deinen täglichen Ruhebegleiter.\n\nWir freuen uns auf dich!\nHerzliche Grüße\nDein Flow der Stille Team 🌿`;
 
+// =========================================================================
+// 1. INSTAGRAM FUNKTIONEN
+// =========================================================================
+
 /**
- * Sendet eine öffentliche Antwort direkt unter den Kommentar
+ * Sendet eine öffentliche Antwort unter einen Instagram-Kommentar
  */
 async function replyToInstagramComment(commentId: string, accessToken: string, message: string) {
   const candidateUrls = [
@@ -40,23 +63,22 @@ async function replyToInstagramComment(commentId: string, accessToken: string, m
 
       const data = await res.json();
       if (res.ok) {
-        console.log(`[Meta Webhook] Kommentar-Antwort erfolgreich gesendet (${baseUrl}):`, data);
+        console.log(`[Meta Webhook] Instagram Kommentar-Antwort erfolgreich (${baseUrl}):`, data);
         return { success: true, data, endpoint: baseUrl };
       }
-      console.warn(`[Meta Webhook] Kommentar-Antwort fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
+      console.warn(`[Meta Webhook] Instagram Kommentar-Antwort fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
     } catch (err: any) {
-      console.error(`[Meta Webhook] Ausnahme bei Kommentar-Antwort (${baseUrl}):`, err.message);
+      console.error(`[Meta Webhook] Ausnahme bei Instagram Kommentar-Antwort (${baseUrl}):`, err.message);
     }
   }
 
-  return { success: false, error: 'Alle Kommentar-Reply-Versuche fehlgeschlagen' };
+  return { success: false, error: 'Alle Instagram Kommentar-Reply-Versuche fehlgeschlagen' };
 }
 
 /**
- * Sendet eine private Direktnachricht (DM) an den Verfasser des Kommentars
+ * Sendet eine private Direktnachricht (DM) an den Verfasser eines Instagram-Kommentars
  */
 async function sendInstagramDM(pageOrAccountId: string | null, commentId: string, recipientId: string | null, accessToken: string, text: string) {
-  // Wir probieren Endpunkte für graph.instagram.com und graph.facebook.com:
   const candidateUrls: string[] = [
     `https://graph.instagram.com/${GRAPH_API_VERSION}/me/messages`,
   ];
@@ -66,7 +88,7 @@ async function sendInstagramDM(pageOrAccountId: string | null, commentId: string
   }
   candidateUrls.push(`https://graph.facebook.com/${GRAPH_API_VERSION}/me/messages`);
 
-  // 1. Versuch: Private Reply via comment_id (offizieller Weg für Instagram Kommentar-Automationen)
+  // 1. Versuch: Private Reply via comment_id
   for (const baseUrl of candidateUrls) {
     try {
       const urlWithToken = `${baseUrl}?access_token=${encodeURIComponent(accessToken)}`;
@@ -84,16 +106,16 @@ async function sendInstagramDM(pageOrAccountId: string | null, commentId: string
 
       const data = await res.json();
       if (res.ok) {
-        console.log(`[Meta Webhook] Instagram DM erfolgreich gesendet via comment_id (${baseUrl}):`, data);
+        console.log(`[Meta Webhook] Instagram DM via comment_id erfolgreich (${baseUrl}):`, data);
         return { success: true, data, endpoint: baseUrl };
       }
-      console.warn(`[Meta Webhook] DM via comment_id fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
+      console.warn(`[Meta Webhook] Instagram DM via comment_id fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
     } catch (err: any) {
-      console.error(`[Meta Webhook] Ausnahme via comment_id (${baseUrl}):`, err.message);
+      console.error(`[Meta Webhook] Ausnahme bei Instagram DM via comment_id (${baseUrl}):`, err.message);
     }
   }
 
-  // 2. Versuch (Fallback): Falls recipientId vorhanden, via recipient.id (IGSID)
+  // 2. Versuch: via recipient.id (IGSID)
   if (recipientId) {
     for (const baseUrl of candidateUrls) {
       try {
@@ -112,102 +134,172 @@ async function sendInstagramDM(pageOrAccountId: string | null, commentId: string
 
         const data = await res.json();
         if (res.ok) {
-          console.log(`[Meta Webhook] Instagram DM erfolgreich gesendet via recipient.id (${baseUrl}):`, data);
+          console.log(`[Meta Webhook] Instagram DM via recipient.id erfolgreich (${baseUrl}):`, data);
           return { success: true, data, endpoint: baseUrl };
         }
-        console.warn(`[Meta Webhook] DM via recipient.id fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
+        console.warn(`[Meta Webhook] Instagram DM via recipient.id fehlgeschlagen (${baseUrl}):`, JSON.stringify(data));
       } catch (err: any) {
-        console.error(`[Meta Webhook] Ausnahme via recipient.id (${baseUrl}):`, err.message);
+        console.error(`[Meta Webhook] Ausnahme bei Instagram DM via recipient.id (${baseUrl}):`, err.message);
       }
     }
   }
 
-  return { success: false, error: 'Alle DM-Versuche fehlgeschlagen' };
+  return { success: false, error: 'Alle Instagram DM-Versuche fehlgeschlagen' };
 }
+
+// =========================================================================
+// 2. FACEBOOK FUNKTIONEN
+// =========================================================================
+
+/**
+ * Sendet eine öffentliche Antwort unter einen Facebook-Kommentar
+ */
+async function replyToFacebookComment(commentId: string, accessToken: string, message: string) {
+  try {
+    const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${commentId}/comments`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log(`[Meta Webhook] Facebook Kommentar-Antwort erfolgreich (${commentId}):`, data);
+      return { success: true, data };
+    }
+    console.warn(`[Meta Webhook] Facebook Kommentar-Antwort fehlgeschlagen (${commentId}):`, JSON.stringify(data));
+    return { success: false, data };
+  } catch (err: any) {
+    console.error(`[Meta Webhook] Ausnahme bei Facebook Kommentar-Antwort (${commentId}):`, err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Sendet eine private Messenger-Nachricht an den Verfasser eines Facebook-Kommentars (Private Reply)
+ */
+async function sendFacebookDM(pageId: string | null, commentId: string, recipientId: string | null, accessToken: string, text: string) {
+  const candidateUrls: string[] = [];
+  if (pageId) {
+    candidateUrls.push(`https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}/messages`);
+  }
+  candidateUrls.push(`https://graph.facebook.com/${GRAPH_API_VERSION}/me/messages`);
+
+  // 1. Versuch: Meta Private Reply via comment_id
+  for (const url of candidateUrls) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          recipient: { comment_id: commentId },
+          message: { text }
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        console.log(`[Meta Webhook] Facebook Messenger via comment_id erfolgreich (${url}):`, data);
+        return { success: true, data, endpoint: url };
+      }
+      console.warn(`[Meta Webhook] Facebook Messenger via comment_id fehlgeschlagen (${url}):`, JSON.stringify(data));
+    } catch (err: any) {
+      console.error(`[Meta Webhook] Ausnahme bei Facebook Messenger via comment_id (${url}):`, err.message);
+    }
+  }
+
+  // 2. Versuch: via recipient.id (PSID)
+  if (recipientId) {
+    for (const url of candidateUrls) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            recipient: { id: recipientId },
+            message: { text }
+          }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          console.log(`[Meta Webhook] Facebook Messenger via recipient.id erfolgreich (${url}):`, data);
+          return { success: true, data, endpoint: url };
+        }
+        console.warn(`[Meta Webhook] Facebook Messenger via recipient.id fehlgeschlagen (${url}):`, JSON.stringify(data));
+      } catch (err: any) {
+        console.error(`[Meta Webhook] Ausnahme bei Facebook Messenger via recipient.id (${url}):`, err.message);
+      }
+    }
+  }
+
+  return { success: false, error: 'Alle Facebook Messenger-Versuche fehlgeschlagen' };
+}
+
+// =========================================================================
+// 3. HTTP SERVER & ROUTING
+// =========================================================================
 
 serve(async (req) => {
   const url = new URL(req.url);
 
-  // =========================================================================
-  // 1. GET Request: Verifizierung (Handshake) ODER Token-Diagnose
-  // =========================================================================
+  // -------------------------------------------------------------------------
+  // GET Request: Verifizierung (Handshake) ODER Token-Diagnose
+  // -------------------------------------------------------------------------
   if (req.method === 'GET') {
     // Diagnose-Modus: Prüfe Token-Gültigkeit und Berechtigungen
     if (url.searchParams.get('test_token') === '1') {
-      if (!META_PAGE_ACCESS_TOKEN) {
-        return new Response(JSON.stringify({ error: 'META_PAGE_ACCESS_TOKEN is not set in secrets' }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-
       try {
-        const [meRes, permsRes, igDirectMeRes, igDirectPermsRes] = await Promise.all([
-          fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/me?access_token=${META_PAGE_ACCESS_TOKEN}`),
-          fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/me/permissions?access_token=${META_PAGE_ACCESS_TOKEN}`),
-          fetch(`https://graph.instagram.com/me?fields=id,username,account_type&access_token=${META_PAGE_ACCESS_TOKEN}`),
-          fetch(`https://graph.instagram.com/me/permissions?access_token=${META_PAGE_ACCESS_TOKEN}`)
-        ]);
-
-        const meData = await meRes.json();
-        const permsData = await permsRes.json();
-        const igDirectMeData = await igDirectMeRes.json();
-        const igDirectPermsData = await igDirectPermsRes.json();
-
-        // Prüfe auch verknüpften Instagram Account
-        let igAccountData = null;
-        try {
-          const igRes = await fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/me?fields=instagram_business_account{id,username}&access_token=${META_PAGE_ACCESS_TOKEN}`);
-          igAccountData = await igRes.json();
-        } catch (e) {}
-
-        // Teste messages endpoint auf graph.instagram.com mit comment_id vs id
-        let igDirectMessagesTest = null;
-        let igDirectCommentReplyDMTest = null;
-        try {
-          const [idRes, commentRes] = await Promise.all([
-            fetch(`https://graph.instagram.com/${GRAPH_API_VERSION}/me/messages?access_token=${encodeURIComponent(META_PAGE_ACCESS_TOKEN)}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ recipient: { id: "123456789" }, message: { text: "test" } })
-            }),
-            fetch(`https://graph.instagram.com/${GRAPH_API_VERSION}/me/messages?access_token=${encodeURIComponent(META_PAGE_ACCESS_TOKEN)}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ recipient: { comment_id: "123456789" }, message: { text: "test" } })
-            })
-          ]);
-          igDirectMessagesTest = await idRes.json();
-          igDirectCommentReplyDMTest = await commentRes.json();
-        } catch (e: any) {
-          igDirectMessagesTest = { error: e.message };
+        // 1. Instagram Token Check
+        let igDirectMeData = null;
+        if (META_PAGE_ACCESS_TOKEN) {
+          try {
+            const igRes = await fetch(`https://graph.instagram.com/me?fields=id,username,account_type&access_token=${encodeURIComponent(META_PAGE_ACCESS_TOKEN)}`);
+            igDirectMeData = await igRes.json();
+          } catch (e: any) {
+            igDirectMeData = { error: e.message };
+          }
         }
 
-        // Teste debug_token
-        let debugTokenTest = null;
-        try {
-          const dtRes = await fetch(`https://graph.facebook.com/debug_token?input_token=${encodeURIComponent(META_PAGE_ACCESS_TOKEN)}&access_token=${encodeURIComponent(META_PAGE_ACCESS_TOKEN)}`);
-          debugTokenTest = await dtRes.json();
-        } catch (e: any) {
-          debugTokenTest = { error: e.message };
+        // 2. Facebook Token Check
+        let fbMeData = null;
+        if (FB_PAGE_ACCESS_TOKEN) {
+          try {
+            const fbRes = await fetch(`https://graph.facebook.com/${GRAPH_API_VERSION}/me?fields=id,name&access_token=${encodeURIComponent(FB_PAGE_ACCESS_TOKEN)}`);
+            fbMeData = await fbRes.json();
+          } catch (e: any) {
+            fbMeData = { error: e.message };
+          }
         }
 
         return new Response(JSON.stringify({
           status: 'ok',
-          token_info: {
-            length: (META_PAGE_ACCESS_TOKEN || '').length,
-            prefix: (META_PAGE_ACCESS_TOKEN || '').substring(0, 7),
-            suffix: (META_PAGE_ACCESS_TOKEN || '').slice(-4),
-            has_whitespace: /\s/.test(META_PAGE_ACCESS_TOKEN || ''),
-            starts_with_quote: (META_PAGE_ACCESS_TOKEN || '').startsWith('"') || (META_PAGE_ACCESS_TOKEN || '').startsWith("'"),
+          config: {
+            trigger_keyword: TRIGGER_KEYWORD,
+            register_url: REGISTER_URL,
+            has_instagram_token: !!META_PAGE_ACCESS_TOKEN,
+            has_facebook_token: !!FB_PAGE_ACCESS_TOKEN,
           },
-          facebook_graph_me: meData,
-          facebook_graph_permissions: permsData,
-          facebook_graph_ig_account: igAccountData,
-          instagram_graph_me: igDirectMeData,
-          instagram_messages_via_id: igDirectMessagesTest,
-          instagram_messages_via_comment_id: igDirectCommentReplyDMTest,
-          debug_token_test: debugTokenTest
+          instagram_token_info: {
+            prefix: (META_PAGE_ACCESS_TOKEN || '').substring(0, 7),
+            length: (META_PAGE_ACCESS_TOKEN || '').length,
+            account: igDirectMeData
+          },
+          facebook_token_info: {
+            prefix: (FB_PAGE_ACCESS_TOKEN || '').substring(0, 7),
+            length: (FB_PAGE_ACCESS_TOKEN || '').length,
+            account: fbMeData
+          }
         }, null, 2), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
@@ -220,7 +312,7 @@ serve(async (req) => {
       }
     }
 
-    // Meta Webhook Verifizierungs-Handshake
+    // Meta Webhook Verifizierungs-Handshake (für Instagram und Facebook)
     const mode = url.searchParams.get('hub.mode');
     const token = url.searchParams.get('hub.verify_token');
     const challenge = url.searchParams.get('hub.challenge');
@@ -236,60 +328,106 @@ serve(async (req) => {
     return new Response('Forbidden', { status: 403 });
   }
 
-  // =========================================================================
-  // 2. POST Request: Eingehende Events (z. B. Kommentare)
-  // =========================================================================
+  // -------------------------------------------------------------------------
+  // POST Request: Eingehende Events (Kommentare von Instagram oder Facebook)
+  // -------------------------------------------------------------------------
   if (req.method === 'POST') {
-    if (!META_PAGE_ACCESS_TOKEN) {
-      console.error('[Meta Webhook] META_PAGE_ACCESS_TOKEN fehlt in den Supabase Secrets!');
-      return new Response(JSON.stringify({ error: 'Server misconfiguration: Token missing' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
     try {
       const payload = await req.json();
       console.log('[Meta Webhook] POST Event empfangen:', JSON.stringify(payload));
 
-      // Prüfung auf Instagram-Event
-      if (payload.object === 'instagram') {
-        const entries = payload.entry || [];
+      const objectType = payload.object;
 
-        for (const entry of entries) {
-          const pageOrAccountId = entry.id;
-          const changes = entry.changes || [];
+      // =====================================================================
+      // FALL A: INSTAGRAM EVENT
+      // =====================================================================
+      if (objectType === 'instagram') {
+        if (!META_PAGE_ACCESS_TOKEN) {
+          console.error('[Meta Webhook] Kein Instagram Token (META_PAGE_ACCESS_TOKEN) konfiguriert!');
+        } else {
+          const entries = payload.entry || [];
+          for (const entry of entries) {
+            const pageOrAccountId = entry.id;
+            const changes = entry.changes || [];
 
-          for (const change of changes) {
-            if (change.field === 'comments') {
-              const value = change.value || {};
-              const commentId = value.id;
-              const text = (value.text || '').trim();
-              const fromUser = value.from || {};
-              const fromUserId = fromUser.id;
+            for (const change of changes) {
+              if (change.field === 'comments') {
+                const value = change.value || {};
+                const commentId = value.id;
+                const text = (value.text || '').trim();
+                const fromUser = value.from || {};
+                const fromUserId = fromUser.id;
 
-              console.log(`[Meta Webhook] Eingehender Kommentar ${commentId}: "${text}" von ID: ${fromUserId} (@${fromUser.username || 'unbekannt'})`);
+                console.log(`[Meta Webhook] [Instagram] Kommentar ${commentId}: "${text}" von ID: ${fromUserId} (@${fromUser.username || 'unbekannt'})`);
 
-              // Keyword-Filter: "ruhe" (case-insensitive)
-              const hasKeyword = /ruhe/i.test(text);
-
-              if (hasKeyword && commentId) {
-                console.log(`[Meta Webhook] Keyword 'ruhe' erkannt! Starte Aktionen...`);
-
-                const [commentResult, dmResult] = await Promise.all([
-                  replyToInstagramComment(commentId, META_PAGE_ACCESS_TOKEN, DEFAULT_COMMENT_REPLY),
-                  sendInstagramDM(pageOrAccountId, commentId, fromUserId, META_PAGE_ACCESS_TOKEN, DEFAULT_DM_TEXT)
-                ]);
-
-                console.log(`[Meta Webhook] Ergebnis: Kommentar-Reply=${commentResult.success}, DM=${dmResult.success}`);
-              } else {
-                console.log(`[Meta Webhook] Kommentar enthält nicht 'ruhe'. Ignoriert.`);
+                if (matchesKeyword(text) && commentId) {
+                  console.log(`[Meta Webhook] [Instagram] Keyword-Treffer! Sende Reply & DM...`);
+                  const [commentResult, dmResult] = await Promise.all([
+                    replyToInstagramComment(commentId, META_PAGE_ACCESS_TOKEN, DEFAULT_COMMENT_REPLY),
+                    sendInstagramDM(pageOrAccountId, commentId, fromUserId, META_PAGE_ACCESS_TOKEN, DEFAULT_DM_TEXT)
+                  ]);
+                  console.log(`[Meta Webhook] [Instagram] Ergebnis: Reply=${commentResult.success}, DM=${dmResult.success}`);
+                } else {
+                  console.log(`[Meta Webhook] [Instagram] Kommentar ignoriert (kein Keyword-Treffer).`);
+                }
               }
             }
           }
         }
       }
 
+      // =====================================================================
+      // FALL B: FACEBOOK EVENT (Facebook-Seite)
+      // =====================================================================
+      else if (objectType === 'page') {
+        const tokenToUse = FB_PAGE_ACCESS_TOKEN || META_PAGE_ACCESS_TOKEN;
+        if (!tokenToUse) {
+          console.error('[Meta Webhook] Kein Facebook Token (FB_PAGE_ACCESS_TOKEN) konfiguriert!');
+        } else {
+          const entries = payload.entry || [];
+          for (const entry of entries) {
+            const pageId = entry.id;
+            const changes = entry.changes || [];
+
+            for (const change of changes) {
+              // Bei Facebook-Seiten ist das Feld 'feed'
+              if (change.field === 'feed') {
+                const value = change.value || {};
+                const isComment = value.item === 'comment';
+                const isAdd = !value.verb || value.verb === 'add';
+
+                if (isComment && isAdd) {
+                  const commentId = value.comment_id || value.id;
+                  const text = (value.message || '').trim();
+                  const senderId = value.sender_id || value.from?.id;
+                  const senderName = value.sender_name || value.from?.name || 'unbekannt';
+
+                  console.log(`[Meta Webhook] [Facebook] Kommentar ${commentId}: "${text}" von ID: ${senderId} (${senderName})`);
+
+                  // Eigene Kommentare der Seite ignorieren, um Schleifen zu vermeiden
+                  if (senderId && senderId === pageId) {
+                    console.log(`[Meta Webhook] [Facebook] Eigener Seiten-Kommentar ignoriert.`);
+                    continue;
+                  }
+
+                  if (matchesKeyword(text) && commentId) {
+                    console.log(`[Meta Webhook] [Facebook] Keyword-Treffer! Sende Reply & Messenger DM...`);
+                    const [commentResult, dmResult] = await Promise.all([
+                      replyToFacebookComment(commentId, tokenToUse, DEFAULT_COMMENT_REPLY),
+                      sendFacebookDM(pageId, commentId, senderId, tokenToUse, DEFAULT_DM_TEXT)
+                    ]);
+                    console.log(`[Meta Webhook] [Facebook] Ergebnis: Reply=${commentResult.success}, DM=${dmResult.success}`);
+                  } else {
+                    console.log(`[Meta Webhook] [Facebook] Kommentar ignoriert (kein Keyword-Treffer).`);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Meta erwartet immer einen 200 OK Response
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
