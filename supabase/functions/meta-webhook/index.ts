@@ -289,6 +289,7 @@ serve(async (req) => {
             register_url: REGISTER_URL,
             has_instagram_token: !!META_PAGE_ACCESS_TOKEN,
             has_facebook_token: !!FB_PAGE_ACCESS_TOKEN,
+            has_verify_token: !!META_VERIFY_TOKEN,
           },
           instagram_token_info: {
             prefix: (META_PAGE_ACCESS_TOKEN || '').substring(0, 7),
