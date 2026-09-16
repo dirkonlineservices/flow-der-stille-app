@@ -120,6 +120,22 @@ export function AudiobookPlayerModal({
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
 
+  // Sicheres Speichern des Fortschritts mit Produkt-Alias Unterstützung
+  const saveProgress = (time: number) => {
+    if (!time || isNaN(time) || time < 5) return;
+    try {
+      const val = time.toString();
+      localStorage.setItem(PROGRESS_KEY, val);
+      if (productId.startsWith('fds_')) {
+        localStorage.setItem(`fds_audiobook_progress_${productId.replace('fds_', '')}`, val);
+      } else {
+        localStorage.setItem(`fds_audiobook_progress_fds_${productId}`, val);
+      }
+    } catch (e) {
+      console.warn('Could not save audiobook progress:', e);
+    }
+  };
+
   // 1. Audio-URL auflösen (Sandbox Cache oder Direkt-URL) & Startposition
   useEffect(() => {
     if (!isOpen || !audioUrl) return;
@@ -137,11 +153,17 @@ export function AudiobookPlayerModal({
 
     const isDisclaimerListened = localStorage.getItem(DISCLAIMER_KEY) === 'true';
 
-    // Falls initialStartTime mitgegeben wurde und Disclaimer schon gehört: direkt anspringen
-    if (initialStartTime && initialStartTime > 0 && isDisclaimerListened) {
+    // Falls initialStartTime explizit mitgegeben wurde (z.B. Klick auf ein Kapitel) und Disclaimer gehört
+    if (typeof initialStartTime === 'number' && initialStartTime > 0 && isDisclaimerListened) {
       setCurrentTime(initialStartTime);
       if (audioRef.current) {
         audioRef.current.currentTime = initialStartTime;
+      }
+      for (let i = chapters.length - 1; i >= 0; i--) {
+        if (initialStartTime >= chapters[i].startTime) {
+          setActiveChapterId(chapters[i].id);
+          break;
+        }
       }
     } else {
       // Wenn der Disclaimer noch nicht gehört wurde: ZWINGEND bei 00:00 starten!
@@ -150,13 +172,27 @@ export function AudiobookPlayerModal({
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
         }
+        setActiveChapterId(chapters[0]?.id || 'intro');
       } else {
-        // Gespeicherte Hörposition NUR anbieten, wenn Disclaimer schon gehört wurde
-        const saved = localStorage.getItem(PROGRESS_KEY);
+        // Gespeicherte Hörposition AUTOMATISCH übernehmen & fortsetzen!
+        const saved = localStorage.getItem(PROGRESS_KEY) ||
+                      (productId.startsWith('fds_')
+                        ? localStorage.getItem(`fds_audiobook_progress_${productId.replace('fds_', '')}`)
+                        : localStorage.getItem(`fds_audiobook_progress_fds_${productId}`));
         if (saved) {
           const pos = parseFloat(saved);
-          if (!isNaN(pos) && pos > 10 && pos < durationSeconds - 30) {
+          if (!isNaN(pos) && pos > 5 && pos < durationSeconds - 15) {
             setSavedPosition(pos);
+            setCurrentTime(pos);
+            if (audioRef.current) {
+              audioRef.current.currentTime = pos;
+            }
+            for (let i = chapters.length - 1; i >= 0; i--) {
+              if (pos >= chapters[i].startTime) {
+                setActiveChapterId(chapters[i].id);
+                break;
+              }
+            }
             setShowResumeBanner(true);
           }
         }
@@ -167,6 +203,22 @@ export function AudiobookPlayerModal({
       isMounted = false;
     };
   }, [isOpen, productId, audioUrl, initialStartTime]);
+
+  // Automatisches Speichern bei Verlassen der Seite / App-Schließen
+  useEffect(() => {
+    const handleUnload = () => {
+      if (audioRef.current && audioRef.current.currentTime > 5) {
+        saveProgress(audioRef.current.currentTime);
+      }
+    };
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+    return () => {
+      handleUnload();
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+    };
+  }, [productId]);
 
   // 2. MediaSession API (Hintergrund-Wiedergabe, Sperrbildschirm & Einschlaf-Kompatibilität)
   useEffect(() => {
@@ -262,15 +314,23 @@ export function AudiobookPlayerModal({
         });
       }
 
-      // Fortschritt alle 3 Sekunden in localStorage sichern
-      if (Math.floor(cur) % 3 === 0 && cur > 5) {
-        localStorage.setItem(PROGRESS_KEY, cur.toString());
+      // Fortschritt alle 2 Sekunden sichern
+      if (cur > 5 && Math.floor(cur) % 2 === 0) {
+        saveProgress(cur);
       }
     };
 
     const handleLoadedMetadata = () => {
       if (audio.duration && !isNaN(audio.duration)) {
         setDuration(audio.duration);
+      }
+      // Falls der Browser currentTime beim Laden auf 0 zurücksetzt, gespeicherte Position garantieren:
+      const targetPos = (typeof initialStartTime === 'number' && initialStartTime > 0)
+        ? initialStartTime
+        : savedPosition;
+      if (targetPos && targetPos > 5 && isDisclaimerListened && audio.currentTime < 1) {
+        audio.currentTime = targetPos;
+        setCurrentTime(targetPos);
       }
     };
 
@@ -283,6 +343,7 @@ export function AudiobookPlayerModal({
 
     const handlePauseEvent = () => {
       setIsPlaying(false);
+      saveProgress(audio.currentTime);
       if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'paused';
       }
@@ -291,7 +352,16 @@ export function AudiobookPlayerModal({
     // Ende des Hörbuchs: Garantierter Einmal-Durchlauf (kein Endlos-Loop)
     const handleEnded = () => {
       setIsPlaying(false);
-      localStorage.removeItem(PROGRESS_KEY);
+      try {
+        localStorage.removeItem(PROGRESS_KEY);
+        if (productId.startsWith('fds_')) {
+          localStorage.removeItem(`fds_audiobook_progress_${productId.replace('fds_', '')}`);
+        } else {
+          localStorage.removeItem(`fds_audiobook_progress_fds_${productId}`);
+        }
+      } catch {}
+      setSavedPosition(null);
+      setShowResumeBanner(false);
 
       if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'none';
@@ -446,6 +516,13 @@ export function AudiobookPlayerModal({
     return `${mStr}:${sStr}`;
   };
 
+  const handleClose = () => {
+    if (audioRef.current && audioRef.current.currentTime > 5) {
+      saveProgress(audioRef.current.currentTime);
+    }
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -455,7 +532,7 @@ export function AudiobookPlayerModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[220] flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
-        onClick={onClose}
+        onClick={handleClose}
       >
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
@@ -486,7 +563,7 @@ export function AudiobookPlayerModal({
             </div>
 
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition-colors cursor-pointer"
               aria-label="Player schließen"
             >
@@ -499,21 +576,29 @@ export function AudiobookPlayerModal({
 
             {/* Resume Banner */}
             {showResumeBanner && savedPosition && (
-              <div className="p-3.5 rounded-2xl bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex items-center justify-between gap-3 text-xs animate-fade-in">
-                <div className="flex items-center gap-2 text-[var(--text-main)]">
+              <div className="p-3.5 rounded-2xl bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs animate-fade-in shadow-xs">
+                <div className="flex items-center gap-2 text-[var(--text-main)] font-medium">
                   <Bookmark size={16} className="text-[var(--accent)] shrink-0" />
-                  <span>Letzte Position bei <strong>{formatTime(savedPosition)}</strong> fortsetzen?</span>
+                  <span>Automatisch an letzter Position bei <strong>{formatTime(savedPosition)}</strong> fortgesetzt</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-end sm:self-auto">
                   <button
-                    onClick={handleResumePosition}
-                    className="px-3 py-1.5 rounded-xl bg-[var(--accent)] text-white font-semibold text-xs hover:bg-[var(--accent-hover)] transition cursor-pointer"
+                    onClick={() => {
+                      if (audioRef.current) {
+                        audioRef.current.currentTime = 0;
+                        setCurrentTime(0);
+                        setActiveChapterId(chapters[0]?.id || 'intro');
+                      }
+                      setShowResumeBanner(false);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] font-semibold text-xs hover:bg-[var(--bg-alt)] transition cursor-pointer"
                   >
-                    Fortsetzen
+                    Von Beginn an hören (00:00)
                   </button>
                   <button
                     onClick={() => setShowResumeBanner(false)}
-                    className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
+                    className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] transition cursor-pointer"
+                    title="Hinweis schließen"
                   >
                     <X size={14} />
                   </button>
@@ -583,14 +668,14 @@ export function AudiobookPlayerModal({
               </div>
 
               <div className="flex items-center justify-between text-xs font-mono font-medium text-[var(--text-muted)]">
-                <span>{formatTime(currentTime)}</span>
+                <span className="text-stone-950 dark:text-stone-100 font-bold">{formatTime(currentTime)}</span>
                 {!hasListenedDisclaimer ? (
-                  <span className="text-stone-800 dark:text-amber-200 font-sans text-[11px] font-bold flex items-center gap-1.5">
-                    <Lock size={12} className="text-amber-800 dark:text-amber-400" />
-                    <span>Rechtlicher Hinweis läuft (Spulen gesperrt bis {formatTime(DISCLAIMER_DURATION)})</span>
+                  <span className="text-stone-950 dark:text-amber-50 font-sans text-xs font-bold flex items-center gap-1.5 bg-amber-100 dark:bg-amber-900/60 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700 shadow-2xs">
+                    <Lock size={12} className="text-amber-900 dark:text-amber-300" />
+                    <span>Rechtlicher Hinweis aktiv (Spulen gesperrt bis {formatTime(DISCLAIMER_DURATION)})</span>
                   </span>
                 ) : (
-                  <span className="text-[var(--accent)] font-semibold">
+                  <span className="text-[var(--accent)] font-semibold font-mono">
                     -{formatTime(Math.max(0, duration - currentTime))}
                   </span>
                 )}
@@ -598,11 +683,18 @@ export function AudiobookPlayerModal({
 
               {/* Einmaliger rechtlicher Hinweis – kontrastreich & gut lesbar */}
               {!hasListenedDisclaimer && (
-                <div className="text-xs text-stone-900 dark:text-amber-100 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 rounded-xl px-3.5 py-2 flex items-center gap-2.5">
-                  <Lock size={14} className="shrink-0 text-amber-800 dark:text-amber-400" />
-                  <span className="leading-snug text-stone-800 dark:text-amber-100 font-medium">
-                    <strong className="text-stone-950 dark:text-amber-50 font-bold">Rechtlicher Hinweis:</strong> Bitte lausche der Einleitung einmalig bis {formatTime(DISCLAIMER_DURATION)} Min. Danach werden alle Kapitel und das Vor- &amp; Zurückspulen für dich freigeschaltet.
-                  </span>
+                <div className="text-xs bg-amber-50 dark:bg-amber-950/50 border-2 border-amber-300 dark:border-amber-700/70 rounded-2xl p-4 flex items-start gap-3 shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-amber-200/80 dark:bg-amber-900/70 flex items-center justify-center shrink-0 text-amber-950 dark:text-amber-200 mt-0.5 shadow-2xs">
+                    <Lock size={15} />
+                  </div>
+                  <div className="space-y-1">
+                    <strong className="text-stone-950 dark:text-white font-bold block text-xs sm:text-sm">
+                      Rechtlicher Hinweis erforderlich
+                    </strong>
+                    <span className="text-xs text-stone-800 dark:text-amber-100 font-medium block leading-relaxed">
+                      Bitte lausche der Einleitung einmalig bis {formatTime(DISCLAIMER_DURATION)} Min. Danach werden alle Kapitel und das freie Vor- &amp; Zurückspulen automatisch für dich freigeschaltet.
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
@@ -695,11 +787,11 @@ export function AudiobookPlayerModal({
             {/* Kapitel-Navigation (Kapitel-Schnellfinder) */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-[var(--text-main)] uppercase tracking-wider flex items-center gap-1.5">
                   <ListMusic size={15} className="text-[var(--accent)]" />
                   <span>Kapitel-Navigation ({chapters.length} Abschnitte)</span>
                 </h4>
-                <span className="text-[11px] text-[var(--text-muted)]">Klick zum Vor- &amp; Zurückspringen</span>
+                <span className="text-[11px] text-[var(--text-muted)] font-medium">Klick zum Vor- &amp; Zurückspringen</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -713,31 +805,40 @@ export function AudiobookPlayerModal({
                       onClick={() => jumpToChapter(ch)}
                       className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
                         isActive
-                          ? 'bg-[var(--accent)]/15 border-[var(--accent)] text-[var(--text-main)] shadow-xs cursor-pointer'
+                          ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)] text-[var(--text-main)] shadow-sm cursor-pointer'
                           : isLocked
-                          ? 'bg-[var(--bg-alt)]/50 border-[var(--border)] text-[var(--text-muted)] opacity-75 cursor-not-allowed hover:border-amber-400/50'
+                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] opacity-85 cursor-not-allowed hover:border-amber-400/50'
                           : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40 cursor-pointer'
                       }`}
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="font-semibold text-xs block truncate">
+                        <span className={`font-semibold text-xs block truncate ${isActive ? 'text-[var(--text-main)] font-bold' : ''}`}>
                           {ch.title}
                         </span>
-                        <span className="text-[11px] font-mono opacity-80 mt-0.5 block">
+                        <span className="text-[11px] font-mono text-[var(--text-muted)] mt-0.5 block">
                           Startet ab {ch.formattedTime} {ch.duration ? `• Dauer: ${ch.duration}` : ''}
                         </span>
                       </div>
 
                       {isLocked ? (
-                        <span className="px-2 py-1 rounded-lg text-[10px] font-bold font-mono bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center gap-1">
-                          <Lock size={10} />
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono bg-amber-100 dark:bg-amber-900/60 text-stone-950 dark:text-amber-100 border border-amber-300 dark:border-amber-700/60 flex items-center gap-1 shadow-2xs shrink-0">
+                          <Lock size={10} className="text-amber-900 dark:text-amber-300" />
                           <span>Gesperrt</span>
                         </span>
                       ) : (
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-bold font-mono ${
-                          isActive ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-card)] border border-[var(--border)]'
+                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono shrink-0 transition-all ${
+                          isActive
+                            ? 'bg-[var(--accent)] text-white shadow-xs flex items-center gap-1.5'
+                            : 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)]'
                         }`}>
-                          {ch.formattedTime}
+                          {isActive ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                              <span>{formatTime(currentTime)}</span>
+                            </>
+                          ) : (
+                            ch.formattedTime
+                          )}
                         </span>
                       )}
                     </button>
@@ -750,7 +851,7 @@ export function AudiobookPlayerModal({
 
           {/* Footer */}
           <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-alt)]/50 text-center">
-            <p className="text-[11px] text-[var(--text-muted)]">
+            <p className="text-xs text-stone-700 dark:text-stone-300 font-medium">
               🔒 Geschützt im internen App-Speicher hinterlegt • Keine freie MP3-Datei im Dateisystem
             </p>
           </div>

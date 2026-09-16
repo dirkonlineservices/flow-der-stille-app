@@ -173,6 +173,28 @@ export default function AudiobookPage() {
   });
   const [initialChapterTime, setInitialChapterTime] = useState<number>(0);
   const [showDisclaimerRequiredModal, setShowDisclaimerRequiredModal] = useState<boolean>(false);
+  const [savedProgressTime, setSavedProgressTime] = useState<number | null>(null);
+
+  // Gespeicherten Hörfortschritt für dieses Buch auslesen
+  useEffect(() => {
+    try {
+      const activeId = productData?.id || productId || '';
+      const raw = localStorage.getItem(`fds_audiobook_progress_${activeId}`) ||
+                  (activeId.startsWith('fds_') 
+                    ? localStorage.getItem(`fds_audiobook_progress_${activeId.replace('fds_', '')}`) 
+                    : localStorage.getItem(`fds_audiobook_progress_fds_${activeId}`));
+      if (raw) {
+        const val = parseFloat(raw);
+        if (!isNaN(val) && val > 5) {
+          setSavedProgressTime(val);
+        } else {
+          setSavedProgressTime(null);
+        }
+      } else {
+        setSavedProgressTime(null);
+      }
+    } catch {}
+  }, [productData, productId, isPlayerOpen]);
 
   // 90 Sekunden Hörprobe (ab 1:19 Min. = 79 Sek.)
   const SNIPPET_START_TIME = 79;
@@ -433,7 +455,7 @@ export default function AudiobookPage() {
                   <button
                     onClick={() => {
                       if (!audioUrl) return;
-                      setInitialChapterTime(0);
+                      setInitialChapterTime(hasListenedDisclaimer && savedProgressTime ? savedProgressTime : 0);
                       setIsPlayerOpen(true);
                     }}
                     disabled={!audioUrl}
@@ -444,12 +466,16 @@ export default function AudiobookPage() {
                       <span>
                         {!hasListenedDisclaimer 
                           ? 'Hörbuch starten (mit rechtlichem Hinweis)' 
+                          : savedProgressTime
+                          ? `Hörbuch fortsetzen (bei ${formatTime(savedProgressTime)})`
                           : 'Vollständiges Hörbuch abspielen'}
                       </span>
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
                       {!hasListenedDisclaimer
                         ? `${isMenschSein ? '1:08' : '1:19'} Min. Hinweis anhören, danach freies Kapitel-Hüpfen`
+                        : savedProgressTime
+                        ? `Ab Minute ${formatTime(savedProgressTime)} weiterhören • Position gespeichert`
                         : `${isMenschSein ? '58:39' : '58:43'} Min. • Alle Kapitel & freies Spulen aktiv`}
                     </span>
                   </button>
@@ -756,6 +782,17 @@ export default function AudiobookPage() {
             setIsPlayerOpen(false);
             try {
               setHasListenedDisclaimer(localStorage.getItem(DISCLAIMER_KEY) === 'true');
+              const activeId = productData?.id || productId || '';
+              const raw = localStorage.getItem(`fds_audiobook_progress_${activeId}`) ||
+                          (activeId.startsWith('fds_') 
+                            ? localStorage.getItem(`fds_audiobook_progress_${activeId.replace('fds_', '')}`) 
+                            : localStorage.getItem(`fds_audiobook_progress_fds_${activeId}`));
+              if (raw) {
+                const val = parseFloat(raw);
+                if (!isNaN(val) && val > 5) {
+                  setSavedProgressTime(val);
+                }
+              }
             } catch {}
           }}
           productId={productData?.id || productId}
