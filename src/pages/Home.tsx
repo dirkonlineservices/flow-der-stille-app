@@ -14,6 +14,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { getOfflineHoerproben } from '../lib/offlineProductsService';
 import { HomeAdminLanding } from '../components/HomeAdminLanding';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 const dailyWisdoms = [
   { title: "Tägliche Weisheit", text: "\"Das Nervensystem kennt keinen Unterschied zwischen einem echten Tiger und einem Gedanken-Tiger. Behandle deine Gedanken mit Freundlichkeit.\"" },
@@ -160,20 +161,11 @@ export default function Home() {
       }
       return;
     }
-    const supabase = getSupabase();
-    supabase
-      .from('profiles')
-      .select('rolle')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(
-        ({ data }) => {
-          if (data?.rolle?.toLowerCase() === 'admin') {
-            setIsAdmin(true);
-          }
-        },
-        () => {}
-      );
+    checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+      if (adminStatus) {
+        setIsAdmin(true);
+      }
+    });
   }, [user]);
 
   // Startseite (Öffentliche Landing Page)

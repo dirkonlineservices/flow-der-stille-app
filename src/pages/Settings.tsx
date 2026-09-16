@@ -19,6 +19,7 @@ import { getStorageUsageSummary } from '../lib/offlineAudioService';
 import { OfflineStorageModal } from '../components/OfflineStorageModal';
 import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import { GamificationRadar } from '../components/GamificationRadar';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -111,21 +112,13 @@ export default function Settings() {
       setLastName(user.last_name || '');
       setNewsletter(!!user.newsletter_optin);
       
-      // Check admin role from public.profiles
-      const supabase = getSupabase();
-      supabase
-        .from('profiles')
-        .select('rolle')
-        .eq('id', user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data?.rolle?.toLowerCase() === 'admin') {
-            setIsAdminUser(true);
-            loadAdminStats();
-          } else {
-            setIsAdminUser(false);
-          }
-        });
+      // Check admin role
+      checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+        setIsAdminUser(adminStatus);
+        if (adminStatus) {
+          loadAdminStats();
+        }
+      });
 
       // Fetch purchases
       fetchPurchases();

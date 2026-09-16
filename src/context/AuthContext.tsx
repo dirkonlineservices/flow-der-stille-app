@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { syncConsentAfterLogin } from '../lib/consentManager';
+import { isKnownAdminEmail } from '../lib/adminSecurity';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
@@ -203,6 +204,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    const isAdminUser = isKnownAdminEmail(supabaseUser.email);
+
     const mappedUser: User = {
       id: supabaseUser.id,
       email: supabaseUser.email,
@@ -210,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       last_name: lastName,
       // Nutze den Vornamen, falls vorhanden, sonst den Teil der E-Mail vor dem @
       username: firstName || supabaseUser.email?.split('@')[0] || 'Traveler',
-      is_premium: !!metadata.is_premium, 
+      is_premium: isAdminUser || !!metadata.is_premium, 
       newsletter_optin: !!metadata.newsletter_optin,
       purchased_products: metadata.purchased_products || [],
       completed_tasks: metadata.completed_tasks || [],
@@ -244,12 +247,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             clientVersion = 'Web v5.3.0';
           }
 
+          const profileUpdates: any = { 
+            updated_at: lastLoginTime,
+            premium_type: clientVersion
+          };
+
+          // Self-Healing: Wenn Admin-E-Mail (z.B. dirk.schmetzer@googlemail.com), Rolle & Premium in DB absichern
+          if (isAdminUser) {
+            profileUpdates.rolle = 'admin';
+            profileUpdates.is_premium = true;
+          }
+
           await supabase
             .from('profiles')
-            .update({ 
-              updated_at: lastLoginTime,
-              premium_type: clientVersion
-            })
+            .update(profileUpdates)
             .eq('id', supabaseUser.id);
         } catch (e) {}
       })();

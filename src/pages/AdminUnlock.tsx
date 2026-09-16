@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { AdminSecurityLock } from '../components/AdminSecurityLock';
-import { isAdminSessionVerified, lockAdminSession } from '../lib/adminSecurity';
+import { isAdminSessionVerified, lockAdminSession, checkUserIsAdmin } from '../lib/adminSecurity';
 import { GamificationRadar } from '../components/GamificationRadar';
 
 interface UserProfile {
@@ -125,26 +125,19 @@ export default function AdminUnlock() {
       const supabase = getSupabase();
       const { data: { session } } = await supabase.auth.getSession();
       const currentUserId = session?.user?.id || user?.id;
+      const currentUserEmail = session?.user?.email || user?.email;
 
-      if (!currentUserId) {
+      if (!currentUserId && !currentUserEmail) {
         setIsAdmin(false);
         setAuthChecking(false);
         return;
       }
 
-      // Tabelle "profiles" nach der Spalte "rolle" abfragen
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('rolle')
-        .eq('id', currentUserId)
-        .maybeSingle();
+      const adminOk = await checkUserIsAdmin(currentUserId, currentUserEmail);
 
-      if (profileError) {
-        console.error('Fehler bei der Rollenabfrage:', profileError);
-        setIsAdmin(false);
-      } else if (profileData && profileData.rolle?.toLowerCase() === 'admin') {
+      if (adminOk) {
         setIsAdmin(true);
-        setAdminRole(profileData.rolle);
+        setAdminRole('admin');
         if (isAdminSessionVerified()) {
           setIsSessionUnlocked(true);
         }

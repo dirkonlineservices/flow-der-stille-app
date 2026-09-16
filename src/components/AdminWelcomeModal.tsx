@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, Sparkles, X, ArrowRight, Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 export function AdminWelcomeModal() {
   const { user } = useAuth();
@@ -33,22 +34,18 @@ export function AdminWelcomeModal() {
     }
 
     // Rolle prüfen
-    const supabase = getSupabase();
-    supabase
-      .from('profiles')
-      .select('rolle')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.rolle?.toLowerCase() === 'admin') {
-          setIsAdmin(true);
-          // Sanfter Timer für ein angenehmes Nutzererlebnis
-          const timer = setTimeout(() => {
-            setIsOpen(true);
-          }, 800);
-          return () => clearTimeout(timer);
-        }
-      }, () => setIsAdmin(false));
+    checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+      if (adminStatus) {
+        setIsAdmin(true);
+        // Sanfter Timer für ein angenehmes Nutzererlebnis
+        const timer = setTimeout(() => {
+          setIsOpen(true);
+        }, 800);
+        return () => clearTimeout(timer);
+      } else {
+        setIsAdmin(false);
+      }
+    });
   }, [user, location.pathname]);
 
   const handleDismiss = () => {

@@ -19,6 +19,7 @@ import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
 import { NamePromptModal } from './NamePromptModal';
 import { AdminWelcomeModal } from './AdminWelcomeModal';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -61,22 +62,9 @@ export default function Layout() {
       setIsAdmin(false);
       return;
     }
-    const supabase = getSupabase();
-    supabase
-      .from('profiles')
-      .select('rolle')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(
-        ({ data }) => {
-          if (data?.rolle?.toLowerCase() === 'admin') {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false);
-          }
-        },
-        () => setIsAdmin(false)
-      );
+    checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+      setIsAdmin(adminStatus);
+    });
   }, [user]);
 
   // Dynamisch prüfen ob Hörproben existieren (offline sofort aktiv)

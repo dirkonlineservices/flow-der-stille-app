@@ -1,3 +1,5 @@
+import { getSupabase } from './supabaseClient';
+
 /**
  * adminSecurity.ts – Sicherheits- & Verifizierungs-Engine für den Admin-Bereich
  * Unterstützt Biometrie (Fingerabdruck / Face ID via WebAuthn) & 6-stellige Admin-PIN.
@@ -6,6 +8,126 @@
 // Gehashte Admin-Master-PINs für das Team (Dirk, Jacqueline, Lisa)
 // Standard-Master-PIN: 741852 (kann im Adminbereich jederzeit geändert werden)
 const DEFAULT_ADMIN_PIN = '741852';
+
+/**
+ * Feste Liste der autorisierten Team-Admin-Adressen.
+ * Berücksichtigt automatisch @gmail.com <-> @googlemail.com Aliase.
+ */
+export const KNOWN_ADMIN_EMAILS = [
+  'dirk.schmetzer@gmail.com',
+  'dirk.schmetzer@googlemail.com',
+  'jacquelineschmetzer@web.de',
+  'jacquelineschmetzer@gmail.com',
+  'freiheit164@gmail.com',
+  'freiheit164@googlemail.com'
+];
+
+/**
+ * Wandelt @gmail.com in @googlemail.com um und umgekehrt
+ */
+export const getAliasEmail = (email?: string | null): string | null => {
+  if (!email) return null;
+  const clean = email.toLowerCase().trim();
+  if (clean.endsWith('@gmail.com')) {
+    return clean.replace('@gmail.com', '@googlemail.com');
+  }
+  if (clean.endsWith('@googlemail.com')) {
+    return clean.replace('@googlemail.com', '@gmail.com');
+  }
+  return null;
+};
+
+/**
+ * Prüft ob eine E-Mail zu den bekannten Admin-Adressen gehört (inkl. Google-Alias)
+ */
+export const isKnownAdminEmail = (email?: string | null): boolean => {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  const alias = getAliasEmail(clean);
+  return KNOWN_ADMIN_EMAILS.some(adm => {
+    const admClean = adm.toLowerCase().trim();
+    return admClean === clean || (alias && admClean === alias);
+  });
+};
+
+/**
+ * Universelle Admin-Prüfung für Benutzer:
+ * 1. Prüft ob E-Mail eine bekannte Admin-E-Mail ist (z.B. dirk.schmetzer@googlemail.com)
+ * 2. Prüft die Spalte 'rolle' in Supabase 'profiles'
+ * 3. Prüft die 'rolle' einer möglichen Alias-Adresse (@gmail.com <-> @googlemail.com)
+ * 4. Führt automatisches Self-Healing durch (setzt rolle='admin', is_premium=true in Supabase)
+ */
+export async function checkUserIsAdmin(userId?: string | null, userEmail?: string | null): Promise<boolean> {
+  // 1. Sofortige Erkennung über Admin-E-Mail (inkl. @googlemail.com <-> @gmail.com)
+  if (isKnownAdminEmail(userEmail)) {
+    if (userId) {
+      try {
+        const supabase = getSupabase();
+        // Self-Healing im Hintergrund: Rolle in profiles sicherstellen
+        supabase
+          .from('profiles')
+          .update({ rolle: 'admin', is_premium: true })
+          .eq('id', userId)
+          .then(() => {});
+      } catch {}
+    }
+    return true;
+  }
+
+  if (!userId) return false;
+
+  try {
+    const supabase = getSupabase();
+    // 2. Abfrage der profiles Tabelle für den aktuellen User
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('rolle, email')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (profile?.rolle?.toLowerCase() === 'admin') {
+      return true;
+    }
+
+    if (isKnownAdminEmail(profile?.email)) {
+      try {
+        supabase
+          .from('profiles')
+          .update({ rolle: 'admin', is_premium: true })
+          .eq('id', userId)
+          .then(() => {});
+      } catch {}
+      return true;
+    }
+
+    // 3. Falls User eine Alias-Email hat (z.B. @googlemail.com statt @gmail.com)
+    const emailToCheck = userEmail || profile?.email;
+    const alias = getAliasEmail(emailToCheck);
+    if (alias) {
+      const { data: aliasProfile } = await supabase
+        .from('profiles')
+        .select('rolle')
+        .eq('email', alias)
+        .maybeSingle();
+
+      if (aliasProfile?.rolle?.toLowerCase() === 'admin') {
+        try {
+          supabase
+            .from('profiles')
+            .update({ rolle: 'admin', is_premium: true })
+            .eq('id', userId)
+            .then(() => {});
+        } catch {}
+        return true;
+      }
+    }
+
+    return false;
+  } catch (err) {
+    console.warn('[AdminSecurity] Fehler bei Admin-Prüfung:', err);
+    return isKnownAdminEmail(userEmail);
+  }
+}
 
 export const isAdminSessionVerified = (): boolean => {
   if (typeof window === 'undefined') return false;
