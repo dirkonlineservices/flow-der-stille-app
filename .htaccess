@@ -1,7 +1,50 @@
+# =============================================================================
+# FLOW DER STILLE – .htaccess Sicherheits-Härtung
+# Hostinger Apache-Konfiguration
+# =============================================================================
+
+# -----------------------------------------------------------
+# 1. HTTPS ERZWINGEN (HTTP → HTTPS Redirect)
+# -----------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# -----------------------------------------------------------
+# 2. VERZEICHNIS-LISTING DEAKTIVIEREN
+# -----------------------------------------------------------
+Options -Indexes
+
+# -----------------------------------------------------------
+# 3. ZUGRIFF AUF SENSIBLE DATEIEN & PFADE SPERREN
+# -----------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # .git-Verzeichnisse und alle darin enthaltenen Dateien
+  RedirectMatch 404 /\.git
+  # .env, .env.example, .config Dateien
+  RedirectMatch 404 /\.env
+  RedirectMatch 404 /\.env\..*
+  # Konfigurationsdateien die nicht im public root sein sollten
+  RedirectMatch 404 /tsconfig\.json$
+  RedirectMatch 404 /vite\.config\.(ts|js)$
+  RedirectMatch 404 /package(-lock)?\.json$
+</IfModule>
+
+# Direktzugriff auf .htaccess selbst verbieten
+<Files ".htaccess">
+  Require all denied
+</Files>
+
+# -----------------------------------------------------------
+# 4. CACHE-STEUERUNG (Bestehende Regeln – unverändert)
+# -----------------------------------------------------------
 <IfModule mod_expires.c>
   ExpiresActive On
 
-  # 1. Bilder & Fonts (Ändern sich selten -> 1 Jahr Cache)
+  # Bilder & Fonts (ändern sich selten → 1 Jahr Cache)
   ExpiresByType image/jpg "access plus 1 year"
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/gif "access plus 1 year"
@@ -10,21 +53,55 @@
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType font/woff2 "access plus 1 year"
 
-  # 2. CSS & JavaScript (Vite nutzt Hashes -> 1 Monat Cache)
+  # CSS & JavaScript (Vite nutzt Hashes → 1 Monat Cache)
   ExpiresByType text/css "access plus 1 month"
   ExpiresByType application/javascript "access plus 1 month"
 
-  # 3. HTML / React Einstiegspunkt (NIEMALS cachen, sonst sehen Nutzer keine Updates!)
+  # HTML / React Einstiegspunkt (NIEMALS cachen!)
   ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
-# Fallback für moderne Browser (Cache-Control Header erzwingen)
+# -----------------------------------------------------------
+# 5. SICHERHEITS-HEADER SUITE
+# -----------------------------------------------------------
 <IfModule mod_headers.c>
+  # Cache-Control für Assets
   <FilesMatch "\.(css|js|woff2|png|jpg|jpeg|gif|svg|webp)$">
     Header set Cache-Control "public, max-age=2592000, immutable"
   </FilesMatch>
-  
-  # Sicherheits-Header (Bonus für SEO & Trust)
-  Header set X-Content-Type-Options "nosniff"
-  Header set X-Frame-Options "SAMEORIGIN"
+
+  # --- Sicherheits-Header ---
+
+  # Verhindert MIME-Type-Sniffing (Pflicht)
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Verhindert Einbetten der Seite in fremde iFrames (Clickjacking-Schutz)
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # XSS-Filter für ältere Browser (IE/Edge Legacy)
+  Header always set X-XSS-Protection "1; mode=block"
+
+  # Referrer-Datenschutz: Kein Pfad an externe Seiten weitergeben
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Browser-APIs einschränken: keine Kamera, kein Mikro, keine Geolocation
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+  # HSTS: Browser merkt sich für 1 Jahr, dass diese Domain nur über HTTPS erreichbar ist
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # Content Security Policy: Nur eigene und bekannte Quellen erlaubt
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com; frame-src https://www.paypal.com https://www.sandbox.paypal.com;"
+</IfModule>
+
+# -----------------------------------------------------------
+# 6. SPA FALLBACK (React Router – alle Routen auf index.html)
+# -----------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
 </IfModule>
