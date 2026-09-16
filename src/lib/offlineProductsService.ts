@@ -228,6 +228,22 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "play_store_id": "fds_schmetterling",
     "hoerprobe_url": null,
     "is_active": true
+  },
+  {
+    "id": "mensch_sein",
+    "titel": "Mut zum Echtsein - Was steckt hinter einem echtem Menschen",
+    "beschreibung": "Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.",
+    "kategorie": "Hörbuch",
+    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3",
+    "created_at": "2026-09-16T07:40:36+00:00",
+    "preis": 4.99,
+    "waehrung": "EUR",
+    "dauer": 3519,
+    "highlights": null,
+    "audio_hinweis": "Audio-Hinweis: Sprecherin Lisa Ragusa, Hintergrundmusik mit KI-Unterstützung erstellt.",
+    "play_store_id": "fds_mensch_sein",
+    "hoerprobe_url": null,
+    "is_active": true
   }
 ];
 

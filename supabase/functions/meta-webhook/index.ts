@@ -29,6 +29,13 @@ function matchesKeyword(text: string): boolean {
   return keywords.some(k => new RegExp(`(^|\\s|\\W)${k}(\\W|\\s|$)`, 'i').test(text) || new RegExp(k, 'i').test(text));
 }
 
+// In-Memory Speicher für die letzten empfangenen Events (zur Diagnose)
+const RECENT_EVENTS: any[] = [];
+function recordEvent(item: any) {
+  RECENT_EVENTS.unshift({ timestamp: new Date().toISOString(), ...item });
+  if (RECENT_EVENTS.length > 10) RECENT_EVENTS.pop();
+}
+
 // Standard-Nachrichtentexte
 const DEFAULT_COMMENT_REPLY = 
   "Wundervoll, dass du dir diesen Moment nimmst! 🌿 Ich habe dir soeben eine Direktnachricht mit deinem persönlichen Ruhebereich geschickt. Schau gleich mal in dein Postfach (auch unter Anfragen)! ✨";
@@ -300,7 +307,8 @@ serve(async (req) => {
             prefix: (FB_PAGE_ACCESS_TOKEN || '').substring(0, 7),
             length: (FB_PAGE_ACCESS_TOKEN || '').length,
             account: fbMeData
-          }
+          },
+          recent_events: RECENT_EVENTS
         }, null, 2), {
           status: 200,
           headers: { 'Content-Type': 'application/json' }
@@ -336,6 +344,7 @@ serve(async (req) => {
     try {
       const payload = await req.json();
       console.log('[Meta Webhook] POST Event empfangen:', JSON.stringify(payload));
+      recordEvent({ type: 'incoming_webhook', object: payload.object, payload });
 
       const objectType = payload.object;
 
@@ -418,6 +427,7 @@ serve(async (req) => {
                       sendFacebookDM(pageId, commentId, senderId, tokenToUse, DEFAULT_DM_TEXT)
                     ]);
                     console.log(`[Meta Webhook] [Facebook] Ergebnis: Reply=${commentResult.success}, DM=${dmResult.success}`);
+                    recordEvent({ type: 'facebook_action_result', commentId, text, senderId, commentResult, dmResult });
                   } else {
                     console.log(`[Meta Webhook] [Facebook] Kommentar ignoriert (kein Keyword-Treffer).`);
                   }

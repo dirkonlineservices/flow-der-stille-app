@@ -399,7 +399,10 @@ export default function PremiumShopDashboard() {
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
-    if (id.includes('schmetterling') || id.includes('hoerbuch') || title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch')) {
+    if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
+      return '/images/products/cover_mensch_sein.jpg';
+    }
+    if (id.includes('schmetterling') || title.includes('schmetterling') || id.includes('hoerbuch') || title.includes('hörbuch') || title.includes('hoerbuch')) {
       return '/images/products/cover_schmetterling.jpg';
     }
     if (id.includes('schlaf') || title.includes('schlaf')) {
@@ -1083,7 +1086,7 @@ export default function PremiumShopDashboard() {
                           className="flex-1 py-3 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                         >
                           <Sparkles size={16} />
-                          <span>Hörbuch-Player öffnen (58:43 Min &amp; Kapitel)</span>
+                          <span>Hörbuch-Player öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'})</span>
                         </Link>
                         <AudioPlayerButton 
                           produkt={produkt}  

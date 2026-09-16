@@ -66,6 +66,18 @@ const SCHMETTERLING_CHAPTERS: FormattedAudiobookChapter[] = [
   },
 ];
 
+const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
+  { 
+    id: 'intro', 
+    number: 'Hörbuch',
+    title: 'Mut zum Echtsein – Was steckt hinter einem echten Menschen', 
+    subtitle: 'Vollständige ungekürzte Hörreise',
+    startTime: 0, 
+    formattedTime: '00:00',
+    duration: '58:39 Min.'
+  }
+];
+
 export default function AudiobookPage() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -130,13 +142,16 @@ export default function AudiobookPage() {
 
       try {
         const supabase = getSupabase();
+        const isDefaultSchmetterling = !productId || productId === 'fds_hoerbuch_schmetterling' || productId === 'schmetterling' || productId === 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte';
+        let query = supabase.from('produkte').select('*');
+        if (!isDefaultSchmetterling) {
+          query = query.eq('id', productId);
+        } else {
+          query = query.or(`id.eq.${productId},titel.ilike.%schmetterling%`);
+        }
+
         const res: any = await Promise.race([
-          supabase
-            .from('produkte')
-            .select('*')
-            .or(`id.eq.${productId},titel.ilike.%schmetterling%,titel.ilike.%hörbuch%`)
-            .limit(1)
-            .maybeSingle(),
+          query.limit(1).maybeSingle(),
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Audiobook Timeout')), 3000))
         ]);
 
@@ -190,7 +205,13 @@ export default function AudiobookPage() {
     loadAudiobook();
   }, [productId, user]);
 
-  const title = productData?.titel || 'Der Tag, an dem der Schmetterling erwachte';
+  const isMenschSein = Boolean(
+    (productData?.id && (productData.id.includes('mensch_sein') || productData.id.includes('echtsein'))) || 
+    (productId && (productId.includes('mensch_sein') || productId.includes('echtsein')))
+  );
+  const coverImage = isMenschSein ? '/images/products/cover_mensch_sein.jpg' : '/images/products/cover_schmetterling.jpg';
+  const chapters = isMenschSein ? MENSCH_SEIN_CHAPTERS : SCHMETTERLING_CHAPTERS;
+  const title = productData?.titel || (isMenschSein ? 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen' : 'Der Tag, an dem der Schmetterling erwachte');
   const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';
   const priceDisplay = productData?.preis ? `${productData.preis} €` : '4,99 €';
 
@@ -287,7 +308,7 @@ export default function AudiobookPage() {
           {/* Cover Image */}
           <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">
             <img
-              src="/images/products/cover_schmetterling.jpg"
+              src={coverImage}
               alt={title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -299,7 +320,7 @@ export default function AudiobookPage() {
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold uppercase tracking-wider">
                 <BookOpen size={14} />
-                <span>Hörbuch • 58:43 Minuten</span>
+                <span>Hörbuch • {isMenschSein ? '58:39 Minuten' : '58:43 Minuten'}</span>
               </span>
 
               {isOwned ? (
@@ -676,9 +697,9 @@ export default function AudiobookPage() {
           author="Jacqueline Schmetzer"
           reader="Lisa Ragusa"
           audioUrl={audioUrl}
-          coverImage="/images/products/cover_schmetterling.jpg"
-          durationSeconds={3523}
-          chapters={SCHMETTERLING_CHAPTERS}
+          coverImage={coverImage}
+          durationSeconds={productData?.dauer || (isMenschSein ? 3519 : 3523)}
+          chapters={chapters}
           initialStartTime={hasListenedDisclaimer ? initialChapterTime : 0}
         />
       )}
