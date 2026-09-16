@@ -4,7 +4,7 @@ import {
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
   Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon, HardDrive, WifiOff,
-  ShieldCheck, Gift, ChevronDown, ChevronUp, RefreshCw, BarChart3, Users
+  ShieldCheck, Gift, ChevronDown, ChevronUp, RefreshCw, BarChart3, Users, Headphones
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -15,11 +15,16 @@ import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newslet
 import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
-import { getStorageUsageSummary } from '../lib/offlineAudioService';
+import { getStorageUsageSummary, offlineManager } from '../lib/offlineAudioService';
 import { OfflineStorageModal } from '../components/OfflineStorageModal';
 import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import { GamificationRadar } from '../components/GamificationRadar';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
+import { 
+  getOfflineProducts, 
+  getOfflineProductById, 
+  getProductCoverImage 
+} from '../lib/offlineProductsService';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -128,23 +133,96 @@ export default function Settings() {
   const fetchPurchases = async () => {
     if (!user) return;
     const supabase = getSupabase();
-    
-    // Join with produkt table to get product info
-    const { data: kaeufe, error } = await supabase
-      .from('kaeufe')
-      .select('*, produkt:produkt_id(*)')
-      .eq('user_id', user.id);
-      
-    if (error) {
-      console.error('Fehler beim Laden der Käufe:', error);
-      return;
+    const offlineProducts = getOfflineProducts();
+    const offlinePurchasedIds = offlineManager.getPurchasedProducts();
+
+    const targetUserIds: string[] = [user.id];
+    const cleanEmail = (user.email || '').toLowerCase().trim();
+    let aliasEmail: string | null = null;
+    if (cleanEmail.endsWith('@gmail.com')) {
+      aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
+    } else if (cleanEmail.endsWith('@googlemail.com')) {
+      aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
     }
-    
-    setPurchases(kaeufe || []);
-    
-    // Calculate total
-    const total = (kaeufe || []).reduce((sum, k) => sum + (parseFloat(k.preis) || 0), 0);
-    setTotalSpent(total);
+
+    try {
+      if (aliasEmail) {
+        try {
+          const { data: aliasProfiles } = await supabase
+            .from('profiles')
+            .select('id')
+            .in('email', [cleanEmail, aliasEmail]);
+          if (aliasProfiles && aliasProfiles.length > 0) {
+            aliasProfiles.forEach((p: any) => {
+              if (p.id && !targetUserIds.includes(p.id)) {
+                targetUserIds.push(p.id);
+              }
+            });
+          }
+        } catch {}
+      }
+
+      // Hole alle Käufe für alle Target-User-IDs
+      const { data: kaeufe, error } = await supabase
+        .from('kaeufe')
+        .select('*')
+        .in('user_id', targetUserIds)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Fehler beim Laden der Käufe:', error);
+      }
+
+      // Verknüpfe jeden Kauf mit den Produktdetails (aus DB oder Offline-Katalog)
+      const mergedPurchases: any[] = [];
+      const seenProdIds = new Set<string>();
+
+      (kaeufe || []).forEach((k: any) => {
+        const prod = offlineProducts.find(p => p.id === k.produkt_id || p.play_store_id === k.produkt_id) || getOfflineProductById(k.produkt_id);
+        if (!seenProdIds.has(k.produkt_id)) {
+          seenProdIds.add(k.produkt_id);
+          mergedPurchases.push({
+            ...k,
+            produkt: prod || {
+              id: k.produkt_id,
+              titel: k.produkt_id,
+              beschreibung: 'Freigeschalteter Inhalt'
+            }
+          });
+        }
+      });
+
+      // Auch offline freigeschaltete Produkte einbeziehen, falls sie noch nicht in kaeufe gelistet waren
+      offlinePurchasedIds.forEach((offId) => {
+        if (!seenProdIds.has(offId)) {
+          const prod = offlineProducts.find(p => p.id === offId || p.play_store_id === offId) || getOfflineProductById(offId);
+          if (prod) {
+            seenProdIds.add(offId);
+            mergedPurchases.push({
+              id: `offline_${offId}`,
+              user_id: user.id,
+              produkt_id: prod.id,
+              preis: prod.preis || 0,
+              created_at: new Date().toISOString(),
+              produkt: prod
+            });
+          }
+        }
+      });
+
+      setPurchases(mergedPurchases);
+      
+      // Calculate total
+      const total = mergedPurchases.reduce((sum, k) => sum + (parseFloat(k.preis) || 0), 0);
+      setTotalSpent(total);
+
+      // Falls Käufe existieren, standardmäßig aufklappen damit der Nutzer sie direkt sieht!
+      if (mergedPurchases.length > 0) {
+        setIsPurchasesOpen(true);
+      }
+    } catch (err) {
+      console.warn('Exception beim Laden der Käufe:', err);
+    }
   };
 
   const handleLogout = async () => {
@@ -952,36 +1030,64 @@ export default function Settings() {
                   <div className="space-y-3">
                     {purchases.map((kauf: any) => {
                       const course = kauf.produkt;
+                      const isAudiobook = (course?.kategorie && course.kategorie.toLowerCase().includes('hörbuch')) || 
+                                          (course?.id && (course.id.includes('schmetterling') || course.id.includes('mensch_sein') || course.id.includes('hoerbuch')));
+                      const coverImg = getProductCoverImage(course);
+                      const targetHoerbuchId = course?.id || kauf.produkt_id;
+
                       return (
                         <div 
                           key={kauf.id}
-                          className="p-4 sm:p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/55 border-[var(--color-border-main)]"
+                          className="p-4 sm:p-5 rounded-2xl border transition-all bg-[var(--color-bg-alt)]/60 border-[var(--color-border-main)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                         >
-                          <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
-                            <div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-700 text-white shadow-2xs">
-                                Aktiviert
-                              </span>
-                              <h3 className="text-base sm:text-lg font-serif text-[var(--color-text-main)] mt-1.5 font-bold">
-                                {course?.titel || 'Unbekanntes Produkt'}
+                          <div className="flex items-start sm:items-center gap-3.5 sm:gap-4 min-w-0">
+                            <img 
+                              src={coverImg} 
+                              alt={course?.titel || 'Produkt'} 
+                              className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl object-cover shrink-0 shadow-xs border border-[var(--color-border-main)]"
+                            />
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-700 text-white shadow-2xs">
+                                  Freigeschaltet
+                                </span>
+                                {course?.kategorie && (
+                                  <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-md bg-[var(--color-bg-card)] text-[var(--color-text-muted)] border border-[var(--color-border-main)]">
+                                    {course.kategorie}
+                                  </span>
+                                )}
+                              </div>
+                              <h3 className="text-base sm:text-lg font-serif text-[var(--color-text-main)] font-bold truncate">
+                                {course?.titel || 'Unbekannter Inhalt'}
                               </h3>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-sm font-semibold text-[var(--color-text-main)] block">{kauf.preis} €</span>
-                              <span className="text-xs text-[var(--color-text-muted-light)] block">{new Date(kauf.created_at).toLocaleDateString()}</span>
+                              <p className="text-[var(--color-text-muted)] text-xs line-clamp-1 mt-0.5">
+                                {course?.beschreibung || 'Exklusiver Premium-Inhalt für dich aktiviert.'}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-[var(--color-text-muted-light)]">
+                                <span>Kaufdatum: {new Date(kauf.created_at || Date.now()).toLocaleDateString('de-DE')}</span>
+                                {kauf.preis !== undefined && <span>• {kauf.preis} €</span>}
+                              </div>
                             </div>
                           </div>
 
-                          <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-3">{course?.beschreibung}</p>
-
-                          <div className="flex items-center justify-end pt-2 border-t border-[var(--color-border-main)]">
-                            <Link 
-                              to={`/premium-dashboard#product-${course?.id || kauf.produkt_id}`}
-                              className="px-4 py-1.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow-xs"
-                            >
-                              <Eye size={13} />
-                              <span>Zum Produkt / Anhören</span>
-                            </Link>
+                          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--color-border-main)]/50">
+                            {isAudiobook ? (
+                              <Link 
+                                to={`/hoerbuch/${targetHoerbuchId}?purchased=true&play=true`}
+                                className="w-full sm:w-auto px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-xs"
+                              >
+                                <Headphones size={14} />
+                                <span>Hörbuch abspielen</span>
+                              </Link>
+                            ) : (
+                              <Link 
+                                to={`/premium-dashboard#product-${targetHoerbuchId}`}
+                                className="w-full sm:w-auto px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-xs"
+                              >
+                                <Eye size={14} />
+                                <span>Anhören / Zum Inhalt</span>
+                              </Link>
+                            )}
                           </div>
                         </div>
                       );

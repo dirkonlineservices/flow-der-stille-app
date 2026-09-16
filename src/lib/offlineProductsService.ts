@@ -330,3 +330,67 @@ export function saveCachedPurchases(purchases: any[]): void {
     console.warn('[OfflineProducts] Fehler beim Speichern der Käufe:', e);
   }
 }
+
+/**
+ * Ermittelt das Cover-Bild für ein Produkt anhand von ID, Titel oder Kategorie.
+ */
+export function getProductCoverImage(prod: any): string {
+  if (!prod) return '/images/products/cover_schmetterling.jpg';
+  if (prod.image_url) return prod.image_url;
+  
+  const id = (prod.id || '').toLowerCase();
+  const title = (prod.titel || '').toLowerCase();
+  const kat = (prod.kategorie || '').toLowerCase();
+
+  if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
+    return '/images/products/cover_mensch_sein.jpg';
+  }
+  if (id.includes('schmetterling') || title.includes('schmetterling') || id.includes('hoerbuch') || title.includes('hörbuch') || title.includes('hoerbuch')) {
+    return '/images/products/cover_schmetterling.jpg';
+  }
+  if (id.includes('schlaf') || title.includes('schlaf')) {
+    return '/images/products/cover_schlaf.jpg';
+  }
+  if (id.includes('inneres_kind') || id.includes('inneres-kind') || title.includes('inneres kind')) {
+    return '/images/products/cover_inneres_kind.jpg';
+  }
+  if (id.includes('herzkompass') || title.includes('herzkompass')) {
+    return '/images/products/cover_herzkompass.jpg';
+  }
+  if (id.includes('herzoeffnung') || title.includes('herzöffnung') || title.includes('herz-öffnung')) {
+    return '/images/products/cover_herzoeffnung.jpg';
+  }
+  if (id.includes('innere_ruhe') || id.includes('innere-ruhe') || title.includes('innere ruhe')) {
+    return '/images/products/cover_innere_ruhe.jpg';
+  }
+  if (id.includes('loslassen') || title.includes('loslassen')) {
+    return '/images/products/cover_loslassen.jpg';
+  }
+  if (id.includes('pmr') || title.includes('muskelentspannung') || title.includes('progressive')) {
+    return '/images/products/cover_pmr.jpg';
+  }
+  if (id.includes('atem') || title.includes('atemarbeit') || title.includes('pranayama')) {
+    return '/images/products/cover_atemarbeit.jpg';
+  }
+  if (id.includes('fokus') || title.includes('fokus') || title.includes('klarheit')) {
+    return '/images/products/cover_fokus.jpg';
+  }
+  if (id.includes('vertrauen') && !id.includes('selbstbewusstsein')) {
+    return '/images/products/cover_vertrauen.jpg';
+  }
+  if (id.includes('selbstbewusstsein') || title.includes('selbstbewusstsein') || title.includes('vertrauen')) {
+    return '/images/products/cover_selbstbewusst.jpg';
+  }
+  if (id.includes('ernaehrung') || id.includes('gesund') || title.includes('ernährung') || title.includes('lebensstil')) {
+    return '/images/products/cover_ernaehrung.jpg';
+  }
+  if (title.includes('herz')) {
+    return '/images/products/cover_herz.jpg';
+  }
+
+  if (kat.includes('hörbuch') || kat.includes('hoerbuch')) return '/images/products/cover_schmetterling.jpg';
+  if (kat.includes('meditation')) return '/images/products/cover_innere_ruhe.jpg';
+  if (kat.includes('hypnose')) return '/images/products/cover_fokus.jpg';
+
+  return '/images/products/cover_innere_ruhe.jpg';
+}
