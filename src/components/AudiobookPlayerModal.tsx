@@ -585,9 +585,9 @@ export function AudiobookPlayerModal({
               <div className="flex items-center justify-between text-xs font-mono font-medium text-[var(--text-muted)]">
                 <span>{formatTime(currentTime)}</span>
                 {!hasListenedDisclaimer ? (
-                  <span className="text-amber-600 dark:text-amber-400 font-sans text-[11px] font-semibold flex items-center gap-1">
-                    <Lock size={12} />
-                    <span>Rechtlicher Hinweis läuft (Spulen gesperrt bis 01:19)</span>
+                  <span className="text-stone-800 dark:text-amber-200 font-sans text-[11px] font-bold flex items-center gap-1.5">
+                    <Lock size={12} className="text-amber-800 dark:text-amber-400" />
+                    <span>Rechtlicher Hinweis läuft (Spulen gesperrt bis {formatTime(DISCLAIMER_DURATION)})</span>
                   </span>
                 ) : (
                   <span className="text-[var(--accent)] font-semibold">
@@ -596,12 +596,12 @@ export function AudiobookPlayerModal({
                 )}
               </div>
 
-              {/* Einmaliger rechtlicher Hinweis bis 1:19 Min. */}
+              {/* Einmaliger rechtlicher Hinweis – kontrastreich & gut lesbar */}
               {!hasListenedDisclaimer && (
-                <div className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-1.5 flex items-center gap-2">
-                  <Lock size={13} className="shrink-0 text-amber-600 dark:text-amber-400" />
-                  <span>
-                    <strong>Rechtlicher Hinweis:</strong> Bitte lausche der Einleitung einmalig bis 1:19 Min. Danach werden alle Kapitel und das Vor- &amp; Zurückspulen für dich freigeschaltet.
+                <div className="text-xs text-stone-900 dark:text-amber-100 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 rounded-xl px-3.5 py-2 flex items-center gap-2.5">
+                  <Lock size={14} className="shrink-0 text-amber-800 dark:text-amber-400" />
+                  <span className="leading-snug text-stone-800 dark:text-amber-100 font-medium">
+                    <strong className="text-stone-950 dark:text-amber-50 font-bold">Rechtlicher Hinweis:</strong> Bitte lausche der Einleitung einmalig bis {formatTime(DISCLAIMER_DURATION)} Min. Danach werden alle Kapitel und das Vor- &amp; Zurückspulen für dich freigeschaltet.
                   </span>
                 </div>
               )}
@@ -614,11 +614,11 @@ export function AudiobookPlayerModal({
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
-                  className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 shadow-sm"
+                  className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border-2 border-amber-400 dark:border-amber-700/60 text-stone-950 dark:text-amber-50 text-xs flex items-start gap-2.5 shadow-sm"
                 >
-                  <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                  <div className="flex-1 leading-relaxed">
-                    <strong>Hinweis:</strong> {disclaimerNotice}
+                  <AlertCircle size={16} className="text-amber-800 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="flex-1 leading-relaxed text-stone-800 dark:text-amber-100 font-medium">
+                    <strong className="text-stone-950 dark:text-amber-50 font-bold">Hinweis:</strong> {disclaimerNotice}
                   </div>
                 </motion.div>
               )}

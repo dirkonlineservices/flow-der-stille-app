@@ -449,8 +449,8 @@ export default function AudiobookPage() {
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
                       {!hasListenedDisclaimer
-                        ? '1:19 Min. Hinweis anhören, danach freies Kapitel-Hüpfen'
-                        : '58:43 Min. • Alle Kapitel & freies Spulen aktiv'}
+                        ? `${isMenschSein ? '1:08' : '1:19'} Min. Hinweis anhören, danach freies Kapitel-Hüpfen`
+                        : `${isMenschSein ? '58:39' : '58:43'} Min. • Alle Kapitel & freies Spulen aktiv`}
                     </span>
                   </button>
 
@@ -477,7 +477,7 @@ export default function AudiobookPage() {
                       <span>Hörbuch für {priceDisplay} freischalten</span>
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
-                      Einmaliger Kauf • Kein Abo • Volle 58:43 Min.
+                      Einmaliger Kauf • Kein Abo • Volle {isMenschSein ? '58:39 Min.' : '58:43 Min.'}
                     </span>
                   </Link>
 
@@ -545,18 +545,22 @@ export default function AudiobookPage() {
               </p>
             </div>
             <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-alt)] px-3 py-1.5 rounded-full border border-[var(--border)] self-start sm:self-auto">
-              5 Abschnitte • 58:43 Min.
+              {chapters.length} Abschnitte • {isMenschSein ? '58:39 Min.' : '58:43 Min.'}
             </span>
           </div>
 
-          {/* Hinweis wenn Disclaimer noch nicht angehört wurde */}
+          {/* Hinweis wenn Disclaimer noch nicht angehört wurde – Hoher Kontrast für optimale Lesbarkeit */}
           {isOwned && !hasListenedDisclaimer && (
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-xs">
-              <Lock size={16} className="text-amber-600 shrink-0 mt-0.5" />
-              <div className="space-y-0.5">
-                <span className="font-semibold block">Einmaliger rechtlicher Hinweis erforderlich (00:00 bis 01:19 Min.)</span>
-                <span className="text-[11px] opacity-90 block">
-                  Bitte lausche zu Beginn der Einleitung einmalig bis zum Ende (1:19 Min.). Erst danach werden alle weiteren Kapitel zur Direktauswahl freigeschaltet.
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-xs flex items-start gap-3.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-200/80 dark:bg-amber-900/60 flex items-center justify-center shrink-0 text-amber-950 dark:text-amber-200 mt-0.5 shadow-xs">
+                <Lock size={16} />
+              </div>
+              <div className="space-y-1">
+                <span className="font-bold text-stone-950 dark:text-amber-50 block text-xs sm:text-sm">
+                  Einmaliger rechtlicher Hinweis erforderlich (00:00 bis {isMenschSein ? '01:08' : '01:19'} Min.)
+                </span>
+                <span className="text-xs text-stone-800 dark:text-amber-200/95 font-medium block leading-relaxed">
+                  Bitte lausche zu Beginn der Einleitung einmalig bis zum Ende ({isMenschSein ? '1:08' : '1:19'} Min.). Erst danach werden alle weiteren Kapitel zur Direktauswahl freigeschaltet.
                 </span>
               </div>
             </div>
@@ -621,9 +625,7 @@ export default function AudiobookPage() {
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                       isAvailable
                         ? 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--accent)]'
-                        : isLockedByDisclaimer
-                        ? 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
-                        : 'bg-amber-500/10 border border-amber-500/20 text-amber-600'
+                        : 'bg-amber-100/90 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200'
                     }`}>
                       {isAvailable ? <Play size={14} className="fill-current ml-0.5" /> : <Lock size={14} />}
                     </div>
