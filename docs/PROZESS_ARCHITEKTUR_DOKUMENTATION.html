@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flow der Stille – System-Architektur &amp; Prozess-Dokumentation</title>
+  <title>Flow der Stille – System-Architektur, CI/CD &amp; Sicherheits-Roadmap</title>
   <style>
     :root {
       --primary: #4A5D4E;       /* Beruhigendes Salbeigrün */
@@ -16,7 +16,6 @@
       --text: #1F2937;
       --text-muted: #4B5563;
       --text-light: #9CA3AF;
-      --font-serif: "Cormorant Garamond", Georgia, serif;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -29,25 +28,25 @@
     body {
       font-family: var(--font-sans);
       color: var(--text);
-      background-color: #E2E8F0;
+      background-color: #CBD5E1;
       line-height: 1.5;
-      font-size: 13px;
+      font-size: 12.5px;
       -webkit-font-smoothing: antialiased;
     }
 
     /* Druck-Layout & DIN-A4 Seitenstruktur */
     @page {
       size: A4 portrait;
-      margin: 12mm 12mm 14mm 12mm;
+      margin: 10mm 12mm 12mm 12mm;
     }
 
     .page {
       width: 210mm;
       min-height: 297mm;
-      padding: 16mm 16mm 18mm 16mm;
+      padding: 14mm 16mm 16mm 16mm;
       margin: 20px auto;
       background: white;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -76,19 +75,19 @@
       justify-content: space-between;
       align-items: flex-end;
       border-bottom: 2px solid var(--primary);
-      padding-bottom: 10px;
-      margin-bottom: 16px;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
     }
 
     .brand-title {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       color: var(--primary);
       letter-spacing: -0.5px;
     }
 
     .brand-subtitle {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -96,11 +95,11 @@
     }
 
     .page-badge {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       color: white;
       background: var(--primary);
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -113,35 +112,35 @@
       justify-content: space-between;
       font-size: 10px;
       color: var(--text-light);
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
     /* Typografie */
     h1 {
-      font-size: 20px;
+      font-size: 18px;
       color: var(--primary-dark);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     h2 {
-      font-size: 15px;
+      font-size: 14px;
       color: var(--primary-dark);
-      margin: 14px 0 8px 0;
+      margin: 12px 0 6px 0;
       display: flex;
       align-items: center;
       gap: 8px;
       border-bottom: 1px solid #E5E7EB;
-      padding-bottom: 4px;
+      padding-bottom: 3px;
     }
 
     h3 {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     p, li {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--text-muted);
       line-height: 1.45;
     }
@@ -150,26 +149,26 @@
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .grid-5 {
+    .grid-6 {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
     }
 
     .card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 9px 11px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
@@ -182,11 +181,21 @@
       border-left: 4px solid var(--primary);
     }
 
+    .card-danger {
+      border-left: 4px solid #DC2626;
+      background: #FEF2F2;
+    }
+
+    .card-warning {
+      border-left: 4px solid #D97706;
+      background: #FFFBEB;
+    }
+
     .badge {
       display: inline-block;
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -196,6 +205,8 @@
     .badge-cloudflare { background: #FFEDD5; color: #C2410C; border: 1px solid #FDBA74; }
     .badge-hostinger { background: #EDE9FE; color: #6D28D9; border: 1px solid #C4B5FD; }
     .badge-google { background: #DBEAFE; color: #1D4ED8; border: 1px solid #93C5FD; }
+    .badge-github { background: #F1F5F9; color: #0F172A; border: 1px solid #CBD5E1; }
+    .badge-android { background: #E0F2FE; color: #0369A1; border: 1px solid #7DD3FC; }
     .badge-antigravity { background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; }
 
     /* SVG Diagramm Container */
@@ -204,28 +215,28 @@
       border: 1px solid #E2E8F0;
       border-radius: 10px;
       padding: 10px;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     /* Tabellen */
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11.5px;
-      margin-top: 6px;
+      font-size: 11px;
+      margin-top: 5px;
     }
 
     th {
       background: #F3F4F6;
       color: var(--text);
       text-align: left;
-      padding: 6px 8px;
+      padding: 5px 7px;
       font-weight: 600;
       border: 1px solid #E5E7EB;
     }
 
     td {
-      padding: 6px 8px;
+      padding: 5px 7px;
       border: 1px solid #E5E7EB;
       color: var(--text-muted);
       vertical-align: top;
@@ -239,17 +250,17 @@
     .step-box {
       border: 1px solid #E5E7EB;
       border-radius: 8px;
-      padding: 9px 12px;
-      margin-bottom: 8px;
+      padding: 8px 11px;
+      margin-bottom: 7px;
       background: white;
       display: flex;
-      gap: 12px;
+      gap: 10px;
       align-items: flex-start;
     }
 
     .step-num {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       background: var(--primary);
       color: white;
       border-radius: 50%;
@@ -257,7 +268,7 @@
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
       flex-shrink: 0;
     }
 
@@ -269,20 +280,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
     .step-title {
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--primary-dark);
     }
 
     .mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
+      font-size: 10.5px;
       background: #F3F4F6;
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 3px;
       color: #374151;
       border: 1px solid #E5E7EB;
@@ -322,60 +333,66 @@
   </button>
 
   <!-- ========================================== -->
-  <!-- SEITE 1: SYSTEM-ARCHITEKTUR & 5 SÄULEN     -->
+  <!-- SEITE 1: SYSTEM-ARCHITEKTUR & CI/CD KETTE  -->
   <!-- ========================================== -->
   <div class="page">
     <div>
       <div class="page-header">
         <div>
           <div class="brand-title">Flow der Stille</div>
-          <div class="brand-subtitle">System-Architektur &amp; Werkzeug-Übersicht</div>
+          <div class="brand-subtitle">System-Architektur &amp; Werkzeug-Kette</div>
         </div>
-        <div class="page-badge">Seite 1 / 3 • Gesamtüberblick</div>
+        <div class="page-badge">Seite 1 / 4 • Gesamtüberblick</div>
       </div>
 
-      <h1>Das Gesamtsystem: Zusammenspiel aller Dienste</h1>
-      <p style="margin-bottom: 12px;">
-        Flow der Stille läuft als moderne Web- und native Android-App. Um maximale Geschwindigkeit, Offline-Fähigkeit und geschütztes Audio-Streaming zu garantieren, sind 5 spezialisierte Dienste nahtlos miteinander verzahnt:
+      <h1>Das Gesamtsystem: Entwicklung, GitHub, Web &amp; App</h1>
+      <p style="margin-bottom: 10px;">
+        Flow der Stille basiert auf einer vollständig integrierten Tool-Chain: Die Entwicklung erfolgt KI-gestützt in <strong>Antigravity</strong>, der Code wird über <strong>GitHub</strong> versioniert und per Webhook automatisiert auf <strong>Hostinger</strong> veröffentlicht, während native Android-Builds über <strong>Android Studio</strong> für <strong>Google Play</strong> erzeugt werden:
       </p>
 
-      <!-- Die 5 Säulen Cards -->
-      <div class="grid-5" style="margin-bottom: 14px;">
+      <!-- Die 6 Säulen Cards -->
+      <div class="grid-6" style="margin-bottom: 12px;">
+        <div class="card" style="border-top: 3px solid #B45309;">
+          <span class="badge badge-antigravity">Antigravity</span>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">1. KI-Entwicklung</h3>
+          <p style="font-size: 10px;">Codebase (React, TypeScript), Prompting, Logik &amp; <span class="mono">npm run build</span>.</p>
+        </div>
+
+        <div class="card" style="border-top: 3px solid #0F172A;">
+          <span class="badge badge-github">GitHub</span>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">2. CI/CD Hub</h3>
+          <p style="font-size: 10px;">Repository <span class="mono">flow-der-stille-app</span>. Triggert Hostinger Webhook bei Push zu <span class="mono">main</span>.</p>
+        </div>
+
         <div class="card" style="border-top: 3px solid #6D28D9;">
           <span class="badge badge-hostinger">Hostinger</span>
-          <h3 style="margin-top: 6px;">Web &amp; Mail</h3>
-          <p style="font-size: 11px;">Liefert die HTML/JS/CSS Web-App via LiteSpeed aus und verwaltet die Domain <span class="mono">flow-der-stille.de</span> inkl. E-Mail Postfächer.</p>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">3. Web &amp; Mail</h3>
+          <p style="font-size: 10px;">Auto-Deploy zu <span class="mono">public_html</span>, Domain <span class="mono">flow-der-stille.de</span>, Mailserver.</p>
+        </div>
+
+        <div class="card" style="border-top: 3px solid #0369A1;">
+          <span class="badge badge-android">Android Studio</span>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">4. App-Bau</h3>
+          <p style="font-size: 10px;">Capacitor Sync, Gradle Build, Signieren des Release-Bundles (<span class="mono">.aab</span>).</p>
         </div>
 
         <div class="card" style="border-top: 3px solid #15803D;">
           <span class="badge badge-supabase">Supabase</span>
-          <h3 style="margin-top: 6px;">DB &amp; Auth</h3>
-          <p style="font-size: 11px;">PostgreSQL-Datenbank für Produkte, Käufe, Google SSO Login und Benutzerprofile (Admin/User Rollen).</p>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">5. DB &amp; Auth</h3>
+          <p style="font-size: 10px;">PostgreSQL (produkte, kaeufe, profiles) &amp; Google SSO Authentifizierung.</p>
         </div>
 
         <div class="card" style="border-top: 3px solid #C2410C;">
           <span class="badge badge-cloudflare">Cloudflare</span>
-          <h3 style="margin-top: 6px;">Audio Streaming</h3>
-          <p style="font-size: 11px;">Cloudflare R2 / CDN speichert die großen MP3-Dateien und liefert sie blitzschnell mit HTTP-Range Streaming aus.</p>
-        </div>
-
-        <div class="card" style="border-top: 3px solid #1D4ED8;">
-          <span class="badge badge-google">Google Play</span>
-          <h3 style="margin-top: 6px;">Android App</h3>
-          <p style="font-size: 11px;">Google Play Console verwaltet die App-Releases und In-App-Produkte (In-App-Kauf IDs für Android-Nutzer).</p>
-        </div>
-
-        <div class="card" style="border-top: 3px solid #B45309;">
-          <span class="badge badge-antigravity">Antigravity / Git</span>
-          <h3 style="margin-top: 6px;">Entwicklung</h3>
-          <p style="font-size: 11px;">Source Code Verwaltung, Kapitel-Konfiguration, Offline-Cache-Logik und Build-Prozess (<span class="mono">npm run build</span>).</p>
+          <h3 style="margin-top: 5px; font-size: 11.5px;">6. Streaming</h3>
+          <p style="font-size: 10px;">R2 Storage &amp; globales CDN für geschützte MP3-Auslieferung mit Range-Support.</p>
         </div>
       </div>
 
-      <!-- Visuelles SVG Architektur-Diagramm -->
-      <h2>1. Architektur- und Datenfluss-Diagramm</h2>
+      <!-- Vollständiges CI/CD & Datenfluss SVG Diagramm -->
+      <h2>1. Vollständiges Architektur- &amp; Deployment-Diagramm</h2>
       <div class="diagram-container">
-        <svg viewBox="0 0 740 280" style="width: 100%; height: auto; display: block;" font-family="sans-serif">
+        <svg viewBox="0 0 740 260" style="width: 100%; height: auto; display: block;" font-family="sans-serif">
           <defs>
             <marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748B" />
@@ -383,165 +400,214 @@
             <marker id="arr-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#15803D" />
             </marker>
+            <marker id="arr-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7C3AED" />
+            </marker>
+            <marker id="arr-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284C7" />
+            </marker>
             <marker id="arr-orange" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C2410C" />
             </marker>
           </defs>
 
-          <!-- Client Boxen -->
-          <rect x="20" y="30" width="160" height="95" rx="8" fill="#FFFFFF" stroke="#4A5D4E" stroke-width="2"/>
-          <text x="100" y="52" text-anchor="middle" font-weight="bold" font-size="13" fill="#2F3E32">🌐 Web-Besucher</text>
-          <text x="100" y="70" text-anchor="middle" font-size="10" fill="#64748B">Browser (Chrome, Safari, Edge)</text>
-          <text x="100" y="88" text-anchor="middle" font-size="10" fill="#4A5D4E">flow-der-stille.de</text>
-          <text x="100" y="106" text-anchor="middle" font-size="9" fill="#94A3B8">PWA &amp; Offline-Storage</text>
+          <!-- 1. Antigravity -->
+          <rect x="15" y="20" width="135" height="90" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"/>
+          <text x="82" y="40" text-anchor="middle" font-weight="bold" font-size="11" fill="#92400E">ANTIGRAVITY IDE</text>
+          <text x="82" y="56" text-anchor="middle" font-size="9" fill="#78350F">KI-Code-Entwicklung</text>
+          <text x="82" y="72" text-anchor="middle" font-size="9" fill="#78350F">npm run build -> dist/</text>
+          <text x="82" y="90" text-anchor="middle" font-size="8.5" fill="#B45309">git commit &amp; push</text>
 
-          <rect x="20" y="155" width="160" height="95" rx="8" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="2"/>
-          <text x="100" y="177" text-anchor="middle" font-weight="bold" font-size="13" fill="#1E3A8A">📱 Android Nutzer</text>
-          <text x="100" y="195" text-anchor="middle" font-size="10" fill="#64748B">Google Play App (Capacitor)</text>
-          <text x="100" y="213" text-anchor="middle" font-size="10" fill="#1D4ED8">In-App Billing (Google Pay)</text>
-          <text x="100" y="231" text-anchor="middle" font-size="9" fill="#94A3B8">App-Speicher (Flugmodus)</text>
+          <!-- 2. GitHub -->
+          <rect x="180" y="20" width="145" height="90" rx="8" fill="#F8FAFC" stroke="#0F172A" stroke-width="2"/>
+          <text x="252" y="40" text-anchor="middle" font-weight="bold" font-size="11" fill="#0F172A">GITHUB REPO</text>
+          <text x="252" y="56" text-anchor="middle" font-size="9" fill="#475569">flow-der-stille-app</text>
+          <text x="252" y="72" text-anchor="middle" font-size="9" fill="#0284C7">Branch: main</text>
+          <text x="252" y="90" text-anchor="middle" font-size="8.5" fill="#7C3AED">Auto Webhook Trigger</text>
 
-          <!-- Hostinger Webserver -->
-          <rect x="250" y="30" width="200" height="95" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
-          <text x="350" y="52" text-anchor="middle" font-weight="bold" font-size="12" fill="#5B21B6">HOSTINGER WEBSPACE</text>
-          <text x="350" y="70" text-anchor="middle" font-size="10" fill="#6D28D9">public_html (dist/ Bundle)</text>
-          <text x="350" y="88" text-anchor="middle" font-size="9.5" fill="#4B5563">Liefert React Frontend &amp; Assets</text>
-          <text x="350" y="106" text-anchor="middle" font-size="9" fill="#6D28D9">.well-known/assetlinks.json</text>
+          <!-- 3. Hostinger Web -->
+          <rect x="360" y="20" width="165" height="90" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+          <text x="442" y="40" text-anchor="middle" font-weight="bold" font-size="11" fill="#5B21B6">HOSTINGER WEBSPACE</text>
+          <text x="442" y="56" text-anchor="middle" font-size="9" fill="#6D28D9">Auto Git Deployment</text>
+          <text x="442" y="72" text-anchor="middle" font-size="9" fill="#4B5563">public_html / LiteSpeed</text>
+          <text x="442" y="90" text-anchor="middle" font-size="8.5" fill="#6D28D9">flow-der-stille.de</text>
 
-          <!-- Supabase Cloud -->
-          <rect x="250" y="155" width="200" height="95" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-          <text x="350" y="177" text-anchor="middle" font-weight="bold" font-size="12" fill="#166534">SUPABASE CLOUD</text>
-          <text x="350" y="195" text-anchor="middle" font-size="10" fill="#15803D">Tabelle "produkte" &amp; "kaeufe"</text>
-          <text x="350" y="213" text-anchor="middle" font-size="9.5" fill="#4B5563">Google SSO Auth / Profiles</text>
-          <text x="350" y="231" text-anchor="middle" font-size="9" fill="#15803D">Rollen: 'admin' vs 'user'</text>
+          <!-- 4. End-User Browser -->
+          <rect x="560" y="20" width="165" height="90" rx="8" fill="#FFFFFF" stroke="#4A5D4E" stroke-width="2"/>
+          <text x="642" y="40" text-anchor="middle" font-weight="bold" font-size="11" fill="#2F3E32">🌐 WEB-BESUCHER</text>
+          <text x="642" y="56" text-anchor="middle" font-size="9" fill="#4B5563">Browser (Desktop &amp; Mobil)</text>
+          <text x="642" y="72" text-anchor="middle" font-size="9" fill="#4A5D4E">PWA Offline Storage</text>
+          <text x="642" y="90" text-anchor="middle" font-size="8.5" fill="#64748B">Web-Kauf &amp; Audio Player</text>
 
-          <!-- Cloudflare R2 -->
-          <rect x="520" y="30" width="200" height="95" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
-          <text x="620" y="52" text-anchor="middle" font-weight="bold" font-size="12" fill="#9A3412">CLOUDFLARE R2 / CDN</text>
-          <text x="620" y="70" text-anchor="middle" font-size="10" fill="#C2410C">Audio-Storage (MP3 Dateien)</text>
-          <text x="620" y="88" text-anchor="middle" font-size="9.5" fill="#4B5563">High-Speed HTTP Range Streaming</text>
-          <text x="620" y="106" text-anchor="middle" font-size="9" fill="#C2410C">Schutz vor unbefugtem Download</text>
+          <!-- 5. Android Studio -->
+          <rect x="15" y="150" width="135" height="95" rx="8" fill="#F0F9FF" stroke="#0284C7" stroke-width="1.5"/>
+          <text x="82" y="170" text-anchor="middle" font-weight="bold" font-size="11" fill="#0369A1">ANDROID STUDIO</text>
+          <text x="82" y="186" text-anchor="middle" font-size="9" fill="#0284C7">npx cap sync android</text>
+          <text x="82" y="202" text-anchor="middle" font-size="9" fill="#475569">Release Keystore Sign</text>
+          <text x="82" y="220" text-anchor="middle" font-size="8.5" fill="#0369A1">Erzeugt App Bundle (.aab)</text>
 
-          <!-- Google Play Console / Billing -->
-          <rect x="520" y="155" width="200" height="95" rx="8" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
-          <text x="620" y="177" text-anchor="middle" font-weight="bold" font-size="12" fill="#1E40AF">GOOGLE PLAY CONSOLE</text>
-          <text x="620" y="195" text-anchor="middle" font-size="10" fill="#1D4ED8">In-App-Produkte (play_store_id)</text>
-          <text x="620" y="213" text-anchor="middle" font-size="9.5" fill="#4B5563">Abrechnung Android Käufe</text>
-          <text x="620" y="231" text-anchor="middle" font-size="9" fill="#1D4ED8">Signierter App-Release (AAB)</text>
+          <!-- 6. Google Play Console -->
+          <rect x="180" y="150" width="145" height="95" rx="8" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.5"/>
+          <text x="252" y="170" text-anchor="middle" font-weight="bold" font-size="11" fill="#1E40AF">GOOGLE PLAY CONSOLE</text>
+          <text x="252" y="186" text-anchor="middle" font-size="9" fill="#1D4ED8">In-App-Produkte (IDs)</text>
+          <text x="252" y="202" text-anchor="middle" font-size="9" fill="#475569">Google Play Billing API</text>
+          <text x="252" y="220" text-anchor="middle" font-size="8.5" fill="#1D4ED8">Track: Closed / Production</text>
 
-          <!-- Verbindungslinien -->
-          <line x1="180" y1="65" x2="245" y2="65" stroke="#7C3AED" stroke-width="1.5" marker-end="url(#arr)"/>
-          <line x1="180" y1="95" x2="245" y2="175" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arr-green)"/>
-          <line x1="180" y1="200" x2="245" y2="200" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arr-green)"/>
-          <line x1="180" y1="185" x2="515" y2="185" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
-          <line x1="450" y1="200" x2="515" y2="200" stroke="#2563EB" stroke-width="1.5" marker-end="url(#arr)"/>
-          <path d="M 180 80 Q 350 15 515 65" fill="none" stroke="#EA580C" stroke-width="2" marker-end="url(#arr-orange)"/>
+          <!-- 7. Supabase DB -->
+          <rect x="360" y="150" width="165" height="95" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+          <text x="442" y="170" text-anchor="middle" font-weight="bold" font-size="11" fill="#166534">SUPABASE CLOUD</text>
+          <text x="442" y="186" text-anchor="middle" font-size="9" fill="#15803D">Tabellen: produkte &amp; kaeufe</text>
+          <text x="442" y="202" text-anchor="middle" font-size="9" fill="#4B5563">Google SSO Auth &amp; Rollen</text>
+          <text x="442" y="220" text-anchor="middle" font-size="8.5" fill="#15803D">Sync für Web &amp; Android App</text>
+
+          <!-- 8. Cloudflare R2 -->
+          <rect x="560" y="150" width="165" height="95" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+          <text x="642" y="170" text-anchor="middle" font-weight="bold" font-size="11" fill="#9A3412">CLOUDFLARE R2 CDN</text>
+          <text x="642" y="186" text-anchor="middle" font-size="9" fill="#C2410C">MP3 Audio-Streaming</text>
+          <text x="642" y="202" text-anchor="middle" font-size="9" fill="#4B5563">Range Requests (Spulen)</text>
+          <text x="642" y="220" text-anchor="middle" font-size="8.5" fill="#C2410C">Schutz vor MP3-Direktdownload</text>
+
+          <!-- Pfeile -->
+          <line x1="150" y1="65" x2="175" y2="65" stroke="#0F172A" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="325" y1="65" x2="355" y2="65" stroke="#7C3AED" stroke-width="2" marker-end="url(#arr-purple)"/>
+          <line x1="525" y1="65" x2="555" y2="65" stroke="#4A5D4E" stroke-width="2" marker-end="url(#arr)"/>
+          
+          <line x1="82" y1="110" x2="82" y2="145" stroke="#0284C7" stroke-width="2" marker-end="url(#arr-blue)"/>
+          <line x1="150" y1="195" x2="175" y2="195" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr)"/>
+          
+          <!-- Supabase & Cloudflare Verbindungen -->
+          <line x1="642" y1="110" x2="642" y2="145" stroke="#EA580C" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+          <path d="M 560 70 Q 442 120 442 145" fill="none" stroke="#16A34A" stroke-width="1.5" marker-end="url(#arr-green)"/>
+          <line x1="325" y1="195" x2="355" y2="195" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr-green)"/>
         </svg>
       </div>
 
       <!-- Zuständigkeiten-Tabelle -->
-      <h2>2. Welches Tool ist wofür zuständig?</h2>
+      <h2>2. Rollenverteilung in der CI/CD- und App-Kette</h2>
       <table>
         <thead>
           <tr>
-            <th style="width: 18%;">Werkzeug</th>
-            <th style="width: 32%;">Hauptaufgabe</th>
+            <th style="width: 17%;">Tool</th>
+            <th style="width: 33%;">Konkrete Rolle im Arbeitsablauf</th>
             <th style="width: 25%;">Wo einloggen?</th>
-            <th style="width: 25%;">Wichtige Einstellungen</th>
+            <th style="width: 25%;">Wichtigste Schnittstellen</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td><strong>Antigravity</strong></td>
+            <td>Lokale Entwicklung, KI-Programmierung, Kapitel-Konfiguration in <span class="mono">AudiobookPage.tsx</span>, lokale Tests &amp; Build-Erstellung.</td>
+            <td>Lokal auf Rechner<br><span style="font-size:10px;">Workspace: App Version 3</span></td>
+            <td><span class="mono">git commit</span>, <span class="mono">npm run build</span>, <span class="mono">npx cap sync</span></td>
+          </tr>
+          <tr>
+            <td><strong>GitHub</strong></td>
+            <td>Zentrales Versions-Repository. Sichert den Quellcode und triggert bei Push auf <span class="mono">main</span> das automatische Publishing zu Hostinger.</td>
+            <td><span class="mono">github.com/dirkonlineservices/flow-der-stille-app</span></td>
+            <td>Branch <span class="mono">main</span>, Webhook zu Hostinger, Repository Secrets.</td>
+          </tr>
+          <tr>
             <td><strong>Hostinger</strong></td>
-            <td>Webspace für Web-App, Domain <span class="mono">flow-der-stille.de</span>, SSL-Zertifikate, E-Mail Postfächer (<span class="mono">info@...</span>).</td>
+            <td>Nimmt das Git-Deployment entgegen, aktualisiert <span class="mono">public_html</span> und liefert die Web-App per LiteSpeed aus. Verwaltet E-Mails (<span class="mono">info@...</span>).</td>
             <td><span class="mono">hpanel.hostinger.com</span></td>
-            <td>Dateimanager <span class="mono">public_html</span>, DNS-Zone, E-Mail Weiterleitungen.</td>
+            <td>Git Deployment Webhook, Dateimanager, DNS-Zone.</td>
           </tr>
           <tr>
-            <td><strong>Supabase</strong></td>
-            <td>Speichert Produkte, Kaufberechtigungen, Benutzerkonten und steuert Google Login (OAuth 2.0).</td>
-            <td><span class="mono">supabase.com/dashboard</span><br><span style="font-size:10px;">Projekt: fsfoxgezrcqkjhfyqcwa</span></td>
-            <td>Tabellen <span class="mono">produkte</span>, <span class="mono">kaeufe</span>, <span class="mono">profiles</span>. Auth > Providers > Google.</td>
-          </tr>
-          <tr>
-            <td><strong>Cloudflare</strong></td>
-            <td>Sichere und schnelle Auslieferung aller MP3-Audiodateien weltweit per Streaming (CDN &amp; R2).</td>
-            <td><span class="mono">dash.cloudflare.com</span></td>
-            <td>R2 Object Storage, Public Bucket URLs, CORS-Regeln für Audio Range Requests.</td>
+            <td><strong>Android Studio</strong></td>
+            <td>Kompiliert das Capacitor-Projekt zu nativem Java/Kotlin Android-Code, signiert das Release mit dem Keystore und erzeugt das <span class="mono">.aab</span>-Bundle.</td>
+            <td>Lokal installiert<br><span style="font-size:10px;">Ordner: android/</span></td>
+            <td>Gradle Build, Keystore Datei (<span class="mono">.jks</span>), Android SDKs.</td>
           </tr>
           <tr>
             <td><strong>Google Play</strong></td>
-            <td>Verteilung der Android App und Abwicklung von In-App-Käufen über das Google-Konto des Nutzers.</td>
+            <td>Nimmt das <span class="mono">.aab</span>-Bundle entgegen, verteilt die App an Android-Nutzer und wickelt die In-App-Zahlungen (Google Pay) ab.</td>
             <td><span class="mono">play.google.com/console</span></td>
-            <td>Monetarisieren > In-App-Produkte (IDs müssen exakt mit Supabase übereinstimmen).</td>
-          </tr>
-          <tr>
-            <td><strong>Antigravity / Git</strong></td>
-            <td>Quellcode, Kapitel-Definitionen, Vorlaufschutz-Logik, Offline-Speicherung und Produktions-Build.</td>
-            <td>Lokal / VS Code / Antigravity IDE<br><span style="font-size:10px;">GitHub: flow-der-stille-app</span></td>
-            <td><span class="mono">src/pages/AudiobookPage.tsx</span>, <span class="mono">npm run build</span>, Git push zu <span class="mono">main</span>.</td>
+            <td>In-App-Produkte (IDs), Release-Tracks (Closed / Production).</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="page-footer">
-      <span>Flow der Stille • Systemdokumentation</span>
+      <span>Flow der Stille • System- &amp; CI/CD-Dokumentation</span>
       <span>Stand: September 2026</span>
       <span>Vertraulich • Für interne Betreuung</span>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SEITE 2: WORKFLOW NEUES HÖRBUCH ANLEGEN    -->
+  <!-- SEITE 2: WORKFLOWS (WEB & ANDROID APP)     -->
   <!-- ========================================== -->
   <div class="page">
     <div>
       <div class="page-header">
         <div>
           <div class="brand-title">Flow der Stille</div>
-          <div class="brand-subtitle">Standard-Betriebsablauf (SOP) • Produktanlage</div>
+          <div class="brand-subtitle">Standard-Betriebsablauf (SOP) • Release-Prozesse</div>
         </div>
-        <div class="page-badge">Seite 2 / 3 • Schritt-für-Schritt</div>
+        <div class="page-badge">Seite 2 / 4 • Workflows</div>
       </div>
 
-      <h1>Ablauf: Neues Hörbuch / Produkt anlegen &amp; freischalten</h1>
-      <p style="margin-bottom: 12px;">
-        Folge exakt diesen 6 Schritten, um ein neues Hörbuch fehlerfrei im System zu hinterlegen, sodass es sowohl auf der Webseite als auch in der Android-App kaufbar und abspielbar ist:
+      <h1>Die 2 Release-Pfade: Web-Publishing vs. Android App Bau</h1>
+      <p style="margin-bottom: 10px;">
+        Je nachdem, ob Änderungen an der Webseite oder eine neue Version der Android-App veröffentlicht werden, greifen zwei unterschiedliche Wege:
       </p>
 
-      <!-- Schritt 1 -->
+      <!-- Pfad A: Web-Publishing -->
+      <div class="card card-accent" style="margin-bottom: 10px;">
+        <h3 style="color: #B45309; display: flex; justify-content: space-between;">
+          <span>Pfad A: Automatisches Web-Publishing (Webseite &amp; PWA)</span>
+          <span class="badge badge-hostinger">Antigravity -> GitHub -> Hostinger</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 4px;">
+          1. Änderung in Antigravity mit KI programmieren und testen.<br>
+          2. <span class="mono">npm run build</span> ausführen (erzeugt das optimierte <span class="mono">dist/</span> Bundle).<br>
+          3. Im Terminal: <span class="mono">git add .</span>, <span class="mono">git commit -m "feat: ..."</span> und <span class="mono">git push origin main</span>.<br>
+          4. <strong>Automatisch:</strong> GitHub informiert Hostinger per Webhook, Hostinger zieht den neuesten Stand in <span class="mono">public_html</span>.<br>
+          5. <strong>Ergebnis:</strong> Die Webseite ist innerhalb von 30 Sekunden weltweit aktualisiert!
+        </p>
+      </div>
+
+      <!-- Pfad B: Android App Bau -->
+      <div class="card card-primary" style="margin-bottom: 14px;">
+        <h3 style="color: var(--primary-dark); display: flex; justify-content: space-between;">
+          <span>Pfad B: Android-App Bau &amp; Google Play Release</span>
+          <span class="badge badge-android">Capacitor -> Android Studio -> Google Play</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 4px;">
+          1. <strong>Web-Build erstellen:</strong> <span class="mono">npm run build</span> im Projektverzeichnis ausführen.<br>
+          2. <strong>Android-Synchronisation:</strong> <span class="mono">npx cap sync android</span> (kopiert <span class="mono">dist/</span> in das native Android-Projekt).<br>
+          3. <strong>In Android Studio öffnen:</strong> <span class="mono">npx cap open android</span> (oder Android Studio starten und Ordner <span class="mono">android</span> öffnen).<br>
+          4. <strong>Signiertes Bundle bauen:</strong> Im Menü auf <em>Build > Generate Signed Bundle / APK</em> klicken, <em>Android App Bundle</em> wählen, Release-Keystore auswählen, Passwort eingeben und Build starten.<br>
+          5. <strong>Google Play Console Release:</strong> Unter <em>Release > Produktion (oder Geschlossener Test)</em> eine neue Version erstellen und die erzeugte <span class="mono">.aab</span>-Datei hochladen.
+        </p>
+      </div>
+
+      <!-- Checkliste Neues Produkt / Hörbuch -->
+      <h2>Standard-Ablauf: Neues Hörbuch / Produkt anlegen</h2>
+      
       <div class="step-box">
         <div class="step-num">1</div>
         <div class="step-content">
           <div class="step-header">
-            <span class="step-title">Audio-Datei (MP3) in Cloudflare hochladen</span>
+            <span class="step-title">Audio-Datei (MP3) in Cloudflare R2 hochladen</span>
             <span class="badge badge-cloudflare">Cloudflare R2</span>
           </div>
-          <p>
-            • Logge dich bei Cloudflare ein und öffne den R2-Bucket für Flow der Stille.<br>
-            • Lade die fertige MP3-Datei hoch (z. B. <span class="mono">Mut zum echtsein.....mp3</span>).<br>
-            • Kopiere die öffentliche Streaming-URL der Datei (diese wird in Schritt 3 benötigt).
-          </p>
+          <p>Fertige MP3-Audiodatei in Cloudflare hochladen und die öffentliche Streaming-URL kopieren.</p>
         </div>
       </div>
 
-      <!-- Schritt 2 -->
       <div class="step-box">
         <div class="step-num">2</div>
         <div class="step-content">
           <div class="step-header">
-            <span class="step-title">Produktbild / Cover erstellen &amp; hinterlegen</span>
-            <span class="badge badge-antigravity">Antigravity / Assets</span>
+            <span class="step-title">Cover-Bild (1:1 JPG) im Projekt hinterlegen</span>
+            <span class="badge badge-antigravity">Assets / Antigravity</span>
           </div>
-          <p>
-            • Quadratisches Cover-Bild im Verhältnis 1:1 anlegen (z. B. 1000 × 1000 Pixel JPG).<br>
-            • Datei im Projektordner unter <span class="mono">src/assets/images/products/</span> und <span class="mono">dist/images/products/</span> speichern (z. B. <span class="mono">cover_mensch_sein.jpg</span>).
-          </p>
+          <p>Bild quadratisch (1000 × 1000 px) in <span class="mono">src/assets/images/products/</span> und <span class="mono">dist/images/products/</span> ablegen.</p>
         </div>
       </div>
 
-      <!-- Schritt 3 -->
       <div class="step-box">
         <div class="step-num">3</div>
         <div class="step-content">
@@ -549,205 +615,277 @@
             <span class="step-title">Datensatz in Supabase Tabelle „produkte“ anlegen</span>
             <span class="badge badge-supabase">Supabase Database</span>
           </div>
-          <p>
-            Öffne in Supabase den <strong>Table Editor</strong> und wähle die Tabelle <span class="mono">produkte</span>. Klicke auf <em>Insert Row</em> und fülle folgende Felder aus:
-          </p>
-          <table style="margin-top: 4px; font-size: 11px;">
-            <tr><td style="width:25%;"><strong>id</strong></td><td>Eindeutiger System-Schlüssel (z. B. <span class="mono">mensch_sein</span> oder <span class="mono">fds_mensch_sein</span>)</td></tr>
-            <tr><td><strong>titel</strong></td><td>Exakter Buchtitel (z. B. <em>Mut zum Echtsein - Was steckt hinter einem echten Menschen</em>)</td></tr>
-            <tr><td><strong>beschreibung</strong></td><td>Klappentext / Inhaltsbeschreibung für die Detail- und Shopansicht</td></tr>
-            <tr><td><strong>preis / dauer</strong></td><td>Verkaufspreis in Euro (z. B. <span class="mono">4.99</span>) und Gesamtdauer in Sekunden (z. B. <span class="mono">3519</span>)</td></tr>
-            <tr><td><strong>audio_path</strong></td><td>Die in Schritt 1 kopierte Cloudflare-Streaming-URL der MP3-Datei</td></tr>
-            <tr><td><strong>cover_path</strong></td><td>Relativer Bildpfad (z. B. <span class="mono">/images/products/cover_mensch_sein.jpg</span>)</td></tr>
-            <tr><td><strong>play_store_id</strong></td><td>Google In-App Produkt-ID (z. B. <span class="mono">fds_mensch_sein</span>) – <strong>Wichtig für Android!</strong></td></tr>
-            <tr><td><strong>kategorie</strong></td><td>Wert auf <span class="mono">hoerbuch</span> setzen (weitere: <span class="mono">meditation</span>, <span class="mono">self_hypnosis</span>)</td></tr>
+          <table style="font-size: 10.5px; margin-top: 2px;">
+            <tr><td style="width:25%;"><strong>id</strong></td><td>Eindeutiger System-Key (z. B. <span class="mono">mensch_sein</span>)</td><td style="width:25%;"><strong>dauer</strong></td><td>Sekunden (z. B. <span class="mono">3519</span>)</td></tr>
+            <tr><td><strong>titel / beschreibung</strong></td><td>Vollständiger Buchtitel &amp; Klappentext</td><td><strong>audio_path</strong></td><td>Cloudflare-Streaming-URL</td></tr>
+            <tr><td><strong>preis / kategorie</strong></td><td>Preis (z. B. <span class="mono">4.99</span>) &amp; Kategorie <span class="mono">hoerbuch</span></td><td><strong>play_store_id</strong></td><td>Google In-App ID (z. B. <span class="mono">fds_mensch_sein</span>)</td></tr>
           </table>
         </div>
       </div>
 
-      <!-- Schritt 4 -->
       <div class="step-box">
         <div class="step-num">4</div>
         <div class="step-content">
           <div class="step-header">
-            <span class="step-title">In-App-Produkt in der Google Play Console anlegen</span>
+            <span class="step-title">In-App-Produkt in Google Play Console anlegen</span>
             <span class="badge badge-google">Google Play Console</span>
           </div>
-          <p>
-            • Gehe zu <em>Google Play Console > App auswählen > Monetarisieren > In-App-Produkte</em>.<br>
-            • Klicke auf <em>Produkt erstellen</em> und trage dieselbe ID wie in Supabase ein: <span class="mono">fds_mensch_sein</span>.<br>
-            • Titel, Beschreibung und Bruttopreis eintragen und auf <strong>Aktivieren</strong> stellen.
-          </p>
+          <p>Unter <em>Monetarisieren > In-App-Produkte</em> die identische ID (<span class="mono">fds_mensch_sein</span>) erstellen, Preis festlegen und <strong>Aktivieren</strong>.</p>
         </div>
       </div>
 
-      <!-- Schritt 5 -->
       <div class="step-box">
         <div class="step-num">5</div>
         <div class="step-content">
           <div class="step-header">
-            <span class="step-title">Kapitel &amp; Vorlauf-Schutz im Code hinterlegen</span>
-            <span class="badge badge-antigravity">Frontend Code</span>
+            <span class="step-title">Kapitel &amp; Vorlaufschutz im Code eintragen</span>
+            <span class="badge badge-antigravity">AudiobookPage.tsx</span>
           </div>
-          <p>
-            • In <span class="mono">src/pages/AudiobookPage.tsx</span> das Kapitel-Array (Titel, Startzeit in Sekunden) eintragen.<br>
-            • Den Vorlauf-Schutz (rechtlicher Hinweis z. B. 69 Sek. für 01:08 Min.) für dieses Buch aktivieren.
-          </p>
+          <p>In <span class="mono">AudiobookPage.tsx</span> das Kapitel-Array (Titel, Untertitel, Startzeit in Sekunden) eintragen &amp; Disclaimer-Dauer setzen.</p>
         </div>
       </div>
 
-      <!-- Schritt 6 -->
       <div class="step-box">
         <div class="step-num">6</div>
         <div class="step-content">
           <div class="step-header">
-            <span class="step-title">Kompilieren &amp; auf Hostinger veröffentlichen</span>
-            <span class="badge badge-hostinger">Hostinger / Deploy</span>
+            <span class="step-title">Builden &amp; Pushen (Auto-Deploy Hostinger)</span>
+            <span class="badge badge-github">GitHub / Hostinger</span>
           </div>
-          <p>
-            • Im Terminal <span class="mono">npm run build</span> ausführen.<br>
-            • Die erzeugten Dateien aus <span class="mono">dist/</span> auf den Hostinger Server in den Ordner <span class="mono">public_html</span> hochladen (per Web-FTP oder automatischer Git-Synchronisation).
-          </p>
+          <p><span class="mono">npm run build</span> ausführen, mit Git zu GitHub pushen – Hostinger aktualisiert die Seite automatisch!</p>
         </div>
       </div>
     </div>
 
     <div class="page-footer">
-      <span>Flow der Stille • Standard Operating Procedure (SOP)</span>
+      <span>Flow der Stille • Release-Workflows</span>
       <span>Stand: September 2026</span>
       <span>Vertraulich • Für interne Betreuung</span>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SEITE 3: DATENSTRUKTUR & NOTFALL-HANDBUCH  -->
+  <!-- SEITE 3: DATENBANK & SICHERE KAUF-LOGIK    -->
   <!-- ========================================== -->
   <div class="page">
     <div>
       <div class="page-header">
         <div>
           <div class="brand-title">Flow der Stille</div>
-          <div class="brand-subtitle">Datenbank-Struktur &amp; Notfall-Handbuch</div>
+          <div class="brand-subtitle">Datenbank-Struktur &amp; Kaufabwicklung</div>
         </div>
-        <div class="page-badge">Seite 3 / 3 • Wartung &amp; Support</div>
+        <div class="page-badge">Seite 3 / 4 • Datenmodell</div>
       </div>
 
-      <h1>Datenbank-Tabellen, Rollen &amp; Fehlerbehebung</h1>
-      <p style="margin-bottom: 12px;">
-        Alle Nutzerdaten, Freischaltungen und Admin-Rechte werden in Supabase gespeichert. Nachfolgend die Schlüssel-Tabellen und Standard-Lösungen für den Support:
+      <h1>Datenbank-Tabellen, Auth &amp; Kopierschutz</h1>
+      <p style="margin-bottom: 10px;">
+        Alle Benutzerkonten, Käufe und Admin-Rollen liegen in Supabase. Die Daten sind strikt normalisiert und gegen unbefugten Zugriff geschützt:
       </p>
 
       <!-- Supabase Tabellen Übersicht -->
-      <h2>1. Die 3 zentralen Tabellen in Supabase</h2>
-      <div class="grid-3" style="margin-bottom: 12px;">
+      <h2>1. Die 3 Kern-Tabellen in Supabase (PostgreSQL)</h2>
+      <div class="grid-3" style="margin-bottom: 10px;">
         <div class="card card-primary">
           <h3 style="color: var(--primary);">Tabelle: produkte</h3>
-          <p style="font-size: 11px; margin-top: 4px;">
-            Enthält den Katalog aller Produkte.<br>
-            <strong>Wichtige Spalten:</strong><br>
-            • <span class="mono">id</span> (z. B. <span class="mono">mensch_sein</span>)<br>
+          <p style="font-size: 11px; margin-top: 3px;">
+            Katalog aller Hörbücher &amp; Meditationen.<br>
+            • <span class="mono">id</span>: Primärschlüssel (z. B. <span class="mono">mensch_sein</span>)<br>
             • <span class="mono">titel</span>, <span class="mono">beschreibung</span><br>
-            • <span class="mono">audio_path</span> (Cloudflare Link)<br>
-            • <span class="mono">dauer</span> (Sekunden)<br>
-            • <span class="mono">play_store_id</span> (z. B. <span class="mono">fds_mensch_sein</span>)
+            • <span class="mono">audio_path</span>: Cloudflare R2 Stream URL<br>
+            • <span class="mono">dauer</span>: Sekunden (z. B. 3519)<br>
+            • <span class="mono">play_store_id</span>: ID für Google Play
           </p>
         </div>
 
         <div class="card card-primary">
           <h3 style="color: var(--primary);">Tabelle: kaeufe</h3>
-          <p style="font-size: 11px; margin-top: 4px;">
-            Verknüpft Nutzer mit ihren freigeschalteten Produkten.<br>
-            <strong>Wichtige Spalten:</strong><br>
-            • <span class="mono">user_id</span> (Supabase Auth UID)<br>
-            • <span class="mono">produkt_id</span> (entspricht produkte.id)<br>
-            • <span class="mono">created_at</span> (Kaufzeitpunkt)<br>
-            • <span class="mono">status</span> (<span class="mono">completed</span>)
+          <p style="font-size: 11px; margin-top: 3px;">
+            Verknüpft Nutzer mit freigeschalteten Inhalten.<br>
+            • <span class="mono">user_id</span>: Supabase Auth UUID<br>
+            • <span class="mono">produkt_id</span>: Entspricht <span class="mono">produkte.id</span><br>
+            • <span class="mono">status</span>: <span class="mono">'completed'</span><br>
+            • <span class="mono">created_at</span>: Kaufzeitstempel
           </p>
         </div>
 
         <div class="card card-primary">
           <h3 style="color: var(--primary);">Tabelle: profiles</h3>
-          <p style="font-size: 11px; margin-top: 4px;">
-            Nutzerdaten &amp; Berechtigungsstufen.<br>
-            <strong>Wichtige Spalten:</strong><br>
-            • <span class="mono">id</span> (UID aus Auth)<br>
-            • <span class="mono">email</span> (Normalisierte Mailadresse)<br>
+          <p style="font-size: 11px; margin-top: 3px;">
+            Benutzerkonten &amp; Berechtigungen.<br>
+            • <span class="mono">id</span>: UUID des Nutzers<br>
+            • <span class="mono">email</span>: Normalisierte Mailadresse<br>
             • <span class="mono">rolle</span>: <span class="mono">'admin'</span> oder <span class="mono">'user'</span><br>
-            • <span class="mono">is_premium</span> (Abo-Status)
+            • <span class="mono">is_premium</span>: Abo-Freischaltung
           </p>
         </div>
       </div>
 
-      <!-- Wichtige Regeln & Fallstricke -->
-      <h2>2. Wichtige Regeln für reibungslosen Betrieb</h2>
-      <div class="grid-2" style="margin-bottom: 12px;">
-        <div class="card card-accent">
-          <h3>E-Mail Alias-Gleichbehandlung</h3>
-          <p style="font-size: 11.5px; margin-top: 3px;">
-            Im Code ist eine automatische Normalisierung integriert: <span class="mono">@googlemail.com</span> und <span class="mono">@gmail.com</span> werden für dieselbe Person identisch behandelt. Käufe und Admin-Rechte bleiben so bei SSO-Logins immer erhalten.
-          </p>
-        </div>
-
-        <div class="card card-accent">
-          <h3>Flugmodus &amp; Offline-Speicher</h3>
-          <p style="font-size: 11.5px; margin-top: 3px;">
-            Gekaufte Hörbücher werden im geschützten App-Speicher (IndexedDB / Capacitor) abgelegt. Die MP3-Datei liegt niemals ungeschützt im Dateisystem. Der Offline-Player merkt sich die genaue Hörposition automatisch im <span class="mono">localStorage</span>.
-          </p>
-        </div>
-      </div>
-
-      <!-- Notfall & Troubleshooting Checkliste -->
-      <h2>3. Schnelle Hilfe bei typischen Fragen / Problemen</h2>
+      <!-- Datenfluss Kaufabwicklung -->
+      <h2>2. Datenfluss bei Kauf &amp; Freischaltung</h2>
       <table>
         <thead>
           <tr>
-            <th style="width: 28%;">Problem</th>
-            <th style="width: 32%;">Ursache</th>
-            <th style="width: 40%;">Sofort-Lösung</th>
+            <th style="width: 25%;">Kanal</th>
+            <th style="width: 35%;">Ablauf der Transaktion</th>
+            <th style="width: 40%;">Wo wird der Kauf gespeichert?</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Admin-Rechte nach Login weg</strong></td>
-            <td>Login mit neuem SSO-Konto oder geänderter E-Mail-Adresse.</td>
-            <td>In Supabase Tabelle <span class="mono">profiles</span> den Nutzer suchen und Spalte <span class="mono">rolle</span> manuell auf <span class="mono">admin</span> setzen. (Das System besitzt zusätzlich eine Self-Healing-Funktion).</td>
+            <td><strong>Webseite<br>(Stripe / PayPal)</strong></td>
+            <td>Kunde wählt Produkt -> Checkout via Zahlungsdienstleister -> Bei Erfolg Rückleitung zur App.</td>
+            <td>Eintrag in Supabase Tabelle <span class="mono">kaeufe</span> verknüpft mit der <span class="mono">user_id</span>. Zudem im lokalen Offline-Manager für Schnellzugriff.</td>
           </tr>
           <tr>
-            <td><strong>Neues Hörbuch wird nicht angezeigt</strong></td>
-            <td>Eintrag in Supabase Tabelle <span class="mono">produkte</span> fehlt oder Cache aktiv.</td>
-            <td>1. Prüfen ob die Zeile in <span class="mono">produkte</span> existiert.<br>2. Browser-Cache leeren mit <strong>Strg + F5</strong>.<br>3. Prüfen ob <span class="mono">dist/</span> auf Hostinger hochgeladen wurde.</td>
-          </tr>
-          <tr>
-            <td><strong>Audio spielt nicht ab / bricht ab</strong></td>
-            <td>Cloudflare R2 Link falsch oder CORS blockiert Range Requests.</td>
-            <td>1. Öffentliche URL im Browser direkt testen.<br>2. Cloudflare R2 CORS prüfen (GET, HEAD und Header <span class="mono">Range</span> müssen erlaubt sein).</td>
-          </tr>
-          <tr>
-            <td><strong>In-App-Kauf auf Android schlägt fehl</strong></td>
-            <td>Produkt-ID in Google Play weicht von Supabase <span class="mono">play_store_id</span> ab.</td>
-            <td>In der Google Play Console prüfen, ob das In-App-Produkt aktiv ist und die ID exakt (z. B. <span class="mono">fds_mensch_sein</span>) übereinstimmt.</td>
-          </tr>
-          <tr>
-            <td><strong>Google Login zeigt falsche Domain</strong></td>
-            <td>Zustimmungsbildschirm in Google Cloud Console nicht auf Produktion.</td>
-            <td>In Google Cloud Console > <em>APIs &amp; Dienste > OAuth-Zustimmungsbildschirm</em> die autorisierte Domain <span class="mono">flow-der-stille.de</span> prüfen (Status: <em>In Produktion</em>).</td>
+            <td><strong>Android App<br>(Google Play)</strong></td>
+            <td>Kauf über natives Google Play Dialogfenster mit hinterlegtem Google Pay / Guthaben.</td>
+            <td>Google Play Billing liefert den Kauf-Token. Die App trägt den Datensatz in Supabase <span class="mono">kaeufe</span> ein und spiegelt ihn in den internen App-Speicher.</td>
           </tr>
         </tbody>
       </table>
 
-      <!-- Wichtige Zugangsdaten Übersicht -->
-      <div style="margin-top: 14px; padding: 10px 14px; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px;">
+      <!-- Wichtige Schutzmechanismen -->
+      <h2>3. Intelligente Schutz- &amp; Komfortmechanismen</h2>
+      <div class="grid-2">
+        <div class="card card-accent">
+          <h3>E-Mail Alias-Gleichbehandlung (@googlemail vs @gmail)</h3>
+          <p style="font-size: 11px; margin-top: 3px;">
+            Das System normalisiert im Frontend automatisch: <span class="mono">@googlemail.com</span> und <span class="mono">@gmail.com</span> werden für dieselbe Person als identisch behandelt. Käufe, Hörpositionen und Admin-Status gehen auch bei Google-SSO-Login-Wechsel nie verloren.
+          </p>
+        </div>
+
+        <div class="card card-accent">
+          <h3>Flugmodus &amp; geschützter Offline-Speicher</h3>
+          <p style="font-size: 11px; margin-top: 3px;">
+            Hörbücher werden bei Offline-Speicherung in den isolierten App-Cache (IndexedDB / Capacitor Sandbox) geladen. Es existiert keine ungeschützte MP3 im Dateisystem. Der Player merkt sich die Abspielsekunde alle 2 Sekunden im <span class="mono">localStorage</span> für nahtloses Fortsetzen.
+          </p>
+        </div>
+      </div>
+
+      <!-- Support Schnelldiagnose -->
+      <h2 style="margin-top: 10px;">4. Schnelle Hilfe bei typischen Support-Fällen</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30%;">Symptom</th>
+            <th style="width: 30%;">Häufigste Ursache</th>
+            <th style="width: 40%;">Lösung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Admin-Status weg nach Login</strong></td>
+            <td>Login mit neuer E-Mail oder neuem SSO-Alias.</td>
+            <td>In Supabase Tabelle <span class="mono">profiles</span> Spalte <span class="mono">rolle</span> auf <span class="mono">admin</span> setzen. (Self-Healing im Frontend ist ebenfalls aktiv).</td>
+          </tr>
+          <tr>
+            <td><strong>Neues Buch im Store nicht kaufbar</strong></td>
+            <td>Google Play ID weicht von Supabase <span class="mono">play_store_id</span> ab.</td>
+            <td>Prüfen, ob in der Google Play Console das Produkt mit exakt der gleichen ID aktiv geschaltet ist.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-footer">
+      <span>Flow der Stille • Datenmodell &amp; Kaufabwicklung</span>
+      <span>Stand: September 2026</span>
+      <span>Vertraulich • Für interne Betreuung</span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SEITE 4: SICHERHEITS-ROADMAP & ZUKUNFT     -->
+  <!-- ========================================== -->
+  <div class="page">
+    <div>
+      <div class="page-header">
+        <div>
+          <div class="brand-title">Flow der Stille</div>
+          <div class="brand-subtitle">Sicherheits-Roadmap &amp; Zukunfts-Backlog</div>
+        </div>
+        <div class="page-badge">Seite 4 / 4 • Sicherheit &amp; Härtung</div>
+      </div>
+
+      <h1>Sicherheits-Roadmap: Absicherung vor Skalierung</h1>
+      <p style="margin-bottom: 10px;">
+        <strong>Strategische Vormerkung:</strong> Aktuell läuft die Plattform in einer überschaubaren Nutzerphase stabil. Sobald die Nutzerzahlen steigen, müssen folgende 4 Sicherheits- und Härtungsmaßnahmen umgesetzt werden, um das System gegen Angriffe und Datenlecks abzusichern:
+      </p>
+
+      <!-- Sicherheitsbereich 1: Hostinger & GitHub Webhook -->
+      <div class="card card-warning" style="margin-bottom: 8px;">
+        <h3 style="color: #92400E; display: flex; justify-content: space-between;">
+          <span>1. GitHub -> Hostinger Webhook-Absicherung</span>
+          <span class="badge" style="background:#FEF3C7; color:#92400E; border:1px solid #FCD34D;">Priorität: Hoch</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 2px;">
+          <strong>Risiko:</strong> Der Webhook-Endpunkt auf Hostinger, der bei jedem Git-Push automatisch die Webseite neu zieht, könnte ohne Geheimschlüssel von unbefugten Dritten getriggert oder manipuliert werden.<br>
+          <strong>Härtungsmaßnahme:</strong><br>
+          • In den Hostinger Git-Einstellungen ein geheimes <strong>Webhook Secret</strong> hinterlegen.<br>
+          • In GitHub unter <em>Settings > Webhooks</em> dasselbe Secret eintragen, sodass Hostinger die HMAC-Signatur jedes Pushes kryptografisch validiert.<br>
+          • Zugriff auf die Webhook-URL auf GitHub IP-Ranges beschränken.
+        </p>
+      </div>
+
+      <!-- Sicherheitsbereich 2: Server- & Quellcode-Schutz -->
+      <div class="card card-warning" style="margin-bottom: 8px;">
+        <h3 style="color: #92400E; display: flex; justify-content: space-between;">
+          <span>2. Hostinger Server-Härtung &amp; Verzeichnisschutz (.htaccess)</span>
+          <span class="badge" style="background:#FEF3C7; color:#92400E; border:1px solid #FCD34D;">Priorität: Hoch</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 2px;">
+          <strong>Risiko:</strong> Wenn beim Git-Pull versehentlich ein <span class="mono">.git</span>-Ordner oder Konfigurationsdateien im <span class="mono">public_html</span> landen, könnten Angreifer die gesamte Historie herunterladen.<br>
+          <strong>Härtungsmaßnahme:</strong><br>
+          • In der <span class="mono">.htaccess</span>-Datei von Hostinger den direkten Zugriff auf sensible Pfade sperren:<br>
+          <span class="mono">RedirectMatch 404 /\.(git|env|config)</span><br>
+          • Verzeichnis-Listing (Directory Browsing) per <span class="mono">Options -Indexes</span> global abschalten.<br>
+          • HTTP-Sicherheits-Header setzen: <span class="mono">X-Frame-Options: SAMEORIGIN</span>, <span class="mono">X-Content-Type-Options: nosniff</span>.
+        </p>
+      </div>
+
+      <!-- Sicherheitsbereich 3: Supabase RLS & API-Key Schutz -->
+      <div class="card card-danger" style="margin-bottom: 8px;">
+        <h3 style="color: #991B1B; display: flex; justify-content: space-between;">
+          <span>3. Supabase Row Level Security (RLS) &amp; Key-Trennung</span>
+          <span class="badge" style="background:#FEE2E2; color:#991B1B; border:1px solid #FCA5A5;">Priorität: Kritisch</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 2px;">
+          <strong>Risiko:</strong> Im Frontend-Code ist der Supabase Anon-Key sichtbar. Ohne strikte RLS-Regeln könnte ein versierter Nutzer fremde Kaufhistorien oder E-Mails auslesen.<br>
+          <strong>Härtungsmaßnahme:</strong><br>
+          • <strong>RLS auf allen Tabellen aktivieren:</strong> Tabelle <span class="mono">kaeufe</span> darf nur Zeilen liefern, bei denen <span class="mono">auth.uid() = user_id</span> ist.<br>
+          • Tabelle <span class="mono">profiles</span> darf für normale Nutzer nur das eigene Profil lesbar und bearbeitbar machen.<br>
+          • <strong>Niemals den Service-Role-Key im Code verwenden</strong> – dieser verbleibt ausschließlich in geschützten Edge-Functions.
+        </p>
+      </div>
+
+      <!-- Sicherheitsbereich 4: Android Release Keystore Schutz -->
+      <div class="card card-warning" style="margin-bottom: 12px;">
+        <h3 style="color: #92400E; display: flex; justify-content: space-between;">
+          <span>4. Android Keystore-Sicherung &amp; Signaturschutz</span>
+          <span class="badge" style="background:#FEF3C7; color:#92400E; border:1px solid #FCD34D;">Priorität: Mittel</span>
+        </h3>
+        <p style="font-size: 11px; margin-top: 2px;">
+          <strong>Risiko:</strong> Geht die Android Keystore-Datei verloren oder wird kompromittiert, können keine App-Updates mehr im Google Play Store eingereicht werden.<br>
+          <strong>Härtungsmaßnahme:</strong><br>
+          • Keystore-Datei (<span class="mono">.jks</span>) und Passwörter stehen in <span class="mono">.gitignore</span> und dürfen <strong>niemals auf GitHub</strong> hochgeladen werden.<br>
+          • Verschlüsseltes Offline-Backup des Keystores anlegen (z. B. auf sicherem USB-Stick &amp; Passwortmanager).<br>
+          • Google Play App Signing (Play Feature) nutzen, damit Google die App mit dem Master-Key signiert.
+        </p>
+      </div>
+
+      <!-- Notfall-Checkliste für Betreuer -->
+      <div style="padding: 10px 14px; background: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px;">
         <strong style="color: var(--primary-dark); font-size: 12px; display: block; margin-bottom: 3px;">
-          🔑 Zentraler Übergabe-Hinweis für Nachfolger:
+          📌 Zusammenfassung für den nächsten Entwicklungsschritt:
         </strong>
-        <span style="font-size: 11.5px; color: var(--text-muted);">
-          Alle Hauptdienste laufen unter dem Google-/Admin-Konto von Dirk Schmetzer (<span class="mono">dirk.schmetzer@gmail.com</span> / <span class="mono">dirk.online.services@gmail.com</span>). Vor Übergabe an Dritte sollten bei Hostinger, Supabase und Cloudflare entsprechende Team-Einladungen oder gesicherte Zugangsdaten übergeben werden.
+        <span style="font-size: 11px; color: var(--text-muted);">
+          Dieses Dokument ist im Git-Repository gesichert. Wenn das Marketing anläuft und die Nutzerbasis wächst, wird diese Seite 4 Schritt für Schritt als Sicherheits-Sprint abgearbeitet, um Hostinger, GitHub und Supabase abzusichern.
         </span>
       </div>
     </div>
 
     <div class="page-footer">
-      <span>Flow der Stille • Systemdokumentation &amp; Handbuch</span>
+      <span>Flow der Stille • Sicherheits-Roadmap &amp; Notizen</span>
       <span>Stand: September 2026</span>
       <span>Vertraulich • Für interne Betreuung</span>
     </div>
