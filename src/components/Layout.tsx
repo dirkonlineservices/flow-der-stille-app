@@ -20,6 +20,7 @@ import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
 import { NamePromptModal } from './NamePromptModal';
 import { AdminWelcomeModal } from './AdminWelcomeModal';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
+import { APP_VERSION } from '../version';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -505,7 +506,7 @@ export default function Layout() {
                 {/* App Version Badge */}
                 <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
                   <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
-                    Flow der Stille v5.3.0
+                    Flow der Stille v{APP_VERSION}
                   </span>
                 </div>
               </div>

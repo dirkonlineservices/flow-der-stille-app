@@ -5,6 +5,7 @@ import { isKnownAdminEmail } from '../lib/adminSecurity';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
+import { APP_VERSION } from '../version';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -234,17 +235,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const lastLoginTime = supabaseUser.last_sign_in_at || new Date().toISOString();
 
           // Ermittle exakte App-Version des Handys / Browsers
-          let clientVersion = 'Web v5.3.0';
+          let clientVersion = `Web v${APP_VERSION}`;
           try {
             if (Capacitor.isNativePlatform()) {
               const info = await CapApp.getInfo();
-              clientVersion = `Android App v${info.version}`;
+              clientVersion = `Android App v${info.version || APP_VERSION}`;
             } else {
               const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-              clientVersion = isMobile ? 'Mobile Web v5.3.0' : 'Desktop Web v5.3.0';
+              clientVersion = isMobile ? `Mobile Web v${APP_VERSION}` : `Desktop Web v${APP_VERSION}`;
             }
           } catch (e) {
-            clientVersion = 'Web v5.3.0';
+            clientVersion = `Web v${APP_VERSION}`;
           }
 
           const profileUpdates: any = { 

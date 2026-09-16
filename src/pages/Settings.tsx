@@ -25,6 +25,7 @@ import {
   getOfflineProductById, 
   getProductCoverImage 
 } from '../lib/offlineProductsService';
+import { APP_VERSION, getClientAppVersion } from '../version';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -60,6 +61,13 @@ export default function Settings() {
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isPurchasesOpen, setIsPurchasesOpen] = useState(false);
   const [isAdminSectionOpen, setIsAdminSectionOpen] = useState(false);
+  const [appDisplayVersion, setAppDisplayVersion] = useState<string>(APP_VERSION);
+
+  useEffect(() => {
+    getClientAppVersion().then((v) => {
+      if (v) setAppDisplayVersion(v);
+    });
+  }, []);
 
   // Admin Live-Statistiken State
   const [adminStats, setAdminStats] = useState<{
@@ -1220,7 +1228,7 @@ export default function Settings() {
           {/* App Version Info Footer */}
           <div className="pt-2 text-center">
             <span className="text-[11px] font-mono text-[var(--color-text-muted)] opacity-70">
-              Flow der Stille • Version v5.2.2
+              Flow der Stille • Version v{appDisplayVersion}
             </span>
           </div>
 
