@@ -294,7 +294,7 @@ export default function AudiobookPage() {
     (productData?.id && (productData.id.includes('mensch_sein') || productData.id.includes('echtsein'))) || 
     (productId && (productId.includes('mensch_sein') || productId.includes('echtsein')))
   );
-  const coverImage = isMenschSein ? '/images/products/cover_mensch_sein.jpg' : '/images/products/cover_schmetterling.jpg';
+  const coverImage = isMenschSein ? '/images/products/cover_mensch_sein.jpg?v=2' : '/images/products/cover_schmetterling.jpg';
   const chapters = isMenschSein ? MENSCH_SEIN_CHAPTERS : SCHMETTERLING_CHAPTERS;
   const title = productData?.titel || (isMenschSein ? 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen' : 'Der Tag, an dem der Schmetterling erwachte');
   const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';

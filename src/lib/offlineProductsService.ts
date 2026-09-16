@@ -343,7 +343,7 @@ export function getProductCoverImage(prod: any): string {
   const kat = (prod.kategorie || '').toLowerCase();
 
   if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
-    return '/images/products/cover_mensch_sein.jpg';
+    return '/images/products/cover_mensch_sein.jpg?v=2';
   }
   if (id.includes('schmetterling') || title.includes('schmetterling') || id.includes('hoerbuch') || title.includes('hörbuch') || title.includes('hoerbuch')) {
     return '/images/products/cover_schmetterling.jpg';
