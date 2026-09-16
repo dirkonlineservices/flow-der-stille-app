@@ -924,8 +924,8 @@ export default function PremiumShopDashboard() {
 
               <div className="p-5 lg:p-7 flex flex-col">
 
-              {/* Cover Image Header Banner */}
-              <div className="relative h-48 sm:h-56 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
+              {/* Cover Image Header Banner (optimal proportioniert im Querformat) */}
+              <div className="relative h-56 sm:h-64 md:h-72 lg:h-80 w-full mb-6 rounded-xl overflow-hidden shadow-sm group">
                 <img 
                   src={getProductCoverImage(produkt)} 
                   alt={produkt.titel} 
