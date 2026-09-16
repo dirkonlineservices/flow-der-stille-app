@@ -106,8 +106,8 @@ export function AudiobookPlayerModal({
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
 
-  // Schutz-Mechanismus für den rechtlichen Hinweis (Disclaimer bis 01:19 Min. = 79 Sek.)
-  const DISCLAIMER_DURATION = 79;
+  // Schutz-Mechanismus für den rechtlichen Hinweis (Disclaimer bis erstes echtes Kapitel z. B. 01:08 oder 01:19 Min.)
+  const DISCLAIMER_DURATION = (chapters.length > 1 && chapters[1]?.startTime) ? chapters[1].startTime : 79;
   const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
   const [hasListenedDisclaimer, setHasListenedDisclaimer] = useState<boolean>(() => {
     try {
@@ -387,7 +387,7 @@ export function AudiobookPlayerModal({
   const skipSeconds = (seconds: number) => {
     if (!audioRef.current) return;
     if (!hasListenedDisclaimer && seconds > 0) {
-      setDisclaimerNotice('Vorspulen ist während des rechtlichen Hinweises (erste 1:19 Min.) gesperrt. Du musst ihn dir einmalig anhören.');
+      setDisclaimerNotice(`Vorspulen ist während des rechtlichen Hinweises (erste ${formatTime(DISCLAIMER_DURATION)} Min.) gesperrt. Du musst ihn dir einmalig anhören.`);
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
@@ -398,7 +398,7 @@ export function AudiobookPlayerModal({
 
   const jumpToChapter = (chapter: AudiobookChapter) => {
     if (!hasListenedDisclaimer && chapter.id !== 'intro' && chapter.startTime >= DISCLAIMER_DURATION) {
-      setDisclaimerNotice('Du musst dir zuerst den rechtlichen Hinweis (1:19 Min.) einmalig anhören. Danach kannst du in den Kapiteln hüpfen.');
+      setDisclaimerNotice(`Du musst dir zuerst den rechtlichen Hinweis (${formatTime(DISCLAIMER_DURATION)} Min.) einmalig anhören. Danach kannst du in den Kapiteln hüpfen.`);
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }

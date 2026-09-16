@@ -69,12 +69,75 @@ const SCHMETTERLING_CHAPTERS: FormattedAudiobookChapter[] = [
 const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'intro', 
-    number: 'Hörbuch',
-    title: 'Mut zum Echtsein – Was steckt hinter einem echten Menschen', 
-    subtitle: 'Vollständige ungekürzte Hörreise',
+    number: 'Einleitung',
+    title: 'Einleitung und rechtlicher Hinweis', 
+    subtitle: 'Wichtige Orientierung vor Beginn der Hörreise',
     startTime: 0, 
     formattedTime: '00:00',
-    duration: '58:39 Min.'
+    duration: '1:09 Min.'
+  },
+  { 
+    id: 'ch1', 
+    number: 'Kapitel 1',
+    title: 'Die Fassade bröckelt – Was bedeutet es, echt zu sein?', 
+    subtitle: 'Der Mut, Masken abzulegen und zu sich selbst zu stehen',
+    startTime: 69, 
+    formattedTime: '01:09',
+    duration: '11:00 Min.'
+  },
+  { 
+    id: 'ch2', 
+    number: 'Kapitel 2',
+    title: 'Der spirituelle Werkzeugkasten – Bewusstsein mit Humor', 
+    subtitle: 'Leichtigkeit und Achtsamkeit im Alltag integrieren',
+    startTime: 729, 
+    formattedTime: '12:09',
+    duration: '8:41 Min.'
+  },
+  { 
+    id: 'ch3', 
+    number: 'Kapitel 3',
+    title: 'In die Tiefe tauchen – Schatten & alte Muster', 
+    subtitle: 'Alte Glaubenssätze erkennen und liebevoll transformieren',
+    startTime: 1250, 
+    formattedTime: '20:50',
+    duration: '8:46 Min.'
+  },
+  { 
+    id: 'ch4', 
+    number: 'Kapitel 4',
+    title: 'Die innere Ausrichtung – Klarheit, Willenskraft & Wege', 
+    subtitle: 'Den inneren Kompass neu justieren und fokussieren',
+    startTime: 1776, 
+    formattedTime: '29:36',
+    duration: '8:39 Min.'
+  },
+  { 
+    id: 'ch5', 
+    number: 'Kapitel 5',
+    title: 'Die große Ausrichtung – Sehnsucht & Freiheit', 
+    subtitle: 'Den eigenen Herzensweg mutig und frei beschreiten',
+    startTime: 2295, 
+    formattedTime: '38:15',
+    duration: '8:40 Min.'
+  },
+  { 
+    id: 'ch6', 
+    number: 'Kapitel 6',
+    title: 'Die Heimkehr ins Herz – Kraft bündeln & Wirken', 
+    subtitle: 'Ganz bei dir ankommen und aus dem Herzen leben',
+    startTime: 2815, 
+    formattedTime: '46:55',
+    duration: '8:44 Min.'
+  },
+  { 
+    id: 'outro', 
+    number: 'Klangreise',
+    title: 'Klassisches Musikstück – Vollständiger Ausklang', 
+    subtitle: 'Hinterlegtes Musikstück zum Nachspüren und Entspannen',
+    startTime: 3339, 
+    formattedTime: '55:39',
+    duration: '3:00 Min.'
   }
 ];
 
@@ -501,8 +564,9 @@ export default function AudiobookPage() {
 
           {/* Saubere Liste der Kapitel */}
           <div className="space-y-3">
-            {SCHMETTERLING_CHAPTERS.map((ch) => {
-              const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= 79;
+            {chapters.map((ch) => {
+              const disclaimerThreshold = isMenschSein ? 69 : 79;
+              const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= disclaimerThreshold;
               const isAvailable = isOwned && (hasListenedDisclaimer || ch.id === 'intro');
 
               return (
@@ -599,7 +663,7 @@ export default function AudiobookPage() {
                 Rechtlicher Hinweis erforderlich
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Du musst dir zuerst die Einleitung und den rechtlichen Hinweis (1:19 Min.) einmalig vollständig anhören. Danach werden alle Kapitel zur Direktauswahl freigeschaltet und du kannst frei in den Kapiteln hüpfen.
+                Du musst dir zuerst die Einleitung und den rechtlichen Hinweis ({isMenschSein ? '1:08 Min.' : '1:19 Min.'}) einmalig vollständig anhören. Danach werden alle Kapitel zur Direktauswahl freigeschaltet und du kannst frei in den Kapiteln hüpfen.
               </p>
             </div>
 
@@ -645,7 +709,7 @@ export default function AudiobookPage() {
                 {selectedLockedChapter?.title || 'Hörbuch freischalten'}
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Dieses Kapitel ist Teil des vollständigen Hörbuchs. Schalte das Werk einmalig für <strong>{priceDisplay}</strong> frei, um alle 4 Kapitel und die vollen 58 Minuten dauerhaft anzuhören.
+                Dieses Kapitel ist Teil des vollständigen Hörbuchs. Schalte das Werk einmalig für <strong>{priceDisplay}</strong> frei, um alle {chapters.length} Kapitel und die vollen {Math.floor((productData?.dauer || (isMenschSein ? 3519 : 3523)) / 60)} Minuten dauerhaft anzuhören.
               </p>
             </div>
 
