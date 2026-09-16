@@ -400,6 +400,44 @@ export function AudiobookPlayerModal({
     };
   }, [playableUrl, chapters, productId, title]);
 
+  // Polling-Fallback: Fortschrittsbalken & Zeitanzeige verlässlich synchronisieren.
+  // Das timeupdate-Event allein kann bei preload="none" und dynamischem src-Wechsel unzuverlässig sein.
+  // Dieser Interval liest currentTime direkt aus dem Audio-Element und aktualisiert den State.
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const id = setInterval(() => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      const cur = audio.currentTime;
+      setCurrentTime(cur);
+
+      // Aktives Kapitel synchron mitführen
+      for (let i = chapters.length - 1; i >= 0; i--) {
+        if (cur >= chapters[i].startTime) {
+          setActiveChapterId(chapters[i].id);
+          break;
+        }
+      }
+
+      // Disclaimer-Grenze prüfen
+      if (cur >= DISCLAIMER_DURATION) {
+        const alreadySet = localStorage.getItem(DISCLAIMER_KEY) === 'true';
+        if (!alreadySet) {
+          setHasListenedDisclaimer(true);
+          localStorage.setItem(DISCLAIMER_KEY, 'true');
+        }
+      }
+
+      // Fortschritt sichern (bei ganzen Vielfachen von 4 Sekunden)
+      if (cur > 5 && Math.floor(cur) % 4 === 0) {
+        saveProgress(cur);
+      }
+    }, 200); // 5× pro Sekunde – flüssig für einen Fortschrittsbalken
+
+    return () => clearInterval(id);
+  }, [isPlaying, chapters]);
+
   // 4. Steuerungsfunktionen
   const togglePlay = () => {
     const audio = audioRef.current;
