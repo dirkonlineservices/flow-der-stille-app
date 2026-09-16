@@ -1,156 +1,104 @@
 -- ==============================================================================
--- FLOW DER STILLE – SUPABASE ROW LEVEL SECURITY (RLS) & SICHERHEITS-HÄRTUNG
+-- FLOW DER STILLE – VOLLSTÄNDIGE RLS-HÄRTUNG (SELBSTREINIGEND & REKURSIONSSICHER)
 -- Projekt: fsfoxgezrcqkjhfyqcwa
--- Datum: 16. September 2026
 -- ==============================================================================
 
--- ------------------------------------------------------------------------------
--- 1. TABELLE: produkte (Katalog aller Hörbücher & Meditationen)
--- ------------------------------------------------------------------------------
--- RLS aktivieren
-ALTER TABLE IF EXISTS produkte ENABLE ROW LEVEL SECURITY;
+-- 1. SICHERHEITSFUNKTION: is_admin() mit SECURITY DEFINER (verhindert Rekursionen auf profiles)
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT coalesce(
+    (SELECT lower(rolle) = 'admin' FROM public.profiles WHERE id = auth.uid() LIMIT 1),
+    false
+  );
+$$;
 
--- Alte Policies entfernen (für sauberen idempotent Rerun)
-DROP POLICY IF EXISTS "Produkte sind öffentlich lesbar" ON produkte;
-DROP POLICY IF EXISTS "Nur Admins dürfen Produkte ändern" ON produkte;
-DROP POLICY IF EXISTS "Enable read access for all users" ON produkte;
+-- 2. ALLE ALTEN POLICIES AUF DEN 3 TABELLEN AUTOMATISCH ENTFERNEN
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (
+        SELECT schemaname, tablename, policyname 
+        FROM pg_policies 
+        WHERE schemaname = 'public' 
+          AND tablename IN ('kaeufe', 'profiles', 'produkte')
+    ) LOOP
+        EXECUTE format('DROP POLICY IF EXISTS %I ON %I.%I', r.policyname, r.schemaname, r.tablename);
+    END LOOP;
+END $$;
 
--- LESEN (SELECT): Jeder (auch anonyme Web-Besucher) darf den Produktkatalog ansehen
-CREATE POLICY "Produkte sind öffentlich lesbar"
-ON produkte FOR SELECT
+-- 3. RLS AUF ALLEN TABELLEN AKTIVIEREN
+ALTER TABLE public.produkte ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.kaeufe ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- 4. PRODUKTE: Öffentlicher Lesezugriff für den Katalog, Bearbeitung nur durch Admin
+CREATE POLICY "produkte_select_public"
+ON public.produkte FOR SELECT
 TO public
 USING (true);
 
--- SCHREIBEN (INSERT / UPDATE / DELETE): Nur Administratoren (rolle = 'admin')
-CREATE POLICY "Nur Admins dürfen Produkte ändern"
-ON produkte FOR ALL
+CREATE POLICY "produkte_all_admin"
+ON public.produkte FOR ALL
 TO authenticated
-USING (
-  EXISTS (
-    SELECT 1 FROM profiles
-    WHERE profiles.id = auth.uid()
-      AND lower(profiles.rolle) = 'admin'
-  )
-)
-WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM profiles
-    WHERE profiles.id = auth.uid()
-      AND lower(profiles.rolle) = 'admin'
-  )
-);
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
 
-
--- ------------------------------------------------------------------------------
--- 2. TABELLE: kaeufe (Kaufhistorie & Freischaltungen)
--- ------------------------------------------------------------------------------
--- RLS aktivieren
-ALTER TABLE IF EXISTS kaeufe ENABLE ROW LEVEL SECURITY;
-
--- Alte Policies entfernen
-DROP POLICY IF EXISTS "Nutzer dürfen eigene Käufe lesen" ON kaeufe;
-DROP POLICY IF EXISTS "Nutzer dürfen eigene Käufe anlegen" ON kaeufe;
-DROP POLICY IF EXISTS "Admins dürfen alle Käufe verwalten" ON kaeufe;
-DROP POLICY IF EXISTS "Enable read access for all users" ON kaeufe;
-
--- LESEN (SELECT):
--- Ein Nutzer sieht NUR seine eigenen Käufe (oder über Googlemail/Gmail-Alias verknüpfte) ODER wenn er Admin ist
-CREATE POLICY "Nutzer dürfen eigene Käufe lesen"
-ON kaeufe FOR SELECT
+-- 5. KAEUFE: Nur eigene Käufe sichtbar (kein anonymer Zugriff!)
+CREATE POLICY "kaeufe_select_owner"
+ON public.kaeufe FOR SELECT
 TO authenticated
 USING (
   auth.uid() = user_id
+  OR public.is_admin()
   OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
-  OR EXISTS (
-    SELECT 1 FROM profiles p_owner
-    JOIN profiles p_viewer ON (
-      replace(lower(p_owner.email), '@googlemail.com', '@gmail.com') = 
-      replace(lower(p_viewer.email), '@googlemail.com', '@gmail.com')
-    )
-    WHERE p_viewer.id = auth.uid()
-      AND p_owner.id = kaeufe.user_id
+    SELECT 1 FROM public.profiles p_owner
+    WHERE p_owner.id = kaeufe.user_id
+      AND replace(lower(p_owner.email), '@googlemail.com', '@gmail.com') = 
+          replace(lower(coalesce(auth.jwt() ->> 'email', '')), '@googlemail.com', '@gmail.com')
   )
 );
 
--- EINFÜGEN (INSERT):
--- Ein Nutzer darf für sich selbst (user_id = auth.uid()) Käufe registrieren
-CREATE POLICY "Nutzer dürfen eigene Käufe anlegen"
-ON kaeufe FOR INSERT
+CREATE POLICY "kaeufe_insert_owner"
+ON public.kaeufe FOR INSERT
 TO authenticated
 WITH CHECK (
   auth.uid() = user_id
-  OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
+  OR public.is_admin()
 );
 
-
--- ------------------------------------------------------------------------------
--- 3. TABELLE: profiles (Nutzerdaten & Rollen)
--- ------------------------------------------------------------------------------
--- RLS aktivieren
-ALTER TABLE IF EXISTS profiles ENABLE ROW LEVEL SECURITY;
-
--- Alte Policies entfernen
-DROP POLICY IF EXISTS "Nutzer dürfen eigenes Profil lesen" ON profiles;
-DROP POLICY IF EXISTS "Nutzer dürfen eigenes Profil anlegen" ON profiles;
-DROP POLICY IF EXISTS "Nutzer dürfen eigenes Profil bearbeiten" ON profiles;
-DROP POLICY IF EXISTS "Admins dürfen alle Profile verwalten" ON profiles;
-DROP POLICY IF EXISTS "Enable read access for all users" ON profiles;
-
--- LESEN (SELECT):
--- Nutzer darf eigenes Profil lesen, Aliase (@googlemail = @gmail), Admins dürfen alle Profile sehen
-CREATE POLICY "Nutzer dürfen eigenes Profil lesen"
-ON profiles FOR SELECT
+-- 6. PROFILES: Nur eigenes Profil sichtbar (kein anonymer Zugriff!)
+CREATE POLICY "profiles_select_owner"
+ON public.profiles FOR SELECT
 TO authenticated
 USING (
   auth.uid() = id
-  OR replace(lower(email), '@googlemail.com', '@gmail.com') = replace(lower(coalesce(auth.jwt() ->> 'email', '')), '@googlemail.com', '@gmail.com')
-  OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
+  OR replace(lower(email), '@googlemail.com', '@gmail.com') = 
+     replace(lower(coalesce(auth.jwt() ->> 'email', '')), '@googlemail.com', '@gmail.com')
+  OR public.is_admin()
 );
 
--- EINFÜGEN (INSERT / UPSERT):
--- Neuer Nutzer darf bei Registrierung / Google SSO sein eigenes Profil anlegen
-CREATE POLICY "Nutzer dürfen eigenes Profil anlegen"
-ON profiles FOR INSERT
+CREATE POLICY "profiles_insert_owner"
+ON public.profiles FOR INSERT
 TO authenticated
 WITH CHECK (
   auth.uid() = id
-  OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
+  OR public.is_admin()
 );
 
--- AKTUALISIEREN (UPDATE):
--- Nutzer darf eigenes Profil anpassen (Name, Newsletter etc.), Admins dürfen alle Profile verwalten
-CREATE POLICY "Nutzer dürfen eigenes Profil bearbeiten"
-ON profiles FOR UPDATE
+CREATE POLICY "profiles_update_owner"
+ON public.profiles FOR UPDATE
 TO authenticated
 USING (
   auth.uid() = id
-  OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
+  OR public.is_admin()
 )
 WITH CHECK (
   auth.uid() = id
-  OR EXISTS (
-    SELECT 1 FROM profiles p_admin
-    WHERE p_admin.id = auth.uid()
-      AND lower(p_admin.rolle) = 'admin'
-  )
+  OR public.is_admin()
 );
