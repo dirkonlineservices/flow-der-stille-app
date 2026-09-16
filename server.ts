@@ -84,6 +84,40 @@ if (recipeCount.count === 0) {
 app.use(express.json());
 app.use(cookieParser());
 
+// -----------------------------------------------------------------------
+// SICHERHEITS-HEADER: Werden bei jeder Antwort mitgeschickt
+// (Hostinger Node.js Hosting ignoriert .htaccess mod_headers – daher hier)
+// -----------------------------------------------------------------------
+app.use((_req, res, next) => {
+  // Verhindert Einbetten in fremde iFrames (Clickjacking-Schutz)
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  // Verhindert MIME-Type-Sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // XSS-Filter für ältere Browser
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  // Referrer-Datenschutz
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // Browser-APIs einschränken
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  // HSTS: Nur HTTPS für 1 Jahr
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  // Content Security Policy
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: blob: https:",
+      "connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com",
+      "frame-src https://www.paypal.com https://www.sandbox.paypal.com",
+      "media-src 'self' https://cdn.flow-der-stille.de blob:",
+    ].join('; ')
+  );
+  next();
+});
+
 // Middleware to verify JWT
 const authenticateToken = (req: any, res: any, next: any) => {
   const token = req.cookies.token;
