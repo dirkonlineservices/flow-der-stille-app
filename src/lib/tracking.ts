@@ -6,7 +6,7 @@ declare global {
 }
 
 export const CONSENT_STORAGE_KEY = 'flow_analytics_consent';
-import { initMetaPixel, trackMetaLead, trackMetaPurchase } from './metaPixel';
+import { initMetaPixel, trackMetaLead, trackMetaPurchase, captureTrafficSource } from './metaPixel';
 
 /**
  * Prüft, ob Analytics/Tracking vom Nutzer explizit zugelassen wurde.
@@ -81,6 +81,7 @@ export const setAnalyticsConsent = (choice: 'accepted' | 'rejected') => {
  */
 export const initConsentState = () => {
   if (typeof window === 'undefined') return;
+  captureTrafficSource();
   const status = localStorage.getItem(CONSENT_STORAGE_KEY);
   const cookieStatus = localStorage.getItem('flow_cookie_consent_status');
   const isAccepted = status === 'accepted' || cookieStatus === 'all' || cookieStatus === 'accepted';

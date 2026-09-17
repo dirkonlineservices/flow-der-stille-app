@@ -205,7 +205,7 @@ export default function Register() {
         status: 'success',
         user_id: data?.user?.id || 'unknown'
       });
-      trackMetaRegistration('Email');
+      trackMetaRegistration({ method: 'Email', email: normalizedEmail, firstName });
 
       setIsSubmitted(true);
     } catch (err) {

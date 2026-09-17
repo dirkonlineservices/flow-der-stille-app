@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { APP_VERSION } from '../version';
+import { setMetaUserProperties } from '../lib/metaPixel';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -229,6 +230,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Letzten Login / Aktivitäts-Zeitstempel & installierte App-Version in profiles festhalten
     if (supabaseUser.id) {
+      if (supabaseUser.email) {
+        setMetaUserProperties({ email: supabaseUser.email });
+      }
       (async () => {
         try {
           const supabase = getSupabase();

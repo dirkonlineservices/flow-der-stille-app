@@ -1,5 +1,6 @@
 import { getSupabase } from './supabaseClient';
 import { getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP } from './billing';
+import { trackMetaPurchase } from './metaPixel';
 
 interface VerifyPurchaseParams {
   purchaseToken: string;
@@ -60,6 +61,16 @@ export const verifyGooglePlayPurchase = async ({
     }).eq('id', userId);
 
     verifiedSuccessfully = true;
+
+    // Meta Pixel In-App Purchase Event mit Plattform-Tag
+    trackMetaPurchase({
+      value: price || 1.99,
+      currency: 'EUR',
+      content_ids: [dbProductId],
+      content_name: `Google Play: ${dbProductId}`,
+      content_type: 'app_in_app_purchase',
+      platform: 'app'
+    });
   } catch (dbErr) {
     console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
   }
