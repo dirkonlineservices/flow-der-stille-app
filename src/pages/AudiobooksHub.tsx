@@ -708,7 +708,13 @@ export default function AudiobooksHub() {
       {/* Registrierungs-Modal zur Haftungsabsicherung für Gäste nach Ablauf der 45s-Hörprobe */}
       <FullAudioRegistrationModal
         isOpen={showRegModal}
-        onClose={() => setShowRegModal(false)}
+        onClose={() => {
+          setShowRegModal(false);
+          if (snippetAudioRef.current && !user) {
+            snippetAudioRef.current.currentTime = SNIPPET_START_TIME;
+            setSnippetCurrentTime(SNIPPET_START_TIME);
+          }
+        }}
         title="Klangprobe vollständig anhören"
         subtitle="Kurze Registrierung zur rechtlichen Haftungsabsicherung"
         returnPath="/hoerbuecher"

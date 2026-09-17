@@ -582,9 +582,16 @@ export default function HypnosisLanding() {
       {/* Registrierungs-Modal mit Haftungsausschluss-Begründung */}
       <FullAudioRegistrationModal
         isOpen={showRegModal}
-        onClose={() => setShowRegModal(false)}
+        onClose={() => {
+          setShowRegModal(false);
+          if (audioRef.current && !user) {
+            audioRef.current.currentTime = 0;
+            setCurrentTime(0);
+          }
+        }}
         audioTitle="Selbsthypnose: Tiefer und erholsamer Schlaf"
         durationText="12:54 Min."
+        returnPath="/selbsthypnose"
       />
     </div>
   );

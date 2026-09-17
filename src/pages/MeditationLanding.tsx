@@ -573,9 +573,16 @@ export default function MeditationLanding() {
       {/* Registrierungs-Modal mit Haftungsausschluss-Begründung */}
       <FullAudioRegistrationModal
         isOpen={showRegModal}
-        onClose={() => setShowRegModal(false)}
+        onClose={() => {
+          setShowRegModal(false);
+          if (audioRef.current && !user) {
+            audioRef.current.currentTime = 0;
+            setCurrentTime(0);
+          }
+        }}
         audioTitle="Meditation zur Herzöffnung"
         durationText="16:45 Min."
+        returnPath="/meditation"
       />
     </div>
   );
