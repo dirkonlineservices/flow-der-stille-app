@@ -11,7 +11,11 @@
 
 import { isAnalyticsAllowed } from './tracking';
 
-export const META_PIXEL_ID = '1065633849494606';
+export const META_PIXEL_IDS = [
+  '1065633849494606', // Flow der Stille – Pixel (Business Manager / DS Online Services)
+  '1195226879163757'  // Dirk Schmetzer – Pixel (Werbekonto in Anzeige)
+];
+export const META_PIXEL_ID = META_PIXEL_IDS[0];
 
 declare global {
   interface Window {
@@ -105,11 +109,13 @@ export function initMetaPixel(userData?: { email?: string; firstName?: string; l
     if (userData?.firstName) advancedMatching.fn = userData.firstName.trim().toLowerCase();
     if (userData?.lastName) advancedMatching.ln = userData.lastName.trim().toLowerCase();
 
-    if (Object.keys(advancedMatching).length > 0) {
-      window.fbq('init', META_PIXEL_ID, advancedMatching);
-    } else {
-      window.fbq('init', META_PIXEL_ID);
-    }
+    META_PIXEL_IDS.forEach((id) => {
+      if (Object.keys(advancedMatching).length > 0) {
+        window.fbq('init', id, advancedMatching);
+      } else {
+        window.fbq('init', id);
+      }
+    });
 
     const platform = getPlatformType();
     const traffic = captureTrafficSource();
@@ -133,7 +139,11 @@ export function setMetaUserProperties(user: { email?: string; firstName?: string
     if (user.email) payload.em = user.email.trim().toLowerCase();
     if (user.firstName) payload.fn = user.firstName.trim().toLowerCase();
     if (user.lastName) payload.ln = user.lastName.trim().toLowerCase();
-    window.fbq('setUserProperties', META_PIXEL_ID, payload);
+    META_PIXEL_IDS.forEach((id) => {
+      try {
+        window.fbq('setUserProperties', id, payload);
+      } catch {}
+    });
   } catch (e) {
     console.warn('Meta setUserProperties notice:', e);
   }
