@@ -344,7 +344,7 @@ export default function CookieBanner() {
                   </div>
                   <div>
                     <strong className="text-[var(--text-main)] block mb-1">2. Analyse &amp; Optimierung (Optional)</strong>
-                    Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden, um die Plattform DSGVO-konform weiterzuentwickeln.
+                    Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden (Google Analytics, Meta Pixel), um die Plattform DSGVO-konform weiterzuentwickeln.
                   </div>
                 </div>
               )}

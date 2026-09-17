@@ -6,6 +6,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
 import { reportCriticalError } from '../lib/errorLogger';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
+import { trackMetaPurchase } from '../lib/metaPixel';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -272,6 +273,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                         payment_method: 'paypal',
                         items: [{ item_id: produkt?.id, item_name: produkt?.titel, price: produkt?.preis }],
                       },
+                    });
+                    trackMetaPurchase({
+                      value: priceValue,
+                      currency: 'EUR',
+                      content_ids: [produkt?.id || orderId],
+                      content_name: produkt?.titel || 'Produktkauf'
                     });
                   }
 

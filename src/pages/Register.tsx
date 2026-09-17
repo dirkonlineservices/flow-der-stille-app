@@ -10,6 +10,7 @@ import SEO from '../components/SEO';
 import { checkConsentForAuth } from '../components/CookieBanner';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { trackMetaRegistration, trackMetaLead } from '../lib/metaPixel';
 
 export default function Register() {
   const { login } = useAuth();
@@ -204,6 +205,7 @@ export default function Register() {
         status: 'success',
         user_id: data?.user?.id || 'unknown'
       });
+      trackMetaRegistration('Email');
 
       setIsSubmitted(true);
     } catch (err) {

@@ -91,7 +91,7 @@ Options -Indexes
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
   # Content Security Policy: Nur eigene und bekannte Quellen erlaubt
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com; frame-src https://www.paypal.com https://www.sandbox.paypal.com;"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com https://js.stripe.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: https://www.facebook.com; connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com https://connect.facebook.net https://www.facebook.com; frame-src https://www.paypal.com https://www.sandbox.paypal.com;"
 </IfModule>
 
 # -----------------------------------------------------------

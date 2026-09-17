@@ -81,6 +81,7 @@ export default function Datenschutz() {
               <li><strong>Google Search Console:</strong> Werkzeug zur Überwachung der Auffindbarkeit unserer Plattform in der Google-Suche (ohne Erfassung personenbezogener Nutzerdaten).</li>
               <li><strong>Firebase Crashlytics:</strong> Erfassung anonymer Absturzberichte zur Optimierung der App-Stabilität (Art. 6 Abs. 1 lit. f DSGVO).</li>
               <li><strong>Google Ads:</strong> Einsatz von Werbeanzeigen und Conversion-Tracking zur Reichweitenmessung unserer Marketingkampagnen.</li>
+              <li><strong>Meta Pixel (Facebook & Instagram):</strong> Zur statistischen Auswertung und Optimierung von Werbekampagnen (Anbieter: Meta Platforms Ireland Limited, 4 Grand Canal Square, Dublin 2, Irland). Der Pixel wird erst nach Ihrer ausdrücklichen Zustimmung über unser Cookie-Banner aktiviert (Art. 6 Abs. 1 lit. a DSGVO). Die Einwilligung kann jederzeit widerrufen werden.</li>
             </ul>
 
             <div className="mt-4 p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex items-center justify-between gap-4 flex-wrap">

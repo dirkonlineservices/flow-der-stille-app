@@ -106,11 +106,11 @@ app.use((_req, res, next) => {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.paypalobjects.com https://connect.facebook.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com",
+      "img-src 'self' data: blob: https: https://www.facebook.com",
+      "connect-src 'self' https://fsfoxgezrcqkjhfyqcwa.supabase.co wss://fsfoxgezrcqkjhfyqcwa.supabase.co https://www.paypal.com https://api.paypal.com https://connect.facebook.net https://www.facebook.com",
       "frame-src https://www.paypal.com https://www.sandbox.paypal.com",
       "media-src 'self' https://cdn.flow-der-stille.de blob:",
     ].join('; ')

@@ -21,6 +21,7 @@ import { NamePromptModal } from './NamePromptModal';
 import { AdminWelcomeModal } from './AdminWelcomeModal';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
 import { APP_VERSION } from '../version';
+import { trackMetaPageView } from '../lib/metaPixel';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -31,6 +32,7 @@ const pushVirtualPageView = (pathname: string, search: string) => {
       page_path: pathname + search,
       page_title: document.title || 'Flow der Stille'
     });
+    trackMetaPageView();
   }
 };
 

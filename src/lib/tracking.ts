@@ -6,6 +6,7 @@ declare global {
 }
 
 export const CONSENT_STORAGE_KEY = 'flow_analytics_consent';
+import { initMetaPixel, trackMetaLead, trackMetaPurchase } from './metaPixel';
 
 /**
  * Prüft, ob Analytics/Tracking vom Nutzer explizit zugelassen wurde.
@@ -63,6 +64,10 @@ export const setAnalyticsConsent = (choice: 'accepted' | 'rejected') => {
       'ad_personalization': choice === 'accepted' ? 'granted' : 'denied'
     });
 
+    if (choice === 'accepted') {
+      initMetaPixel();
+    }
+
     pushToDataLayer({
       event: 'consent_update',
       consent_choice: choice,
@@ -88,6 +93,7 @@ export const initConsentState = () => {
       'ad_user_data': 'granted',
       'ad_personalization': 'granted'
     });
+    initMetaPixel();
   } else if (status === 'rejected' || cookieStatus === 'necessary' || cookieStatus === 'rejected') {
     gtagFn('consent', 'update', {
       'analytics_storage': 'denied',
@@ -113,6 +119,7 @@ export const trackLead = (email: string) => {
     event: 'generate_lead',
     user_email: email
   });
+  trackMetaLead('Newsletter/Lead');
 };
 
 export const trackPurchase = (transactionId: string, value: number, email: string) => {
@@ -126,6 +133,12 @@ export const trackPurchase = (transactionId: string, value: number, email: strin
       value: value,
       currency: 'EUR'
     }
+  });
+  trackMetaPurchase({
+    value: value,
+    currency: 'EUR',
+    content_ids: [transactionId],
+    content_name: 'Produktkauf'
   });
 };
 
