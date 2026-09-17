@@ -97,6 +97,8 @@ function ReferralCapture() {
 
 import AudiobookPage from './pages/AudiobookPage';
 import AudiobooksHub from './pages/AudiobooksHub';
+import MeditationLanding from './pages/MeditationLanding';
+import HypnosisLanding from './pages/HypnosisLanding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
@@ -156,6 +158,10 @@ export default function App() {
                   <Route path="hoerbuch/:id" element={<AudiobookPage />} />
                   <Route path="hoerbuecher" element={<AudiobooksHub />} />
                   <Route path="audiobooks" element={<AudiobooksHub />} />
+                  <Route path="meditation" element={<MeditationLanding />} />
+                  <Route path="gefuehrte-meditation" element={<MeditationLanding />} />
+                  <Route path="selbsthypnose" element={<HypnosisLanding />} />
+                  <Route path="hypnose" element={<HypnosisLanding />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />

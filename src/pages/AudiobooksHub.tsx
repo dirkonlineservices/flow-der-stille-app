@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Headphones, Sparkles, Play, Pause, ShieldCheck, 
   Moon, Clock, Heart, Volume2, ArrowRight, CheckCircle2, 
-  HelpCircle, Shield, ArrowLeft, Loader2, Award, User, Gift
+  HelpCircle, Shield, ArrowLeft, Loader2, Award, User, Gift,
+  Wind, Smartphone
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
@@ -14,8 +15,9 @@ export default function AudiobooksHub() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // 1. Besitzprüfung für das aktuelle Hörbuch
+  // 1. Besitzprüfung für die Hörbücher
   const [isAudiobookOwned, setIsAudiobookOwned] = useState(false);
+  const [isMenschSeinOwned, setIsMenschSeinOwned] = useState(false);
 
   // 2. Audio-Probe Zustand (Startet ab 1:19 Min. = 79 Sek. für genau 90 Sekunden)
   const SNIPPET_START_TIME = 79;
@@ -32,39 +34,37 @@ export default function AudiobooksHub() {
 
   useEffect(() => {
     async function checkOwnership() {
-      if (!user) {
-        // Aufgabe 2: Offline-Fallback prüfen – falls Kaufstatus lokal gecacht ist
-        const isOfflineOwned = offlineManager.isPurchasedOffline('schmetterling');
-        setIsAudiobookOwned(isOfflineOwned);
-        return;
-      }
+      // Offline-Fallback prüfen
+      const isOfflineSchmetterling = offlineManager.isPurchasedOffline('schmetterling');
+      const isOfflineMenschSein = offlineManager.isPurchasedOffline('mensch_sein');
+      setIsAudiobookOwned(isOfflineSchmetterling);
+      setIsMenschSeinOwned(isOfflineMenschSein);
 
-      // Aufgabe 2: Immer auch Offline-Cache prüfen (Flugmodus-Schutz)
-      const isOfflineOwned = offlineManager.isPurchasedOffline('schmetterling');
-      if (isOfflineOwned) {
-        setIsAudiobookOwned(true);
-      }
+      if (!user) return;
 
       try {
         const supabase = getSupabase();
-        // Prüfen ob Hörbuch im Besitz ist
-        const { data: purchase } = await supabase
+        const { data: purchases } = await supabase
           .from('kaeufe')
-          .select('id')
-          .eq('user_id', user.id)
-          .ilike('produkt_id', '%schmetterling%')
-          .maybeSingle();
+          .select('produkt_id')
+          .eq('user_id', user.id);
 
-        const owned = !!purchase;
-        setIsAudiobookOwned(owned);
+        if (purchases) {
+          const ownedSchmetterling = purchases.some(p => p.produkt_id?.toLowerCase().includes('schmetterling'));
+          const ownedMenschSein = purchases.some(p => p.produkt_id?.toLowerCase().includes('mensch_sein'));
+          
+          setIsAudiobookOwned(ownedSchmetterling);
+          setIsMenschSeinOwned(ownedMenschSein);
 
-        // Aufgabe 2: Nach erfolgreicher Online-Prüfung den Kaufstatus lokal sichern
-        if (owned) {
-          offlineManager.savePurchasedProducts(['schmetterling', 'fds_hoerbuch_schmetterling']);
+          if (ownedSchmetterling) {
+            offlineManager.savePurchasedProducts(['schmetterling', 'fds_hoerbuch_schmetterling']);
+          }
+          if (ownedMenschSein) {
+            offlineManager.savePurchasedProducts(['mensch_sein', 'fds_mensch_sein']);
+          }
         }
       } catch (err) {
         console.error('Fehler bei Hörbuch-Besitzprüfung (ggf. offline):', err);
-        // Offline-Fallback bereits oben gesetzt – kein Überschreiben auf false
       }
     }
 
@@ -432,6 +432,146 @@ export default function AudiobooksHub() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Werk 2: Mut zum Echtsein */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl flex flex-col md:flex-row gap-8 items-center">
+            {/* Cover Image */}
+            <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">
+              <img
+                src="/images/products/cover_mensch_sein.jpg"
+                alt="Hörbuch Cover: Mut zum Echtsein - Was steckt hinter einem echten Menschen"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+            </div>
+
+            {/* Content & Action */}
+            <div className="space-y-4 flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs font-mono text-[var(--text-muted)]">
+                <Clock size={13} className="text-[var(--accent)]" />
+                <span>58:39 Minuten Gesamtlaufzeit</span>
+              </div>
+
+              <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
+                Mut zum Echtsein – Was steckt hinter einem echten Menschen
+              </h3>
+
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.
+              </p>
+
+              {/* Highlights */}
+              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 border border-[var(--border)] text-left space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-semibold text-[var(--text-main)]">
+                  <Sparkles size={14} className="text-[var(--accent)]" />
+                  <span>Themenschwerpunkte der Hörreise</span>
+                </div>
+                <ul className="space-y-1 text-[11px] text-[var(--text-muted)] pl-5 list-disc">
+                  <li>Die Masken des Alltags erkennen und behutsam ablegen</li>
+                  <li>Innere Werte statt äußerem Erwartungsdruck leben</li>
+                  <li>Wohlwollender Umgang mit eigenen Grenzen und Gefühlen</li>
+                  <li>Echtes Selbstvertrauen aus der inneren Stille schöpfen</li>
+                </ul>
+              </div>
+
+              {/* Preisanker & Kauf-Verlinkung */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center gap-3">
+                <div className="text-center sm:text-left">
+                  <div className="text-2xl font-bold text-[var(--text-main)]">4,99 €</div>
+                  <div className="text-[11px] text-[var(--text-muted)]">Einmalig • Kein Abo</div>
+                </div>
+
+                {isMenschSeinOwned ? (
+                  <Link
+                    to="/hoerbuch/mensch_sein"
+                    className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Play size={16} className="fill-white" />
+                    <span>Vollständiges Hörbuch abspielen</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/premium#product-mensch_sein"
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Gift size={16} />
+                      <span>Hörbuch für 4,99 € freischalten</span>
+                    </Link>
+
+                    <Link
+                      to="/hoerbuch/mensch_sein"
+                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <BookOpen size={14} />
+                      <span>Details</span>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4b. SCHNUPPERÜBUNGEN SEKTION (Atemübungen & PMR) */}
+      <section className="py-12 sm:py-16 px-4 sm:px-6 bg-[var(--bg-alt)]/40 border-y border-[var(--border)]">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--accent)]">
+              Kostenfreier Einstieg
+            </span>
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
+              Schnupperübungen für zwischendurch
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto">
+              Du möchtest sofort etwas für dein Wohlbefinden tun? Probiere unsere kostenlosen geführten Entspannungsübungen aus.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <Link
+              to="/exercises"
+              className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Wind size={24} />
+                </div>
+                <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                  Geführte Atemübungen
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Box Breathing und Entspannungstaktung mit interaktivem Atemkreis. Reguliert den Herzschlag in wenigen Atemzügen.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
+                <span>Jetzt ausprobieren</span>
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            <Link
+              to="/exercises/pmr_basis"
+              className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Moon size={24} />
+                </div>
+                <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                  Progressive Muskelentspannung (PMR)
+                </h3>
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Geführte somatische Tiefenentspannung (4:14 Min.). Löst muskuläre Verspannungen und bereitet sanft auf das Hören vor.
+                </p>
+              </div>
+              <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
+                <span>Kostenlos starten</span>
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
