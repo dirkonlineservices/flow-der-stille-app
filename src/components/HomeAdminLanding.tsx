@@ -338,21 +338,12 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               Alle Inhalte einzeln freischaltbar – 100 % werbefrei und ohne Abonnement.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <Link
-              to="/klangproben"
-              className="px-3 py-1.5 rounded-xl bg-[var(--accent)]/15 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 border border-[var(--accent)]/30 shadow-2xs group"
-            >
-              <Headphones size={15} />
-              <span>Kostenlose Klangproben anhören →</span>
-            </Link>
-            <Link 
-              to="/premium" 
-              className="text-xs sm:text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] hover:underline inline-flex items-center gap-1 shrink-0"
-            >
-              Gesamter Shop →
-            </Link>
-          </div>
+          <Link 
+            to="/premium" 
+            className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
+          >
+            Gesamter Shop →
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
