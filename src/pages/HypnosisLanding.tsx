@@ -539,6 +539,11 @@ export default function HypnosisLanding() {
               id: 4,
               q: 'Gibt es ein monatliches Abo?',
               a: 'Nein. Bei Flow der Stille gibt es keine Abofallen. Unsere Schlaf-Selbsthypnose ist dauerhaft gratis. Alle weiteren Themen kannst du als faire Einmalkäufe (1,99 €) lebenslang behalten.'
+            },
+            {
+              id: 5,
+              q: 'Warum wird vor den Sessions ein Haftungsausschluss benötigt?',
+              a: 'Selbsthypnose und Mentaltraining berühren sensible Themen der mentalen Gesundheit. In Deutschland gibt es hierfür aus gutem Grund strenge Gesetze: Sie sollen Verbraucher vor Heilversprechen schützen und klarstellen, dass es sich um Entspannung und Selbsterfahrung handelt – nicht um eine Psychotherapie oder ärztliche Heilbehandlung. Der Haftungsausschluss sichert dich und uns rechtlich ab, damit du unsere geführten Sitzungen in voller Eigenverantwortung und Sicherheit genießen kannst.'
             }
           ].map((item) => (
             <div

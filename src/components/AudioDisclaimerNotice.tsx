@@ -26,17 +26,25 @@ export default function AudioDisclaimerNotice({ className = '', isLoggedIn = fal
         Unsere Meditationen und Selbsthypnosen dienen der persönlichen Entspannung und Selbsterfahrung. Sie stellen ausdrücklich <strong>keine medizinische oder therapeutische Behandlung</strong> dar und ersetzen keinen Arztbesuch. <strong>Niemals beim Autofahren</strong> oder bei Tätigkeiten hören, die ungeteilte Aufmerksamkeit erfordern.
       </p>
 
-      <div className="pt-1 flex items-center justify-between text-[11px] border-t border-[var(--border)]/60">
+      <div className="pt-1 flex items-center justify-between text-[11px] border-t border-[var(--border)]/60 flex-wrap gap-2">
         <span className="text-[var(--text-muted)] italic">
           Nutzung ausschließlich auf eigene Verantwortung.
         </span>
-        <Link 
-          to="/rechtliches" 
-          className="text-[var(--accent)] hover:underline font-medium inline-flex items-center gap-0.5"
-        >
-          <span>Rechtliches &amp; Disclaimer</span>
-          <ArrowUpRight size={12} />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link 
+            to="/faq" 
+            className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors inline-flex items-center gap-1"
+          >
+            <span>Warum? (FAQ)</span>
+          </Link>
+          <Link 
+            to="/rechtliches" 
+            className="text-[var(--accent)] hover:underline font-medium inline-flex items-center gap-0.5"
+          >
+            <span>Rechtliches</span>
+            <ArrowUpRight size={12} />
+          </Link>
+        </div>
       </div>
     </div>
   );

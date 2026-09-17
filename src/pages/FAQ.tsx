@@ -54,6 +54,11 @@ const faqData: FAQItem[] = [
     question: "Kann ich persönliche Fragen zu Meditation, Selbsthypnose oder Affirmationen stellen?",
     answer: "Ja, sehr gerne! Wenn du inhaltliche Fragen zu den Themen Meditation, Selbsthypnose, Affirmationen oder den Übungen hast, gibt dir Jacqueline Schmetzer jederzeit sehr gerne Auskunft. Du kannst deine Fragen einfach über unser Kontaktformular an uns senden."
   },
+  {
+    category: "Achtsamkeit, Meditation & Selbsthypnose",
+    question: "Warum benötigt Flow der Stille einen Haftungsausschluss und eine Bestätigung?",
+    answer: "Bei Meditation, Atmung und Selbsthypnose geht es um dein persönliches Wohlbefinden und die mentale Gesundheit. In Deutschland und der EU gelten für gesundheitsbezogene Themen sehr strenge und genaue gesetzliche Vorgaben (unter anderem zum Schutz vor unberechtigten Heilversprechen und zur klaren Abgrenzung medizinischer Behandlungen).\n\nDer Gesetzgeber verlangt hier Transparenz: Unsere Meditationen, Selbsthypnosen und Entspannungsübungen sind wertvolle Begleiter zur Stressreduktion, mentalen Erholung und Selbsterfahrung. Sie stellen jedoch ausdrücklich keine medizinische, psychotherapeutische oder heilkundliche Behandlung dar und können einen Arztbesuch niemals ersetzen.\n\nDer Haftungsausschluss dient daher dem gegenseitigen, fairen Schutz beider Seiten: Er stellt klar, dass du die Übungen eigenverantwortlich und bei körperlicher sowie geistiger Gesundheit anwendest (z. B. niemals während des Autofahrens). Durch deine kurze Bestätigung bei der kostenlosen Registrierung haben wir den gesetzlich geforderten Nachweis und können dir unsere Inhalte dauerhaft rechtssicher, transparent und vertrauensvoll bereitstellen."
+  },
 
   // 2. Plattform- & App-Nutzung
   {

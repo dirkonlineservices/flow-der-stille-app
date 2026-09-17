@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ShieldCheck, UserPlus, LogIn, X, Lock, CheckCircle2, ArrowLeft, Home } from 'lucide-react';
 
 interface FullAudioRegistrationModalProps {
@@ -99,7 +99,10 @@ export default function FullAudioRegistrationModal({
 
           <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-left bg-[var(--bg-alt)] p-4 rounded-2xl border border-[var(--border)]">
             Du hast gerade die ersten <strong>45 Sekunden</strong> zur Stimmprobe gehört. 
-            Aus rechtlichen Gründen (Bestätigung des Haftungsausschlusses, Ausschluss therapeutischer Heilversprechen und Eigenverantwortung) ist für die vollständige Sitzung eine einmalige, kostenlose Registrierung erforderlich.
+            Da es bei Entspannung und mentalem Wohlbefinden um Gesundheitsthemen geht, gelten in Deutschland besonders strenge Gesetze (u.&nbsp;a. Abgrenzung zur ärztlichen Therapie). Um beide Seiten fair und rechtssicher abzusichern, ist für die vollständige Sitzung eine einmalige, kostenlose Registrierung erforderlich.{' '}
+            <Link to="/faq" target="_blank" className="text-[var(--accent)] hover:underline font-medium inline-block">
+              Warum genau? (FAQ) →
+            </Link>
           </p>
 
           <div className="space-y-2 text-left text-xs text-[var(--text-muted)]">

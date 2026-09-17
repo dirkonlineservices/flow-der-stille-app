@@ -530,6 +530,11 @@ export default function MeditationLanding() {
               id: 4,
               q: 'Gibt es versteckte Kosten oder ein Abonnement?',
               a: 'Nein. Flow der Stille verzichtet bewusst auf Abo-Modelle. Schnupperübungen sind komplett kostenfrei. Alle weiteren Meditationen lassen sich einzeln für einmalig 1,99 € dauerhaft freischalten.'
+            },
+            {
+              id: 5,
+              q: 'Warum wird vor dem Abspielen ein Haftungsausschluss angezeigt?',
+              a: 'Bei Meditation und Entspannung geht es um deine Gesundheit und dein Wohlbefinden. In Deutschland und der EU gibt es hierfür besonders strenge Gesetze: Sie verlangen eine klare Abgrenzung zu ärztlichen Behandlungen und Psychotherapien. Unsere Sessions dienen der gesunden Stressreduktion und Selbsterfahrung, stellen aber keine medizinische Therapie dar. Der Haftungsausschluss und die kurze Bestätigung bei der Registrierung schützen beide Seiten fair und unkompliziert, damit du unsere Inhalte dauerhaft sicher nutzen kannst.'
             }
           ].map((item) => (
             <div

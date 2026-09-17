@@ -694,6 +694,11 @@ export default function AudiobooksHub() {
               id: 4,
               q: 'Werden weitere Hörbücher erscheinen?',
               a: 'Ja, unser Autoren- und Produktionsteam arbeitet bereits an weiteren Werken und heilsamen Geschichten. Sobald neue Titel bereitstehen, wirst du sie hier und in deinem Dashboard finden.'
+            },
+            {
+              id: 5,
+              q: 'Warum gibt es vor dem Anhören einen rechtlichen Haftungsausschluss?',
+              a: 'Unsere Hörbücher berühren emotionale und tiefgehende Lebensthemen (wie Wandlung, Trost und das Finden der eigenen Wahrheit). Da es sich um mentale Selbsterfahrung und ganzheitliche Entspannung handelt, greifen in Deutschland strenge Verbraucherschutz- und Gesundheitsgesetze: Sie verlangen eine eindeutige Abgrenzung zu medizinischer Therapie oder psychologischer Behandlung. Der Haftungsausschluss sorgt für rechtliche Klarheit und Transparenz für Hörer und Autoren gleichermaßen.'
             }
           ].map((item) => (
             <div
