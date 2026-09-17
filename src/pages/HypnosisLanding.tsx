@@ -147,7 +147,7 @@ export default function HypnosisLanding() {
               {isPlaying ? (
                 <>
                   <Pause size={16} />
-                  <span>Hypnose pausieren</span>
+                  <span>Selbsthypnose pausieren</span>
                 </>
               ) : (
                 <>
@@ -217,7 +217,7 @@ export default function HypnosisLanding() {
             <div className="flex-1 w-full space-y-2 text-left">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[var(--text-main)]">
-                  {isPlaying ? 'Hypnose läuft...' : 'Bereit zum Abspielen'}
+                  {isPlaying ? 'Selbsthypnose läuft...' : 'Bereit zum Abspielen'}
                 </span>
                 <span className="font-mono text-[var(--text-muted)]">
                   {formatTime(currentTime)} / {formatTime(duration)}
@@ -432,7 +432,7 @@ export default function HypnosisLanding() {
                   Progressive Muskelentspannung (PMR)
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Löse muskuläre Verspannungen gezielt auf. Ideal vor dem Einschlafen in Kombination mit der Schlaf-Hypnose.
+                  Löse muskuläre Verspannungen gezielt auf. Ideal vor dem Einschlafen in Kombination mit der Schlaf-Selbsthypnose.
                 </p>
               </div>
               <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between text-xs font-semibold text-[var(--accent)]">
@@ -456,7 +456,7 @@ export default function HypnosisLanding() {
           {[
             {
               id: 1,
-              q: 'Kann ich in der Hypnose „steckenbleiben“?',
+              q: 'Kann ich in der Selbsthypnose „steckenbleiben“?',
               a: 'Nein, das ist neurologisch unmöglich. Sollte die Audio-Aufnahme enden oder gestört werden, wechselt dein Zustand entweder ganz natürlich in einen normalen Schlaf oder du öffnest nach wenigen Momenten völlig erfrischt die Augen.'
             },
             {
@@ -466,13 +466,13 @@ export default function HypnosisLanding() {
             },
             {
               id: 3,
-              q: 'Darf ich die Hypnose beim Autofahren hören?',
+              q: 'Darf ich die Selbsthypnose beim Autofahren hören?',
               a: 'Nein, niemals! Selbsthypnosen erzeugen eine tiefe Muskel- und Sinnesentspannung. Höre sie ausschließlich in sicherer Umgebung, am besten im Bett oder in einem bequemen Sessel.'
             },
             {
               id: 4,
               q: 'Gibt es ein monatliches Abo?',
-              a: 'Nein. Bei Flow der Stille gibt es keine Abofallen. Unsere Schlaf-Hypnose ist dauerhaft gratis. Alle weiteren Themen kannst du als faire Einmalkäufe (1,99 €) lebenslang behalten.'
+              a: 'Nein. Bei Flow der Stille gibt es keine Abofallen. Unsere Schlaf-Selbsthypnose ist dauerhaft gratis. Alle weiteren Themen kannst du als faire Einmalkäufe (1,99 €) lebenslang behalten.'
             }
           ].map((item) => (
             <div
