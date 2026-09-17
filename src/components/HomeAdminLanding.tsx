@@ -527,7 +527,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               to="/klangproben"
               className="px-3.5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold transition flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-xs cursor-pointer"
             >
-              <span>Alle 10 Klangproben ansehen</span>
+              <Headphones size={14} />
+              <span>In alle Klangproben reinhören</span>
               <ArrowRight size={14} />
             </Link>
           </div>
