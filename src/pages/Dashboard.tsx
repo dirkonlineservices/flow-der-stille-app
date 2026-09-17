@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { 
   Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, 
   Send, MessageCircle, Share2, Eye, RefreshCw, ArrowRight,
-  Sparkles, Headphones, Check
+  Sparkles, Headphones, Check, ChevronDown
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -35,6 +35,7 @@ export default function Dashboard() {
   const initialProducts = getOfflineProducts().filter(p => p.is_active && (p.audio_path || p.hoerprobe_url));
   const [productList, setProductList] = useState<ProductData[]>(initialProducts);
   const [klangprobeFilter, setKlangprobeFilter] = useState<'Alle' | 'Meditation' | 'Selbsthypnose' | 'Hörbuch' | 'Kostenfreie Anwendungen'>('Alle');
+  const [showAllKlangproben, setShowAllKlangproben] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [shareToast, setShareToast] = useState('');
 
@@ -144,20 +145,24 @@ export default function Dashboard() {
   };
 
   const handleShareWisdom = async () => {
-    const shareText = `✨ Tägliche Weisheit von Flow der Stille:\n${todaysWisdom.text}\n\nFinde deine innere Ruhe – Meditation, Achtsamkeit & Vagusnerv-Entspannung:\nhttps://flow-der-stille.de`;
+    // WICHTIG: Die URL wird bewusst NICHT in den Text-String geschrieben,
+    // da WhatsApp und Smartphone-Share-Sheets das Feld 'url' automatisch an 'text' anhängen.
+    // Wenn die URL auch im text stünde, würde sie sonst doppelt erscheinen!
+    const wisdomText = `✨ Tägliche Weisheit von Flow der Stille:\n${todaysWisdom.text}\n\nFinde deine innere Ruhe – Meditation, Achtsamkeit & Vagusnerv-Entspannung:`;
+    const shareUrl = 'https://flow-der-stille.de';
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Tagesimpuls – Flow der Stille',
-          text: shareText,
-          url: 'https://flow-der-stille.de'
+          text: wisdomText,
+          url: shareUrl
         });
       } catch (err) {}
     } else {
       try {
-        await navigator.clipboard.writeText(shareText);
-        setShareToast('Tagesimpuls in die Zwischenablage kopiert! Bereit zum Teilen auf WhatsApp, Instagram, TikTok & Co.');
+        await navigator.clipboard.writeText(`${wisdomText}\n${shareUrl}`);
+        setShareToast('Tagesimpuls in die Zwischenablage kopiert! Bereit zum Teilen auf WhatsApp (auch als Status), Instagram, TikTok & Co.');
         setTimeout(() => setShareToast(''), 4500);
       } catch {
         setShareToast('Teilen fehlgeschlagen');
@@ -175,6 +180,9 @@ export default function Dashboard() {
     if (klangprobeFilter === 'Kostenfreie Anwendungen') return kat.includes('kostenfrei') || Number(p.preis) === 0;
     return true;
   });
+
+  // Kompakte Ansicht: Standardmäßig nur die ersten 4 Produkte, aufklappbar für alle weiteren
+  const displayedKlangproben = showAllKlangproben ? filteredKlangproben : filteredKlangproben.slice(0, 4);
 
   if (!user) return null;
 
@@ -322,7 +330,7 @@ export default function Dashboard() {
           </div>
 
           {/* Kostenlose Klangproben aller Produkte */}
-          <div className="mt-8 p-5 sm:p-7 bg-[var(--color-bg-card)] rounded-3xl border border-[var(--color-border-main)] shadow-sm space-y-5">
+          <div className="mt-8 p-4 sm:p-6 bg-[var(--color-bg-card)] rounded-3xl border border-[var(--color-border-main)] shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-border-main)]">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -330,25 +338,25 @@ export default function Dashboard() {
                     <Headphones size={13} />
                     Klangproben
                   </span>
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-[var(--color-text-main)]">
-                    Kostenlose Klangproben aller Produkte
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-[var(--color-text-main)]">
+                    Kostenlose Klangproben der Produkte
                   </h3>
                 </div>
-                <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">
+                <p className="text-xs text-[var(--color-text-muted)]">
                   100 % werbefrei – höre direkt 90 Sekunden ohne rechtlichen Disclaimer rein.
                 </p>
               </div>
               <Link
                 to="/klangproben"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
               >
-                <Headphones size={15} />
+                <Headphones size={14} />
                 <span>In alle Klangproben reinhören →</span>
               </Link>
             </div>
 
             {/* Filter-Kategorien */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
               {[
                 { id: 'Alle', label: 'Alle Proben' },
                 { id: 'Meditation', label: 'Meditationen' },
@@ -358,8 +366,11 @@ export default function Dashboard() {
               ].map(cat => (
                 <button
                   key={cat.id}
-                  onClick={() => setKlangprobeFilter(cat.id as any)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  onClick={() => {
+                    setKlangprobeFilter(cat.id as any);
+                    // Beim Kategoriewechsel Ansicht zurücksetzen oder erweitert lassen
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     klangprobeFilter === cat.id
                       ? 'bg-[var(--color-accent-primary)] text-white shadow-xs'
                       : 'bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] hover:text-[var(--color-text-main)] border border-[var(--color-border-main)]'
@@ -370,9 +381,9 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Grid mit allen gefilterten Produkten */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-              {filteredKlangproben.map((p) => (
+            {/* Grid mit kompakten / aufklappbaren Produkten */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              {displayedKlangproben.map((p) => (
                 <HoerprobenPlayer 
                   key={p.id} 
                   produkt={p} 
@@ -386,16 +397,31 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Weiterer Link zur Klangproben-Themenseite */}
-            <div className="pt-2 text-center">
-              <Link 
-                to="/klangproben" 
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[var(--color-accent-primary)] hover:underline"
-              >
-                <span>Zur großen Klangproben-Themenseite mit allen Detailbeschreibungen & Filtern</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
+            {/* Aufklappen-Button / Einklappen-Button */}
+            {filteredKlangproben.length > 4 && (
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[var(--color-border-main)]">
+                <button
+                  type="button"
+                  onClick={() => setShowAllKlangproben(!showAllKlangproben)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-semibold transition cursor-pointer active:scale-95 shadow-2xs"
+                >
+                  <ChevronDown className={`transition-transform duration-200 ${showAllKlangproben ? 'rotate-180' : ''}`} size={16} />
+                  <span>
+                    {showAllKlangproben 
+                      ? 'Weniger Klangproben anzeigen (auf 4 reduzieren)' 
+                      : `Alle ${filteredKlangproben.length} Klangproben aufklappen (+${filteredKlangproben.length - 4} weitere)`}
+                  </span>
+                </button>
+                
+                <Link 
+                  to="/klangproben" 
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent-primary)] hover:underline"
+                >
+                  <span>Zur großen Mediathek</span>
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
