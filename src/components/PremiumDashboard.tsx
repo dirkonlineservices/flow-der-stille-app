@@ -41,7 +41,6 @@ export default function PremiumShopDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
-  const [showAllHoerproben, setShowAllHoerproben] = useState(false);
   const [searchParams] = useSearchParams();
   const [productRatings, setProductRatings] = useState<Record<string, { average: number; count: number }>>({});
 
@@ -645,43 +644,6 @@ export default function PremiumShopDashboard() {
         )}
       </div>
 
-      {/* Kompakter Bereich für kostenlose Klangproben (oben vor gekauften Produkten) */}
-      {(() => {
-        const hoerproben = produkte.filter(p => !!((p.hoerprobe_url && p.hoerprobe_url.trim()) || (p.audio_path && p.audio_path.trim())));
-        if (hoerproben.length === 0) return null;
-        const visibleHoerproben = showAllHoerproben ? hoerproben : hoerproben.slice(0, 4);
-        return (
-          <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
-            <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--accent)] text-white">
-                  Kostenlos reinschnuppern
-                </span>
-                <h3 className="text-base sm:text-lg font-serif font-semibold text-[var(--text-main)]">
-                  Kostenlose Klangproben ({hoerproben.length})
-                </h3>
-              </div>
-              {hoerproben.length > 4 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllHoerproben(!showAllHoerproben)}
-                  className="text-xs text-[var(--accent)] hover:underline font-semibold cursor-pointer"
-                >
-                  {showAllHoerproben ? 'Weniger anzeigen' : `Alle ${hoerproben.length} Klangproben anzeigen`}
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-[var(--text-muted)] mb-3">
-              Höre unverbindlich rein – 100 % werbefrei und ohne Anmeldung. Der rechtliche Disclaimer vorab wird automatisch übersprungen.
-            </p>
-            <div className="grid grid-cols-1 gap-2.5">
-              {visibleHoerproben.map((p) => (
-                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} onProductClick={handleJumpToProduct} />
-              ))}
-            </div>
-          </div>
-        );
-      })()}
 
       {user && (
         <div className="w-full bg-[var(--bg-card)] border border-emerald-300/80 dark:border-emerald-800/80 rounded-2xl overflow-hidden mb-8 shadow-xs">

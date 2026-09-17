@@ -221,6 +221,7 @@ export default function Layout() {
       <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
         {[
           { to: '/contact', label: 'Kontakt', isButton: true },
+          { to: '/klangproben', label: 'Klangproben' },
           { to: '/app', label: 'Android App' },
           { to: '/faq', label: 'FAQ' },
           { to: '/impressum', label: 'Impressum' },
@@ -348,18 +349,18 @@ export default function Layout() {
                   </div>
                 </Link>
 
-                {/* Hörproben - nur anzeigen wenn in Supabase vorhanden */}
+                {/* Klangproben & Hörproben - zur dedizierten Landingpage */}
                 {hasHoerproben && (
                   <Link
-                    to="/premium?filter=H%C3%B6rprobe"
-                    onClick={() => handleMenuClick('Hörproben')}
+                    to="/klangproben"
+                    onClick={() => handleMenuClick('Klangproben')}
                     className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
                   >
                     <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                       <Headphones size={22} />
                     </div>
                     <div>
-                      <div className="font-semibold text-sm text-[var(--text-main)]">Hörproben</div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">Klangproben</div>
                       <div className="text-xs text-[var(--text-muted)]">Kostenlos reinhören</div>
                     </div>
                   </Link>

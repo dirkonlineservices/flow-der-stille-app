@@ -99,6 +99,7 @@ import AudiobookPage from './pages/AudiobookPage';
 import AudiobooksHub from './pages/AudiobooksHub';
 import MeditationLanding from './pages/MeditationLanding';
 import HypnosisLanding from './pages/HypnosisLanding';
+import SoundSamplesLanding from './pages/SoundSamplesLanding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
@@ -162,6 +163,8 @@ export default function App() {
                   <Route path="gefuehrte-meditation" element={<MeditationLanding />} />
                   <Route path="selbsthypnose" element={<HypnosisLanding />} />
                   <Route path="hypnose" element={<HypnosisLanding />} />
+                  <Route path="klangproben" element={<SoundSamplesLanding />} />
+                  <Route path="hoerproben" element={<SoundSamplesLanding />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
