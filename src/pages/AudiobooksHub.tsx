@@ -12,6 +12,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
+import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 
 export default function AudiobooksHub() {
   const { user } = useAuth();
@@ -502,6 +503,19 @@ export default function AudiobooksHub() {
                   <li>Wohlwollender Umgang mit eigenen Grenzen und Gefühlen</li>
                   <li>Echtes Selbstvertrauen aus der inneren Stille schöpfen</li>
                 </ul>
+              </div>
+
+              {/* Kostenlose Klangprobe für Mut zum Echtsein (startet ab 1:10 Min. nach Disclaimer) */}
+              <div className="pt-2">
+                <HoerprobenPlayer
+                  produkt={{
+                    id: 'mensch_sein',
+                    titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
+                    audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3',
+                    dauer: 3519
+                  }}
+                  variant="compact"
+                />
               </div>
 
               {/* Preisanker & Kauf-Verlinkung */}

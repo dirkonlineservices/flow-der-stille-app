@@ -11,6 +11,8 @@ import { useAuth } from '../context/AuthContext';
 import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
+import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
+import { getOfflineProductById } from '../lib/offlineProductsService';
 
 interface HypnosisItem {
   id: string;
@@ -399,6 +401,24 @@ export default function HypnosisLanding() {
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                   {item.description}
                 </p>
+
+                {/* Kostenlose Klangprobe für die Selbsthypnose */}
+                {!item.isFree && (
+                  <div className="pt-2">
+                    <HoerprobenPlayer 
+                      produkt={getOfflineProductById(item.id) || {
+                        id: item.id,
+                        titel: item.title,
+                        audio_path: item.id === 'selbsthypnose_ernaehrung'
+                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3'
+                          : item.id === 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen'
+                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3'
+                          : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3'
+                      }} 
+                      variant="compact" 
+                    />
+                  </div>
+                )}
 
                 <div className="pt-2 border-t border-[var(--border)] flex items-center justify-between">
                   {item.isFree ? (

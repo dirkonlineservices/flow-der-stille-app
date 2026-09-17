@@ -11,6 +11,8 @@ import { useAuth } from '../context/AuthContext';
 import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
+import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
+import { getOfflineProductById } from '../lib/offlineProductsService';
 
 interface MeditationItem {
   id: string;
@@ -344,6 +346,24 @@ export default function MeditationLanding() {
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                   {item.description}
                 </p>
+
+                {/* Kostenlose Klangprobe für die Meditation */}
+                {!item.isFree && (
+                  <div className="pt-2">
+                    <HoerprobenPlayer 
+                      produkt={getOfflineProductById(item.id) || {
+                        id: item.id,
+                        titel: item.title,
+                        audio_path: item.id === 'meditation_innere_ruhe' 
+                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3'
+                          : item.id === 'meditation_inneres_kind'
+                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3'
+                          : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3'
+                      }} 
+                      variant="compact" 
+                    />
+                  </div>
+                )}
 
                 <div className="pt-2 border-t border-[var(--border)] flex items-center justify-between">
                   {item.isFree ? (
