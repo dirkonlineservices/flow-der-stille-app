@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Headphones, Sparkles, Volume2, ArrowLeft, ArrowRight, 
   CheckCircle2, Clock, ShieldCheck, Heart, Moon, BookOpen, 
@@ -261,8 +261,22 @@ const ALL_SAMPLES: SampleCardData[] = [
 
 export default function SoundSamplesLanding() {
   const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchParams] = useSearchParams();
+  const paramCat = searchParams.get('category');
+  
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => {
+    if (paramCat && ['meditation', 'selbsthypnose', 'hoerbuch', 'uebung'].includes(paramCat.toLowerCase())) {
+      return paramCat.toLowerCase();
+    }
+    return 'all';
+  });
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (paramCat && ['meditation', 'selbsthypnose', 'hoerbuch', 'uebung', 'all'].includes(paramCat.toLowerCase())) {
+      setSelectedCategory(paramCat.toLowerCase());
+    }
+  }, [paramCat]);
 
   const filteredSamples = selectedCategory === 'all'
     ? ALL_SAMPLES

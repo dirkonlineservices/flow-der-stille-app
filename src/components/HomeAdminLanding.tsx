@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
+import { getOfflineProductById } from '../lib/offlineProductsService';
 
 interface HomeAdminLandingProps {
   user: any;
@@ -58,6 +59,9 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
   // Modal für Reflexions-Fortschritt bei unregistrierten Gästen
   const [showWisdomProgressModal, setShowWisdomProgressModal] = useState(false);
+
+  // Aktiver Tab für die Schnupper-Klangprobe auf der Startseite
+  const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch'>('meditation');
 
   // Platzhalter-Audio (kann sofort durch die finale Begrüßung ersetzt werden)
   const VOICE_INTRO_URL = "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3";
@@ -325,7 +329,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
       {/* ─── 3. PRODUKT-KATEGORIEN & FORMATE (DIE MEDIATHEK) ─────────────── */}
       <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-7 shadow-2xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--border)] mb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--border)] mb-5">
           <div>
             <h2 className="font-serif font-semibold text-xl sm:text-2xl text-[var(--text-main)]">
               Unsere Mediathek nach Kategorien
@@ -334,12 +338,21 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               Alle Inhalte einzeln freischaltbar – 100 % werbefrei und ohne Abonnement.
             </p>
           </div>
-          <Link 
-            to="/premium" 
-            className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
-          >
-            Gesamter Shop →
-          </Link>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              to="/klangproben"
+              className="px-3 py-1.5 rounded-xl bg-[var(--accent)]/15 hover:bg-[var(--accent)] text-[var(--accent)] hover:text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 border border-[var(--accent)]/30 shadow-2xs group"
+            >
+              <Headphones size={15} />
+              <span>Kostenlose Klangproben anhören →</span>
+            </Link>
+            <Link 
+              to="/premium" 
+              className="text-xs sm:text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] hover:underline inline-flex items-center gap-1 shrink-0"
+            >
+              Gesamter Shop →
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -353,19 +366,29 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Herzkompass, Loslassen &amp; Innere Ruhe (Lisa Ragusa)
               </p>
             </div>
-            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex items-center justify-between gap-3">
+            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] bg-[var(--accent)]/10 px-2.5 py-1 rounded-md whitespace-nowrap inline-flex items-center">
                   1,99&nbsp;€
                 </span>
                 <span className="text-xs text-[var(--text-muted)]">einmalig</span>
               </div>
-              <Link
-                to="/premium?filter=Meditation"
-                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
-              >
-                Ansehen
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/klangproben?category=meditation"
+                  className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
+                  title="Kostenlose Klangprobe für Meditationen anhören"
+                >
+                  <Headphones size={13} />
+                  <span>Probe hören</span>
+                </Link>
+                <Link
+                  to="/premium?filter=Meditation"
+                  className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                >
+                  Ansehen
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -379,19 +402,29 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Tiefer Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung
               </p>
             </div>
-            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex items-center justify-between gap-3">
+            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] bg-[var(--accent)]/10 px-2.5 py-1 rounded-md whitespace-nowrap inline-flex items-center">
                   1,99&nbsp;€
                 </span>
                 <span className="text-xs text-[var(--text-muted)]">einmalig</span>
               </div>
-              <Link
-                to="/premium?filter=Selbsthypnose"
-                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
-              >
-                Ansehen
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/klangproben?category=selbsthypnose"
+                  className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
+                  title="Kostenlose Klangprobe für Selbsthypnosen anhören"
+                >
+                  <Headphones size={13} />
+                  <span>Probe hören</span>
+                </Link>
+                <Link
+                  to="/premium?filter=Selbsthypnose"
+                  className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                >
+                  Ansehen
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -405,19 +438,29 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Der Schmetterling (58:43 Min. inkl. Kapitel-Navigation)
               </p>
             </div>
-            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex items-center justify-between gap-3">
+            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] bg-[var(--accent)]/10 px-2.5 py-1 rounded-md whitespace-nowrap inline-flex items-center">
                   ab 4,99&nbsp;€
                 </span>
                 <span className="text-xs text-[var(--text-muted)]">einmalig</span>
               </div>
-              <Link
-                to="/premium?filter=H%C3%B6rbuch"
-                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
-              >
-                Ansehen
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/klangproben?category=hoerbuch"
+                  className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
+                  title="Kostenlose Hörbuch-Klangprobe anhören"
+                >
+                  <Headphones size={13} />
+                  <span>Probe hören</span>
+                </Link>
+                <Link
+                  to="/hoerbuecher"
+                  className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                >
+                  Ansehen
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -431,21 +474,144 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Geführte Atemübung &amp; Progressive Muskelentspannung
               </p>
             </div>
-            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex items-center justify-between gap-3">
+            <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-md whitespace-nowrap inline-flex items-center">
                   100 % Gratis
                 </span>
                 <span className="text-xs text-[var(--text-muted)]">ohne Kosten</span>
               </div>
-              <Link
-                to="/premium?filter=Kostenfreie%20Anwendungen"
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
-              >
-                Starten
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/klangproben?category=uebung"
+                  className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-emerald-600 dark:text-emerald-400 border border-[var(--border)] hover:border-emerald-500 text-xs font-semibold transition shadow-2xs flex items-center gap-1"
+                  title="Kostenlose Schnupper-Klangprobe anhören"
+                >
+                  <Headphones size={13} />
+                  <span>Probe hören</span>
+                </Link>
+                <Link
+                  to="/premium?filter=Kostenfreie%20Anwendungen"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                >
+                  Starten
+                </Link>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* 🌟 Interaktive Schnupper-Leiste für Klangproben direkt auf der Startseite */}
+        <div className="mt-6 pt-5 border-t border-[var(--border)] bg-[var(--bg-main)]/60 rounded-2xl p-4 sm:p-5 border border-[var(--border)] shadow-2xs space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center shrink-0">
+                <Headphones size={20} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-[var(--text-main)]">
+                    Kostenlose Klangproben – Sofort reinhören
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs">
+                    Ohne Anmeldung
+                  </span>
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  Lerne Lisas warme Stimme unverbindlich kennen – 100 % werbefrei, ohne Abo und direkt im Web abspielbar.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/klangproben"
+              className="px-3.5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold transition flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-xs cursor-pointer"
+            >
+              <span>Alle 10 Klangproben ansehen</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          {/* Schnupper-Tabs */}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { key: 'meditation', label: '🧘‍♀️ Meditation: Herzöffnung', sub: 'Gratis' },
+              { key: 'selbsthypnose', label: '🌀 Selbsthypnose: Tiefer Schlaf', sub: 'Gratis' },
+              { key: 'hoerbuch', label: '🎧 Hörbuch: Schmetterling', sub: 'Auszug' },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveSampleHighlight(tab.key as any)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeSampleHighlight === tab.key
+                    ? 'bg-[var(--accent)] text-white shadow-xs scale-102'
+                    : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  activeSampleHighlight === tab.key ? 'bg-white/20 text-white' : 'bg-[var(--bg-alt)] text-[var(--text-muted)]'
+                }`}>
+                  {tab.sub}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Aktiver Klangproben-Player */}
+          {(() => {
+            const sampleHighlightProducts: Record<string, { produkt: any; badge: string; desc: string }> = {
+              meditation: {
+                produkt: getOfflineProductById('meditation_zur_herzoeffnung') || {
+                  id: 'meditation_zur_herzoeffnung',
+                  titel: 'Meditation zur Herzöffnung',
+                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
+                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3',
+                  dauer: 1005
+                },
+                badge: 'Geführte Meditation • 100 % Gratis Vollversion verfügbar',
+                desc: 'Spüre die sanfte Herzöffnung und lasse innere Schutzpanzer los. Lisa Ragusa spricht.'
+              },
+              selbsthypnose: {
+                produkt: getOfflineProductById('selbsthypnose_besser_und_erholsamer_schlaf') || {
+                  id: 'selbsthypnose_besser_und_erholsamer_schlaf',
+                  titel: 'Selbsthypnose: Tiefer und erholsamer Schlaf',
+                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
+                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3',
+                  dauer: 774
+                },
+                badge: 'Gezielte Selbsthypnose • 100 % Gratis Vollversion verfügbar',
+                desc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine tiefe Nachtruhe.'
+              },
+              hoerbuch: {
+                produkt: getOfflineProductById('hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') || {
+                  id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+                  titel: 'Der Tag, an dem der Schmetterling erwachte',
+                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
+                  dauer: 3523
+                },
+                badge: 'Ganzheitliches Hörbuch (58:43 Min. Gesamtlaufzeit)',
+                desc: 'Eine tröstende Hörreise über den Wandel des Lebens und die Leichtigkeit des Loslassens.'
+              }
+            };
+
+            const current = sampleHighlightProducts[activeSampleHighlight];
+            if (!current) return null;
+            return (
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                  <span className="font-semibold text-[var(--text-main)] flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-[var(--accent)] shrink-0" />
+                    <span>{current.badge}</span>
+                  </span>
+                  <span className="text-[11px] text-[var(--text-muted)]">
+                    {current.desc}
+                  </span>
+                </div>
+                <HoerprobenPlayer produkt={current.produkt} variant="compact" />
+              </div>
+            );
+          })()}
         </div>
       </section>
 
