@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, 
-  Send, MessageCircle, Share2, Eye, RefreshCw, ArrowRight 
+  Send, MessageCircle, Share2, Eye, RefreshCw, ArrowRight,
+  Sparkles, Headphones, Check
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -12,7 +13,7 @@ import WeeklyChallenge from '../components/WeeklyChallenge';
 import SEO from '../components/SEO';
 import { getSupabase } from '../lib/supabaseClient';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
-import { getOfflineHoerproben } from '../lib/offlineProductsService';
+import { getOfflineProducts, ProductData } from '../lib/offlineProductsService';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 const dailyWisdoms = [
@@ -31,8 +32,9 @@ export default function Dashboard() {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
-  const initialHoerproben = getOfflineHoerproben();
-  const [hoerprobenList, setHoerprobenList] = useState<any[]>(initialHoerproben);
+  const initialProducts = getOfflineProducts().filter(p => p.is_active && (p.audio_path || p.hoerprobe_url));
+  const [productList, setProductList] = useState<ProductData[]>(initialProducts);
+  const [klangprobeFilter, setKlangprobeFilter] = useState<'Alle' | 'Meditation' | 'Selbsthypnose' | 'Hörbuch' | 'Kostenfreie Anwendungen'>('Alle');
   const [isAdmin, setIsAdmin] = useState(false);
   const [shareToast, setShareToast] = useState('');
 
@@ -43,20 +45,22 @@ export default function Dashboard() {
     }
   }, [user, navigate]);
 
-  // Hörproben aus Supabase laden
+  // Alle Produkte für Klangproben aus Supabase laden
   useEffect(() => {
     Promise.race([
       getSupabase()
         .from('produkte')
         .select('*')
-        .not('hoerprobe_url', 'is', null)
-        .neq('hoerprobe_url', ''),
+        .eq('is_active', true),
       new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
     ])
       .then((res: any) => {
         const data = res?.data;
-        if (data && data.length > 0) {
-          setHoerprobenList(data);
+        if (data && Array.isArray(data) && data.length > 0) {
+          const playable = data.filter((p: any) => p.audio_path || p.hoerprobe_url);
+          if (playable.length > 0) {
+            setProductList(playable);
+          }
         }
       })
       .catch(() => {});
@@ -139,6 +143,39 @@ export default function Dashboard() {
     }
   };
 
+  const handleShareWisdom = async () => {
+    const shareText = `✨ Tägliche Weisheit von Flow der Stille:\n${todaysWisdom.text}\n\nFinde deine innere Ruhe – Meditation, Achtsamkeit & Vagusnerv-Entspannung:\nhttps://flow-der-stille.de`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Tagesimpuls – Flow der Stille',
+          text: shareText,
+          url: 'https://flow-der-stille.de'
+        });
+      } catch (err) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setShareToast('Tagesimpuls in die Zwischenablage kopiert! Bereit zum Teilen auf WhatsApp, Instagram, TikTok & Co.');
+        setTimeout(() => setShareToast(''), 4500);
+      } catch {
+        setShareToast('Teilen fehlgeschlagen');
+        setTimeout(() => setShareToast(''), 2500);
+      }
+    }
+  };
+
+  const filteredKlangproben = productList.filter(p => {
+    if (klangprobeFilter === 'Alle') return true;
+    const kat = (p.kategorie || '').toLowerCase();
+    if (klangprobeFilter === 'Meditation') return kat.includes('meditation');
+    if (klangprobeFilter === 'Selbsthypnose') return kat.includes('hypnose');
+    if (klangprobeFilter === 'Hörbuch') return kat.includes('hörbuch') || kat.includes('hoerbuch');
+    if (klangprobeFilter === 'Kostenfreie Anwendungen') return kat.includes('kostenfrei') || Number(p.preis) === 0;
+    return true;
+  });
+
   if (!user) return null;
 
   return (
@@ -177,6 +214,58 @@ export default function Dashboard() {
           <p className="text-[var(--color-text-muted)] text-base md:text-lg text-center max-w-xl">
             {t('home.subtitle')}
           </p>
+          
+          {/* Dein Start in den Tag: Tägliche Weisheit & Impuls */}
+          <div className="w-full mt-6 p-6 sm:p-7 bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden text-left">
+            <div className="flex-1">
+              <div className="flex items-center justify-between gap-3 mb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+                    <Sparkles size={13} className="text-amber-500" />
+                    Dein Start in den Tag
+                  </span>
+                  <span className="text-xs text-[var(--color-text-muted)] hidden sm:inline">• Tägliche Weisheit</span>
+                </div>
+
+                {/* Social Share Button */}
+                <button 
+                  onClick={handleShareWisdom}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-accent-primary)] hover:text-white text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs font-semibold transition-all cursor-pointer active:scale-95 shadow-2xs"
+                  title="Tagesimpuls auf WhatsApp, Instagram, TikTok & Social Media teilen"
+                >
+                  <Share2 size={13} />
+                  <span>Impuls teilen</span>
+                </button>
+              </div>
+
+              <h2 className="text-xl sm:text-2xl font-serif text-[var(--color-accent-primary)] mb-2">
+                {todaysWisdom.title}
+              </h2>
+              <p className="text-[var(--color-text-muted)] italic text-base sm:text-lg leading-relaxed border-l-2 border-[var(--color-accent-primary)] pl-4">
+                {todaysWisdom.text}
+              </p>
+            </div>
+
+            <div className="shrink-0 flex items-center justify-start md:justify-end">
+              <button 
+                id="btn-complete-daily-wisdom"
+                onClick={handleCompleteWisdom}
+                disabled={isCompleted || loading}
+                className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition-all ${
+                  isCompleted 
+                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 cursor-default shadow-sm' 
+                    : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm active:scale-95 cursor-pointer'
+                }`}
+              >
+                {isCompleted ? <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" /> : <Circle size={16} />}
+                <span>
+                  {isCompleted 
+                    ? 'Inmitten der Stille reflektiert' 
+                    : (loading ? 'Speichern...' : 'Als reflektiert markieren')}
+                </span>
+              </button>
+            </div>
+          </div>
           
           {/* Schnelleinstieg für den Tag */}
           <div className="bg-[var(--color-bg-card)] p-6 md:p-8 rounded-3xl border border-[var(--color-border-main)] mt-6 w-full text-center shadow-sm">
@@ -232,44 +321,82 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {/* Kostenlose Hörproben */}
-          {hoerprobenList.length > 0 && (
-            <div className="mt-8 p-5 sm:p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-border-main)]">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white">
-                      Hörproben
-                    </span>
-                    <h3 className="font-serif font-bold text-xl text-[var(--color-text-main)]">
-                      Kostenlose Hörproben
-                    </h3>
-                  </div>
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    100 % werbefrei – höre direkt rein.
-                  </p>
+          {/* Kostenlose Klangproben aller Produkte */}
+          <div className="mt-8 p-5 sm:p-7 bg-[var(--color-bg-card)] rounded-3xl border border-[var(--color-border-main)] shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-border-main)]">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white flex items-center gap-1.5">
+                    <Headphones size={13} />
+                    Klangproben
+                  </span>
+                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-[var(--color-text-main)]">
+                    Kostenlose Klangproben aller Produkte
+                  </h3>
                 </div>
-                <Link
-                  to="/premium?filter=H%C3%B6rprobe"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
-                >
-                  Zu allen Inhalten →
-                </Link>
+                <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">
+                  100 % werbefrei – höre direkt 90 Sekunden ohne rechtlichen Disclaimer rein.
+                </p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {hoerprobenList.slice(0, 4).map((p) => (
-                  <HoerprobenPlayer 
-                    key={p.id} 
-                    produkt={p} 
-                    variant="compact" 
-                    showProductLink={true} 
-                    onProductClick={(productId) => navigate(`/premium#product-${productId}`)}
-                  />
-                ))}
-              </div>
+              <Link
+                to="/klangproben"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
+              >
+                <Headphones size={15} />
+                <span>In alle Klangproben reinhören →</span>
+              </Link>
             </div>
-          )}
+
+            {/* Filter-Kategorien */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {[
+                { id: 'Alle', label: 'Alle Proben' },
+                { id: 'Meditation', label: 'Meditationen' },
+                { id: 'Selbsthypnose', label: 'Selbsthypnosen' },
+                { id: 'Hörbuch', label: 'Hörbücher' },
+                { id: 'Kostenfreie Anwendungen', label: 'Kostenfreie Übungen' }
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setKlangprobeFilter(cat.id as any)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    klangprobeFilter === cat.id
+                      ? 'bg-[var(--color-accent-primary)] text-white shadow-xs'
+                      : 'bg-[var(--color-bg-alt)] text-[var(--color-text-muted)] hover:text-[var(--color-text-main)] border border-[var(--color-border-main)]'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Grid mit allen gefilterten Produkten */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+              {filteredKlangproben.map((p) => (
+                <HoerprobenPlayer 
+                  key={p.id} 
+                  produkt={p} 
+                  variant="compact" 
+                  showProductLink={true} 
+                  onProductClick={(productId) => {
+                    const targetId = p.play_store_id || productId;
+                    navigate(`/premium#product-${targetId}`);
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Weiterer Link zur Klangproben-Themenseite */}
+            <div className="pt-2 text-center">
+              <Link 
+                to="/klangproben" 
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[var(--color-accent-primary)] hover:underline"
+              >
+                <span>Zur großen Klangproben-Themenseite mit allen Detailbeschreibungen & Filtern</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Schnellauswahl-Kacheln */}
@@ -299,39 +426,6 @@ export default function Dashboard() {
             to="/evening"
           />
         </div>
-
-        {/* Täglicher Impuls mit dauerhafter Speicherung */}
-        <section className="mt-8 p-6 md:p-8 bg-[var(--color-bg-card)] rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen size={18} className="text-[var(--color-accent-primary)]" />
-              <h2 className="text-2xl font-serif text-[var(--color-accent-primary)]">{todaysWisdom.title}</h2>
-            </div>
-            <p className="text-[var(--color-text-muted)] italic text-base sm:text-lg leading-relaxed max-w-2xl border-l-2 border-[var(--color-accent-primary)] pl-4">
-              {todaysWisdom.text}
-            </p>
-          </div>
-
-          <div className="shrink-0 flex items-center">
-            <button 
-              id="btn-complete-daily-wisdom"
-              onClick={handleCompleteWisdom}
-              disabled={isCompleted || loading}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold transition-all ${
-                isCompleted 
-                  ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 cursor-default shadow-sm' 
-                  : 'bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm active:scale-95 cursor-pointer'
-              }`}
-            >
-              {isCompleted ? <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" /> : <Circle size={16} />}
-              <span>
-                {isCompleted 
-                  ? 'Inmitten der Stille reflektiert' 
-                  : (loading ? 'Speichern...' : 'Als reflektiert markieren')}
-              </span>
-            </button>
-          </div>
-        </section>
 
         {/* Newsletter */}
         <div className="mt-8">
