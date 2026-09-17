@@ -7,6 +7,10 @@ import {
   Gift
 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useAuth } from '../context/AuthContext';
+import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
+import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
+import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 
 interface MeditationItem {
   id: string;
@@ -64,6 +68,13 @@ const MEDITATIONS: MeditationItem[] = [
 ];
 
 export default function MeditationLanding() {
+  const { user } = useAuth();
+  const { hasAccepted } = useDisclaimerStatus();
+  const [showRegModal, setShowRegModal] = useState(false);
+
+  // Nicht-eingeloggte Besucher dürfen 45 Sek. reinhören
+  const GUEST_PREVIEW_LIMIT = 45;
+
   const SAMPLE_AUDIO_URL = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3';
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -80,12 +91,28 @@ export default function MeditationLanding() {
       audio.pause();
       setIsPlaying(false);
     } else {
+      // Wenn Gast und 45 Sek. bereits erreicht sind: Registrierungsschranke anzeigen
+      if (!user && currentTime >= GUEST_PREVIEW_LIMIT) {
+        setShowRegModal(true);
+        return;
+      }
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = Number(e.target.value);
+    let time = Number(e.target.value);
+    if (!user && time > GUEST_PREVIEW_LIMIT) {
+      time = GUEST_PREVIEW_LIMIT;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = GUEST_PREVIEW_LIMIT;
+      }
+      setIsPlaying(false);
+      setCurrentTime(GUEST_PREVIEW_LIMIT);
+      setShowRegModal(true);
+      return;
+    }
     if (audioRef.current) {
       audioRef.current.currentTime = time;
       setCurrentTime(time);
@@ -117,7 +144,17 @@ export default function MeditationLanding() {
         }}
         onTimeUpdate={() => {
           if (audioRef.current) {
-            setCurrentTime(audioRef.current.currentTime);
+            const cur = audioRef.current.currentTime;
+            setCurrentTime(cur);
+
+            // Für nicht eingeloggte Nutzer: Stopp bei Sekunde 45 & Registrierungs-Modal
+            if (!user && cur >= GUEST_PREVIEW_LIMIT) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = GUEST_PREVIEW_LIMIT;
+              setCurrentTime(GUEST_PREVIEW_LIMIT);
+              setIsPlaying(false);
+              setShowRegModal(true);
+            }
           }
         }}
         onEnded={() => setIsPlaying(false)}
@@ -152,7 +189,7 @@ export default function MeditationLanding() {
               ) : (
                 <>
                   <Play size={16} className="fill-white" />
-                  <span>Kostenlos reinhören (16:45 Min.)</span>
+                  <span>{user ? 'Kostenlos abspielen (16:45 Min.)' : 'Kostenlos reinhören (Hörprobe 45 Sek.)'}</span>
                 </>
               )}
             </button>
@@ -205,6 +242,10 @@ export default function MeditationLanding() {
             </div>
           </div>
 
+          {/* Haftungsausschluss-Kennzeichnung direkt vor dem Player */}
+          <AudioDisclaimerNotice isLoggedIn={!!user} />
+
+          {/* Mini-Player Interface */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row items-center gap-4">
             <button
               onClick={togglePlay}
@@ -218,16 +259,21 @@ export default function MeditationLanding() {
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[var(--text-main)]">
                   {isPlaying ? 'Spielt jetzt...' : 'Bereit zum Abspielen'}
+                  {!user && (
+                    <span className="ml-2 text-[10px] text-[var(--accent)] font-normal">
+                      (Hörprobe 45 Sek.)
+                    </span>
+                  )}
                 </span>
                 <span className="font-mono text-[var(--text-muted)]">
-                  {formatTime(currentTime)} / {formatTime(duration)}
+                  {formatTime(currentTime)} / {formatTime(user ? duration : GUEST_PREVIEW_LIMIT)}
                 </span>
               </div>
 
               <input
                 type="range"
                 min={0}
-                max={duration || 1005}
+                max={user ? (duration || 1005) : GUEST_PREVIEW_LIMIT}
                 value={currentTime}
                 onChange={handleSeek}
                 className="w-full accent-[var(--accent)] cursor-pointer h-2 bg-[var(--border)] rounded-full appearance-none"
@@ -523,6 +569,14 @@ export default function MeditationLanding() {
           </div>
         </div>
       </section>
+
+      {/* Registrierungs-Modal mit Haftungsausschluss-Begründung */}
+      <FullAudioRegistrationModal
+        isOpen={showRegModal}
+        onClose={() => setShowRegModal(false)}
+        audioTitle="Meditation zur Herzöffnung"
+        durationText="16:45 Min."
+      />
     </div>
   );
 }

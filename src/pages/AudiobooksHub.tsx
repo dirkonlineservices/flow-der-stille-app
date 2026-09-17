@@ -10,6 +10,8 @@ import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
+import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
+import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 
 export default function AudiobooksHub() {
   const { user } = useAuth();
@@ -22,8 +24,10 @@ export default function AudiobooksHub() {
   // 2. Audio-Probe Zustand (Startet ab 1:19 Min. = 79 Sek. für genau 90 Sekunden)
   const SNIPPET_START_TIME = 79;
   const SNIPPET_DURATION = 90;
+  const GUEST_PREVIEW_LIMIT = 45; // 45 Sekunden Hörprobe für Gäste
   const [isPlayingSnippet, setIsPlayingSnippet] = useState(false);
   const [snippetCurrentTime, setSnippetCurrentTime] = useState(79);
+  const [showRegModal, setShowRegModal] = useState(false);
   const snippetAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // 3. FAQ Accordion State
@@ -71,7 +75,7 @@ export default function AudiobooksHub() {
     checkOwnership();
   }, [user]);
 
-  // Audio Snippet Steuerung (Startet ab 1:19 Min. und läuft für 90 Sek.)
+  // Audio Snippet Steuerung (Startet ab 1:19 Min. und läuft für 90 Sek., Gäste 45 Sek.)
   const togglePlaySnippet = () => {
     const audio = snippetAudioRef.current;
     if (!audio) return;
@@ -80,6 +84,13 @@ export default function AudiobooksHub() {
       audio.pause();
       setIsPlayingSnippet(false);
     } else {
+      // Wenn Gast und bereits 45 Sek. gehört, Modal öffnen
+      const elapsed = audio.currentTime - SNIPPET_START_TIME;
+      if (!user && elapsed >= GUEST_PREVIEW_LIMIT) {
+        setShowRegModal(true);
+        return;
+      }
+
       // Wenn die Position außerhalb des 90-Sekunden-Bereichs liegt, zurück zu 1:19 Min. springen
       if (audio.currentTime < SNIPPET_START_TIME || audio.currentTime >= SNIPPET_START_TIME + SNIPPET_DURATION) {
         audio.currentTime = SNIPPET_START_TIME;
@@ -106,7 +117,7 @@ export default function AudiobooksHub() {
         description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten, die dein Nervensystem sanft entspannen."
       />
 
-      {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek.) */}
+      {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek. bzw. 45 Sek. Gast) */}
       <audio
         ref={snippetAudioRef}
         src={SAMPLE_AUDIO_URL}
@@ -115,6 +126,16 @@ export default function AudiobooksHub() {
           if (snippetAudioRef.current) {
             const cur = snippetAudioRef.current.currentTime;
             setSnippetCurrentTime(cur);
+            const elapsed = cur - SNIPPET_START_TIME;
+
+            // Für Gäste: Nach 45 Sekunden stoppen & Registrierungs-Modal zur Haftungsabsicherung anzeigen
+            if (!user && elapsed >= GUEST_PREVIEW_LIMIT) {
+              snippetAudioRef.current.pause();
+              setIsPlayingSnippet(false);
+              setShowRegModal(true);
+              return;
+            }
+
             // Stopp nach 90 Sekunden ab 1:19 Min. (also bei 2:49 Min. = 169 Sek.)
             if (cur >= SNIPPET_START_TIME + SNIPPET_DURATION) {
               snippetAudioRef.current.pause();
@@ -160,7 +181,7 @@ export default function AudiobooksHub() {
               ) : (
                 <>
                   <Play size={16} className="fill-white" />
-                  <span>Klangprobe lauschen (1:30 Min)</span>
+                  <span>{user ? 'Klangprobe lauschen (1:30 Min.)' : 'Klangprobe reinhören (Hörprobe 45 Sek.)'}</span>
                 </>
               )}
             </button>
@@ -192,6 +213,9 @@ export default function AudiobooksHub() {
             </p>
           </div>
 
+          {/* Haftungsausschluss-Kennzeichnung direkt vor dem Player */}
+          <AudioDisclaimerNotice isLoggedIn={!!user} />
+
           {/* Mini-Player Interface */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row items-center gap-4">
             <button
@@ -206,9 +230,14 @@ export default function AudiobooksHub() {
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[var(--text-main)]">
                   Hörprobe: Kapitel 1 (Auszug nach der Einleitung)
+                  {!user && (
+                    <span className="ml-2 text-[10px] text-[var(--accent)] font-normal">
+                      (Hörprobe 45 Sek.)
+                    </span>
+                  )}
                 </span>
                 <span className="font-mono text-[var(--text-muted)]">
-                  {formatTime(Math.max(0, snippetCurrentTime - SNIPPET_START_TIME))} / {formatTime(SNIPPET_DURATION)}
+                  {formatTime(Math.max(0, snippetCurrentTime - SNIPPET_START_TIME))} / {formatTime(user ? SNIPPET_DURATION : GUEST_PREVIEW_LIMIT)}
                 </span>
               </div>
 
@@ -216,7 +245,7 @@ export default function AudiobooksHub() {
               <div className="h-2 rounded-full bg-[var(--border)] overflow-hidden relative">
                 <div
                   className="h-full bg-[var(--accent)] transition-all duration-300 rounded-full"
-                  style={{ width: `${Math.min(100, (Math.max(0, snippetCurrentTime - SNIPPET_START_TIME) / SNIPPET_DURATION) * 100)}%` }}
+                  style={{ width: `${Math.min(100, (Math.max(0, snippetCurrentTime - SNIPPET_START_TIME) / (user ? SNIPPET_DURATION : GUEST_PREVIEW_LIMIT)) * 100)}%` }}
                 />
               </div>
 
@@ -675,6 +704,15 @@ export default function AudiobooksHub() {
           ))}
         </div>
       </section>
+
+      {/* Registrierungs-Modal zur Haftungsabsicherung für Gäste nach Ablauf der 45s-Hörprobe */}
+      <FullAudioRegistrationModal
+        isOpen={showRegModal}
+        onClose={() => setShowRegModal(false)}
+        title="Klangprobe vollständig anhören"
+        subtitle="Kurze Registrierung zur rechtlichen Haftungsabsicherung"
+        returnPath="/hoerbuecher"
+      />
 
     </div>
   );

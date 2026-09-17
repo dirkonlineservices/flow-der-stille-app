@@ -10,6 +10,7 @@ import { getOfflineProductById } from '../lib/offlineProductsService';
 import SEO from '../components/SEO';
 import { AudioPlayerButton } from '../components/AudioPlayerButton';
 import AuthRequiredModal from '../components/AuthRequiredModal';
+import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -432,6 +433,9 @@ export default function ExerciseDetail() {
           {/* Audio Player for this exercise */}
           {exercise.audioId && (
             <div className="mt-8 space-y-4">
+              {/* Rechtlicher Haftungsausschluss vor dem Player */}
+              <AudioDisclaimerNotice isLoggedIn={!!user} />
+
               {!user && (
                 <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-6 text-amber-900 dark:text-amber-200 shadow-sm">
                   <div className="flex items-start gap-4">
@@ -439,9 +443,9 @@ export default function ExerciseDetail() {
                       <Lock size={22} />
                     </div>
                     <div>
-                      <h4 className="font-serif font-bold text-base mb-1">Kostenlose Registrierung für dieses Audio erforderlich</h4>
+                      <h4 className="font-serif font-bold text-base mb-1">Kostenlose Registrierung zur Haftungsabsicherung</h4>
                       <p className="text-xs sm:text-sm opacity-90 mb-4 leading-relaxed">
-                        Dieses geführte Audio (sowie alle Premium-Funktionen) steht nach einer kostenlosen und unverbindlichen Registrierung uneingeschränkt für dich bereit.
+                        Um dieses Audio in voller Länge anzuhören, ist eine kurze Registrierung erforderlich. Dadurch bestätigst du den Haftungsausschluss zu deiner und unserer rechtlichen Sicherheit.
                       </p>
                       <div className="flex flex-wrap gap-3">
                         <Link 
