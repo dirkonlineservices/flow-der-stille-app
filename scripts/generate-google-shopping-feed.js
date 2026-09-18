@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -114,7 +114,8 @@ if (!match) {
 }
 
 const products = JSON.parse(match[1]);
-const activeProducts = products.filter(p => p.is_active !== false);
+// Google Shopping verlangt zwingend einen Preis > 0 (kostenlose Produkte mit 0,00 € führen zu Richtlinienfehlern)
+const activeProducts = products.filter(p => p.is_active !== false && Number(p.preis) > 0);
 
 const itemsXml = activeProducts.map(prod => {
   const rawId = prod.play_store_id || prod.id;
