@@ -116,6 +116,10 @@ export function AudiobookPlayerModal({
       return false;
     }
   });
+  // Ref-Kopie für Event-Listener-Closures: verhindert stale closure auf Mobile (iOS)
+  const isDisclaimerListenedRef = useRef<boolean>(
+    typeof window !== 'undefined' && window.localStorage?.getItem(DISCLAIMER_KEY) === 'true'
+  );
   const [disclaimerNotice, setDisclaimerNotice] = useState<string | null>(null);
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
@@ -288,6 +292,7 @@ export function AudiobookPlayerModal({
       // Disclaimer Prüfung: Ab Sekunde 79 (01:19 Min.) gilt der rechtliche Hinweis als gehört
       if (cur >= DISCLAIMER_DURATION && !hasListenedDisclaimer) {
         setHasListenedDisclaimer(true);
+        isDisclaimerListenedRef.current = true; // Ref sync halten für Event-Listener-Closures
         localStorage.setItem(DISCLAIMER_KEY, 'true');
       }
 
@@ -325,10 +330,11 @@ export function AudiobookPlayerModal({
         setDuration(audio.duration);
       }
       // Falls der Browser currentTime beim Laden auf 0 zurücksetzt, gespeicherte Position garantieren:
+      // Nutzt Ref statt Closure-Wert (isDisclaimerListened wäre stale auf iOS/Mobile!)
       const targetPos = (typeof initialStartTime === 'number' && initialStartTime > 0)
         ? initialStartTime
         : savedPosition;
-      if (targetPos && targetPos > 5 && isDisclaimerListened && audio.currentTime < 1) {
+      if (targetPos && targetPos > 5 && isDisclaimerListenedRef.current && audio.currentTime < 1) {
         audio.currentTime = targetPos;
         setCurrentTime(targetPos);
       }

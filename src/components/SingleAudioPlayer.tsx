@@ -120,11 +120,6 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
         />
-        
-        {/* Zeit-Anzeige */}
-        <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </div>
 
         {/* Schalter für Offline-Verfügbarkeit im Flugmodus */}
         {rawUrl && (

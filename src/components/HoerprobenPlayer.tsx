@@ -113,8 +113,12 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     // Über das Consent-Gate routen
     requestPlay('sample', produkt.titel, () => {
       const srcToPlay = audioUrl || rawUrl;
-      if (!audio.src || audio.src === '' || audio.src === window.location.href) {
+      const needsSrcSet = !audio.src || audio.src === '' || audio.src === window.location.href;
+      if (needsSrcSet) {
         audio.src = srcToPlay;
+        // iOS-FIX: Nach src-Wechsel muss load() aufgerufen werden,
+        // sonst schlägt play() mit NotSupportedError / NotAllowedError fehl.
+        audio.load();
       }
 
       // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
@@ -131,6 +135,8 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
             console.error('Audio play error:', err);
             if (rawUrl && audio.src !== rawUrl) {
               audio.src = rawUrl;
+              // iOS-FIX: Auch im Fallback load() aufrufen
+              audio.load();
               audio.currentTime = startTime;
               audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
             }
@@ -275,7 +281,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         {/* Audio-Element mit preload="none" */}
         <audio
           ref={audioRef}
-          src={audioUrl || rawUrl}
           controlsList="nodownload"
           preload="none"
           className="hidden"

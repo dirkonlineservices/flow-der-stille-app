@@ -116,6 +116,8 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     const targetUrl = resolvedUrl || rawUrl;
     if (targetUrl && (!audio.src || audio.src === window.location.href)) {
       audio.src = targetUrl;
+      // iOS-FIX: Nach src-Wechsel load() aufrufen, sonst schlägt play() fehl
+      audio.load();
     }
 
     const playPromise = audio.play();
@@ -124,6 +126,8 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
         console.error("Playback Fehler:", err);
         if (rawUrl && audio.src !== rawUrl) {
           audio.src = rawUrl;
+          // iOS-FIX: Auch im Fallback load() aufrufen
+          audio.load();
           audio.play().catch((e) => console.error("Fallback play fehlgeschlagen:", e));
         }
       });
