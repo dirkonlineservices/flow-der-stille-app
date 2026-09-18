@@ -19,3 +19,4 @@ Disallow: /exercisedetail
 Disallow: /recipedetail
 
 Sitemap: https://flow-der-stille.de/sitemap.xml
+# Google Merchant Center Product Feed: https://flow-der-stille.de/google-shopping-feed.xml

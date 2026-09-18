@@ -324,11 +324,72 @@ export default function AudiobookPage() {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
+  const audiobookSchema = {
+    "@context": "https://schema.org",
+    "@type": ["Product", "Audiobook", "Book"],
+    "name": title,
+    "description": productData?.beschreibung || "Ganzheitliches Hörbuch über innere Verwandlung, Achtsamkeit und Bewusstsein von Jacqueline Schmetzer.",
+    "image": coverImage.startsWith('http') ? coverImage : `https://flow-der-stille.de${coverImage}`,
+    "author": {
+      "@type": "Person",
+      "name": "Jacqueline Schmetzer"
+    },
+    "readBy": {
+      "@type": "Person",
+      "name": "Lisa Ragusa"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Flow der Stille",
+      "url": "https://flow-der-stille.de"
+    },
+    "inLanguage": "de-DE",
+    "duration": isMenschSein ? "PT58M39S" : "PT58M43S",
+    "sku": isMenschSein ? "fds_mensch_sein" : "fds_schmetterling",
+    "brand": {
+      "@type": "Brand",
+      "name": "Flow der Stille"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": isMenschSein ? "https://flow-der-stille.de/hoerbuch/mensch_sein" : "https://flow-der-stille.de/hoerbuch/schmetterling",
+      "priceCurrency": "EUR",
+      "price": "4.99",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {
+        "@type": "Organization",
+        "name": "Flow der Stille",
+        "url": "https://flow-der-stille.de"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0.00",
+          "currency": "EUR"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "DE"
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "DE",
+        "returnPolicyCategory": "https://schema.org/DigitalContentWaiverReturnPolicy",
+        "merchantReturnLink": "https://flow-der-stille.de/rueckgaberichtlinie"
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title={`${title} – Flow der Stille`}
         description="Ganzheitliches Hörbuch über innere Verwandlung und Achtsamkeit von Jacqueline Schmetzer."
+        image={coverImage}
+        schemaJson={audiobookSchema}
       />
 
       {/* Audio-Element für die 90s Hörprobe ab 1:19 Min. */}

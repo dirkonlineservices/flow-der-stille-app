@@ -36,6 +36,7 @@ import Datenschutz from './pages/Datenschutz';
 import DataDeletion from './pages/DataDeletion';
 import Impressum from './pages/Impressum';
 import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
+import Versand from './pages/Versand';
 import Danke from './pages/Danke';
 import RecipeDetail from './pages/RecipeDetail';
 import Blog from './pages/Blog';
@@ -166,6 +167,10 @@ export default function App() {
                   <Route path="klangproben" element={<SoundSamplesLanding />} />
                   <Route path="hoerproben" element={<SoundSamplesLanding />} />
                   <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
+                  <Route path="versand" element={<Versand />} />
+                  <Route path="lieferung" element={<Versand />} />
+                  <Route path="versandinformationen" element={<Versand />} />
+                  <Route path="widerruf" element={<OnlineWiderruf />} />
                   <Route path="danke" element={<Danke />} />
                   <Route path="recipe/:id" element={<RecipeDetail />} />
                   <Route path="blog" element={<Blog />} />

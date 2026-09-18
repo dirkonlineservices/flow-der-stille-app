@@ -227,6 +227,8 @@ export default function Layout() {
           { to: '/impressum', label: 'Impressum' },
           { to: '/datenschutz', label: 'Datenschutz' },
           { to: '/agb', label: 'AGB' },
+          { to: '/versand', label: 'Versand & Lieferung' },
+          { to: '/rueckgaberichtlinie', label: 'Rückgaberichtlinie' },
           { to: '/rechtliches', label: 'Rechtliches' },
           { to: '/online-widerruf', label: 'Online-Widerruf' },
           { to: '/konto-loeschen', label: 'Konto löschen' }

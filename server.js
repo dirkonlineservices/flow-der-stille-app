@@ -312,6 +312,16 @@ Absolute Leitplanken:
 app.get("/api/daily", (req, res) => {
   res.json({ message: "Willkommen beim Flow der Stille. Dein Parasympathikus-Impuls folgt!" });
 });
+app.get(["/google-shopping-feed.xml", "/feed/google-shopping.xml"], (_req, res) => {
+  const feedPath = process.env.NODE_ENV !== "production" ? import_path.default.join(__dirname, "public", "google-shopping-feed.xml") : import_path.default.join(__dirname, "dist", "google-shopping-feed.xml");
+  res.setHeader("Content-Type", "application/xml; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400, s-maxage=86400");
+  res.sendFile(feedPath, (err) => {
+    if (err) {
+      res.sendFile(import_path.default.join(__dirname, "public", "google-shopping-feed.xml"));
+    }
+  });
+});
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await (0, import_vite.createServer)({
