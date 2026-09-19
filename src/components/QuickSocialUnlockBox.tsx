@@ -86,7 +86,7 @@ export default function QuickSocialUnlockBox({
     } else if (isAudiobookDetermined) {
       displaySubtitle = `Registriere dich kostenlos mit 1 Klick, um das gesamte 1. Kapitel sofort anzuhören (Vollversion aller Kapitel danach optional für ${priceFormatted}):`;
     } else {
-      displaySubtitle = `Registriere dich kostenlos mit 1 Klick, um die ausführliche Hörprobe ohne Disclaimer anzuhören (Vollversion danach für ${priceFormatted} freischaltbar):`;
+      displaySubtitle = `Registriere dich kostenlos mit 1 Klick, um die ausführliche 25 % Hörprobe direkt anzuhören (Vollversion danach für ${priceFormatted} freischaltbar):`;
     }
   }
 
