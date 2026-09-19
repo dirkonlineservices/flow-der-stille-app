@@ -5,8 +5,8 @@ import { App } from '@capacitor/app';
  * Zentrale Versionsdefinition für die gesamte Flow der Stille Plattform
  * (Webseite, PWA und Android App).
  */
-export const APP_VERSION = '5.3.0';
-export const APP_VERSION_CODE = 100;
+export const APP_VERSION = '5.3.4';
+export const APP_VERSION_CODE = 103;
 
 /**
  * Ermittelt die exakte App-Version:
