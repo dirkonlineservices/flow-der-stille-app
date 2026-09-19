@@ -175,6 +175,54 @@ export default function Login() {
     }
   };
 
+  const handleFacebookSignIn = async () => {
+    if (loading) return;
+    setError('');
+    setLoading(true);
+
+    const dataLayer = (window as any).dataLayer || [];
+    dataLayer.push({ event: 'login_attempt', method: 'facebook_sso' });
+
+    try {
+      const supabase = getSupabase();
+      const isNative = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
+      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/dashboard';
+      sessionStorage.setItem('auth_return_url', returnUrl);
+
+      const redirectTo = isNative
+        ? 'app.flowderstille.de://auth/callback'
+        : `${window.location.origin}/auth/callback`;
+
+      if (isNative) {
+        // NATIV: System-Browser öffnen (verhindert Facebook WebView-Fehler)
+        const { data, error: ssoError } = await supabase.auth.signInWithOAuth({
+          provider: 'facebook',
+          options: {
+            redirectTo: redirectTo,
+            skipBrowserRedirect: true,
+          }
+        });
+
+        if (ssoError) throw ssoError;
+
+        if (data?.url) {
+          await Browser.open({ url: data.url, windowName: '_system' });
+        }
+      } else {
+        // WEB: Standard Browser-Redirect
+        const { error: ssoError } = await supabase.auth.signInWithOAuth({
+          provider: 'facebook',
+          options: { redirectTo: redirectTo }
+        });
+
+        if (ssoError) throw ssoError;
+      }
+    } catch (err: any) {
+      setError(err.message || 'Facebook-Anmeldung konnte nicht gestartet werden.');
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
       <SEO title="Einloggen" description="Melde dich bei deinem Flow der Stille Account an." />
@@ -333,8 +381,21 @@ export default function Login() {
             <span>Mit Google anmelden</span>
           </button>
 
+          {/* Facebook / Meta SSO Button */}
+          <button
+            type="button"
+            onClick={handleFacebookSignIn}
+            disabled={loading}
+            className="w-full py-3.5 px-4 flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white border-2 border-[#1877F2] rounded-full font-semibold text-sm transition-all shadow-2xs active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            <span>Mit Facebook anmelden</span>
+          </button>
+
           <p className="text-[11px] text-[var(--text-muted)] text-center leading-relaxed px-2">
-            Mit der Google-Anmeldung stimmst du unserer{' '}
+            Mit der Anmeldung stimmst du unserer{' '}
             <Link to="/datenschutz" className="underline hover:text-[var(--text-main)]">
               Datenschutzerklärung
             </Link>{' '}
