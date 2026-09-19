@@ -165,57 +165,76 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center p-5 sm:p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm min-h-[8rem] h-auto">
-        <button 
-          onClick={handlePlayClick}
-          disabled={isLoading}
-          className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] shrink-0 ${
-            isLoading
-              ? 'bg-[var(--accent)]/70 cursor-not-allowed'
-              : isPlaying 
-              ? 'bg-[#ef4444] hover:bg-[#dc2626] hover:ring-4 hover:ring-red-200' 
-              : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] hover:ring-4 hover:ring-emerald-100'
-          }`}
-          aria-label={isLoading ? "Wird geladen..." : isPlaying ? "Pause" : "Abspielen"}
-        >
-          {isLoading ? (
-            <Loader2 size={32} className="animate-spin" />
-          ) : isPlaying ? (
-            <Pause size={32} fill="white" stroke="none" />
-          ) : (
-            <Play size={32} className="ml-1" fill="white" stroke="none" />
+      <div className="w-full max-w-xl mx-auto p-3.5 sm:p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] my-3 shadow-xs space-y-2.5">
+        {/* Hauptzeile: Kompakter Play-Button (48x48px) + Titel, Zeit, Fortschritt + Offline-Download */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handlePlayClick}
+            disabled={isLoading}
+            className={`w-12 h-12 flex items-center justify-center rounded-2xl shadow-sm active:scale-95 transition-all text-white shrink-0 cursor-pointer ${
+              isLoading
+                ? 'bg-[var(--accent)]/70 cursor-not-allowed'
+                : isPlaying 
+                ? 'bg-[#ef4444] hover:bg-[#dc2626]' 
+                : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)]'
+            }`}
+            aria-label={isLoading ? "Wird geladen..." : isPlaying ? "Pause" : "Abspielen"}
+          >
+            {isLoading ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : isPlaying ? (
+              <Pause size={20} fill="white" stroke="none" />
+            ) : (
+              <Play size={20} className="ml-0.5" fill="white" stroke="none" />
+            )}
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-xs sm:text-sm font-semibold text-[var(--text-main)] truncate">
+                {produkt.titel}
+              </h4>
+              <span className="text-[11px] font-mono font-medium text-[var(--text-muted)] shrink-0">
+                {isLoading
+                  ? 'Lädt…'
+                  : <>{formatTime(currentTime)} / {formatTime(duration > 0 && isFinite(duration) ? duration : (produkt.dauer || 0))}</>
+                }
+              </span>
+            </div>
+
+            {/* Schlanker Fortschrittsbalken */}
+            <div className="h-1.5 w-full bg-[var(--border)] rounded-full mt-2 overflow-hidden relative">
+              <div 
+                className="h-full bg-[var(--accent)] rounded-full transition-all duration-200"
+                style={{ 
+                  width: `${duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0}%` 
+                }}
+              />
+            </div>
+          </div>
+
+          {rawUrl && (
+            <div className="shrink-0">
+              <OfflineDownloadButton
+                productId={produkt.id}
+                audioUrl={rawUrl}
+                title={produkt.titel}
+                variant="icon"
+              />
+            </div>
           )}
-        </button>
+        </div>
 
         {offlineAlert && (
-          <div className="mt-3 px-3 py-2 bg-amber-500/15 border border-amber-500/30 rounded-xl text-[11px] text-amber-700 dark:text-amber-300 text-center leading-snug">
+          <div className="px-3 py-1.5 bg-amber-500/15 border border-amber-500/30 rounded-xl text-[11px] text-amber-700 dark:text-amber-300 text-center leading-snug">
             {offlineAlert}
           </div>
         )}
 
-        <div className="mt-4 text-center select-none w-full">
-          <div className="text-xl font-bold text-[var(--text-main)] tracking-wider">
-            {isLoading
-              ? <span className="text-sm font-medium text-[var(--text-muted)]">Audio wird geladen...</span>
-              : <>{formatTime(currentTime)} <span className="text-[var(--text-muted)] font-normal text-sm">/ {formatTime(duration > 0 && isFinite(duration) ? duration : (produkt.dauer || 0))}</span></>
-            }
-          </div>
-          <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] mx-auto break-words leading-normal">{produkt.titel}</div>
-        </div>
-
-        {rawUrl && (
-          <OfflineDownloadButton
-            productId={produkt.id}
-            audioUrl={rawUrl}
-            title={produkt.titel}
-            variant="button"
-          />
-        )}
-        
         <audio ref={audioRef} className="hidden" preload="none" controlsList="nodownload" />
-        
+
         {produkt.audio_hinweis && (
-          <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal break-words border-t border-[var(--border)] pt-2 w-full">
+          <p className="text-[10px] text-[var(--text-muted)] italic leading-normal border-t border-[var(--border)] pt-1.5">
             {produkt.audio_hinweis}
           </p>
         )}

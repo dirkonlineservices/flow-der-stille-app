@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -10,6 +10,7 @@ import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, 
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
+import QuickSocialUnlockBox from './QuickSocialUnlockBox';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { offlineManager } from '../lib/offlineAudioService';
@@ -981,8 +982,18 @@ export default function PremiumShopDashboard() {
 
                     {/* Kostenlose Klangprobe – für jedes Produkt mit Audio verfügbar, überspringt Disclaimer */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-5 md:mt-7">
+                      <div className="mt-5 md:mt-7 space-y-2">
                         <HoerprobenPlayer produkt={produkt} variant="compact" />
+                        <div className="flex items-center justify-end px-1 pt-1">
+                          <Link
+                            to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}` : `/audio/${produkt.id}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline"
+                          >
+                            <Headphones size={13} />
+                            <span>Eigene Hörseite &amp; Anleitung öffnen</span>
+                            <ArrowRight size={12} />
+                          </Link>
+                        </div>
                       </div>
                     )}
                 </div>
@@ -1015,39 +1026,15 @@ export default function PremiumShopDashboard() {
               </div>
 
               {!hatZugriff && !user && (
-                <div className="mt-6 md:mt-8 bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-5 sm:p-6 text-[var(--text-main)] shadow-sm">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-[var(--accent)]/15 rounded-xl text-[var(--accent)] shrink-0">
-                        <Lock size={22} />
-                      </div>
-                      <div>
-                        <h4 className="font-serif font-bold text-base text-[var(--text-main)] mb-1">
-                          {istKostenlos ? "Kostenloses Audio nach Registrierung anhören" : "Produkt freischalten"}
-                        </h4>
-                        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                          {istKostenlos 
-                            ? "Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit."
-                            : `Melde dich an oder registriere dich kostenlos, um dieses Produkt zum Preis von ${produkt.preis} € freizuschalten.`
-                          }
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-                      <Link 
-                        to={`/register?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
-                        className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
-                      >
-                        Jetzt kostenlos registrieren
-                      </Link>
-                      <Link 
-                        to={`/login?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
-                        className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
-                      >
-                        Anmelden
-                      </Link>
-                    </div>
-                  </div>
+                <div className="mt-6 md:mt-8">
+                  <QuickSocialUnlockBox
+                    title={istKostenlos ? "Kostenlos freischalten (1-Klick)" : `Mit 1 Klick registrieren & freischalten`}
+                    subtitle={istKostenlos 
+                      ? "Dieses Audio ist 100% kostenlos. Registriere dich mit 1 Klick über Google oder Facebook und höre sofort:" 
+                      : `Registriere dich mit 1 Klick über Google oder Facebook, um dieses Audio für ${produkt.preis ? `${produkt.preis} €` : 'Einmalkauf'} freizuschalten:`}
+                    returnPath={`/premium-dashboard#product-${produkt.id}`}
+                    compact={true}
+                  />
                 </div>
               )}
 
@@ -1084,25 +1071,36 @@ export default function PremiumShopDashboard() {
                         />
                       </div>
                     ) : (
-                      <AudioPlayerButton 
-                        produkt={produkt}  
-                        getUrl={async (p: any) => {
-                          if (p.audio_path && p.audio_path.startsWith('http')) {
-                            return p.audio_path;
-                          }
-                          const off = getOfflineProductById(p.id);
-                          if (off?.audio_path && off.audio_path.startsWith('http')) {
-                            return off.audio_path;
-                          }
-                          try {
-                            const supabase = getSupabase();
-                            const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                            return data?.publicUrl || '';
-                          } catch {
-                            return '';
-                          }
-                        }} 
-                      />
+                      <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+                        <Link
+                          to={`/audio/${produkt.id}`}
+                          className="py-2.5 px-4 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                        >
+                          <Headphones size={15} />
+                          <span>Hörseite &amp; Anleitung</span>
+                        </Link>
+                        <div className="flex-1 min-w-0">
+                          <AudioPlayerButton 
+                            produkt={produkt}  
+                            getUrl={async (p: any) => {
+                              if (p.audio_path && p.audio_path.startsWith('http')) {
+                                return p.audio_path;
+                              }
+                              const off = getOfflineProductById(p.id);
+                              if (off?.audio_path && off.audio_path.startsWith('http')) {
+                                return off.audio_path;
+                              }
+                              try {
+                                const supabase = getSupabase();
+                                const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                                return data?.publicUrl || '';
+                              } catch {
+                                return '';
+                              }
+                            }} 
+                          />
+                        </div>
+                      </div>
                     )}
 
                     {/* Interaktive Sternebewertung für freigeschaltete Hörer */}

@@ -50,6 +50,7 @@ const AudiobooksHub = lazy(() => import('./pages/AudiobooksHub'));
 const MeditationLanding = lazy(() => import('./pages/MeditationLanding'));
 const HypnosisLanding = lazy(() => import('./pages/HypnosisLanding'));
 const SoundSamplesLanding = lazy(() => import('./pages/SoundSamplesLanding'));
+const AudioSessionPage = lazy(() => import('./pages/AudioSessionPage'));
 
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -219,6 +220,9 @@ export default function App() {
                       <Route path="gefuehrte-meditation" element={<MeditationLanding />} />
                       <Route path="selbsthypnose" element={<HypnosisLanding />} />
                       <Route path="hypnose" element={<HypnosisLanding />} />
+                      <Route path="audio/:id" element={<AudioSessionPage />} />
+                      <Route path="selbsthypnose/:id" element={<AudioSessionPage />} />
+                      <Route path="meditation/:id" element={<AudioSessionPage />} />
                       <Route path="klangproben" element={<SoundSamplesLanding />} />
                       <Route path="hoerproben" element={<SoundSamplesLanding />} />
 
