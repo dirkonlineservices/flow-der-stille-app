@@ -592,7 +592,7 @@ export default function AudiobookPage() {
             {/* Kauf- und Play-Steuerung basierend auf Besitzstatus */}
             <div className="pt-2 flex flex-col sm:flex-row items-stretch gap-3">
               {isOwned ? (
-                /* Fall 1: Produkt GEKAUFT -> Voller Zugriff auf das Hörbuch */
+                /* Fall 1: Produkt GEKAUFT -> Voller Zugriff auf das Hörbuch + Schnellauswahl Kapitel 1 */
                 <>
                   <button
                     onClick={() => {
@@ -622,8 +622,26 @@ export default function AudiobookPage() {
                     </span>
                   </button>
 
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!audioUrl) return;
+                      setInitialChapterTime(0);
+                      setIsPlayerOpen(true);
+                    }}
+                    className="sm:w-auto px-5 py-3.5 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer hover:shadow-lg"
+                  >
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-bold">
+                      <Play size={15} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 anhören</span>
+                    </div>
+                    <span className="text-[10px] opacity-90 font-normal mt-0.5">
+                      Direkt ab Kapitel 1 abspielen
+                    </span>
+                  </button>
+
                   {audioUrl && (
-                    <div className="flex-1 min-h-[64px] flex flex-col justify-center">
+                    <div className="sm:w-auto min-h-[64px] flex flex-col justify-center">
                       <OfflineDownloadButton
                         productId={productData?.id || productId}
                         audioUrl={audioUrl}
@@ -671,7 +689,7 @@ export default function AudiobookPage() {
             </div>
 
             {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten */}
-            {!user && !isOwned && (
+            {!user ? (
               <div className="mt-4">
                 <QuickSocialUnlockBox
                   produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
@@ -680,6 +698,13 @@ export default function AudiobookPage() {
                   returnPath={location.pathname}
                   compact={false}
                 />
+              </div>
+            ) : (
+              <div className="mt-4 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5 text-emerald-800 dark:text-emerald-300 font-medium">
+                  <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>Du bist angemeldet als <strong>{user.email}</strong>. Deine 1-Klick-Freischaltungen und Hörfortschritte sind aktiv verknüpft.</span>
+                </div>
               </div>
             )}
           </div>

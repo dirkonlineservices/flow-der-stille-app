@@ -435,13 +435,22 @@ export default function AudiobooksHub() {
                 </div>
 
                 {isAudiobookOwned ? (
-                  <Link
-                    to="/hoerbuch/schmetterling"
-                    className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Play size={16} className="fill-white" />
-                    <span>Vollständiges Hörbuch abspielen</span>
-                  </Link>
+                  <div className="w-full sm:flex-1 flex flex-col sm:flex-row gap-2">
+                    <Link
+                      to="/hoerbuch/schmetterling"
+                      className="flex-1 py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Play size={16} className="fill-white" />
+                      <span>Vollständiges Hörbuch abspielen</span>
+                    </Link>
+                    <Link
+                      to="/hoerbuch/schmetterling?autoplay=true"
+                      className="px-4 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Play size={13} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 anhören</span>
+                    </Link>
+                  </div>
                 ) : (
                   <>
                     <Link
@@ -471,7 +480,7 @@ export default function AudiobooksHub() {
                 )}
               </div>
 
-              {!user && !isAudiobookOwned && (
+              {!user ? (
                 <div className="pt-2 text-left">
                   <QuickSocialUnlockBox
                     produkt={{
@@ -485,6 +494,13 @@ export default function AudiobooksHub() {
                     returnPath="/hoerbuch/schmetterling?autoplay=true"
                     compact={true}
                   />
+                </div>
+              ) : (
+                <div className="pt-2 text-left">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Angemeldet als <strong>{user.email}</strong> • Deine 1-Klick-Freischaltungen sind aktiv</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -552,13 +568,22 @@ export default function AudiobooksHub() {
                 </div>
 
                 {isMenschSeinOwned ? (
-                  <Link
-                    to="/hoerbuch/mensch_sein"
-                    className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Play size={16} className="fill-white" />
-                    <span>Vollständiges Hörbuch abspielen</span>
-                  </Link>
+                  <div className="w-full sm:flex-1 flex flex-col sm:flex-row gap-2">
+                    <Link
+                      to="/hoerbuch/mensch_sein"
+                      className="flex-1 py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Play size={16} className="fill-white" />
+                      <span>Vollständiges Hörbuch abspielen</span>
+                    </Link>
+                    <Link
+                      to="/hoerbuch/mensch_sein?autoplay=true"
+                      className="px-4 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Play size={13} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 anhören</span>
+                    </Link>
+                  </div>
                 ) : (
                   <>
                     <Link
@@ -588,7 +613,7 @@ export default function AudiobooksHub() {
                 )}
               </div>
 
-              {!user && !isMenschSeinOwned && (
+              {!user ? (
                 <div className="pt-2 text-left">
                   <QuickSocialUnlockBox
                     produkt={{
@@ -602,6 +627,13 @@ export default function AudiobooksHub() {
                     returnPath="/hoerbuch/mensch_sein?autoplay=true"
                     compact={true}
                   />
+                </div>
+              ) : (
+                <div className="pt-2 text-left">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Angemeldet als <strong>{user.email}</strong> • Deine 1-Klick-Freischaltungen sind aktiv</span>
+                  </div>
                 </div>
               )}
             </div>

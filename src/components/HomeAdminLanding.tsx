@@ -530,6 +530,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               { key: 'meditation', label: '🧘‍♀️ Meditation: Herzöffnung', sub: 'Gratis' },
               { key: 'selbsthypnose', label: '🌀 Selbsthypnose: Tiefer Schlaf', sub: 'Gratis' },
               { key: 'hoerbuch', label: '🎧 Hörbuch: Schmetterling', sub: 'Auszug' },
+              { key: 'hoerbuch_mensch_sein', label: '🎧 Hörbuch: Mut zum Echtsein', sub: 'Kapitel 1' },
             ].map(tab => (
               <button
                 key={tab.key}
@@ -584,6 +585,16 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 },
                 badge: 'Ganzheitliches Hörbuch (58:43 Min. Gesamtlaufzeit)',
                 desc: 'Eine tröstende Hörreise über den Wandel des Lebens und die Leichtigkeit des Loslassens.'
+              },
+              hoerbuch_mensch_sein: {
+                produkt: getOfflineProductById('mensch_sein') || {
+                  id: 'mensch_sein',
+                  titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
+                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3',
+                  dauer: 3519
+                },
+                badge: 'Ganzheitliches Hörbuch (58:39 Min. • Kapitel 1 gratis)',
+                desc: 'Erkenne deine Einzigartigkeit und lerne, dein wahres Selbst ohne Masken zu leben.'
               }
             };
 

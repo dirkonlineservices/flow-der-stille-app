@@ -303,6 +303,17 @@ export function HoerprobenPlayer({
               variant="icon"
             />
 
+            {isAudiobook && (
+              <Link
+                to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 flex items-center gap-1.5"
+                title="Mit 1 Klick Kapitel 1 kostenlos anhören"
+              >
+                <Play size={11} className="fill-white" />
+                <span>Mit 1 Klick Kapitel 1 (Gratis)</span>
+              </Link>
+            )}
+
             {showProductLink && (
               <button
                 onClick={scrollToProduct}
@@ -388,13 +399,32 @@ export function HoerprobenPlayer({
                 <span>Mit 1 Klick gratis freischalten</span>
               </button>
             ) : isAudiobook ? (
-              <Link
-                to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein' : '/hoerbuch/schmetterling'}
-                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <BookOpen size={13} />
-                <span>Gesamtes Hörbuch freischalten ({produkt.preis ? `${produkt.preis} €` : '4,99 €'}) →</span>
-              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                  className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Play size={12} className="fill-white" />
+                  <span>Mit 1 Klick Kapitel 1 kostenlos anhören →</span>
+                </Link>
+                {!user && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRegModal(true)}
+                    className="px-3.5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Sparkles size={13} />
+                    <span>1-Klick-Freischaltung</span>
+                  </button>
+                )}
+                <Link
+                  to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein' : '/hoerbuch/schmetterling'}
+                  className="px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-medium text-xs border border-[var(--border)] transition-all flex items-center gap-1 cursor-pointer"
+                >
+                  <BookOpen size={12} />
+                  <span>Vollversion ({produkt.preis ? `${produkt.preis} €` : '4,99 €'})</span>
+                </Link>
+              </div>
             ) : !isFreeProduct ? (
               <button
                 type="button"

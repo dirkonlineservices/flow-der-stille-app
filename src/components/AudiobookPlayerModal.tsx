@@ -684,30 +684,54 @@ export function AudiobookPlayerModal({
           {/* Player Scrollable Content */}
           <div className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1">
 
-            {/* Kostenloses Kapitel 1 Banner für Nicht-Käufer */}
+            {/* Kostenloses Kapitel 1 Banner mit 1-Klick-Hinweis & Registrierung für Nicht-Käufer */}
             {!isOwned && (
-              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs animate-fade-in">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-200/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 flex items-center justify-center shrink-0">
-                    <Sparkles size={16} />
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 flex flex-col gap-3 text-xs shadow-xs animate-fade-in">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-200/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                      <Sparkles size={16} />
+                    </div>
+                    <div>
+                      <strong className="text-emerald-950 dark:text-emerald-100 font-bold block text-xs sm:text-sm">
+                        Mit 1 Klick: Kapitel 1 &amp; Einleitung kostenlos freigeschaltet
+                      </strong>
+                      <span className="text-[11px] text-emerald-800 dark:text-emerald-300/90 font-medium">
+                        Du hörst das gesamte erste Kapitel gratis. Die weiteren Abschnitte gehören zur Vollversion.
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <strong className="text-emerald-950 dark:text-emerald-100 font-bold block">
-                      Kapitel 1 &amp; Einleitung kostenlos freigeschaltet
-                    </strong>
-                    <span className="text-[11px] text-emerald-800 dark:text-emerald-300/90 font-medium">
-                      Du hörst das gesamte erste Kapitel gratis. Die weiteren Abschnitte gehören zur Vollversion.
-                    </span>
-                  </div>
+                  {onRequirePurchase && (
+                    <button
+                      type="button"
+                      onClick={() => onRequirePurchase(ch2)}
+                      className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all whitespace-nowrap self-end sm:self-auto cursor-pointer"
+                    >
+                      Vollversion ({priceDisplay}) →
+                    </button>
+                  )}
                 </div>
-                {onRequirePurchase && (
-                  <button
-                    type="button"
-                    onClick={() => onRequirePurchase(ch2)}
-                    className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all whitespace-nowrap self-end sm:self-auto cursor-pointer"
-                  >
-                    Vollversion ({priceDisplay}) →
-                  </button>
+
+                {/* 1-Klick-Registrierung direkt im oberen Bereich des Players */}
+                {!user ? (
+                  <div className="pt-2 border-t border-emerald-300/40 dark:border-emerald-700/40">
+                    <QuickSocialUnlockBox
+                      produkt={{
+                        id: productId,
+                        titel: title,
+                        preis: 4.99,
+                        kategorie: 'Hörbuch'
+                      }}
+                      isAudiobook={true}
+                      price={priceDisplay}
+                      compact={true}
+                    />
+                  </div>
+                ) : (
+                  <div className="pt-1.5 border-t border-emerald-300/40 dark:border-emerald-700/40 flex items-center gap-2 text-[11px] text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Eingeloggt als <strong>{user.email}</strong> • Dein Hörfortschritt wird automatisch synchronisiert</span>
+                  </div>
                 )}
               </div>
             )}

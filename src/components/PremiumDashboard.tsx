@@ -1018,7 +1018,7 @@ export default function PremiumShopDashboard() {
                             className="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                            <span>Kostenlose Hörprobe &amp; Anleitung abspielen →</span>
+                            <span>Mit 1 Klick kostenlose Hörprobe &amp; Anleitung abspielen →</span>
                           </Link>
                         )}
                       </div>
@@ -1065,7 +1065,7 @@ export default function PremiumShopDashboard() {
               {/* Für freigeschaltete Produkte: Audio Player Button (auch im Flugmodus sofort verfügbar) */}
               {hatZugriff && (
                 <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
-                    {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch')) ? (
+                    {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch')) ? (
                       <div className="flex flex-col sm:flex-row gap-3">
                         <Link
                           to={`/hoerbuch/${produkt.id}`}
