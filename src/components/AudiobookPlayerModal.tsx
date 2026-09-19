@@ -39,6 +39,9 @@ interface Props {
   durationSeconds?: number; // z. B. 3523 für 58:43 Min
   chapters?: AudiobookChapter[];
   initialStartTime?: number;
+  isOwned?: boolean;
+  priceDisplay?: string;
+  onRequirePurchase?: (chapter?: AudiobookChapter) => void;
 }
 
 const DEFAULT_CHAPTERS: AudiobookChapter[] = [
@@ -90,7 +93,10 @@ export function AudiobookPlayerModal({
   audioUrl,
   durationSeconds = 3523,
   chapters = DEFAULT_CHAPTERS,
-  initialStartTime
+  initialStartTime,
+  isOwned = false,
+  priceDisplay = '4,99 €',
+  onRequirePurchase
 }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const milestonesRef = useRef({ 25: false, 50: false, 75: false, 100: false });
@@ -105,6 +111,13 @@ export function AudiobookPlayerModal({
   const [savedPosition, setSavedPosition] = useState<number | null>(null);
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
+
+  // 🎯 User-Wunsch: Erstes Kapitel bei Hörbüchern komplett freischalten!
+  // Intro + Kapitel 1 sind gratis anhörbar (bis zum Beginn von Kapitel 2).
+  const ch2 = chapters.find(c => c.id === 'ch2') || chapters[2];
+  const maxFreeTime = isOwned 
+    ? (durationSeconds || 3600) 
+    : (ch2 ? ch2.startTime : 729);
 
   // Schutz-Mechanismus für den rechtlichen Hinweis (Disclaimer bis erstes echtes Kapitel z. B. 01:08 oder 01:19 Min.)
   const DISCLAIMER_DURATION = (chapters.length > 1 && chapters[1]?.startTime) ? chapters[1].startTime : 79;
@@ -296,6 +309,19 @@ export function AudiobookPlayerModal({
         localStorage.setItem(DISCLAIMER_KEY, 'true');
       }
 
+      // 🎯 Wenn nicht gekauft: Nach Ende von Kapitel 1 stoppen und Kaufhinweis anzeigen
+      if (!isOwned && cur >= maxFreeTime) {
+        audio.pause();
+        audio.currentTime = maxFreeTime;
+        setCurrentTime(maxFreeTime);
+        setIsPlaying(false);
+        setDisclaimerNotice('Kapitel 1 beendet. Schalte jetzt das vollständige Hörbuch frei, um nahtlos weiterzuhören.');
+        if (onRequirePurchase) {
+          onRequirePurchase(ch2);
+        }
+        return;
+      }
+
       // GA4 Meilenstein-Tracking (25%, 50%, 75%)
       if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
         const pct = Math.round((cur / audio.duration) * 100);
@@ -426,6 +452,19 @@ export function AudiobookPlayerModal({
         }
       }
 
+      // 🎯 Wenn nicht gekauft: Nach Ende von Kapitel 1 stoppen
+      if (!isOwned && cur >= maxFreeTime) {
+        audio.pause();
+        audio.currentTime = maxFreeTime;
+        setCurrentTime(maxFreeTime);
+        setIsPlaying(false);
+        setDisclaimerNotice('Kapitel 1 beendet. Schalte jetzt das vollständige Hörbuch frei, um nahtlos weiterzuhören.');
+        if (onRequirePurchase) {
+          onRequirePurchase(ch2);
+        }
+        return;
+      }
+
       // Disclaimer-Grenze prüfen
       if (cur >= DISCLAIMER_DURATION) {
         const alreadySet = localStorage.getItem(DISCLAIMER_KEY) === 'true';
@@ -487,11 +526,17 @@ export function AudiobookPlayerModal({
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!hasListenedDisclaimer) {
-      setDisclaimerNotice('Du musst dir zuerst den rechtlichen Hinweis (1:19 Min.) einmalig anhören. Danach kannst du frei spulen.');
+      setDisclaimerNotice(`Du musst dir zuerst den rechtlichen Hinweis (${formatTime(DISCLAIMER_DURATION)} Min.) einmalig anhören. Danach kannst du frei spulen.`);
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
     const targetTime = parseFloat(e.target.value);
+    if (!isOwned && targetTime >= maxFreeTime) {
+      setCurrentTime(maxFreeTime);
+      if (audioRef.current) audioRef.current.currentTime = maxFreeTime;
+      if (onRequirePurchase) onRequirePurchase(ch2);
+      return;
+    }
     setCurrentTime(targetTime);
     if (audioRef.current) {
       audioRef.current.currentTime = targetTime;
@@ -505,12 +550,30 @@ export function AudiobookPlayerModal({
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
-    const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
+    const maxBound = !isOwned ? maxFreeTime : duration;
+    const target = audioRef.current.currentTime + seconds;
+    if (!isOwned && target >= maxFreeTime) {
+      audioRef.current.currentTime = maxFreeTime;
+      setCurrentTime(maxFreeTime);
+      if (onRequirePurchase) onRequirePurchase(ch2);
+      return;
+    }
+    const newTime = Math.min(Math.max(0, target), maxBound);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const jumpToChapter = (chapter: AudiobookChapter) => {
+    if (!isOwned && chapter.id !== 'intro' && chapter.id !== 'ch1' && chapter.startTime >= maxFreeTime) {
+      if (onRequirePurchase) {
+        onRequirePurchase(chapter);
+      } else {
+        setDisclaimerNotice('Dieses Kapitel ist Teil der Vollversion. Bitte schalte das Hörbuch frei.');
+        setTimeout(() => setDisclaimerNotice(null), 4500);
+      }
+      return;
+    }
+
     if (!hasListenedDisclaimer && chapter.id !== 'intro' && chapter.startTime >= DISCLAIMER_DURATION) {
       setDisclaimerNotice(`Du musst dir zuerst den rechtlichen Hinweis (${formatTime(DISCLAIMER_DURATION)} Min.) einmalig anhören. Danach kannst du in den Kapiteln hüpfen.`);
       setTimeout(() => setDisclaimerNotice(null), 4500);
@@ -618,6 +681,34 @@ export function AudiobookPlayerModal({
           {/* Player Scrollable Content */}
           <div className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1">
 
+            {/* Kostenloses Kapitel 1 Banner für Nicht-Käufer */}
+            {!isOwned && (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs animate-fade-in">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-200/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <strong className="text-emerald-950 dark:text-emerald-100 font-bold block">
+                      Kapitel 1 &amp; Einleitung kostenlos freigeschaltet
+                    </strong>
+                    <span className="text-[11px] text-emerald-800 dark:text-emerald-300/90 font-medium">
+                      Du hörst das gesamte erste Kapitel gratis. Die weiteren Abschnitte gehören zur Vollversion.
+                    </span>
+                  </div>
+                </div>
+                {onRequirePurchase && (
+                  <button
+                    type="button"
+                    onClick={() => onRequirePurchase(ch2)}
+                    className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all whitespace-nowrap self-end sm:self-auto cursor-pointer"
+                  >
+                    Vollversion ({priceDisplay}) →
+                  </button>
+                )}
+              </div>
+            )}
+
             {/* Resume Banner */}
             {showResumeBanner && savedPosition && (
               <div className="p-3.5 rounded-2xl bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs animate-fade-in shadow-xs">
@@ -680,14 +771,25 @@ export function AudiobookPlayerModal({
                   Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
 
-                {/* Offline-Speicher Button */}
+                {/* Offline-Speicher Button oder Freischalt-Hinweis */}
                 <div className="pt-2">
-                  <OfflineDownloadButton
-                    productId={productId}
-                    audioUrl={audioUrl}
-                    title={title}
-                    variant="button"
-                  />
+                  {isOwned ? (
+                    <OfflineDownloadButton
+                      productId={productId}
+                      audioUrl={audioUrl}
+                      title={title}
+                      variant="button"
+                    />
+                  ) : onRequirePurchase ? (
+                    <button
+                      type="button"
+                      onClick={() => onRequirePurchase(ch2)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold text-[var(--accent)] transition cursor-pointer shadow-2xs"
+                    >
+                      <Lock size={12} />
+                      <span>Vollversion freischalten ({priceDisplay})</span>
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -841,18 +943,20 @@ export function AudiobookPlayerModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {chapters.map((ch) => {
                   const isActive = activeChapterId === ch.id;
-                  const isLocked = !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= DISCLAIMER_DURATION;
+                  const isLockedByPurchase = !isOwned && ch.id !== 'intro' && ch.id !== 'ch1' && ch.startTime >= maxFreeTime;
+                  const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= DISCLAIMER_DURATION;
+                  const isLocked = isLockedByPurchase || isLockedByDisclaimer;
 
                   return (
                     <button
                       key={ch.id}
                       onClick={() => jumpToChapter(ch)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
                         isActive
-                          ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)] text-[var(--text-main)] shadow-sm cursor-pointer'
+                          ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)] text-[var(--text-main)] shadow-sm'
                           : isLocked
-                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] opacity-85 cursor-not-allowed hover:border-amber-400/50'
-                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40 cursor-pointer'
+                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] opacity-85 hover:border-amber-400/50'
+                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40'
                       }`}
                     >
                       <div className="min-w-0 flex-1">
@@ -867,7 +971,11 @@ export function AudiobookPlayerModal({
                       {isLocked ? (
                         <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono bg-amber-100 dark:bg-amber-900/60 text-stone-950 dark:text-amber-100 border border-amber-300 dark:border-amber-700/60 flex items-center gap-1 shadow-2xs shrink-0">
                           <Lock size={10} className="text-amber-900 dark:text-amber-300" />
-                          <span>Gesperrt</span>
+                          <span>{isLockedByPurchase ? 'Vollversion' : 'Gesperrt'}</span>
+                        </span>
+                      ) : !isOwned && (ch.id === 'intro' || ch.id === 'ch1') ? (
+                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 shrink-0">
+                          Gratis
                         </span>
                       ) : (
                         <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono shrink-0 transition-all ${

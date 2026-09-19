@@ -607,34 +607,38 @@ export default function AudiobookPage() {
                   )}
                 </>
               ) : (
-                /* Fall 2: Produkt NOCH NICHT GEKAUFT -> Kauf-Button & 90s Hörprobe */
+                /* Fall 2: Produkt NOCH NICHT GEKAUFT -> Kapitel 1 kostenlos abspielen ODER Vollversion freischalten */
                 <>
-                  <Link
-                    to={`/premium#product-${productData?.id || productId}`}
-                    className="flex-1 py-3.5 px-6 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white cursor-pointer hover:shadow-lg"
-                  >
-                    <div className="flex items-center gap-2 text-sm font-bold">
-                      <Gift size={16} />
-                      <span>Hörbuch für {priceDisplay} freischalten</span>
-                    </div>
-                    <span className="text-[11px] opacity-90 font-normal mt-0.5">
-                      Einmaliger Kauf • Kein Abo • Volle {isMenschSein ? '58:39 Min.' : '58:43 Min.'}
-                    </span>
-                  </Link>
-
                   <button
                     type="button"
-                    onClick={togglePlaySnippet}
-                    className="sm:w-auto px-5 py-3.5 rounded-2xl font-semibold transition-all border border-[var(--border)] bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] flex flex-col items-center justify-center text-center min-h-[64px] cursor-pointer"
+                    onClick={() => {
+                      if (!audioUrl) return;
+                      setInitialChapterTime(0);
+                      setIsPlayerOpen(true);
+                    }}
+                    className="flex-1 py-3.5 px-6 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer hover:shadow-lg"
                   >
-                    <div className="flex items-center gap-2 text-xs font-bold">
-                      {isPlayingSnippet ? <Pause size={14} /> : <Play size={14} className="fill-current" />}
-                      <span>{isPlayingSnippet ? 'Hörprobe stoppen' : '90 Sek. Hörprobe'}</span>
+                    <div className="flex items-center gap-2 text-sm font-bold">
+                      <Play size={16} className="fill-white" />
+                      <span>Kapitel 1 jetzt kostenlos anhören</span>
                     </div>
-                    <span className="text-[10px] text-[var(--text-muted)] font-normal mt-0.5">
-                      Kapitel 1 (Auszug)
+                    <span className="text-[11px] opacity-90 font-normal mt-0.5">
+                      {isMenschSein ? '11:00 Min.' : '17:05 Min.'} Vollversion des 1. Kapitels gratis
                     </span>
                   </button>
+
+                  <Link
+                    to={`/premium#product-${productData?.id || productId}`}
+                    className="sm:w-auto px-6 py-3.5 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white cursor-pointer hover:shadow-lg"
+                  >
+                    <div className="flex items-center gap-2 text-xs sm:text-sm font-bold">
+                      <Gift size={15} />
+                      <span>Hörbuch für {priceDisplay} freischalten</span>
+                    </div>
+                    <span className="text-[10px] opacity-90 font-normal mt-0.5">
+                      Alle {chapters.length} Kapitel • Kein Abo
+                    </span>
+                  </Link>
                 </>
               )}
             </div>
@@ -802,16 +806,18 @@ export default function AudiobookPage() {
 
           {/* Saubere Liste der Kapitel */}
           <div className="space-y-3">
-            {chapters.map((ch) => {
+            {chapters.map((ch, idx) => {
               const disclaimerThreshold = isMenschSein ? 69 : 79;
+              const isFreeChapter = ch.id === 'intro' || ch.id === 'ch1' || idx <= 1;
               const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= disclaimerThreshold;
-              const isAvailable = isOwned && (hasListenedDisclaimer || ch.id === 'intro');
+              const isLockedByPurchase = !isOwned && !isFreeChapter;
+              const isAvailable = isOwned ? (hasListenedDisclaimer || ch.id === 'intro') : isFreeChapter;
 
               return (
                 <div
                   key={ch.id}
                   onClick={() => {
-                    if (!isOwned) {
+                    if (isLockedByPurchase) {
                       setSelectedLockedChapter(ch);
                       setShowBuyModal(true);
                     } else if (isLockedByDisclaimer) {
@@ -825,9 +831,7 @@ export default function AudiobookPage() {
                   className={`p-4 sm:p-5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left cursor-pointer ${
                     isAvailable
                       ? 'bg-[var(--bg-alt)] border-[var(--border)] hover:border-[var(--accent)] hover:shadow-xs'
-                      : isLockedByDisclaimer
-                      ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] opacity-85 hover:border-amber-400/60'
-                      : 'bg-[var(--bg-alt)]/60 border-[var(--border)] hover:border-amber-400/50'
+                      : 'bg-[var(--bg-alt)]/60 border-[var(--border)] opacity-85 hover:border-amber-400/60'
                   }`}
                 >
                   {/* Titel und Untertitel sauber untereinander */}
@@ -836,6 +840,11 @@ export default function AudiobookPage() {
                       <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded-md border border-[var(--accent)]/20">
                         {ch.number}
                       </span>
+                      {isFreeChapter && !isOwned && (
+                        <span className="text-[10px] font-mono font-bold uppercase text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-md border border-emerald-500/25">
+                          Kostenlos
+                        </span>
+                      )}
                       <h4 className="font-semibold text-sm sm:text-base text-[var(--text-main)]">
                         {ch.title}
                       </h4>
@@ -982,10 +991,16 @@ export default function AudiobookPage() {
         </div>
       )}
 
-      {/* Vollwertiger Audiobook Player Modal (NUR wenn freigeschaltet) */}
-      {isOwned && (
+      {/* Vollwertiger Audiobook Player Modal (für Besitzer oder für kostenloses Kapitel 1) */}
+      {isPlayerOpen && (
         <AudiobookPlayerModal
           isOpen={isPlayerOpen}
+          isOwned={isOwned}
+          priceDisplay={priceDisplay}
+          onRequirePurchase={(lockedChapter) => {
+            if (lockedChapter) setSelectedLockedChapter(lockedChapter as any);
+            setShowBuyModal(true);
+          }}
           onClose={() => {
             setIsPlayerOpen(false);
             try {
