@@ -12,7 +12,6 @@ import { Link } from 'react-router-dom';
 import { Play, Pause, Headphones, Loader2, Sparkles, Gift, Lock, BookOpen } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
-import { useAudioConsentGate } from './AudioConsentModal';
 import { useAuth } from '../context/AuthContext';
 import FullAudioRegistrationModal from './FullAudioRegistrationModal';
 
@@ -66,9 +65,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(startTime);
   const [duration, setDuration] = useState(Number(produkt?.dauer) || 0);
-
-  // Consent-Gate: öffnet sich beim ersten Klick wenn noch nicht zugestimmt
-  const { gate, requestPlay } = useAudioConsentGate();
 
   // Ist es ein kostenloses Produkt? (preis ist 0, '0', '0.00' oder nicht gesetzt)
   const isFreeProduct = !produkt?.preis || Number(produkt.preis) === 0;
@@ -144,48 +140,43 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
       if (el !== audio) el.pause();
     });
 
-    // Über das Consent-Gate routen
-    requestPlay('sample', produkt.titel, () => {
-      const srcToPlay = audioUrl || rawUrl;
-      const needsSrcSet = !audio.src || audio.src === '' || audio.src === window.location.href;
-      if (needsSrcSet) {
-        audio.src = srcToPlay;
-        // iOS-FIX: Nach src-Wechsel muss load() aufgerufen werden,
-        // sonst schlägt play() mit NotSupportedError / NotAllowedError fehl.
-        audio.load();
-      }
+    // Sofort abspielen ohne blockierenden Vorab-Klick (optimale Usability)
+    const srcToPlay = audioUrl || rawUrl;
+    const needsSrcSet = !audio.src || audio.src === '' || audio.src === window.location.href;
+    if (needsSrcSet) {
+      audio.src = srcToPlay;
+      audio.load();
+    }
 
-      // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
-      if (audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration) {
-        audio.currentTime = startTime;
-        setCurrentTime(startTime);
-      }
+    // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
+    if (audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration) {
+      audio.currentTime = startTime;
+      setCurrentTime(startTime);
+    }
 
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setIsPlaying(true))
-          .catch((err) => {
-            console.error('Audio play error:', err);
-            if (rawUrl && audio.src !== rawUrl) {
-              audio.src = rawUrl;
-              // iOS-FIX: Auch im Fallback load() aufrufen
-              audio.load();
-              audio.currentTime = startTime;
-              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
-            }
-          });
-      }
-
-      if ((window as any).dataLayer) {
-        (window as any).dataLayer.push({
-          event: 'hoerprobe_play',
-          audio_title: produkt.titel,
-          audio_category: produkt.kategorie,
-          has_skipped_disclaimer: startTime > 0,
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setIsPlaying(true))
+        .catch((err) => {
+          console.error('Audio play error:', err);
+          if (rawUrl && audio.src !== rawUrl) {
+            audio.src = rawUrl;
+            audio.load();
+            audio.currentTime = startTime;
+            audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
+          }
         });
-      }
-    });
+    }
+
+    if ((window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'hoerprobe_play',
+        audio_title: produkt.titel,
+        audio_category: produkt.kategorie,
+        has_skipped_disclaimer: startTime > 0,
+      });
+    }
   };
 
   const progress = Math.min(
@@ -217,9 +208,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   return (
     <>
-      {/* Consent-Gate Modal (rendert nur wenn nötig) */}
-      {gate}
-
       <div className={`w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
         {/* Header-Zeile mit Titel, Disclaimer-Skip-Badge, Offline-Icon und optionalem "Zum Produkt"-Button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">

@@ -123,6 +123,7 @@ export default function QuickSocialUnlockBox({
       const supabase = getSupabase();
       const isNative = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
       sessionStorage.setItem('auth_return_url', targetPath);
+      localStorage.setItem('flow_disclaimer_accepted', 'true');
 
       const redirectTo = isNative
         ? 'app.flowderstille.de://auth/callback'
@@ -213,10 +214,22 @@ export default function QuickSocialUnlockBox({
         </button>
       </div>
 
-      {/* Rechtlicher Haftungsausschluss & Vertrauens-Hinweis */}
-      <div className="mt-2.5 pt-2 border-t border-[var(--border)]/70 flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] text-left">
-        <ShieldCheck size={13} className="text-emerald-700 dark:text-emerald-300 shrink-0" />
-        <span className="leading-tight">{trustNote}</span>
+      {/* Transparenter Haftungsausschluss & Kenntnisnahme bei der 1-Klick-Registrierung */}
+      <div className="mt-3 p-2.5 rounded-xl bg-[var(--bg-alt)]/70 border border-[var(--border)] text-[11px] text-[var(--text-muted)] space-y-1 text-left">
+        <div className="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
+          <ShieldCheck size={14} className="text-emerald-700 dark:text-emerald-300 shrink-0" />
+          <span>Haftungsausschluss &amp; Nutzungsbedingungen:</span>
+        </div>
+        <p className="leading-relaxed">
+          Mit Klick auf Google oder Facebook bestätigst du, dass du unseren{' '}
+          <Link to="/rechtliches#haftungsausschluss" target="_blank" className="text-[var(--accent)] underline font-medium hover:opacity-80">
+            Haftungsausschluss
+          </Link>{' '}
+          (Entspannungsanwendung, kein Heilversprechen, niemals beim Autofahren hören) sowie unsere{' '}
+          <Link to="/agb" target="_blank" className="underline hover:opacity-80">AGB</Link> und{' '}
+          <Link to="/datenschutz" target="_blank" className="underline hover:opacity-80">Datenschutz</Link>{' '}
+          zur Kenntnis genommen hast.
+        </p>
       </div>
 
       {/* Klassischer E-Mail Registrierungs-Link & Android App */}
