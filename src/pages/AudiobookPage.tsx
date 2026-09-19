@@ -211,15 +211,25 @@ export default function AudiobookPage() {
       setLoadError(null);
 
       // 1. Zuerst sofort aus Offline-Katalog laden (Flugmodus-Schutz)
-      const offlineProd = getOfflineProductById(productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte');
+      const normalizedId = (productId?.includes('mensch') || productId?.includes('echt')) ? 'mensch_sein' : (productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte');
+      const offlineProd = getOfflineProductById(normalizedId);
       if (offlineProd) {
         setProductData(offlineProd);
       }
 
-      // 2. Offline-Kaufstatus sofort prüfen
-      const isOfflineOwned = offlineManager.isPurchasedOffline(productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') ||
-                             offlineManager.isPurchasedOffline('schmetterling') ||
-                             offlineManager.isPurchasedOffline('fds_schmetterling');
+      // 2. Offline-Kaufstatus sofort prüfen (differenziert nach Hörbuch!)
+      const isTargetMenschSein = Boolean(
+        (productId && (productId.includes('mensch') || productId.includes('echt'))) ||
+        (offlineProd?.id && (offlineProd.id.includes('mensch') || offlineProd.id.includes('echt')))
+      );
+
+      const isOfflineOwned = isTargetMenschSein
+        ? (offlineManager.isPurchasedOffline('mensch_sein') || offlineManager.isPurchasedOffline('fds_mensch_sein'))
+        : (offlineManager.isPurchasedOffline(productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') ||
+           offlineManager.isPurchasedOffline('schmetterling') ||
+           offlineManager.isPurchasedOffline('fds_schmetterling') ||
+           offlineManager.isPurchasedOffline('fds_hoerbuch_schmetterling'));
+
       if (isOfflineOwned) {
         setIsOwned(true);
         if (shouldAutoPlay) {
@@ -234,7 +244,9 @@ export default function AudiobookPage() {
         const supabase = getSupabase();
         const isDefaultSchmetterling = !productId || productId === 'fds_hoerbuch_schmetterling' || productId === 'schmetterling' || productId === 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte';
         let query = supabase.from('produkte').select('*');
-        if (!isDefaultSchmetterling) {
+        if (isTargetMenschSein) {
+          query = query.or('id.eq.mensch_sein,id.eq.fds_mensch_sein,titel.ilike.%echtsein%');
+        } else if (!isDefaultSchmetterling) {
           query = query.eq('id', productId);
         } else {
           query = query.or(`id.eq.${productId},titel.ilike.%schmetterling%`);
@@ -254,12 +266,16 @@ export default function AudiobookPage() {
           if (user) {
             setCheckingOwnership(true);
             try {
+              const targetPurchaseIds = isTargetMenschSein
+                ? ['mensch_sein', 'fds_mensch_sein']
+                : [data.id, 'schmetterling', 'fds_schmetterling', 'fds_hoerbuch_schmetterling', 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte'];
+
               const { data: purchaseData } = await Promise.race([
                 supabase
                   .from('kaeufe')
                   .select('id')
                   .eq('user_id', user.id)
-                  .eq('produkt_id', data.id)
+                  .in('produkt_id', targetPurchaseIds)
                   .maybeSingle(),
                 new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 2500))
               ]);
@@ -267,7 +283,11 @@ export default function AudiobookPage() {
               const hasPurchased = !!purchaseData || isOfflineOwned;
               setIsOwned(hasPurchased);
               if (hasPurchased) {
-                offlineManager.savePurchasedProducts([data.id, 'schmetterling', 'fds_schmetterling']);
+                if (isTargetMenschSein) {
+                  offlineManager.savePurchasedProducts(['mensch_sein', 'fds_mensch_sein']);
+                } else {
+                  offlineManager.savePurchasedProducts([data.id, 'schmetterling', 'fds_schmetterling', 'fds_hoerbuch_schmetterling']);
+                }
               }
               if (hasPurchased && shouldAutoPlay) {
                 setIsPlayerOpen(true);
@@ -296,13 +316,16 @@ export default function AudiobookPage() {
   }, [productId, user]);
 
   const isMenschSein = Boolean(
-    (productData?.id && (productData.id.includes('mensch_sein') || productData.id.includes('echtsein'))) || 
-    (productId && (productId.includes('mensch_sein') || productId.includes('echtsein')))
+    (productData?.id && (productData.id.includes('mensch') || productData.id.includes('echt'))) || 
+    (productId && (productId.includes('mensch') || productId.includes('echt')))
   );
   const coverImage = isMenschSein ? '/images/products/cover_mensch_sein.jpg?v=2' : '/images/products/cover_schmetterling.jpg';
   const chapters = isMenschSein ? MENSCH_SEIN_CHAPTERS : SCHMETTERLING_CHAPTERS;
   const title = productData?.titel || (isMenschSein ? 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen' : 'Der Tag, an dem der Schmetterling erwachte');
-  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';
+  const fallbackAudioUrl = isMenschSein
+    ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3'
+    : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3';
+  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || fallbackAudioUrl;
   const priceDisplay = productData?.preis ? `${productData.preis} €` : '4,99 €';
 
   // Hörproben-Steuerung
@@ -624,7 +647,7 @@ export default function AudiobookPage() {
                   >
                     <div className="flex items-center gap-2 text-sm font-bold">
                       <Play size={16} className="fill-white" />
-                      <span>Kapitel 1 jetzt kostenlos anhören</span>
+                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
                       {isMenschSein ? '11:00 Min.' : '17:05 Min.'} Vollversion des 1. Kapitels gratis
@@ -928,10 +951,22 @@ export default function AudiobookPage() {
               </p>
             </div>
 
-            <div className="pt-2 flex flex-col gap-2.5">
+            <div className="pt-2 flex flex-col gap-2.5 text-left">
+              {!user && (
+                <div className="mb-2">
+                  <QuickSocialUnlockBox
+                    produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
+                    isAudiobook={true}
+                    price={priceDisplay}
+                    returnPath={location.pathname}
+                    compact={true}
+                  />
+                </div>
+              )}
+
               <Link
                 to={`/premium#product-${productData?.id || productId}`}
-                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Gift size={15} />
                 <span>Jetzt für {priceDisplay} freischalten</span>

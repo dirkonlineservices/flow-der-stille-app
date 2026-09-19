@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Sparkles, Headphones, Play, Pause, ShieldCheck, 
   Moon, Clock, Volume2, ArrowLeft, CheckCircle2, 
@@ -19,6 +19,8 @@ import { offlineManager } from '../lib/offlineAudioService';
 export default function AudioSessionPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const [productData, setProductData] = useState<any>(null);
@@ -43,6 +45,15 @@ export default function AudioSessionPage() {
   };
 
   const resolvedId = resolveProductId(id);
+
+  useEffect(() => {
+    const isAudiobook = resolvedId.includes('hoerbuch') || resolvedId.includes('schmetterling') || resolvedId.includes('mensch_sein') || resolvedId.includes('echtsein');
+    if (isAudiobook) {
+      const targetSlug = (resolvedId.includes('mensch') || resolvedId.includes('echt')) ? 'mensch_sein' : 'schmetterling';
+      navigate(`/hoerbuch/${targetSlug}${location.search}`, { replace: true });
+      return;
+    }
+  }, [resolvedId, navigate, location.search]);
 
   useEffect(() => {
     async function loadSession() {

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Headphones, Sparkles, Volume2, ArrowLeft, ArrowRight, 
   CheckCircle2, Clock, ShieldCheck, Heart, Moon, BookOpen, 
-  Wind, HelpCircle, ChevronDown, ChevronUp, Mic, Cpu, Compass, Lock
+  Wind, HelpCircle, ChevronDown, ChevronUp, Mic, Cpu, Compass, Lock, Play
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
@@ -586,6 +586,18 @@ export default function SoundSamplesLanding() {
                     variant="compact"
                   />
                 </div>
+
+                {sample.category === 'hoerbuch' && (
+                  <div className="pt-2">
+                    <Link
+                      to={sample.id === 'mensch_sein' ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                      className="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
+                    >
+                      <Play size={13} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören →</span>
+                    </Link>
+                  </div>
+                )}
 
                 {/* Fußzeile mit Aktionen */}
                 <div className="pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs">

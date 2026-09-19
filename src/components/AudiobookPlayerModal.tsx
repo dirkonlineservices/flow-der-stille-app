@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
+import { useAuth } from '../context/AuthContext';
+import QuickSocialUnlockBox from './QuickSocialUnlockBox';
 
 export interface AudiobookChapter {
   id: string;
@@ -98,6 +100,7 @@ export function AudiobookPlayerModal({
   priceDisplay = '4,99 €',
   onRequirePurchase
 }: Props) {
+  const { user } = useAuth();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const milestonesRef = useRef({ 25: false, 50: false, 75: false, 100: false });
 
@@ -929,6 +932,23 @@ export function AudiobookPlayerModal({
                 {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
               </button>
             </div>
+
+            {/* 🚀 1-Klick-Registrierung direkt im Hörbuch Player */}
+            {!isOwned && !user && (
+              <div className="pt-2">
+                <QuickSocialUnlockBox
+                  produkt={{
+                    id: productId,
+                    titel: title,
+                    preis: 4.99,
+                    kategorie: 'Hörbuch'
+                  }}
+                  isAudiobook={true}
+                  price={priceDisplay}
+                  compact={true}
+                />
+              </div>
+            )}
 
             {/* Kapitel-Navigation (Kapitel-Schnellfinder) */}
             <div className="space-y-3 pt-2">

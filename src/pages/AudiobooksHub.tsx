@@ -13,6 +13,7 @@ import { offlineManager } from '../lib/offlineAudioService';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
+import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
 
 export default function AudiobooksHub() {
   const { user } = useAuth();
@@ -435,7 +436,7 @@ export default function AudiobooksHub() {
 
                 {isAudiobookOwned ? (
                   <Link
-                    to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                    to="/hoerbuch/schmetterling"
                     className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Play size={16} className="fill-white" />
@@ -444,16 +445,24 @@ export default function AudiobooksHub() {
                 ) : (
                   <>
                     <Link
-                      to="/premium#product-hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
-                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                      to="/hoerbuch/schmetterling?autoplay=true"
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
                     >
-                      <Gift size={16} />
-                      <span>Hörbuch für 4,99 € freischalten</span>
+                      <Play size={16} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
                     </Link>
 
                     <Link
-                      to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
-                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      to="/premium#product-hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Gift size={15} />
+                      <span>Freischalten (4,99 €)</span>
+                    </Link>
+
+                    <Link
+                      to="/hoerbuch/schmetterling"
+                      className="w-full sm:w-auto py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
                     >
                       <BookOpen size={14} />
                       <span>Details</span>
@@ -461,6 +470,23 @@ export default function AudiobooksHub() {
                   </>
                 )}
               </div>
+
+              {!user && !isAudiobookOwned && (
+                <div className="pt-2 text-left">
+                  <QuickSocialUnlockBox
+                    produkt={{
+                      id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+                      titel: 'Der Tag, an dem der Schmetterling erwachte',
+                      preis: 4.99,
+                      kategorie: 'Hörbuch'
+                    }}
+                    isAudiobook={true}
+                    price="4,99 €"
+                    returnPath="/hoerbuch/schmetterling?autoplay=true"
+                    compact={true}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -536,16 +562,24 @@ export default function AudiobooksHub() {
                 ) : (
                   <>
                     <Link
-                      to="/premium#product-mensch_sein"
-                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                      to="/hoerbuch/mensch_sein?autoplay=true"
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
                     >
-                      <Gift size={16} />
-                      <span>Hörbuch für 4,99 € freischalten</span>
+                      <Play size={16} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
+                    </Link>
+
+                    <Link
+                      to="/premium#product-mensch_sein"
+                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Gift size={15} />
+                      <span>Freischalten (4,99 €)</span>
                     </Link>
 
                     <Link
                       to="/hoerbuch/mensch_sein"
-                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full sm:w-auto py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
                     >
                       <BookOpen size={14} />
                       <span>Details</span>
@@ -553,6 +587,23 @@ export default function AudiobooksHub() {
                   </>
                 )}
               </div>
+
+              {!user && !isMenschSeinOwned && (
+                <div className="pt-2 text-left">
+                  <QuickSocialUnlockBox
+                    produkt={{
+                      id: 'mensch_sein',
+                      titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
+                      preis: 4.99,
+                      kategorie: 'Hörbuch'
+                    }}
+                    isAudiobook={true}
+                    price="4,99 €"
+                    returnPath="/hoerbuch/mensch_sein?autoplay=true"
+                    compact={true}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

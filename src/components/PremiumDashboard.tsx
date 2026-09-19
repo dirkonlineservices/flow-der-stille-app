@@ -1004,13 +1004,23 @@ export default function PremiumShopDashboard() {
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
                       <div className="mt-5 md:mt-7">
-                        <Link
-                          to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}?autoplay=true` : `/audio/${produkt.id}?autoplay=true`}
-                          className="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
-                        >
-                          <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                          <span>Kostenlose Hörprobe &amp; Anleitung abspielen →</span>
-                        </Link>
+                        {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
+                          <Link
+                            to={produkt.id?.includes('mensch') || produkt.id?.includes('echt') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
+                          >
+                            <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
+                            <span>Mit 1 Klick Kapitel 1 kostenlos anhören →</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/audio/${produkt.id}?autoplay=true`}
+                            className="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
+                          >
+                            <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
+                            <span>Kostenlose Hörprobe &amp; Anleitung abspielen →</span>
+                          </Link>
+                        )}
                       </div>
                     )}
                 </div>
