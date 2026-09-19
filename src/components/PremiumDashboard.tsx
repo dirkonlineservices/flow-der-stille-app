@@ -1001,20 +1001,16 @@ export default function PremiumShopDashboard() {
                       </div>
                     )}
 
-                    {/* Kostenlose Klangprobe – für jedes Produkt mit Audio verfügbar, überspringt Disclaimer */}
+                    {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-5 md:mt-7 space-y-2">
-                        <HoerprobenPlayer produkt={produkt} variant="compact" />
-                        <div className="flex items-center justify-end px-1 pt-1">
-                          <Link
-                            to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}` : `/audio/${produkt.id}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline"
-                          >
-                            <Headphones size={13} />
-                            <span>Eigene Hörseite &amp; Anleitung öffnen</span>
-                            <ArrowRight size={12} />
-                          </Link>
-                        </div>
+                      <div className="mt-5 md:mt-7">
+                        <Link
+                          to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}?autoplay=true` : `/audio/${produkt.id}?autoplay=true`}
+                          className="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
+                        >
+                          <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
+                          <span>Kostenlose Hörprobe &amp; Anleitung abspielen →</span>
+                        </Link>
                       </div>
                     )}
                 </div>

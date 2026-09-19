@@ -274,6 +274,8 @@ export default function AudioSessionPage() {
               <HoerprobenPlayer 
                 produkt={productData || { id: resolvedId, titel: title, audio_path: productData?.audio_path, dauer: productData?.dauer }}
                 variant="full"
+                autoPlay={searchParams.get('autoplay') === 'true' || searchParams.get('play') === 'true'}
+                enableFloatingPlayer={true}
               />
 
               {/* 1-Klick Quick Unlock Box (Google & Facebook SSO + E-Mail Fallback) */}

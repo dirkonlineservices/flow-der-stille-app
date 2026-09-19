@@ -149,7 +149,7 @@ export default function AudiobookPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isPurchasedRedirect = searchParams.get('purchased') === 'true';
-  const shouldAutoPlay = searchParams.get('play') === 'true' || isPurchasedRedirect;
+  const shouldAutoPlay = searchParams.get('play') === 'true' || searchParams.get('autoplay') === 'true' || isPurchasedRedirect;
   const [showPurchaseCelebration, setShowPurchaseCelebration] = useState(isPurchasedRedirect);
 
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
@@ -225,6 +225,9 @@ export default function AudiobookPage() {
         if (shouldAutoPlay) {
           setIsPlayerOpen(true);
         }
+      } else if (shouldAutoPlay) {
+        setInitialChapterTime(0);
+        setIsPlayerOpen(true);
       }
 
       try {
