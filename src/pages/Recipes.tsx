@@ -25,6 +25,7 @@ export default function Recipes() {
 
   // Neue Rezepte
   const newRecipes = useMemo(() => allRecipes.filter(r => r.isNew), []);
+  const otherRecipes = useMemo(() => allRecipes.filter(r => !r.isNew), []);
 
   // 2. Weekly Tip for User (using task_progress to align with weekly challenge progress)
   const taskProgress = user?.task_progress || { current_task: 0, completions: {} };

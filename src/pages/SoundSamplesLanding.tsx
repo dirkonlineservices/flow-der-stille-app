@@ -259,6 +259,25 @@ const ALL_SAMPLES: SampleCardData[] = [
   }
 ];
 
+const FAQS = [
+  {
+    q: 'Kann ich mir die Hörproben wirklich kostenlos und ohne Registrierung anhören?',
+    a: 'Ja, alle hier aufgeführten Klangproben und Ausschnitte kannst du direkt mit einem Klick abspielen – komplett ohne Registrierung, ohne versteckte Kosten und ohne Abo.'
+  },
+  {
+    q: 'Wer spricht die Meditationen und Selbsthypnosen?',
+    a: 'Unsere Meditationen und Selbsthypnosen werden von der professionellen Sprecherin Lisa Ragusa eingesprochen. Die Texte stammen von Entspannungstherapeutin Jacqueline Schmetzer.'
+  },
+  {
+    q: 'Wie kann ich die vollständigen Audios freischalten?',
+    a: 'Nach einer einfachen 1-Klick-Registrierung (z.B. per Google oder Facebook) kannst du kostenfreie Audios sofort in voller Länge hören oder kostenpflichtige Sessions für eine kleine einmalige Gebühr dauerhaft erwerben – ganz ohne Abonnement.'
+  },
+  {
+    q: 'Funktionieren die Audios auch auf dem Smartphone und offline?',
+    a: 'Ja! Du kannst die Audios im mobilen Webbrowser nutzen oder dir unsere kostenlose Flow der Stille Android-App herunterladen, in der du Sessions auch für den Offline-Flugmodus speichern kannst.'
+  }
+];
+
 export default function SoundSamplesLanding() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
