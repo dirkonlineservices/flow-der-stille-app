@@ -3,47 +3,54 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
-import PremiumDashboard from './components/PremiumDashboard';
 import NotFound from './components/NotFound';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import Exercises from './pages/Exercises';
-import ExerciseDetail from './pages/ExerciseDetail';
-import Recipes from './pages/Recipes';
-import Learn from './pages/Learn';
-import Evening from './pages/Evening';
-import Morning from './pages/Morning';
-import FAQ from './pages/FAQ';
-import Settings from './pages/Settings';
-import AtemChat from './pages/atemchat';
-import AppDownload from './pages/AppDownload'; 
 
-import Login from './pages/Login';
-import Register from './pages/Register';
-import AGB from './pages/AGB';
-import Rechtliches from './pages/Rechtliches';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import UpdatePassword from './pages/UpdatePassword';
-import NewsletterConfirmation from './pages/NewsletterConfirmation';
-import OnlineWiderruf from './pages/OnlineWiderruf';
-import Premium from './pages/Premium';
-import Contact from './pages/Contact';                
-import Datenschutz from './pages/Datenschutz';
-import DataDeletion from './pages/DataDeletion';
-import Impressum from './pages/Impressum';
-import Rueckgaberichtlinie from './pages/Rueckgaberichtlinie';
-import Versand from './pages/Versand';
-import Danke from './pages/Danke';
-import RecipeDetail from './pages/RecipeDetail';
-import Blog from './pages/Blog';
-import BlogPostDetail from './pages/BlogPost';
-import BlogEditor from './pages/BlogEditor';
-import AdminUnlock from './pages/AdminUnlock';
-import AuthCallback from './pages/AuthCallback';
+// 🚀 Code-Splitting mit React.lazy: Jede Seite wird erst geladen, wenn sie gebraucht wird!
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Exercises = lazy(() => import('./pages/Exercises'));
+const ExerciseDetail = lazy(() => import('./pages/ExerciseDetail'));
+const Recipes = lazy(() => import('./pages/Recipes'));
+const RecipeDetail = lazy(() => import('./pages/RecipeDetail'));
+const Learn = lazy(() => import('./pages/Learn'));
+const Evening = lazy(() => import('./pages/Evening'));
+const Morning = lazy(() => import('./pages/Morning'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const Settings = lazy(() => import('./pages/Settings'));
+const AtemChat = lazy(() => import('./pages/atemchat'));
+const AppDownload = lazy(() => import('./pages/AppDownload')); 
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const AGB = lazy(() => import('./pages/AGB'));
+const Rechtliches = lazy(() => import('./pages/Rechtliches'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const UpdatePassword = lazy(() => import('./pages/UpdatePassword'));
+const NewsletterConfirmation = lazy(() => import('./pages/NewsletterConfirmation'));
+const OnlineWiderruf = lazy(() => import('./pages/OnlineWiderruf'));
+const Premium = lazy(() => import('./pages/Premium'));
+const PremiumDashboard = lazy(() => import('./components/PremiumDashboard'));
+const Contact = lazy(() => import('./pages/Contact'));                
+const Datenschutz = lazy(() => import('./pages/Datenschutz'));
+const DataDeletion = lazy(() => import('./pages/DataDeletion'));
+const Impressum = lazy(() => import('./pages/Impressum'));
+const Rueckgaberichtlinie = lazy(() => import('./pages/Rueckgaberichtlinie'));
+const Versand = lazy(() => import('./pages/Versand'));
+const Danke = lazy(() => import('./pages/Danke'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BlogPostDetail = lazy(() => import('./pages/BlogPost'));
+const BlogEditor = lazy(() => import('./pages/BlogEditor'));
+const AdminUnlock = lazy(() => import('./pages/AdminUnlock'));
+const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const AudiobookPage = lazy(() => import('./pages/AudiobookPage'));
+const AudiobooksHub = lazy(() => import('./pages/AudiobooksHub'));
+const MeditationLanding = lazy(() => import('./pages/MeditationLanding'));
+const HypnosisLanding = lazy(() => import('./pages/HypnosisLanding'));
+const SoundSamplesLanding = lazy(() => import('./pages/SoundSamplesLanding'));
+
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
@@ -54,6 +61,18 @@ import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
 import CookieBanner from './components/CookieBanner';
 import DisclaimerModal from './components/DisclaimerModal';
 import { BillingService } from './lib/billing';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+function PageLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-[50vh] w-full">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--accent)]/20 border-t-[var(--accent)] animate-spin" />
+        <span className="text-xs font-medium text-[var(--text-muted)] animate-pulse">Lade Ruhebereich...</span>
+      </div>
+    </div>
+  );
+}
 
 function DisclaimerManager() {
   const location = useLocation();
@@ -73,8 +92,7 @@ function DisclaimerManager() {
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   if (!user) {
-    // Nicht eingeloggt? Ab zum Login!
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/anmelden" replace />;
   }
   return children;
 };
@@ -96,13 +114,6 @@ function ReferralCapture() {
   return null;
 }
 
-import AudiobookPage from './pages/AudiobookPage';
-import AudiobooksHub from './pages/AudiobooksHub';
-import MeditationLanding from './pages/MeditationLanding';
-import HypnosisLanding from './pages/HypnosisLanding';
-import SoundSamplesLanding from './pages/SoundSamplesLanding';
-import { ErrorBoundary } from './components/ErrorBoundary';
-
 export default function App() {
   return (
     <ThemeProvider>
@@ -116,85 +127,130 @@ export default function App() {
               <TransactionErrorOverlay />
               <CookieBanner />
               <ErrorBoundary>
-                <Routes>
-                  {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
-                  <Route path="/" element={<Layout />}>
-                  <Route index element={<Home />} />
-                  <Route path="start" element={<Home />} />
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="mein-bereich" element={<Dashboard />} />
-                  <Route path="exercises" element={<Exercises />} />
-                  <Route path="exercises/:id" element={<ExerciseDetail />} />
-                  <Route path="recipes" element={<Recipes />} />
-                  <Route path="learn" element={<Learn />} />
-                  <Route path="evening" element={<Evening />} />
-                  <Route path="morning" element={<Morning />} />
-                  <Route path="morgenritual" element={<Morning />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="chat" element={<ChatRoute />} />
-                  <Route path="login" element={<Login />} />
-                  <Route path="forgot-password" element={<ForgotPassword />} />
-                  <Route path="reset-password" element={<ResetPassword />} />
-                  <Route path="update-password" element={<UpdatePassword />} />
-                  <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
-                  <Route path="newsletter-bestaetigung" element={<NewsletterConfirmation />} />
-                  <Route path="newsletter-bestaetigt" element={<NewsletterConfirmation />} />
-                  <Route path="confirm-newsletter" element={<NewsletterConfirmation />} />
-                  <Route path="online-widerruf" element={<OnlineWiderruf />} />
-                  <Route path="register" element={<Register />} />
-                  <Route path="faq" element={<FAQ />} />
-                  <Route path="haeufige-fragen" element={<FAQ />} />
-                  <Route path="fragen" element={<FAQ />} />
-                  <Route path="app" element={<AppDownload />} />
-                  <Route path="android-app" element={<AppDownload />} />
-                  <Route path="playstore" element={<AppDownload />} />
-                  <Route path="contact" element={<Contact />} />
-                  <Route path="datenschutz" element={<Datenschutz />} />
-                  <Route path="konto-loeschen" element={<DataDeletion />} />
-                  <Route path="impressum" element={<Impressum />} />
-                  <Route path="agb" element={<AGB />} />
-                  <Route path="rechtliches" element={<Rechtliches />} />
-                  <Route path="premium" element={<Premium />} />
-                  <Route path="premium-dashboard" element={<PremiumDashboard />} />
-                  <Route path="hoerbuch" element={<AudiobookPage />} />
-                  <Route path="hoerbuch/:id" element={<AudiobookPage />} />
-                  <Route path="hoerbuecher" element={<AudiobooksHub />} />
-                  <Route path="audiobooks" element={<AudiobooksHub />} />
-                  <Route path="meditation" element={<MeditationLanding />} />
-                  <Route path="gefuehrte-meditation" element={<MeditationLanding />} />
-                  <Route path="selbsthypnose" element={<HypnosisLanding />} />
-                  <Route path="hypnose" element={<HypnosisLanding />} />
-                  <Route path="klangproben" element={<SoundSamplesLanding />} />
-                  <Route path="hoerproben" element={<SoundSamplesLanding />} />
-                  <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
-                  <Route path="versand" element={<Versand />} />
-                  <Route path="lieferung" element={<Versand />} />
-                  <Route path="versandinformationen" element={<Versand />} />
-                  <Route path="widerruf" element={<OnlineWiderruf />} />
-                  <Route path="danke" element={<Danke />} />
-                  <Route path="recipe/:id" element={<RecipeDetail />} />
-                  <Route path="blog" element={<Blog />} />
-                  <Route path="blog/new" element={<BlogEditor />} />
-                  <Route path="blog/schreiben" element={<BlogEditor />} />
-                  <Route path="blog/:slug" element={<BlogPostDetail />} />
-                  <Route path="admin" element={<AdminUnlock />} />
-                  <Route path="admin/freischalten" element={<AdminUnlock />} />
-                  <Route path="admin-freischalten" element={<AdminUnlock />} />
-                </Route>
+                <Suspense fallback={<PageLoadingFallback />}>
+                  <Routes>
+                    {/* Standard Layout mit deutscher & englischer URL-Struktur */}
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Home />} />
+                      <Route path="start" element={<Home />} />
+                      
+                      {/* Dashboard */}
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="mein-bereich" element={<Dashboard />} />
 
-                {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}
-                <Route 
-                  path="/atemchat" 
-                  element={<AtemChat />} 
-                />
-                <Route 
-                  path="/auth/callback" 
-                  element={<AuthCallback />} 
-                />
+                      {/* Übungen (Deutsch primär, Englisch als Alias) */}
+                      <Route path="uebungen" element={<Exercises />} />
+                      <Route path="uebungen/:id" element={<ExerciseDetail />} />
+                      <Route path="exercises" element={<Exercises />} />
+                      <Route path="exercises/:id" element={<ExerciseDetail />} />
+                      <Route path="atemuebungen" element={<Exercises />} />
 
-                <Route path="*" element={<NotFound />} />
+                      {/* Rezepte */}
+                      <Route path="rezepte" element={<Recipes />} />
+                      <Route path="rezepte/:id" element={<RecipeDetail />} />
+                      <Route path="recipes" element={<Recipes />} />
+                      <Route path="recipe/:id" element={<RecipeDetail />} />
 
-              </Routes>
+                      {/* Wissen / Lernen */}
+                      <Route path="wissen" element={<Learn />} />
+                      <Route path="learn" element={<Learn />} />
+
+                      {/* Tagesrituale */}
+                      <Route path="morgen" element={<Morning />} />
+                      <Route path="morning" element={<Morning />} />
+                      <Route path="morgenritual" element={<Morning />} />
+                      <Route path="abend" element={<Evening />} />
+                      <Route path="evening" element={<Evening />} />
+                      <Route path="abendritual" element={<Evening />} />
+
+                      {/* Einstellungen */}
+                      <Route path="einstellungen" element={<Settings />} />
+                      <Route path="settings" element={<Settings />} />
+                      <Route path="profil" element={<Settings />} />
+
+                      {/* Auth (Deutsch primär, Englisch als Alias) */}
+                      <Route path="anmelden" element={<Login />} />
+                      <Route path="login" element={<Login />} />
+                      <Route path="einloggen" element={<Login />} />
+                      <Route path="registrieren" element={<Register />} />
+                      <Route path="register" element={<Register />} />
+                      <Route path="passwort-vergessen" element={<ForgotPassword />} />
+                      <Route path="forgot-password" element={<ForgotPassword />} />
+                      <Route path="passwort-zuruecksetzen" element={<ResetPassword />} />
+                      <Route path="reset-password" element={<ResetPassword />} />
+                      <Route path="update-password" element={<UpdatePassword />} />
+
+                      {/* FAQ & Fragen */}
+                      <Route path="fragen" element={<FAQ />} />
+                      <Route path="faq" element={<FAQ />} />
+                      <Route path="haeufige-fragen" element={<FAQ />} />
+
+                      {/* App & Download */}
+                      <Route path="app" element={<AppDownload />} />
+                      <Route path="android-app" element={<AppDownload />} />
+                      <Route path="playstore" element={<AppDownload />} />
+
+                      {/* Kontakt & Rechtliches */}
+                      <Route path="kontakt" element={<Contact />} />
+                      <Route path="contact" element={<Contact />} />
+                      <Route path="datenschutz" element={<Datenschutz />} />
+                      <Route path="konto-loeschen" element={<DataDeletion />} />
+                      <Route path="impressum" element={<Impressum />} />
+                      <Route path="agb" element={<AGB />} />
+                      <Route path="rechtliches" element={<Rechtliches />} />
+                      <Route path="rueckgaberichtlinie" element={<Rueckgaberichtlinie />} />
+                      <Route path="versand" element={<Versand />} />
+                      <Route path="lieferung" element={<Versand />} />
+                      <Route path="versandinformationen" element={<Versand />} />
+                      <Route path="online-widerruf" element={<OnlineWiderruf />} />
+                      <Route path="widerruf" element={<OnlineWiderruf />} />
+                      <Route path="danke" element={<Danke />} />
+
+                      {/* Shop & Hörangebote */}
+                      <Route path="premium" element={<Premium />} />
+                      <Route path="shop" element={<Premium />} />
+                      <Route path="premium-dashboard" element={<PremiumDashboard />} />
+                      <Route path="hoerbuch" element={<AudiobookPage />} />
+                      <Route path="hoerbuch/:id" element={<AudiobookPage />} />
+                      <Route path="hoerbuecher" element={<AudiobooksHub />} />
+                      <Route path="audiobooks" element={<AudiobooksHub />} />
+                      <Route path="meditation" element={<MeditationLanding />} />
+                      <Route path="meditationen" element={<MeditationLanding />} />
+                      <Route path="gefuehrte-meditation" element={<MeditationLanding />} />
+                      <Route path="selbsthypnose" element={<HypnosisLanding />} />
+                      <Route path="hypnose" element={<HypnosisLanding />} />
+                      <Route path="klangproben" element={<SoundSamplesLanding />} />
+                      <Route path="hoerproben" element={<SoundSamplesLanding />} />
+
+                      {/* Newsletter */}
+                      <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
+                      <Route path="newsletter-bestaetigung" element={<NewsletterConfirmation />} />
+                      <Route path="newsletter-bestaetigt" element={<NewsletterConfirmation />} />
+                      <Route path="confirm-newsletter" element={<NewsletterConfirmation />} />
+
+                      {/* Blog */}
+                      <Route path="blog" element={<Blog />} />
+                      <Route path="blog/neu" element={<BlogEditor />} />
+                      <Route path="blog/new" element={<BlogEditor />} />
+                      <Route path="blog/schreiben" element={<BlogEditor />} />
+                      <Route path="blog/:slug" element={<BlogPostDetail />} />
+
+                      {/* Admin */}
+                      <Route path="admin" element={<AdminUnlock />} />
+                      <Route path="admin/freischalten" element={<AdminUnlock />} />
+                      <Route path="admin-freischalten" element={<AdminUnlock />} />
+
+                      {/* Chat */}
+                      <Route path="chat" element={<ChatRoute />} />
+                    </Route>
+
+                    {/* Spezielle Routen außerhalb des Layouts */}
+                    <Route path="/atemchat" element={<AtemChat />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
               </ErrorBoundary>
             </BrowserRouter>
           </LanguageProvider>

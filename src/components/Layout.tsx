@@ -125,7 +125,7 @@ export default function Layout() {
       <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
         {!user ? (
           <Link
-            to="/login"
+            to="/anmelden"
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
             title="Jetzt anmelden oder registrieren"
           >
@@ -134,7 +134,7 @@ export default function Layout() {
           </Link>
         ) : (
           <Link
-            to="/settings"
+            to="/einstellungen"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-semibold shadow-xs transition-all cursor-pointer"
             title="Mein Profil / Einstellungen"
           >
@@ -175,9 +175,9 @@ export default function Layout() {
           
           <div className="flex flex-col gap-6 w-full">
             <NavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : t('nav.home')} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
-            <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
-            <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
-            <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
+            <NavLink to="/uebungen" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
+            <NavLink to="/rezepte" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
+            <NavLink to="/wissen" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
             <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
             <button 
               onClick={() => {
@@ -195,7 +195,7 @@ export default function Layout() {
         {/* Mobile Bottom Bar (unter 768px): App-ähnlich fixiert am unteren Rand */}
         <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
           <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
-          <MobileNavLink to="/exercises" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
+          <MobileNavLink to="/uebungen" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
           <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
           <button 
             onClick={() => {
@@ -371,7 +371,7 @@ export default function Layout() {
 
                 {/* Ernährung */}
                 <Link
-                  to="/recipes"
+                  to="/rezepte"
                   onClick={() => handleMenuClick('Ernährung')}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
                 >
@@ -386,7 +386,7 @@ export default function Layout() {
 
                 {/* Lernen & Wissen */}
                 <Link
-                  to="/learn"
+                  to="/wissen"
                   onClick={() => handleMenuClick('Lernen & Wissen')}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
                 >
@@ -395,7 +395,7 @@ export default function Layout() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.learn')}</div>
-                    <div className="text-xs text-[var(--text-muted)]">Wissen & Meditation</div>
+                    <div className="text-xs text-[var(--text-muted)]">Wissen &amp; Meditation</div>
                   </div>
                 </Link>
 
@@ -493,7 +493,7 @@ export default function Layout() {
                   </button>
                 ) : (
                   <Link
-                    to="/login"
+                    to="/anmelden"
                     onClick={() => handleMenuClick('Anmelden / Profil')}
                     className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--accent)] text-white transition-all text-left shadow-md group sm:col-span-2 hover:opacity-95"
                   >
