@@ -233,41 +233,74 @@ export default function Layout() {
       )}
 
       {/* FOOTER */}
-      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
-        {[
-          { to: '/contact', label: 'Kontakt', isButton: true },
-          { to: '/klangproben', label: 'Klangproben' },
-          { to: '/app', label: 'Android App' },
-          { to: '/faq', label: 'FAQ' },
-          { to: '/impressum', label: 'Impressum' },
-          { to: '/datenschutz', label: 'Datenschutz' },
-          { to: '/agb', label: 'AGB' },
-          { to: '/versand', label: 'Versand & Lieferung' },
-          { to: '/rueckgaberichtlinie', label: 'Rückgaberichtlinie' },
-          { to: '/rechtliches', label: 'Rechtliches' },
-          { to: '/online-widerruf', label: 'Online-Widerruf' },
-          { to: '/konto-loeschen', label: 'Konto löschen' }
-        ].map((link) => (
-          link.isButton ? (
-            <Link
-              key={link.to}
-              to={link.to}
-              onClick={() => handleMenuClick(link.label)}
-              className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
-            >
-              {link.label}
-            </Link>
-          ) : (
+      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-col items-center justify-center gap-3 transition-all duration-300">
+        {/* Primäre Hauptlinks */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {[
+            { to: '/contact', label: 'Kontakt', isButton: true },
+            { to: '/klangproben', label: 'Klangproben' },
+            { to: '/app', label: 'Android App' },
+            { to: '/faq', label: 'FAQ' },
+            { to: '/impressum', label: 'Impressum' },
+            { to: '/datenschutz', label: 'Datenschutz' },
+            { to: '/agb', label: 'AGB' },
+            { to: '/rechtliches', label: 'Rechtliches' },
+            { to: '/konto-loeschen', label: 'Konto löschen' }
+          ].map((link) => (
+            link.isButton ? (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => handleMenuClick(link.label)}
+                className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <Link 
+                key={link.to} 
+                to={link.to} 
+                onClick={() => handleMenuClick(link.label)}
+                className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            )
+          ))}
+        </div>
+
+        {/* Dezent unter AGB: Akkordeon für Versand & Retouren (Merchant Center & rechtssicher) */}
+        <details className="text-center group cursor-pointer">
+          <summary className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors list-none select-none inline-flex items-center gap-1 opacity-70 hover:opacity-100 font-medium">
+            <span>Shop-, Versand- &amp; Retouren-Richtlinien</span>
+            <span className="text-[9px] transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[10px] text-[var(--text-muted)] animate-fadeIn">
             <Link 
-              key={link.to} 
-              to={link.to} 
-              onClick={() => handleMenuClick(link.label)}
-              className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
+              to="/versand" 
+              onClick={() => handleMenuClick('Versand & Lieferung')}
+              className="hover:text-[var(--text-main)] hover:underline"
             >
-              {link.label}
+              Versand &amp; Lieferung
             </Link>
-          )
-        ))}
+            <span>•</span>
+            <Link 
+              to="/rueckgaberichtlinie" 
+              onClick={() => handleMenuClick('Rückgaberichtlinie')}
+              className="hover:text-[var(--text-main)] hover:underline"
+            >
+              Rückgaberichtlinie
+            </Link>
+            <span>•</span>
+            <Link 
+              to="/online-widerruf" 
+              onClick={() => handleMenuClick('Online-Widerruf')}
+              className="hover:text-[var(--text-main)] hover:underline"
+            >
+              Online-Widerruf
+            </Link>
+          </div>
+        </details>
         <ProductDisclaimerTrigger />
       </footer>
 
@@ -519,7 +552,34 @@ export default function Layout() {
                     className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
                   >
                     <Scale size={16} className="text-[var(--accent)] shrink-0" />
-                    <span>Rechtliches & KI</span>
+                    <span>Rechtliches &amp; KI</span>
+                  </Link>
+                </div>
+
+                {/* Dezent untergeordnete Shop-Rechte */}
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--text-muted)]">
+                  <Link 
+                    to="/versand" 
+                    onClick={() => handleMenuClick('Versand & Lieferung')}
+                    className="hover:text-[var(--text-main)] hover:underline"
+                  >
+                    Versand
+                  </Link>
+                  <span>•</span>
+                  <Link 
+                    to="/rueckgaberichtlinie" 
+                    onClick={() => handleMenuClick('Rückgaberichtlinie')}
+                    className="hover:text-[var(--text-main)] hover:underline"
+                  >
+                    Rückgaberichtlinie
+                  </Link>
+                  <span>•</span>
+                  <Link 
+                    to="/online-widerruf" 
+                    onClick={() => handleMenuClick('Online-Widerruf')}
+                    className="hover:text-[var(--text-main)] hover:underline"
+                  >
+                    Online-Widerruf
                   </Link>
                 </div>
 

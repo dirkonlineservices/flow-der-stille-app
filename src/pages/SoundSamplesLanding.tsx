@@ -282,74 +282,60 @@ export default function SoundSamplesLanding() {
     ? ALL_SAMPLES
     : ALL_SAMPLES.filter(s => s.category === selectedCategory);
 
-  // SEO Schema.org Structured Data
-  const schemaJson = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "Kostenlose Klangproben & Hörproben von Flow der Stille",
-    "description": "Kostenlose Audio-Klangproben für geführte Meditationen, Selbsthypnosen und Hörbücher von Jacqueline Schmetzer, eingesprochen von Lisa Ragusa.",
-    "numberOfItems": ALL_SAMPLES.length,
-    "itemListElement": ALL_SAMPLES.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "item": {
-        "@type": "AudioObject",
-        "name": item.title,
-        "description": item.shortDesc,
-        "contentUrl": item.hoerprobeUrl || item.audioPath,
-        "encodingFormat": "audio/mpeg",
-        "duration": item.duration,
-        "author": {
-          "@type": "Person",
-          "name": "Jacqueline Schmetzer"
-        },
-        "performer": {
-          "@type": "Person",
-          "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa Ragusa"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Flow der Stille",
-          "url": "https://flow-der-stille.de",
-          "address": {
-            "@type": "PostalAddress",
-            "addressRegion": "Baden-Württemberg",
-            "addressCountry": "DE"
+  // SEO Schema.org Structured Data (GEO & Google Search)
+  const schemaJson = [
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Kostenlose Meditationen & Selbsthypnosen bei Flow der Stille",
+      "description": "Kostenlose geführte Meditationen, Selbsthypnosen und Hörproben von Jacqueline Schmetzer, eingesprochen von Lisa Ragusa.",
+      "numberOfItems": ALL_SAMPLES.length,
+      "itemListElement": ALL_SAMPLES.map((item, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "AudioObject",
+          "name": item.title,
+          "description": item.shortDesc,
+          "contentUrl": item.hoerprobeUrl || item.audioPath,
+          "encodingFormat": "audio/mpeg",
+          "duration": item.duration,
+          "author": {
+            "@type": "Person",
+            "name": "Jacqueline Schmetzer"
+          },
+          "performer": {
+            "@type": "Person",
+            "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa Ragusa"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Flow der Stille",
+            "url": "https://flow-der-stille.de"
           }
         }
-      }
-    }))
-  };
-
-  const FAQS = [
-    {
-      q: "Kann ich mir wirklich alle Klangproben kostenlos und ohne Registrierung anhören?",
-      a: "Ja, absolut! Alle Klangproben auf dieser Seite kannst du direkt im Browser ohne Account, ohne App-Installation und ohne Bezahlschranke anhören. Klicke einfach auf den Play-Button der jeweiligen Karte."
+      }))
     },
     {
-      q: "Warum überspringt der Player automatisch die ersten 70 Sekunden?",
-      a: "Vor jedem vollständigen Audio ist gesetzlich ein wichtiger Haftungsausschluss vorgeschaltet (z. B. dass man Selbsthypnosen keinesfalls beim Autofahren oder beim Bedienen schwerer Maschinen hören darf). Damit du in der Klangprobe nicht erst diesen rechtlichen Text abwarten musst, startet der Player direkt bei 1:10 Min. mitten in der beruhigenden Session."
-    },
-    {
-      q: "Wie entstehen die Audios? (Menschliche Stimme vs. KI-Transparenz)",
-      a: "Volle Ehrlichkeit und Transparenz sind uns wichtig: Alle Meditationen, Selbsthypnosen und unsere Hörbücher wurden von Jacqueline Schmetzer mit Herzblut persönlich verfasst und von Lisa Ragusa mit ihrer warmen, echten menschlichen Stimme eingesprochen. Die meditativen Hintergrundmusiken wurden mit KI-Unterstützung komponiert. Die beiden kurzen Schnupper-Übungen (Atemübung und PMR) wurden basierend auf Jacquelines Texten mit digitaler Sprachsynthese generiert, um dir einen sofortigen, kostenfreien Einstieg zu ermöglichen."
-    },
-    {
-      q: "Warum muss ich mich für die kostenlose Vollversion kurz registrieren?",
-      a: "Bei mentalen Entspannungsübungen und Selbsthypnosen gelten in Deutschland und der EU strenge Vorgaben zum Verbraucher- und Gesundheitsschutz. Durch eine kostenlose, unverbindliche Registrierung können wir rechtssicher nachweisen, dass du den Haftungsausschluss zur Kenntnis genommen hast. Deine Daten werden nicht verkauft oder zu Werbezwecken missbraucht – es dient rein der rechtlichen Absicherung."
-    },
-    {
-      q: "Gibt es bei Flow der Stille ein verstecktes Abonnement?",
-      a: "Nein, niemals! Flow der Stille verzichtet ganz bewusst auf Abo-Modelle und laufende Gebühren. Kostenlose Inhalte bleiben dauerhaft kostenfrei. Bezahlte Einzeltitel (wie die Hörbücher für 4,99 € oder Sessions für 1,99 €) kaufst du einmalig und behältst sie für immer in deinem Bereich."
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": FAQS.map(faq => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.a
+        }
+      }))
     }
   ];
 
   return (
     <div className="min-h-screen text-[var(--text-main)] transition-colors duration-300">
       <SEO
-        title="Kostenlose Klangproben & Hörproben | Meditation, Selbsthypnose & Hörbücher"
-        description="Höre kostenlos & ohne Anmeldung in unsere Meditationen, Selbsthypnosen und Hörbücher rein. Geschrieben von Jacqueline Schmetzer, gesprochen von Lisa Ragusa."
-        keywords="Klangproben Meditation, Hörproben Selbsthypnose, Hörprobe Hörbuch, Meditation kostenlos reinhören, Lisa Ragusa Sprecherin, Jacqueline Schmetzer, Flow der Stille Audio, PMR kostenlos, Entspannungsübung Probe hören"
+        title="Kostenlose Meditation & kostenlose Selbsthypnose – Hörproben | Flow der Stille"
+        description="Entdecke kostenlose Meditationen und geführte Selbsthypnosen zum sofortigen Anhören. Von Jacqueline Schmetzer, gesprochen von Lisa Ragusa – ohne Abo, ohne Risiko."
+        keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation kostenlos anhören, Selbsthypnose Hörprobe, Meditation zum Einschlafen, Herzöffnung, innerer Frieden, Lisa Ragusa Sprecherin, Jacqueline Schmetzer, Flow der Stille Audio"
         image="/images/products/cover_herzoeffnung.jpg"
         schemaJson={schemaJson}
       />
@@ -374,9 +360,9 @@ export default function SoundSamplesLanding() {
       {/* ─── HERO SECTION ───────────────────────────────────────────── */}
       <header className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold tracking-wide uppercase border border-[var(--accent)]/30 shadow-xs">
-            <Headphones size={15} />
-            <span>Kostenlose Klangproben • Ohne Anmeldung reinhören</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold uppercase tracking-wider mb-4 border border-[var(--accent)]/30 shadow-2xs">
+            <Headphones size={14} />
+            <span>Kostenlose Meditationen &amp; Selbsthypnose Hörproben</span>
           </div>
 
           <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-[var(--text-main)] leading-[1.18] max-w-3xl mx-auto">
@@ -384,7 +370,7 @@ export default function SoundSamplesLanding() {
           </h1>
 
           <p className="text-sm sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-            Möchtest du vorab wissen, wie sich unsere Meditationen, Selbsthypnosen und Hörbücher anfühlen? 
+            Möchtest du eine <strong className="text-[var(--text-main)]">kostenlose Meditation</strong> oder geführte <strong className="text-[var(--text-main)]">kostenlose Selbsthypnose</strong> ausprobieren? 
             Höre hier völlig unverbindlich in jede Session rein – 100% werbefrei, ohne Abo und sofort im Browser.
           </p>
 
