@@ -186,7 +186,7 @@ export default function AudioSessionPage() {
             />
             <div className="absolute top-3 left-3 flex flex-wrap gap-2">
               <span className={`px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-lg uppercase shadow-md ${isFreeProduct ? 'bg-emerald-700 text-white' : 'bg-[var(--accent)] text-white'}`}>
-                {isFreeProduct ? '100% Kostenfrei' : priceDisplay}
+                {isFreeProduct ? '100% Kostenfrei (Wert: 1,99 €)' : priceDisplay}
               </span>
             </div>
             {hasFullAccess && (
@@ -213,7 +213,7 @@ export default function AudioSessionPage() {
               ) : (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-semibold">
                   <Lock size={12} />
-                  <span>{isFreeProduct ? 'Gratis nach Registrierung' : `Einmalig ${priceDisplay} • Kein Abo`}</span>
+                  <span>{isFreeProduct ? 'Gratis nach Registrierung (Wert: 1,99 €)' : `Einmalig ${priceDisplay} • Kein Abo`}</span>
                 </span>
               )}
             </div>
@@ -280,10 +280,7 @@ export default function AudioSessionPage() {
               {!user && (
                 <div className="pt-3">
                   <QuickSocialUnlockBox
-                    title={isFreeProduct ? "1-Klick: Jetzt 100% kostenlos freischalten" : "Mit 1 Klick registrieren & Session freischalten"}
-                    subtitle={isFreeProduct 
-                      ? "Diese Session ist vollständig kostenlos. Schalte sie mit einem einzigen Klick frei und höre sie dauerhaft:" 
-                      : `Schalte mit einem Klick die Hörprobe frei oder registriere dich für den Kauf (${priceDisplay}):`}
+                    produkt={productData || { id: resolvedId, titel: title, preis: productData?.preis, kategorie: category }}
                     returnPath={`/audio/${resolvedId}`}
                     compact={false}
                   />

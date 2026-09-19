@@ -922,6 +922,14 @@ export default function PremiumShopDashboard() {
                       ✓ Freigeschaltet
                     </span>
                   )}
+                  <Link
+                    to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}` : `/audio/${produkt.id}`}
+                    className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-md text-white uppercase shadow-md flex items-center gap-1 border border-white/20 transition cursor-pointer"
+                    title="Eigene Hörseite mit 4-Schritte-Anleitung und Player öffnen"
+                  >
+                    <Headphones size={12} />
+                    <span>Hörseite &amp; Anleitung</span>
+                  </Link>
                 </div>
                 {showKIBadge && (
                   <a 
@@ -957,6 +965,19 @@ export default function PremiumShopDashboard() {
                     {!hatZugriff && !istKostenlos && (
                         <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-4">
                             {produkt.preis} €
+                        </div>
+                    )}
+                    {!hatZugriff && istKostenlos && (
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                          <span className="text-[1.3rem] font-bold text-emerald-700 dark:text-emerald-300">
+                            100% Kostenfrei
+                          </span>
+                          <span className="text-xs font-mono line-through text-[var(--text-muted)]">
+                            1,99 €
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
+                            Wert: 1,99 €
+                          </span>
                         </div>
                     )}
                     
@@ -1028,10 +1049,7 @@ export default function PremiumShopDashboard() {
               {!hatZugriff && !user && (
                 <div className="mt-6 md:mt-8">
                   <QuickSocialUnlockBox
-                    title={istKostenlos ? "Kostenlos freischalten (1-Klick)" : `Mit 1 Klick registrieren & freischalten`}
-                    subtitle={istKostenlos 
-                      ? "Dieses Audio ist 100% kostenlos. Registriere dich mit 1 Klick über Google oder Facebook und höre sofort:" 
-                      : `Registriere dich mit 1 Klick über Google oder Facebook, um dieses Audio für ${produkt.preis ? `${produkt.preis} €` : 'Einmalkauf'} freizuschalten:`}
+                    produkt={produkt}
                     returnPath={`/premium-dashboard#product-${produkt.id}`}
                     compact={true}
                   />
