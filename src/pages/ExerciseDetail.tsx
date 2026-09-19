@@ -345,13 +345,13 @@ export default function ExerciseDetail() {
 
       {/* 2. Standard Static Details Page View */}
       <div className="flex items-center gap-4 mb-6 flex-wrap">
-        <Link to="/" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
+        <Link to="/uebungen" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
           <ArrowLeft size={16} />
-          <span>Startseite</span>
+          <span>Zurück zur Übersicht</span>
         </Link>
         <span className="text-[var(--color-text-muted)] opacity-40 select-none">/</span>
-        <Link to="/exercises" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
-          <span>{t('exercise.back')}</span>
+        <Link to="/uebungen" className="inline-flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 transition-all text-sm font-medium">
+          <span>Übungen</span>
         </Link>
       </div>
 
@@ -449,16 +449,16 @@ export default function ExerciseDetail() {
                       </p>
                       <div className="flex flex-wrap gap-3">
                         <Link 
-                          to="/register" 
-                          className="px-4 py-2 bg-[var(--color-accent-primary)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
+                          to="/registrieren" 
+                          className="px-6 py-2.5 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-95"
                         >
-                          Jetzt kostenlos registrieren
+                          Jetzt registrieren
                         </Link>
                         <Link 
-                          to="/login" 
-                          className="px-4 py-2 bg-white dark:bg-stone-800 text-[var(--color-text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--color-border-main)] hover:bg-stone-50 transition"
+                          to="/anmelden" 
+                          className="px-6 py-2.5 bg-transparent border border-[var(--color-border-main)] hover:bg-[var(--color-bg-alt)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl transition-all"
                         >
-                          Anmelden
+                          Bereits registriert? Login
                         </Link>
                       </div>
                     </div>

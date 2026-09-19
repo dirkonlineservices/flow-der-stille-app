@@ -195,14 +195,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             {/* Kompakte, symmetrische Buttons direkt daneben auf Desktop */}
             <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full md:w-auto">
               <Link
-                to="/register"
+                to="/registrieren"
                 className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>Kostenlos registrieren</span>
                 <ArrowRight size={16} />
               </Link>
               <Link
-                to="/login"
+                to="/anmelden"
                 className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <LogIn size={16} className="text-[var(--accent)]" />
@@ -750,7 +750,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
             <div className="space-y-2.5">
               <Link
-                to="/register"
+                to="/registrieren"
                 onClick={() => setShowWisdomProgressModal(false)}
                 className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
               >
@@ -758,7 +758,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 <ArrowRight size={17} />
               </Link>
               <Link
-                to="/login"
+                to="/anmelden"
                 onClick={() => setShowWisdomProgressModal(false)}
                 className="w-full py-3 px-6 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
               >
@@ -819,14 +819,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
           <Link
-            to="/register"
+            to="/registrieren"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>👉 Jetzt kostenlos registrieren (0 €)</span>
             <ArrowRight size={16} />
           </Link>
           <Link
-            to="/login"
+            to="/anmelden"
             className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
           >
             <LogIn size={16} className="text-[var(--accent)]" />

@@ -58,16 +58,19 @@ export default function SmartAppBanner() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="font-bold text-xs sm:text-sm truncate leading-tight">
-            Flow der Stille App
+          <div className="font-bold text-xs sm:text-sm truncate leading-tight flex items-center gap-2">
+            <span>Flow der Stille: Innere Ruhe</span>
+            <span className="text-[10px] bg-emerald-600/15 text-emerald-700 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-full hidden sm:inline">Android App</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[var(--text-muted)] mt-0.5">
+          <div className="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-xs text-[var(--text-muted)] mt-0.5">
             <div className="flex items-center text-amber-500 shrink-0">
               <Star size={11} className="fill-amber-400 text-amber-400" />
               <span className="ml-0.5 font-bold text-[10px]">5.0</span>
             </div>
             <span>•</span>
-            <span className="truncate">Kostenlos im Play Store</span>
+            <span className="font-medium text-[var(--text-main)]">Android App jetzt herunterladen</span>
+            <span className="hidden md:inline">•</span>
+            <span className="hidden md:inline opacity-75">(iOS folgt im nächsten Monat)</span>
           </div>
         </div>
       </div>
@@ -78,9 +81,9 @@ export default function SmartAppBanner() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleDownloadClick}
-        className="px-3.5 py-1.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all shrink-0 flex items-center gap-1 cursor-pointer whitespace-nowrap"
+        className="px-4 py-2 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all shrink-0 flex items-center gap-1 cursor-pointer whitespace-nowrap"
       >
-        <span>INSTALLIEREN</span>
+        <span>APP HERUNTERLADEN</span>
       </a>
     </div>
   );

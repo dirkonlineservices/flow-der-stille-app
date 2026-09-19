@@ -563,7 +563,7 @@ export default function Register() {
 
         <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
           Hast du bereits ein Konto?{' '}
-          <Link to="/login" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
+          <Link to="/anmelden" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
             Hier einloggen
           </Link>
         </div>

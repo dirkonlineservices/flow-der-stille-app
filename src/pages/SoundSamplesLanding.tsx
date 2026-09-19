@@ -619,14 +619,14 @@ export default function SoundSamplesLanding() {
             ) : (
               <>
                 <Link
-                  to="/register"
+                  to="/registrieren"
                   className="px-6 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
                 >
                   <span>Kostenlos &amp; unverbindlich registrieren</span>
                   <ArrowRight size={16} />
                 </Link>
                 <Link
-                  to="/login"
+                  to="/anmelden"
                   className="px-6 py-3 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] font-semibold text-xs sm:text-sm transition-all shadow-xs"
                 >
                   Bereits ein Konto? Anmelden

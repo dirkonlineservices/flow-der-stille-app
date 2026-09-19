@@ -33,7 +33,7 @@ export default function RecipeDetail() {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
       <SEO title={recipe.title} description={recipe.desc} />
-      <Link to="/recipes" className="inline-flex items-center gap-2 text-sm text-[var(--color-accent-primary)] hover:underline mb-6 font-medium">
+      <Link to="/rezepte" className="inline-flex items-center gap-2 text-sm text-[var(--color-accent-primary)] hover:underline mb-6 font-medium">
         <ArrowLeft size={16} /> Zurück zur Übersicht
       </Link>
       
@@ -56,7 +56,7 @@ export default function RecipeDetail() {
             <p className="text-sm text-[var(--color-text-muted)] mb-6 max-w-sm">
               Dieses Rezept und viele weitere Ernährungstipps sind exklusiv für registrierte Mitglieder verfügbar.
             </p>
-            <AuthLink to="/register" className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[var(--color-accent-hover)] transition-colors">
+            <AuthLink to="/registrieren" className="px-8 py-3 bg-[var(--color-accent-primary)] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[var(--color-accent-hover)] transition-colors">
               Jetzt kostenlos registrieren
             </AuthLink>
           </div>

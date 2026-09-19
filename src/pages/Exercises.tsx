@@ -57,7 +57,7 @@ export default function Exercises() {
 function ExerciseCard({ id, title, category, duration, description, image, isAudioExercise }: { id: string; title: string; category: string; duration: string; description: string; image: string; isAudioExercise: boolean }) {
   const { t } = useLanguage();
   return (
-    <Link to={`/exercises/${id}`} className="block">
+    <Link to={`/uebungen/${id}`} className="block">
       <motion.div 
         whileHover={{ y: -2 }}
         className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-all cursor-pointer group min-h-[220px]"

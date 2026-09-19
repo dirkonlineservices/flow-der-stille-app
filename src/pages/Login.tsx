@@ -409,7 +409,7 @@ export default function Login() {
 
         <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
           Neu bei Flow der Stille?{' '}
-          <Link to="/register" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
+          <Link to="/registrieren" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
             Konto erstellen
           </Link>
         </div>
