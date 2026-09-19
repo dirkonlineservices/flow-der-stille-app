@@ -75,6 +75,36 @@ export default function AGB() {
           <p className="mt-2">8.2. Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit, die unter https://ec.europa.eu/consumers/odr zu finden ist. Der Anbieter ist weder bereit noch verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
           <p className="mt-2">8.3. Sollten einzelne Bestimmungen dieser AGB unwirksam oder undurchführbar sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen davon unberührt.</p>
         </section>
+
+        {/* Ergänzende Kunden- und Verbraucherinformationen */}
+        <div className="pt-6 mt-6 border-t border-[var(--color-border-main)] bg-[var(--color-bg-alt)]/50 p-5 rounded-xl">
+          <h3 className="text-sm font-bold text-[var(--color-text-main)] mb-2">
+            Ergänzende Kunden- und Bestellerinformationen
+          </h3>
+          <p className="text-xs text-[var(--color-text-muted)] mb-4">
+            Detaillierte Einzelheiten zu unseren Lieferkonditionen sowie dein gesetzliches Widerrufsrecht findest du auf folgenden Sonderseiten:
+          </p>
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            <Link 
+              to="/versand" 
+              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
+            >
+              Versand- &amp; Lieferbedingungen →
+            </Link>
+            <Link 
+              to="/rueckgaberichtlinie" 
+              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
+            >
+              Rückgabe- &amp; Widerrufsbelehrung →
+            </Link>
+            <Link 
+              to="/online-widerruf" 
+              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
+            >
+              Online-Widerrufsformular →
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

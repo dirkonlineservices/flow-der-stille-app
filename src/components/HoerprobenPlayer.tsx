@@ -8,10 +8,12 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Headphones, Loader2 } from 'lucide-react';
+import { Play, Pause, Headphones, Loader2, Sparkles, Gift, Lock } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
 import { useAudioConsentGate } from './AudioConsentModal';
+import { useAuth } from '../context/AuthContext';
+import FullAudioRegistrationModal from './FullAudioRegistrationModal';
 
 interface Props {
   /** Das komplette Produkt-Objekt aus Supabase */
@@ -52,7 +54,9 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   };
 
   const startTime = getStartTime();
-  const SNIPPET_DURATION = 90; // 90 Sekunden Auszug
+  const { user } = useAuth();
+  const [showRegModal, setShowRegModal] = useState(false);
+  const [snippetEnded, setSnippetEnded] = useState(false);
 
   const [audioUrl, setAudioUrl] = useState<string>(rawUrl);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -64,6 +68,23 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   // Consent-Gate: öffnet sich beim ersten Klick wenn noch nicht zugestimmt
   const { gate, requestPlay } = useAudioConsentGate();
+
+  // Ist es ein kostenloses Produkt? (preis ist 0, '0', '0.00' oder nicht gesetzt)
+  const isFreeProduct = !produkt?.preis || Number(produkt.preis) === 0;
+
+  // Gesamtlänge und Netto-Länge nach Disclaimer
+  const totalDuration = duration || Number(produkt?.dauer) || 600;
+  const netDuration = Math.max(15, totalDuration - startTime);
+
+  // 🎯 User-Wunsch:
+  // 1. Kostenfreie Produkte für eingeloggte User: 100% VOLL anhörbar!
+  // 2. Kostenfreie Produkte für Gäste: 60s Schnupperprobe, danach 1-Klick Registrierung
+  // 3. Kostenpflichtige Produkte: 25% der Netto-Dauer (nach Disclaimer), mind. 90 Sek.
+  const actualSnippetDuration = isFreeProduct && user
+    ? netDuration
+    : isFreeProduct && !user
+    ? Math.min(60, netDuration)
+    : Math.max(90, Math.round(netDuration * 0.25));
 
   useEffect(() => {
     let isMounted = true;
@@ -82,11 +103,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
 
   // Nichts rendern, wenn weder Hörprobe noch Audio-Pfad vorhanden ist
   if (!rawUrl) return null;
-
-  const actualSnippetDuration = Math.min(
-    SNIPPET_DURATION, 
-    Math.max(15, (duration || Number(produkt?.dauer) || 120) - startTime)
-  );
 
   const formatTime = (secs: number) => {
     if (!secs || isNaN(secs) || !isFinite(secs)) return '0:00';
@@ -195,17 +211,25 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
             </span>
             <div className="flex flex-wrap items-center gap-1.5 min-w-0">
               <span className="text-xs sm:text-sm font-semibold text-[var(--text-main)] leading-snug">
-                Kostenlose Klangprobe:
+                {isFreeProduct && user ? 'Kostenfreie Vollversion:' : 'Kostenlose Hörprobe:'}
               </span>
               <span className="font-serif italic font-normal text-xs sm:text-sm text-[var(--text-muted)] truncate max-w-[180px] sm:max-w-none">
                 {produkt.titel}
               </span>
-              {startTime > 0 && (
+              {isFreeProduct && user ? (
+                <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 font-semibold bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/25 whitespace-nowrap">
+                  100% Freigeschaltet
+                </span>
+              ) : isFreeProduct && !user ? (
+                <span className="text-[10px] font-mono text-amber-700 dark:text-amber-300 font-semibold bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/25 whitespace-nowrap">
+                  Kostenlos (Vorschau)
+                </span>
+              ) : (
                 <span 
-                  title="Spielt direkt den beruhigenden Inhalt ab – der rechtliche Hinweis vorab wird übersprungen."
+                  title="Du hörst 25 % dieser Meditation kostenlos (Disclaimer vorab übersprungen)."
                   className="text-[10px] font-mono text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2 py-0.5 rounded-full border border-[var(--accent)]/25 whitespace-nowrap cursor-help"
                 >
-                  Auszug ab 1:10 Min.
+                  25 % Hörprobe ({formatTime(actualSnippetDuration)} Min.)
                 </span>
               )}
             </div>
@@ -233,7 +257,10 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         {/* Audio-Steuerung: Play Button + Vollbreiten-Fortschrittsbalken */}
         <div className="flex items-center gap-3 w-full">
           <button
-            onClick={togglePlay}
+            onClick={() => {
+              setSnippetEnded(false);
+              togglePlay();
+            }}
             disabled={isLoading}
             aria-label={isLoading ? 'Wird geladen…' : isPlaying ? 'Pause' : 'Klangprobe abspielen'}
             className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 shadow-sm active:scale-95 transition-all text-white ${
@@ -278,6 +305,39 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           </div>
         </div>
 
+        {/* 🎯 Call-to-Action nach Ablauf der 25% Hörprobe bzw. Schnupperprobe */}
+        {snippetEnded && (
+          <div className="mt-3 pt-3 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-2.5 animate-fadeIn">
+            <div className="text-xs text-[var(--text-muted)] text-center sm:text-left">
+              {isFreeProduct && !user ? (
+                <span>Hat dir die Vorschau gefallen? Schalte die volle Session jetzt kostenlos frei.</span>
+              ) : !isFreeProduct ? (
+                <span>25 % Hörprobe beendet. Möchtest du die gesamte Meditation hören?</span>
+              ) : null}
+            </div>
+
+            {isFreeProduct && !user ? (
+              <button
+                type="button"
+                onClick={() => setShowRegModal(true)}
+                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles size={13} />
+                <span>Mit 1 Klick gratis freischalten</span>
+              </button>
+            ) : !isFreeProduct ? (
+              <button
+                type="button"
+                onClick={scrollToProduct}
+                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Gift size={13} />
+                <span>Vollversion freischalten ({produkt.preis ? `${produkt.preis} €` : '1,99 €'}) →</span>
+              </button>
+            ) : null}
+          </div>
+        )}
+
         {/* Audio-Element mit preload="none" */}
         <audio
           ref={audioRef}
@@ -288,12 +348,17 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
             if (audioRef.current) {
               const cur = audioRef.current.currentTime;
               setCurrentTime(cur);
-              // Nach Ablauf des 90-Sekunden-Ausschnitts automatisch stoppen
+              // Nach Ablauf des 25%-Ausschnitts (bzw. bei Gästen 60s) automatisch stoppen
               if (cur >= startTime + actualSnippetDuration) {
                 audioRef.current.pause();
                 audioRef.current.currentTime = startTime;
                 setCurrentTime(startTime);
                 setIsPlaying(false);
+                setSnippetEnded(true);
+
+                if (isFreeProduct && !user) {
+                  setShowRegModal(true);
+                }
               }
             }
           }}
@@ -307,13 +372,14 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
               }
             }
           }}
-          onPlay={() => { setIsPlaying(true); setIsLoading(false); }}
+          onPlay={() => { setIsPlaying(true); setIsLoading(false); setSnippetEnded(false); }}
           onPause={() => setIsPlaying(false)}
           onWaiting={() => setIsLoading(true)}
           onPlaying={() => setIsLoading(false)}
           onEnded={() => {
             setIsPlaying(false);
             setIsLoading(false);
+            setSnippetEnded(true);
             if (audioRef.current) audioRef.current.currentTime = startTime;
             setCurrentTime(startTime);
             if ((window as any).dataLayer) {
@@ -325,6 +391,16 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           }}
         />
       </div>
+
+      {/* Registrierungs-Modal für unbegrenztes Hören bei kostenfreien Produkten */}
+      <FullAudioRegistrationModal
+        isOpen={showRegModal}
+        onClose={() => setShowRegModal(false)}
+        audioTitle={produkt.titel}
+        durationText={`${formatTime(totalDuration)} Minuten`}
+        title={`Möchtest du "${produkt.titel}" in voller Länge hören?`}
+        subtitle="100% Kostenfreie Freischaltung"
+      />
     </>
   );
 }
