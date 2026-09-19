@@ -289,8 +289,8 @@ export default function AudioSessionPage() {
                 enableFloatingPlayer={true}
               />
 
-              {/* 1-Klick Quick Unlock Box (Google & Facebook SSO + E-Mail Fallback) */}
-              {!user && (
+              {/* 1-Klick Quick Unlock Box (Google & Facebook SSO + E-Mail Fallback) – nur für Gäste ohne Kauf */}
+              {!user && !isOwned && (
                 <div className="pt-3">
                   <QuickSocialUnlockBox
                     produkt={productData || { id: resolvedId, titel: title, preis: productData?.preis, kategorie: category }}
@@ -300,8 +300,8 @@ export default function AudioSessionPage() {
                 </div>
               )}
 
-              {/* Kauf-Button für kostenpflichtige Audios wenn eingeloggt */}
-              {user && !isFreeProduct && (
+              {/* Kauf-Button für kostenpflichtige Audios wenn eingeloggt und noch nicht gekauft */}
+              {user && !isFreeProduct && !isOwned && (
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
                   <div>
                     <span className="font-bold text-sm block text-[var(--text-main)]">Vollversion freischalten ({priceDisplay})</span>

@@ -688,8 +688,8 @@ export default function AudiobookPage() {
               )}
             </div>
 
-            {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten */}
-            {!user ? (
+            {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten (nur für Gäste ohne Account & ohne Kauf) */}
+            {!user && !isOwned && (
               <div className="mt-4">
                 <QuickSocialUnlockBox
                   produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
@@ -698,13 +698,6 @@ export default function AudiobookPage() {
                   returnPath={location.pathname}
                   compact={false}
                 />
-              </div>
-            ) : (
-              <div className="mt-4 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2.5 text-emerald-800 dark:text-emerald-300 font-medium">
-                  <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>Du bist angemeldet als <strong>{user.email}</strong>. Deine 1-Klick-Freischaltungen und Hörfortschritte sind aktiv verknüpft.</span>
-                </div>
               </div>
             )}
           </div>

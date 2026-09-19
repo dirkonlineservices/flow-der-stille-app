@@ -712,8 +712,8 @@ export function AudiobookPlayerModal({
                   )}
                 </div>
 
-                {/* 1-Klick-Registrierung direkt im oberen Bereich des Players */}
-                {!user ? (
+                {/* 1-Klick-Registrierung direkt im oberen Bereich des Players (nur für Gäste) */}
+                {!user && (
                   <div className="pt-2 border-t border-emerald-300/40 dark:border-emerald-700/40">
                     <QuickSocialUnlockBox
                       produkt={{
@@ -726,11 +726,6 @@ export function AudiobookPlayerModal({
                       price={priceDisplay}
                       compact={true}
                     />
-                  </div>
-                ) : (
-                  <div className="pt-1.5 border-t border-emerald-300/40 dark:border-emerald-700/40 flex items-center gap-2 text-[11px] text-emerald-800 dark:text-emerald-300">
-                    <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>Eingeloggt als <strong>{user.email}</strong> • Dein Hörfortschritt wird automatisch synchronisiert</span>
                   </div>
                 )}
               </div>

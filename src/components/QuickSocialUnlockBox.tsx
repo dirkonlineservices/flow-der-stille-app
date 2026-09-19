@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Sparkles, Mail, ArrowRight, Smartphone, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface Props {
   /** Optionales Produktobjekt zur automatischen Erkennung */
@@ -37,8 +38,15 @@ export default function QuickSocialUnlockBox({
   onSuccess,
   showAppPush = true
 }: Props) {
+  const { user } = useAuth();
   const location = useLocation();
   const [socialLoading, setSocialLoading] = useState<'facebook' | 'google' | null>(null);
+
+  // 🛡️ Dynamischer Schutz: Eingeloggte Nutzer haben bereits ein Konto.
+  // Die 1-Klick-Registrierungsbox fällt bei registrierten Nutzern automatisch komplett raus!
+  if (user) {
+    return null;
+  }
 
   // 1. Automatische Erkennung des Produkttyps
   const isAudiobookDetermined = isAudiobook ?? Boolean(

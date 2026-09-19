@@ -480,7 +480,7 @@ export default function AudiobooksHub() {
                 )}
               </div>
 
-              {!user ? (
+              {!user && !isAudiobookOwned && (
                 <div className="pt-2 text-left">
                   <QuickSocialUnlockBox
                     produkt={{
@@ -494,13 +494,6 @@ export default function AudiobooksHub() {
                     returnPath="/hoerbuch/schmetterling?autoplay=true"
                     compact={true}
                   />
-                </div>
-              ) : (
-                <div className="pt-2 text-left">
-                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
-                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>Angemeldet als <strong>{user.email}</strong> • Deine 1-Klick-Freischaltungen sind aktiv</span>
-                  </div>
                 </div>
               )}
             </div>
@@ -613,7 +606,7 @@ export default function AudiobooksHub() {
                 )}
               </div>
 
-              {!user ? (
+              {!user && !isMenschSeinOwned && (
                 <div className="pt-2 text-left">
                   <QuickSocialUnlockBox
                     produkt={{
@@ -627,13 +620,6 @@ export default function AudiobooksHub() {
                     returnPath="/hoerbuch/mensch_sein?autoplay=true"
                     compact={true}
                   />
-                </div>
-              ) : (
-                <div className="pt-2 text-left">
-                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300">
-                    <CheckCircle2 size={15} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>Angemeldet als <strong>{user.email}</strong> • Deine 1-Klick-Freischaltungen sind aktiv</span>
-                  </div>
                 </div>
               )}
             </div>
