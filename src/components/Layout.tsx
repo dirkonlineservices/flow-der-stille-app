@@ -15,6 +15,7 @@ import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { getSupabase } from '../lib/supabaseClient';
 import { getOfflineHoerproben } from '../lib/offlineProductsService';
 import { AppDownloadBanner } from './AppDownloadBanner';
+import SmartAppBanner from './SmartAppBanner';
 import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
 import { NamePromptModal } from './NamePromptModal';
@@ -117,6 +118,9 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
+      {/* Smarter App-Banner für mobile Browserbesucher (Google Play Download Push) */}
+      <SmartAppBanner />
+
       {/* Top Right Corner Action Buttons */}
       <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
         {!user ? (
@@ -140,14 +144,25 @@ export default function Layout() {
         )}
 
         {!isNativeApp && (
-          <Link
-            to="/app"
+          <a
+            href="https://play.google.com/store/apps/details?id=app.flowderstille.de"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                (window as any).dataLayer.push({
+                  event: 'app_download_click',
+                  source: 'top_nav_button',
+                  destination: 'google_play_store'
+                });
+              }
+            }}
             className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-xs cursor-pointer"
-            title="Flow der Stille Android App Seite öffnen"
+            title="Flow der Stille App direkt im Google Play Store öffnen"
           >
             <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline font-medium">App</span>
-          </Link>
+            <span className="font-medium">App</span>
+          </a>
         )}
       </div>
 

@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { 
   ArrowLeft, Play, Pause, Sparkles, BookOpen, Clock, ShieldCheck, 
   ListMusic, Bookmark, HardDrive, AlertCircle, Lock, Gift, 
-  Headphones, CheckCircle2, X 
+  Headphones, CheckCircle2, X, Smartphone 
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { AudiobookPlayerModal, AudiobookChapter } from '../components/AudiobookPlayerModal';
@@ -614,6 +614,52 @@ export default function AudiobookPage() {
               <span>Vollständiges Hörbuch kaufen</span>
               <ArrowLeft size={12} className="rotate-180" />
             </Link>
+          </div>
+        )}
+
+        {/* 📱 Mobiler Download-Push: Besucher von Facebook/Social direkt zum App-Download einladen */}
+        {typeof window !== 'undefined' && !Boolean((window as any).Capacitor?.isNativePlatform?.()) && (
+          <div className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-7 border border-[var(--border)] shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left flex-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                <Smartphone size={13} />
+                <span>Kostenlose Android App</span>
+              </div>
+              <h3 className="font-serif font-bold text-lg sm:text-xl text-[var(--text-main)] leading-tight">
+                Dieses Hörbuch &amp; alle Meditationen in der App hören
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-xl">
+                Genieße die Hörprobe und deine Inhalte mit <strong className="text-[var(--text-main)]">Hintergrund-Wiedergabe bei gesperrtem Bildschirm</strong>, ohne Browser-Unterbrechungen und mit Offline-Download für unterwegs.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+              <a
+                href="https://play.google.com/store/apps/details?id=app.flowderstille.de"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                    (window as any).dataLayer.push({
+                      event: 'app_download_click',
+                      source: 'audiobook_page_push',
+                      destination: 'google_play_store'
+                    });
+                  }
+                }}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Im Google Play Store laden</span>
+                <ArrowLeft size={14} className="rotate-180" />
+              </a>
+
+              <Link
+                to="/app"
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] hover:underline transition-colors py-1"
+              >
+                Mehr Infos zur App
+              </Link>
+            </div>
           </div>
         )}
 
