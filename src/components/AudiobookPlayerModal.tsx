@@ -43,6 +43,7 @@ interface Props {
   initialStartTime?: number;
   isOwned?: boolean;
   priceDisplay?: string;
+  autoPlay?: boolean;
   onRequirePurchase?: (chapter?: AudiobookChapter) => void;
 }
 
@@ -98,6 +99,7 @@ export function AudiobookPlayerModal({
   initialStartTime,
   isOwned = false,
   priceDisplay = '4,99 €',
+  autoPlay = true,
   onRequirePurchase
 }: Props) {
   const { user } = useAuth();
@@ -219,10 +221,25 @@ export function AudiobookPlayerModal({
       }
     }
 
+    let playTimeout: any = null;
+    if (autoPlay) {
+      playTimeout = setTimeout(() => {
+        if (audioRef.current) {
+          const p = audioRef.current.play();
+          if (p !== undefined) {
+            p.then(() => setIsPlaying(true)).catch((e) => {
+              console.warn('Autoplay wait:', e);
+            });
+          }
+        }
+      }, 150);
+    }
+
     return () => {
       isMounted = false;
+      if (playTimeout) clearTimeout(playTimeout);
     };
-  }, [isOpen, productId, audioUrl, initialStartTime]);
+  }, [isOpen, productId, audioUrl, initialStartTime, autoPlay]);
 
   // Automatisches Speichern bei Verlassen der Seite / App-Schließen
   useEffect(() => {
@@ -694,10 +711,10 @@ export function AudiobookPlayerModal({
                     </div>
                     <div>
                       <strong className="text-emerald-950 dark:text-emerald-100 font-bold block text-xs sm:text-sm">
-                        Mit 1 Klick: Kapitel 1 &amp; Einleitung kostenlos freigeschaltet
+                        Du hörst Kapitel 1 kostenlos ohne Anmeldung
                       </strong>
                       <span className="text-[11px] text-emerald-800 dark:text-emerald-300/90 font-medium">
-                        Du hörst das gesamte erste Kapitel gratis. Die weiteren Abschnitte gehören zur Vollversion.
+                        Genieße das gesamte 1. Kapitel gratis. Möchtest du alle weiteren Kapitel hören? Unten mit 1 Klick registrieren und für einmalig {priceDisplay} freischalten.
                       </span>
                     </div>
                   </div>
@@ -712,7 +729,7 @@ export function AudiobookPlayerModal({
                   )}
                 </div>
 
-                {/* 1-Klick-Registrierung direkt im oberen Bereich des Players (nur für Gäste) */}
+                {/* 1-Klick-Registrierung für Gäste */}
                 {!user && (
                   <div className="pt-2 border-t border-emerald-300/40 dark:border-emerald-700/40">
                     <QuickSocialUnlockBox
@@ -724,6 +741,8 @@ export function AudiobookPlayerModal({
                       }}
                       isAudiobook={true}
                       price={priceDisplay}
+                      title="Gefällt dir Kapitel 1? Gesamtes Hörbuch freischalten"
+                      subtitle={`Kapitel 1 läuft hier komplett kostenlos ohne Anmeldung. Wenn du danach alle weiteren Kapitel dauerhaft hören möchtest: Jetzt mit 1 Klick registrieren und für einmalig ${priceDisplay} (kein Abo) freischalten:`}
                       compact={true}
                     />
                   </div>
@@ -951,23 +970,6 @@ export function AudiobookPlayerModal({
                 {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
               </button>
             </div>
-
-            {/* 🚀 1-Klick-Registrierung direkt im Hörbuch Player */}
-            {!isOwned && !user && (
-              <div className="pt-2">
-                <QuickSocialUnlockBox
-                  produkt={{
-                    id: productId,
-                    titel: title,
-                    preis: 4.99,
-                    kategorie: 'Hörbuch'
-                  }}
-                  isAudiobook={true}
-                  price={priceDisplay}
-                  compact={true}
-                />
-              </div>
-            )}
 
             {/* Kapitel-Navigation (Kapitel-Schnellfinder) */}
             <div className="space-y-3 pt-2">

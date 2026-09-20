@@ -355,10 +355,10 @@ export default function AudiobooksHub() {
               <div className="absolute bottom-3 inset-x-3 z-10">
                 <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
                   <span className="text-[11px] font-semibold block leading-tight">
-                    Kapitel 1 kostenlos anhören
+                    Kapitel 1 sofort gratis (ohne Anmeldung)
                   </span>
                   <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
-                    Nach Registrierung 4,99 € zum Kaufen
+                    Gesamtes Hörbuch nach Registrierung für 4,99 €
                   </span>
                 </div>
               </div>
@@ -481,7 +481,7 @@ export default function AudiobooksHub() {
                       className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
                     >
                       <Play size={16} className="fill-white" />
-                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
+                      <span>Mit 1 Klick Kapitel 1 sofort anhören</span>
                     </Link>
 
                     <Link
@@ -546,10 +546,10 @@ export default function AudiobooksHub() {
               <div className="absolute bottom-3 inset-x-3 z-10">
                 <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
                   <span className="text-[11px] font-semibold block leading-tight">
-                    Kapitel 1 kostenlos anhören
+                    Kapitel 1 sofort gratis (ohne Anmeldung)
                   </span>
                   <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
-                    Nach Registrierung 4,99 € zum Kaufen
+                    Gesamtes Hörbuch nach Registrierung für 4,99 €
                   </span>
                 </div>
               </div>
@@ -628,7 +628,7 @@ export default function AudiobooksHub() {
                       className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
                     >
                       <Play size={16} className="fill-white" />
-                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
+                      <span>Mit 1 Klick Kapitel 1 sofort anhören</span>
                     </Link>
 
                     <Link

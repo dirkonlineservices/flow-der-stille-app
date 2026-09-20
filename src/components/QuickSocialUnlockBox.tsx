@@ -82,7 +82,7 @@ export default function QuickSocialUnlockBox({
     if (isFreeDetermined) {
       displayTitle = 'Kostenfrei freischalten (Normalwert 1,99 €)';
     } else if (isAudiobookDetermined) {
-      displayTitle = 'Kapitel 1 kostenlos freischalten';
+      displayTitle = 'Gefällt dir Kapitel 1? Gesamtes Hörbuch freischalten';
     } else {
       displayTitle = 'Kostenlose Hörprobe (25 %) freischalten';
     }
@@ -92,7 +92,7 @@ export default function QuickSocialUnlockBox({
     if (isFreeDetermined) {
       displaySubtitle = 'Registriere dich kostenlos mit 1 Klick über Google oder Facebook, um die vollständige Session sofort und dauerhaft anzuhören:';
     } else if (isAudiobookDetermined) {
-      displaySubtitle = `Registriere dich kostenlos mit 1 Klick, um das gesamte 1. Kapitel sofort anzuhören (Vollversion aller Kapitel danach optional für ${priceFormatted}):`;
+      displaySubtitle = `Kapitel 1 kannst du oben komplett kostenlos und ohne Anmeldung anhören. Wenn du alle weiteren Kapitel dauerhaft freischalten möchtest, registriere dich mit 1 Klick und sichere dir die Vollversion für einmalig ${priceFormatted} (kein Abo):`;
     } else {
       displaySubtitle = `Registriere dich kostenlos mit 1 Klick, um die ausführliche 25 % Hörprobe direkt anzuhören (Vollversion danach für ${priceFormatted} freischaltbar):`;
     }
@@ -103,9 +103,9 @@ export default function QuickSocialUnlockBox({
     facebookButtonText = 'Mit Facebook 1-Klick freischalten';
     trustNote = '100% kostenlos • Kein Abo • Profil hinterlegt Haftungsausschluss rechtssicher';
   } else if (isAudiobookDetermined) {
-    googleButtonText = 'Kapitel 1 mit Google freischalten';
-    facebookButtonText = 'Kapitel 1 mit Facebook freischalten';
-    trustNote = 'Kostenloses Hörer-Konto • Kein Kaufzwang • Vollversion separat erhältlich';
+    googleButtonText = 'Mit Google 1-Klick registrieren';
+    facebookButtonText = 'Mit Facebook 1-Klick registrieren';
+    trustNote = `Kapitel 1 gratis ohne Anmeldung • Vollversion aller Kapitel für einmalig ${priceFormatted} • Kein Abo`;
   } else {
     googleButtonText = 'Hörprobe mit Google freischalten';
     facebookButtonText = 'Hörprobe mit Facebook freischalten';

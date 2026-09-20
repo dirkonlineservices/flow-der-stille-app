@@ -568,10 +568,10 @@ export default function AudiobookPage() {
             <div className="absolute bottom-3 inset-x-3 z-10">
               <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
                 <span className="text-[11px] font-semibold block leading-tight">
-                  Kapitel 1 kostenlos anhören
+                  Kapitel 1 sofort gratis (ohne Anmeldung)
                 </span>
                 <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
-                  Nach Registrierung {priceDisplay} zum Kaufen
+                  Gesamtes Hörbuch nach Registrierung für {priceDisplay}
                 </span>
               </div>
             </div>
@@ -700,10 +700,10 @@ export default function AudiobookPage() {
                   >
                     <div className="flex items-center gap-2 text-sm font-bold">
                       <Play size={16} className="fill-white" />
-                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören</span>
+                      <span>Mit 1 Klick Kapitel 1 sofort anhören</span>
                     </div>
                     <span className="text-[11px] opacity-90 font-normal mt-0.5">
-                      {isMenschSein ? '11:00 Min.' : '17:05 Min.'} Vollversion des 1. Kapitels gratis
+                      100 % gratis ohne Registrierung abspielen ({isMenschSein ? '11:00 Min.' : '17:05 Min.'})
                     </span>
                   </button>
 
@@ -726,15 +726,15 @@ export default function AudiobookPage() {
           </div>
         </div>
 
-        {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten */}
+        {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos ohne Registrierung hören, Vollversion freischalten */}
         {!user && !isOwned && (
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-xl">
             <QuickSocialUnlockBox
               produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
               isAudiobook={true}
               price={priceDisplay}
-              title="Kapitel 1 kostenlos freischalten"
-              subtitle={`Kapitel 1 kannst du sofort kostenlos anhören. Registriere dich kostenlos mit 1 Klick über Google oder Facebook, um deinen Hörfortschritt zu speichern und das gesamte Hörbuch für einmalig ${priceDisplay} (kein Abo) freizuschalten:`}
+              title="Gefällt dir Kapitel 1? Gesamtes Hörbuch freischalten"
+              subtitle={`Kapitel 1 kannst du dir oben komplett ohne Registrierung kostenlos anhören. Wenn du danach das gesamte Hörbuch (${chapters.length} Kapitel) dauerhaft hören möchtest: Jetzt mit 1 Klick registrieren und für einmalig ${priceDisplay} (kein Abo) freischalten:`}
               returnPath={location.pathname}
               compact={false}
             />
@@ -1031,6 +1031,8 @@ export default function AudiobookPage() {
                     produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
                     isAudiobook={true}
                     price={priceDisplay}
+                    title="Konto mit 1 Klick erstellen"
+                    subtitle={`Erstelle unverbindlich dein Hörer-Konto mit 1 Klick, um das gesamte Hörbuch für einmalig ${priceDisplay} (kein Abo) freizuschalten:`}
                     returnPath={location.pathname}
                     compact={true}
                   />
