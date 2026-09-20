@@ -386,7 +386,7 @@ export default function Layout() {
         <div className="pt-6 border-t border-[var(--border)]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-[var(--text-muted)]">
           <div className="flex items-center gap-2">
             <img src="/logo-transparent.png" alt="Flow der Stille Logo" className="w-5 h-5 object-contain" />
-            <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa &amp; Dirk Schmetzer</span>
+            <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa und Dirk</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/kontakt" className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-semibold hover:opacity-90 transition shadow-xs">

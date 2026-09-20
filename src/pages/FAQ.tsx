@@ -15,7 +15,7 @@ const faqData: FAQItem[] = [
   {
     category: "Über Flow der Stille",
     question: "Warum haben wir Flow der Stille ins Leben gerufen? (Unsere Vision)",
-    answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline und Dirk Schmetzer, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
+    answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline, Lisa und Dirk, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
   },
   {
     category: "Über Flow der Stille",
