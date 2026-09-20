@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, Play, Pause, Sparkles, BookOpen, Clock, ShieldCheck, 
   ListMusic, Bookmark, HardDrive, AlertCircle, Lock, Gift, 
@@ -147,6 +147,7 @@ export default function AudiobookPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const isPurchasedRedirect = searchParams.get('purchased') === 'true';
   const shouldAutoPlay = searchParams.get('play') === 'true' || searchParams.get('autoplay') === 'true' || isPurchasedRedirect;
@@ -553,6 +554,27 @@ export default function AudiobookPage() {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+
+            {/* Preis-Tag oben links über dem Bild */}
+            <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+              <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-xl uppercase shadow-lg bg-[var(--accent)] text-white flex items-center gap-1.5 border border-white/20">
+                <Gift size={13} />
+                <span>{priceDisplay}</span>
+                <span className="text-[10px] font-normal opacity-90">• Einmalkauf</span>
+              </span>
+            </div>
+
+            {/* Info-Banner über unterem Bildrand */}
+            <div className="absolute bottom-3 inset-x-3 z-10">
+              <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
+                <span className="text-[11px] font-semibold block leading-tight">
+                  Kapitel 1 kostenlos anhören
+                </span>
+                <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
+                  Nach Registrierung {priceDisplay} zum Kaufen
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Details & Primary Play / Buy Button */}
@@ -701,20 +723,40 @@ export default function AudiobookPage() {
               )}
             </div>
 
-            {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten (nur für Gäste ohne Account & ohne Kauf) */}
-            {!user && !isOwned && (
-              <div className="mt-4">
-                <QuickSocialUnlockBox
-                  produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
-                  isAudiobook={true}
-                  price="4,99 €"
-                  returnPath={location.pathname}
-                  compact={false}
-                />
-              </div>
-            )}
           </div>
         </div>
+
+        {/* 🚀 Conversion-Hebel für Werbebesucher: Kapitel 1 kostenlos mit 1 Klick freischalten */}
+        {!user && !isOwned && (
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-xl">
+            <QuickSocialUnlockBox
+              produkt={productData || { id: productId, titel: title, preis: 4.99, kategorie: 'Hörbuch' }}
+              isAudiobook={true}
+              price={priceDisplay}
+              title="Kapitel 1 kostenlos freischalten"
+              subtitle={`Kapitel 1 kannst du sofort kostenlos anhören. Registriere dich kostenlos mit 1 Klick über Google oder Facebook, um deinen Hörfortschritt zu speichern und das gesamte Hörbuch für einmalig ${priceDisplay} (kein Abo) freizuschalten:`}
+              returnPath={location.pathname}
+              compact={false}
+            />
+          </div>
+        )}
+
+        {/* Kauf-Banner für eingeloggte Nutzer, die das Hörbuch noch nicht besitzen */}
+        {user && !isOwned && (
+          <div className="p-5 sm:p-6 rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="space-y-1 text-center sm:text-left">
+              <span className="font-bold text-base text-[var(--text-main)] block">Vollversion aller Kapitel freischalten ({priceDisplay})</span>
+              <span className="text-xs text-[var(--text-muted)] block">Einmaliger Kauf • Dauerhafter Zugriff im Web &amp; in der Android-App • 100 % werbe- &amp; abofrei</span>
+            </div>
+            <Link
+              to={`/premium#product-${productData?.id || productId}`}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <Gift size={16} />
+              <span>Jetzt für {priceDisplay} kaufen</span>
+            </Link>
+          </div>
+        )}
 
         {/* 90 Sekunden Hörproben-Statusleiste wenn aktiv */}
         {isPlayingSnippet && !isOwned && (

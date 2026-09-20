@@ -341,6 +341,27 @@ export default function AudiobooksHub() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+
+              {/* Preis-Tag oben links über dem Bild */}
+              <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+                <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-xl uppercase shadow-lg bg-[var(--accent)] text-white flex items-center gap-1.5 border border-white/20">
+                  <Gift size={13} />
+                  <span>4,99 €</span>
+                  <span className="text-[10px] font-normal opacity-90">• Einmalkauf</span>
+                </span>
+              </div>
+
+              {/* Info-Banner über unterem Bildrand */}
+              <div className="absolute bottom-3 inset-x-3 z-10">
+                <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
+                  <span className="text-[11px] font-semibold block leading-tight">
+                    Kapitel 1 kostenlos anhören
+                  </span>
+                  <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
+                    Nach Registrierung 4,99 € zum Kaufen
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Content & Action */}
@@ -511,6 +532,27 @@ export default function AudiobooksHub() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+
+              {/* Preis-Tag oben links über dem Bild */}
+              <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+                <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-xl uppercase shadow-lg bg-[var(--accent)] text-white flex items-center gap-1.5 border border-white/20">
+                  <Gift size={13} />
+                  <span>4,99 €</span>
+                  <span className="text-[10px] font-normal opacity-90">• Einmalkauf</span>
+                </span>
+              </div>
+
+              {/* Info-Banner über unterem Bildrand */}
+              <div className="absolute bottom-3 inset-x-3 z-10">
+                <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
+                  <span className="text-[11px] font-semibold block leading-tight">
+                    Kapitel 1 kostenlos anhören
+                  </span>
+                  <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
+                    Nach Registrierung 4,99 € zum Kaufen
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Content & Action */}

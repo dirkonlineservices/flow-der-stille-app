@@ -320,9 +320,13 @@ export default function MeditationLanding() {
                       alt={item.title}
                       className="w-full h-full object-cover"
                     />
-                    {item.isFree && (
-                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold">
+                    {item.isFree ? (
+                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-emerald-700 text-white text-[9px] font-bold shadow-xs">
                         GRATIS
+                      </div>
+                    ) : (
+                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold shadow-xs">
+                        {item.price}
                       </div>
                     )}
                   </div>

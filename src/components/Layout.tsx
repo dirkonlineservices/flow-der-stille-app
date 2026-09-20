@@ -5,7 +5,7 @@ import {
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift, User, Heart, Sparkles
+  ShieldCheck, Gift, User, Heart, Sparkles, ChevronDown
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -57,6 +57,17 @@ export default function Layout() {
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
   const [hasHoerproben, setHasHoerproben] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [openFooterSilos, setOpenFooterSilos] = useState<Record<string, boolean>>({
+    silo1: false,
+    silo2: false,
+    silo3: false,
+    silo4: false,
+  });
+
+  const toggleFooterSilo = (key: string) => {
+    setOpenFooterSilos(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
   const isPremiumOrAppPage = location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
 
@@ -233,36 +244,47 @@ export default function Layout() {
       )}
 
       {/* ─── SEO-OPTIMIERTER LINK-JUICE FOOTER (4 THEMEN-SILOS) ─── */}
+      {/* Auf Mobile: Aufklappbare Akkordeon-Kategorien für beste Übersicht • Auf Desktop: 4 edle Säulen • 100 % SEO Link-Juice dauerhaft im DOM */}
       <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-10 pt-8 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] transition-all duration-300">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-8 mb-8 text-left">
           {/* Silo 1: Kostenlose Angebote & Praxis */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-              Kostenlose Praxis
-            </h4>
-            <ul className="space-y-2 text-xs">
+          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
+            <button
+              type="button"
+              onClick={() => toggleFooterSilo('silo1')}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
+            >
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+                Kostenlose Praxis
+              </h4>
+              <ChevronDown
+                size={16}
+                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo1 ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo1 ? 'block' : 'hidden md:block'}`}>
               <li>
-                <Link to="/meditation" onClick={() => handleMenuClick('Kostenlose Meditation')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/meditation" onClick={() => handleMenuClick('Kostenlose Meditation')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Kostenlose Meditation
                 </Link>
               </li>
               <li>
-                <Link to="/selbsthypnose" onClick={() => handleMenuClick('Kostenlose Selbsthypnose')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/selbsthypnose" onClick={() => handleMenuClick('Kostenlose Selbsthypnose')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Kostenlose Selbsthypnose
                 </Link>
               </li>
               <li>
-                <Link to="/hoerproben" onClick={() => handleMenuClick('Kostenlose Hörproben')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/hoerproben" onClick={() => handleMenuClick('Kostenlose Hörproben')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Kostenlose Hörproben
                 </Link>
               </li>
               <li>
-                <Link to="/uebungen" onClick={() => handleMenuClick('Atemübungen & Vagusnerv')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/uebungen" onClick={() => handleMenuClick('Atemübungen & Vagusnerv')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Atemübungen &amp; Vagusnerv
                 </Link>
               </li>
               <li>
-                <Link to="/atemchat" onClick={() => handleMenuClick('Interaktiver Atemraum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/atemchat" onClick={() => handleMenuClick('Interaktiver Atemraum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Interaktiver Atemraum
                 </Link>
               </li>
@@ -270,33 +292,43 @@ export default function Layout() {
           </div>
 
           {/* Silo 2: Hörbücher & Mediathek */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-              Hörbücher &amp; Audio
-            </h4>
-            <ul className="space-y-2 text-xs">
+          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
+            <button
+              type="button"
+              onClick={() => toggleFooterSilo('silo2')}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
+            >
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+                Hörbücher &amp; Audio
+              </h4>
+              <ChevronDown
+                size={16}
+                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo2 ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo2 ? 'block' : 'hidden md:block'}`}>
               <li>
-                <Link to="/hoerbuecher" onClick={() => handleMenuClick('Hörbuch-Übersicht')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/hoerbuecher" onClick={() => handleMenuClick('Hörbuch-Übersicht')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Hörbuch-Übersicht
                 </Link>
               </li>
               <li>
-                <Link to="/hoerbuch/schmetterling" onClick={() => handleMenuClick('Der Schmetterling')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/hoerbuch/schmetterling" onClick={() => handleMenuClick('Der Schmetterling')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Der Schmetterling (Trauer &amp; Trost)
                 </Link>
               </li>
               <li>
-                <Link to="/hoerbuch/mensch_sein" onClick={() => handleMenuClick('Mensch sein')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/hoerbuch/mensch_sein" onClick={() => handleMenuClick('Mensch sein')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Mensch sein (Mut zum Echtsein)
                 </Link>
               </li>
               <li>
-                <Link to="/premium" onClick={() => handleMenuClick('Premium Mediathek')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/premium" onClick={() => handleMenuClick('Premium Mediathek')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Premium Mediathek (ab 1,99 €)
                 </Link>
               </li>
               <li>
-                <Link to="/app" onClick={() => handleMenuClick('Android App')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/app" onClick={() => handleMenuClick('Android App')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Android App im Play Store
                 </Link>
               </li>
@@ -304,33 +336,43 @@ export default function Layout() {
           </div>
 
           {/* Silo 3: Wissen & Philosophie */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-              Wissen &amp; Vision
-            </h4>
-            <ul className="space-y-2 text-xs">
+          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
+            <button
+              type="button"
+              onClick={() => toggleFooterSilo('silo3')}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
+            >
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+                Wissen &amp; Vision
+              </h4>
+              <ChevronDown
+                size={16}
+                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo3 ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo3 ? 'block' : 'hidden md:block'}`}>
               <li>
-                <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" onClick={() => handleMenuClick('Unsere Vision: Warum kein Abo?')} className="text-[var(--accent)] hover:underline transition-colors font-medium">
+                <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" onClick={() => handleMenuClick('Unsere Vision: Warum kein Abo?')} className="text-[var(--accent)] hover:underline transition-colors font-medium block py-0.5">
                   Unsere Vision (Warum kein Abo?)
                 </Link>
               </li>
               <li>
-                <Link to="/wissen" onClick={() => handleMenuClick('Nervensystem verstehen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/wissen" onClick={() => handleMenuClick('Nervensystem verstehen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Nervensystem verstehen
                 </Link>
               </li>
               <li>
-                <Link to="/rezepte" onClick={() => handleMenuClick('Darm-Hirn-Achse & Ernährung')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/rezepte" onClick={() => handleMenuClick('Darm-Hirn-Achse & Ernährung')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Darm-Hirn-Achse &amp; Ernährung
                 </Link>
               </li>
               <li>
-                <Link to="/blog" onClick={() => handleMenuClick('Blog & Impulse')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/blog" onClick={() => handleMenuClick('Blog & Impulse')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Blog &amp; Impulse
                 </Link>
               </li>
               <li>
-                <Link to="/faq" onClick={() => handleMenuClick('Häufige Fragen (FAQ)')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/faq" onClick={() => handleMenuClick('Häufige Fragen (FAQ)')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Häufige Fragen (FAQ)
                 </Link>
               </li>
@@ -338,43 +380,53 @@ export default function Layout() {
           </div>
 
           {/* Silo 4: Transparenz & Rechtliches */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
-              Recht &amp; Kontakt
-            </h4>
-            <ul className="space-y-2 text-xs">
+          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
+            <button
+              type="button"
+              onClick={() => toggleFooterSilo('silo4')}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
+            >
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
+                Recht &amp; Kontakt
+              </h4>
+              <ChevronDown
+                size={16}
+                className={`text-[var(--text-muted)] transition-transform duration-200 md:hidden ${openFooterSilos.silo4 ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo4 ? 'block' : 'hidden md:block'}`}>
               <li>
-                <Link to="/kontakt" onClick={() => handleMenuClick('Kontakt')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/kontakt" onClick={() => handleMenuClick('Kontakt')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Kontakt &amp; Anfragen
                 </Link>
               </li>
               <li>
-                <Link to="/impressum" onClick={() => handleMenuClick('Impressum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/impressum" onClick={() => handleMenuClick('Impressum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Impressum
                 </Link>
               </li>
               <li>
-                <Link to="/datenschutz" onClick={() => handleMenuClick('Datenschutz')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/datenschutz" onClick={() => handleMenuClick('Datenschutz')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Datenschutzerklärung
                 </Link>
               </li>
               <li>
-                <Link to="/agb" onClick={() => handleMenuClick('AGB')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/agb" onClick={() => handleMenuClick('AGB')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   AGB &amp; Widerruf
                 </Link>
               </li>
               <li>
-                <Link to="/rechtliches" onClick={() => handleMenuClick('Rechtliches')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/rechtliches" onClick={() => handleMenuClick('Rechtliches')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Haftungsausschluss
                 </Link>
               </li>
               <li>
-                <Link to="/versand" onClick={() => handleMenuClick('Versand & Retouren')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/versand" onClick={() => handleMenuClick('Versand & Retouren')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Versand &amp; Retouren
                 </Link>
               </li>
               <li>
-                <Link to="/konto-loeschen" onClick={() => handleMenuClick('Konto löschen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                <Link to="/konto-loeschen" onClick={() => handleMenuClick('Konto löschen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Konto &amp; Daten löschen
                 </Link>
               </li>
