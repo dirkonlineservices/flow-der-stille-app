@@ -1,1 +1,0 @@
-import{j as r}from"./vendor-ui-zAhOhhDm.js";import t from"./ResetPassword-CJDBGbfd.js";import"./vendor-react-B_eEWaqR.js";import"./index-A_MyVfGs.js";import"./vendor-supabase-CWalYZyV.js";function i(){return r.jsx(t,{})}export{i as default};

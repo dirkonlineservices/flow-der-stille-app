@@ -11,7 +11,12 @@ export default function Learn() {
 
   return (
     <div className="space-y-10 w-full max-w-4xl lg:max-w-5xl mx-auto">
-      <SEO title="Leitfaden – Nervensystem verstehen" description="Verstehe das Nervensystem, Sympathikus, Parasympathikus und den Vagusnerv." />
+      <SEO 
+        title="Nervensystem verstehen: Sympathikus, Parasympathikus & Vagusnerv – Flow der Stille" 
+        description="Erfahre, wie dein Nervensystem tickt: Sympathikus, Parasympathikus und Vagusnerv einfach erklärt. Praktische Impulse für mehr Gelassenheit und Stressregulation."
+        canonicalUrl="https://flow-der-stille.de/wissen"
+        keywords="Nervensystem verstehen, Vagusnerv stimulieren, Parasympathikus aktivieren, Sympathikus beruhigen, Nervensystem regulieren, Darm-Hirn-Achse, Stressregulation, vegetatives Nervensystem, Polyvagal-Theorie, Jacqueline Schmetzer, Flow der Stille"
+      />
       <header className="text-center sm:text-left">
         <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--color-accent-primary)]">Wissen &amp; Praxis</span>
         <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[var(--color-text-main)] mt-1 mb-3">{t('learn.title')}</h1>

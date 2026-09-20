@@ -225,7 +225,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-      <SEO title="Einloggen" description="Melde dich bei deinem Flow der Stille Account an." />
+      <SEO title="Einloggen" description="Melde dich bei deinem Flow der Stille Account an." noindex={true} />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

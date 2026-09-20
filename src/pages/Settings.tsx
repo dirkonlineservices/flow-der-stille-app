@@ -504,7 +504,7 @@ export default function Settings() {
         </div>
       )}
       
-      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." />
+      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." noindex={true} />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="text-[var(--color-accent-primary)] w-8 h-8" />

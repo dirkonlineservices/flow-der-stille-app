@@ -371,7 +371,12 @@ export default function AtemChat() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-alt)] text-[var(--color-text-main)] flex flex-col antialiased">
-      <SEO title="Geführte Atemübungen" description="Beruhige dein Nervensystem durch sanfte Atemführung." />
+      <SEO 
+        title="Atemraum – Interaktive geführte Atemübungen – Flow der Stille" 
+        description="Interaktive Atemführung im Atemraum: 4-7-8 Technik, Box-Atmung und intuitive Atemübungen für sofortige Entlastung bei Stress und Panik." 
+        canonicalUrl="https://flow-der-stille.de/atemchat"
+        keywords="Interaktive Atemübung, Atemraum, 4-7-8 Atmung online, Atemführung, Beruhigung bei Panik, Stress sofort abbauen, Flow der Stille Atemchat"
+      />
       {/* Top Quiet Navbar */}
       <header id="quiet-header" className="sticky top-0 bg-[var(--color-bg-alt)]/90 backdrop-blur-md border-b border-[var(--color-border-main)] z-30 py-4 px-6 md:px-10 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

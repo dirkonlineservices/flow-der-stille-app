@@ -464,11 +464,24 @@ export default function AudiobookPage() {
     }
   };
 
+  const bookCanonicalUrl = `https://flow-der-stille.de/hoerbuch/${isMenschSein ? 'mensch_sein' : 'schmetterling'}`;
+  const bookSeoTitle = isMenschSein 
+    ? 'Hörbuch: Vom Überleben zum Mensch sein – Flow der Stille' 
+    : 'Hörbuch: Wenn der Schmetterling dem Wind vertraut – Flow der Stille';
+  const bookSeoDesc = isMenschSein
+    ? "Hörbuch 'Vom Überleben zum Mensch sein' von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Dein Wegweiser für Mut zum Echtsein, Selbstakzeptanz und emotionale Befreiung."
+    : "Hörbuch 'Wenn der Schmetterling dem Wind vertraut' von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Trost, Hoffnung und Loslassen bei Trauer und Neuanfang.";
+  const bookKeywords = isMenschSein
+    ? "Hörbuch Vom Überleben zum Mensch sein, Mut zum Echtsein, Jacqueline Schmetzer, Lisa Ragusa, Trauma heilen, Selbstliebe Hörbuch, Hörbuch Persönlichkeitsentwicklung, Flow der Stille"
+    : "Hörbuch Wenn der Schmetterling dem Wind vertraut, Hörbuch Trauerbewältigung, Loslassen lernen, Hoffnung bei Verlust, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille";
+
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title={`${title} – Flow der Stille`}
-        description="Ganzheitliches Hörbuch über innere Verwandlung und Achtsamkeit von Jacqueline Schmetzer."
+        title={bookSeoTitle}
+        description={bookSeoDesc}
+        canonicalUrl={bookCanonicalUrl}
+        keywords={bookKeywords}
         image={coverImage}
         schemaJson={audiobookSchema}
       />

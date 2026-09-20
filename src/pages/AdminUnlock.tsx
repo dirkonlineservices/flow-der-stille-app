@@ -522,7 +522,7 @@ export default function AdminUnlock() {
   if (authChecking) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-        <SEO title="Adminbereich wird geladen..." description="Berechtigungsprüfung" />
+        <SEO title="Adminbereich wird geladen..." description="Berechtigungsprüfung" noindex={true} />
         <Loader2 className="w-10 h-10 text-[var(--accent)] animate-spin mb-4" />
         <p className="text-sm text-[var(--text-muted)] font-medium">Berechtigung wird geprüft...</p>
       </div>
@@ -532,7 +532,7 @@ export default function AdminUnlock() {
   if (!isAdmin) {
     return (
       <div className="max-w-md mx-auto my-16 p-8 bg-[var(--bg-card)] rounded-3xl border border-red-200 dark:border-red-900/40 text-center shadow-lg">
-        <SEO title="Zugriff verweigert" description="Adminbereich geschützt" />
+        <SEO title="Zugriff verweigert" description="Adminbereich geschützt" noindex={true} />
         <div className="w-16 h-16 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <ShieldAlert size={32} />
         </div>
@@ -555,7 +555,7 @@ export default function AdminUnlock() {
   if (!isSessionUnlocked) {
     return (
       <div className="py-8 px-4 font-sans min-h-[75vh] flex flex-col justify-center">
-        <SEO title="Admin-Sicherheitsprüfung" description="Biometrie- & 2FA-Schutz für Admins" />
+        <SEO title="Admin-Sicherheitsprüfung" description="Biometrie- & 2FA-Schutz für Admins" noindex={true} />
         <div className="max-w-md mx-auto mb-3 w-full text-left">
           <Link
             to="/premium-dashboard"
@@ -575,7 +575,7 @@ export default function AdminUnlock() {
 
   return (
     <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto py-8 sm:py-12 px-4 space-y-8 font-sans transition-all duration-300">
-      <SEO title="Admin-Bereich – Statistiken & Freischaltungen" description="Internes Verwaltungszentrum für Flow der Stille" />
+      <SEO title="Admin-Bereich – Statistiken & Freischaltungen" description="Internes Verwaltungszentrum für Flow der Stille" noindex={true} />
 
       {/* TOP BAR / NAVIGATION */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-6">

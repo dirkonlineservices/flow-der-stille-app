@@ -42,7 +42,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[75vh] py-12 px-4 bg-[var(--bg-main)] font-sans">
-      <SEO title="Passwort vergessen" description="Setze dein Passwort zurück, um dich wieder anzumelden." />
+      <SEO title="Passwort vergessen" description="Setze dein Passwort zurück, um dich wieder anzumelden." noindex={true} />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

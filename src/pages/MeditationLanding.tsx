@@ -133,6 +133,8 @@ export default function MeditationLanding() {
       <SEO
         title="Geführte Meditationen für innere Ruhe & Nervensystem – Flow der Stille"
         description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Jetzt kostenlos reinhören ohne Abo."
+        canonicalUrl="https://flow-der-stille.de/meditation"
+        keywords="Geführte Meditation, Meditation Herzöffnung, Meditation Innere Ruhe, Meditation Nervensystem, Vagusnerv beruhigen, geführte Meditation Deutsch, Stressabbau Meditation, Loslassen lernen, Lisa Ragusa Meditation, Jacqueline Schmetzer, Meditation ohne Abo, Flow der Stille"
       />
 
       <audio

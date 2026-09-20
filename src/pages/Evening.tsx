@@ -7,7 +7,12 @@ import SEO from '../components/SEO';
 export default function Evening() {
   return (
     <div className="space-y-12">
-      <SEO title="Abendliche Entspannung" description="Bereite deinen Körper und Geist sanft auf einen erholsamen Schlaf vor. Abendroutine." />
+      <SEO 
+        title="Abendritual & Einschlafhilfe – Sanft zur Ruhe kommen – Flow der Stille" 
+        description="Bereite Körper und Nervensystem auf tiefen Schlaf vor. Abendroutine, PMR Muskelentspannung und geführte Selbsthypnose zum Einschlafen." 
+        canonicalUrl="https://flow-der-stille.de/abend"
+        keywords="Abendroutine, Einschlafhilfe, Besser schlafen, Abendmeditation, PMR Einschlafen, Gedanken loslassen vor dem Schlafen, Flow der Stille"
+      />
       <header className="mb-12">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
           <ArrowLeft size={16} />

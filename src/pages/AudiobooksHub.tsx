@@ -115,8 +115,10 @@ export default function AudiobooksHub() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-20 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title="Die Hörbuch-Welt von Flow der Stille – Achtsamkeit, Trost & Innere Ruhe"
-        description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten, die dein Nervensystem sanft entspannen."
+        title="Hörbücher für Achtsamkeit, Trost & Innere Ruhe – Flow der Stille"
+        description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten über Wandel, Loslassen und echtes Menschsein. Kapitel 1 jetzt kostenlos anhören."
+        keywords="Hörbuch Achtsamkeit, Hörbuch Loslassen, Hörbuch Trost und Trauer, Der Tag an dem der Schmetterling erwachte, Mut zum Echtsein, Jacqueline Schmetzer Hörbuch, Lisa Ragusa Hörbuch, Hörbuch Nervensystem, Hörbuch Einschlafen, spirituelles Hörbuch, Hörbuch Lebenskrise bewältigen, Flow der Stille Hörbuch"
+        image="/images/products/cover_schmetterling.jpg"
       />
 
       {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek. bzw. 45 Sek. Gast) */}

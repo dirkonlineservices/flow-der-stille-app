@@ -16,7 +16,7 @@ export default function Danke() {
 
   return (
     <div className="max-w-2xl mx-auto py-20 px-4 text-center">
-      <SEO title="Danke" description="Vielen Dank für deine Anfrage bei Flow der Stille." />
+      <SEO title="Danke" description="Vielen Dank für deine Anfrage bei Flow der Stille." noindex={true} />
       
       <motion.div 
         initial={{ opacity: 0, y: 20 }}

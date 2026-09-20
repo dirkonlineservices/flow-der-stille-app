@@ -166,7 +166,8 @@ export default function AudioSessionPage() {
       <SEO
         title={`${title} – Kostenlos anhören & freischalten`}
         description={`${description} Gesprochen von Lisa Ragusa. Jetzt bei Flow der Stille anhören.`}
-        keywords="kostenlose Selbsthypnose, kostenlose Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa Ragusa, Jacqueline Schmetzer"
+        canonicalUrl={`https://flow-der-stille.de/audio/${id}`}
+        keywords={`${title}, ${category}, kostenlose Selbsthypnose, kostenlose Meditation, geführte Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille`}
         schemaJson={schemaJson}
       />
 

@@ -32,7 +32,12 @@ export default function RecipeDetail() {
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
-      <SEO title={recipe.title} description={recipe.desc} />
+      <SEO 
+        title={`${recipe.title} – Flow der Stille`} 
+        description={recipe.desc} 
+        canonicalUrl={`https://flow-der-stille.de/rezepte/${id}`}
+        keywords={`${recipe.title}, Nervennahrung, Rezept Nervensystem, gesunde Ernährung, Flow der Stille`}
+      />
       <Link to="/rezepte" className="inline-flex items-center gap-2 text-sm text-[var(--color-accent-primary)] hover:underline mb-6 font-medium">
         <ArrowLeft size={16} /> Zurück zur Übersicht
       </Link>

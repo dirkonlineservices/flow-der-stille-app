@@ -192,7 +192,12 @@ export default function ExerciseDetail() {
 
   return (
     <div className="w-full max-w-4xl lg:max-w-5xl mx-auto pb-12">
-      <SEO title={t(exercise.translationKeyTitle)} description={`Detailansicht für die Übung: ${t(exercise.translationKeyTitle)}`} />
+      <SEO 
+        title={`${exercise ? t(exercise.translationKeyTitle) : 'Übung'} – Flow der Stille`} 
+        description={exercise ? t(exercise.translationKeyDesc) : 'Achtsamkeitsübung für dein Nervensystem.'} 
+        canonicalUrl={`https://flow-der-stille.de/uebungen/${id}`}
+        keywords={`${exercise ? t(exercise.translationKeyTitle) : ''}, Atemübung, Nervensystem beruhigen, Achtsamkeit, Flow der Stille`}
+      />
       {/* 1. Guided Player View overlay / fullscreen panel */}
       <AnimatePresence>
         {isActive && (

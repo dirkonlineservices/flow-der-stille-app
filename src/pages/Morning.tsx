@@ -11,6 +11,7 @@ export default function Morning() {
         title="Morgenritual & Morgenmeditation – Vagusnerv-Aktivierung" 
         description="Starte gestärkt in den Tag mit deinem persönlichen Morgenritual: Vagusnerv-Aktivierung, sanfte Atemarbeit und geführte Morgenmeditation von Jacqueline Schmetzer." 
         keywords="Morgenritual, Morgenmeditation, Vagusnerv aktivieren, Atemübung Morgen, Achtsamkeit Tagesstart, Stressreduktion, Flow der Stille"
+        canonicalUrl="https://flow-der-stille.de/morgen"
         schemaJson={{
           "@context": "https://schema.org",
           "@type": "Article",

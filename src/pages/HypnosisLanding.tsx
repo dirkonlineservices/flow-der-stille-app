@@ -133,6 +133,8 @@ export default function HypnosisLanding() {
       <SEO
         title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen – Flow der Stille"
         description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen – 100% werbe- & abofrei."
+        canonicalUrl="https://flow-der-stille.de/selbsthypnose"
+        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu programmieren, Hypnose Einschlafhilfe, Hypnose MP3 ohne Abo, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille"
       />
 
       <audio

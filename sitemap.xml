@@ -1,98 +1,282 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- 1. STARTSEITE & HAUPT-HUBS -->
   <url>
     <loc>https://flow-der-stille.de/</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/learn</loc>
-    <lastmod>2026-06-21</lastmod>
+    <loc>https://flow-der-stille.de/hoerbuecher</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/exercises</loc>
-    <lastmod>2026-06-21</lastmod>
+    <loc>https://flow-der-stille.de/meditation</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/recipes</loc>
-    <lastmod>2026-06-21</lastmod>
+    <loc>https://flow-der-stille.de/selbsthypnose</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/shop</loc>
-    <lastmod>2026-06-21</lastmod>
+    <loc>https://flow-der-stille.de/hoerproben</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/premium</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 2. HÖRBÜCHER DETAILSEITEN -->
+  <url>
+    <loc>https://flow-der-stille.de/hoerbuch/schmetterling</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/hoerbuch/mensch_sein</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 3. EINZELNE AUDIO-SESSIONS & MEDITATIONEN -->
+  <url>
+    <loc>https://flow-der-stille.de/audio/meditation_zur_herzoeffnung</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/meditation_innere_ruhe</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/meditation_loslassen</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/selbsthypnose_besser_und_erholsamer_schlaf</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/selbshypnose_mehr_selbsbewusstsein_&amp;_inneres_vertrauen</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/selbsthypnose_fokus&amp;konzentration</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/selbsthypnose_ernaehrung</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/audio/pmr_muskelentspannung</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- 4. PRAXIS & INTERAKTIVES -->
+  <url>
+    <loc>https://flow-der-stille.de/uebungen</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/uebungen/guided-breathing</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/uebungen/478-breathing</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/uebungen/box-breathing</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/uebungen/pmr</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/uebungen/neck-stretches</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://flow-der-stille.de/atemchat</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/morgen</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/evening</loc>
-    <lastmod>2026-06-21</lastmod>
+    <loc>https://flow-der-stille.de/abend</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- 5. ERNÄHRUNG & DARM-HIRN-ACHSE -->
   <url>
-    <loc>https://flow-der-stille.de/contact</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
+    <loc>https://flow-der-stille.de/rezepte</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/rezepte/golden_milk</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/rezepte/salad</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/rezepte/omega</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 6. WISSEN, APP, FAQ & BLOG -->
+  <url>
+    <loc>https://flow-der-stille.de/wissen</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/app</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/faq</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/blog</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/blog/herzkohaerenz-herz-und-verstand</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/blog/innere-ruhe-im-alltag</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/blog/parasympathikus-aktivieren</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 7. RECHTLICHES & KONTAKT -->
+  <url>
+    <loc>https://flow-der-stille.de/kontakt</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://flow-der-stille.de/impressum</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/datenschutz</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/agb</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/rechtliches</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/versand</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/rueckgaberichtlinie</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://flow-der-stille.de/onlinewiderruf</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://flow-der-stille.de/online-widerruf</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 
 </urlset>

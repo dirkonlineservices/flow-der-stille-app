@@ -1,10 +1,12 @@
 import React from 'react';
 import { Mail, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 export default function DataDeletion() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-200 font-sans flex flex-col justify-center items-center p-6">
+      <SEO title="Konto & Daten löschen" description="Anforderung zur Kontolöschung bei Flow der Stille." noindex={true} />
       <div className="max-w-md w-full text-center">
         <h1 className="text-3xl md:text-4xl font-serif text-white mb-8 tracking-tight">Konto & Daten unwiderruflich löschen</h1>
         

@@ -355,6 +355,7 @@ export default function SoundSamplesLanding() {
         title="Kostenlose Meditation & kostenlose Selbsthypnose – Hörproben | Flow der Stille"
         description="Entdecke kostenlose Meditationen und geführte Selbsthypnosen zum sofortigen Anhören. Von Jacqueline Schmetzer, gesprochen von Lisa Ragusa – ohne Abo, ohne Risiko."
         keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation kostenlos anhören, Selbsthypnose Hörprobe, Meditation zum Einschlafen, Herzöffnung, innerer Frieden, Lisa Ragusa Sprecherin, Jacqueline Schmetzer, Flow der Stille Audio"
+        canonicalUrl="https://flow-der-stille.de/hoerproben"
         image="/images/products/cover_herzoeffnung.jpg"
         schemaJson={schemaJson}
       />

@@ -27,6 +27,8 @@ export default function AppDownload() {
       <SEO 
         title="Flow der Stille App – Android App im Google Play Store" 
         description="Lade die offizielle Flow der Stille Android App herunter. Achtsamkeit, Atemübungen & Meditationen direkt auf deinem Smartphone."
+        canonicalUrl="https://flow-der-stille.de/app"
+        keywords="Flow der Stille App, Meditation Android App, Einschlafhilfe App, Achtsamkeit App kostenlos, Vagusnerv App, Atemübungen Android, Meditation offline hören, Google Play Store"
       />
 
       <header className="text-center space-y-3">

@@ -12,7 +12,12 @@ export default function Exercises() {
 
   return (
     <div className="space-y-8">
-      <SEO title="Übungen" description="Achtsamkeitsübungen und Atemtechniken zur Entspannung." />
+      <SEO 
+        title="Atemübungen & Entspannungstechniken für das Nervensystem – Flow der Stille" 
+        description="Geführte Atemübungen wie 4-7-8 Atmung, Box-Breathing und Progressive Muskelentspannung (PMR). Beruhige dein Nervensystem in wenigen Minuten."
+        canonicalUrl="https://flow-der-stille.de/uebungen"
+        keywords="Atemübungen, 4-7-8 Atmung, Box-Atmung, Box-Breathing, PMR Muskelentspannung, Progressive Muskelrelaxation, Atemtechnik Stressabbau, Zwerchfellatmung, Nervensystem beruhigen, Entspannung im Alltag, Flow der Stille"
+      />
       <header className="mb-8">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
           <ArrowLeft size={16} />

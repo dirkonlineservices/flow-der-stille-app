@@ -30,8 +30,10 @@ export default function Blog() {
   return (
     <main className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] py-12 px-4 sm:px-6 lg:px-8">
       <SEO 
-        title="Blog & Impulse | Flow der Stille" 
-        description="Inspirationen, geführte Meditationen und Wege zu mehr innerer Ruhe." 
+        title="Blog & Impulse für Achtsamkeit und Nervensystem – Flow der Stille" 
+        description="Inspirationen, Übungen und Impulse für innere Ruhe, Vagusnerv-Aktivierung und Gelassenheit im Alltag von Jacqueline Schmetzer." 
+        canonicalUrl="https://flow-der-stille.de/blog"
+        keywords="Achtsamkeit Blog, Meditation Impulse, Vagusnerv Blog, Nervensystem regulieren, Stress bewältigen, Herzkohärenz, Flow der Stille Blog"
       />
       <div className="max-w-5xl mx-auto">
         <header className="mb-16 text-center">

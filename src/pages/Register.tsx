@@ -331,7 +331,7 @@ export default function Register() {
   if (isSubmitted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
+        <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." noindex={true} />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -360,7 +360,7 @@ export default function Register() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-      <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
+      <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." noindex={true} />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

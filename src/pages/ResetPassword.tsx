@@ -149,7 +149,7 @@ export default function ResetPassword() {
   if (sessionChecking) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Passwort zurücksetzen" description="Lege dein neues Passwort fest." />
+        <SEO title="Passwort zurücksetzen" description="Lege dein neues Passwort fest." noindex={true} />
         <div className="w-full max-w-md bg-[var(--bg-card)] p-8 rounded-3xl shadow-md border border-[var(--border)] text-center">
           <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin mx-auto mb-4" />
           <p className="text-sm text-[var(--text-muted)]">Sicherheitsprüfung läuft...</p>
@@ -162,7 +162,7 @@ export default function ResetPassword() {
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Passwort geändert" description="Dein neues Passwort wurde erfolgreich gespeichert." />
+        <SEO title="Passwort geändert" description="Dein neues Passwort wurde erfolgreich gespeichert." noindex={true} />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -190,7 +190,7 @@ export default function ResetPassword() {
   if (!hasValidSession) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Link abgelaufen" description="Der Link zum Zurücksetzen des Passworts ist abgelaufen." />
+        <SEO title="Link abgelaufen" description="Der Link zum Zurücksetzen des Passworts ist abgelaufen." noindex={true} />
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -226,7 +226,7 @@ export default function ResetPassword() {
   // Reguläres Formular zum Setzen des neuen Passworts
   return (
     <div className="flex flex-col items-center justify-center min-h-[75vh] py-12 px-4 bg-[var(--bg-main)] font-sans">
-      <SEO title="Neues Passwort setzen" description="Lege dein neues Passwort fest." />
+      <SEO title="Neues Passwort setzen" description="Lege dein neues Passwort fest." noindex={true} />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}

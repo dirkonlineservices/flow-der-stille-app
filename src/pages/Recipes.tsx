@@ -46,7 +46,12 @@ export default function Recipes() {
 
   return (
     <div className="space-y-12">
-      <SEO title="Ernährung" description="Ernährung und Balance für ein entspanntes Nervensystem." />
+      <SEO 
+        title="Ernährung & Nervensystem: Rezepte für Darm-Hirn-Achse – Flow der Stille" 
+        description="Nervennahrung und gesunde Rezepte: Wie die Darm-Hirn-Achse dein Nervensystem beruhigt. Goldene Milch, Omega-3 und mikrobiomfreundliche Ernährung." 
+        canonicalUrl="https://flow-der-stille.de/rezepte"
+        keywords="Ernährung Nervensystem, Darm-Hirn-Achse, Nervennahrung, Goldene Milch Rezept, Vagusnerv Ernährung, Mikrobiom Stressabbau, Anti-Stress Ernährung, Flow der Stille Rezepte"
+      />
       <header className="mb-8">
         <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">Ernährung & Balance</h1>
         <p className="text-[var(--color-text-muted)] max-w-2xl">

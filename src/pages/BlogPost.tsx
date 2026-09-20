@@ -52,7 +52,12 @@ export default function BlogPostDetail() {
 
   return (
     <main className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] py-20 px-4 sm:px-6">
-      <SEO title={`${post.title} | Flow der Stille`} description={post.excerpt} />
+      <SEO 
+        title={`${post.title} | Flow der Stille`} 
+        description={post.excerpt} 
+        canonicalUrl={`https://flow-der-stille.de/blog/${slug}`}
+        keywords={`${post.title}, Achtsamkeit, Vagusnerv, Flow der Stille Blog`}
+      />
       <article className="max-w-3xl mx-auto">
         <Link
           to="/blog"
