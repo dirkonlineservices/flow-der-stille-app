@@ -1,28 +1,38 @@
 import { useEffect, useState } from 'react';
-import { getSupabase } from '../lib/supabaseClient';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { checkUserCanAuthorBlog } from '../lib/adminSecurity';
 import { trackEditorOpen } from '../lib/analytics';
 
 export function AdminTools() {
   const [isAuthor, setIsAuthor] = useState(false);
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    let isMounted = true;
 
-  async function checkUser() {
-    try {
-      const supabase = getSupabase();
-      const { data: { user } } = await supabase.auth.getUser();
-      // Allow author role or any logged in user / admin for easy testing
-      if (user?.user_metadata?.role === 'author' || user?.email || true) {
-        setIsAuthor(true);
-      }
-    } catch {
-      setIsAuthor(true);
+    if (!isAuthenticated || !user) {
+      setIsAuthor(false);
+      return;
     }
-  }
+
+    checkUserCanAuthorBlog(user.id, user.email)
+      .then((canAuthor) => {
+        if (isMounted) {
+          setIsAuthor(canAuthor);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setIsAuthor(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user, isAuthenticated]);
 
   // Only show on blog tab (/blog or /blog/)
   const isBlogTab = location.pathname === '/blog' || location.pathname === '/blog/';

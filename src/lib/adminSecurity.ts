@@ -129,6 +129,50 @@ export async function checkUserIsAdmin(userId?: string | null, userEmail?: strin
   }
 }
 
+/**
+ * Prüft ob ein Nutzer berechtigt ist, Blogbeiträge zu verfassen oder zu editieren.
+ * Berechtigt sind ausschließlich:
+ * 1. Admins (über checkUserIsAdmin: bekannte Admin-E-Mails oder profiles.rolle = 'admin')
+ * 2. Freigeschaltete Autoren (profiles.rolle = 'author' / 'autor' oder role in user_metadata)
+ * Unangemeldete Besucher erhalten immer false.
+ */
+export async function checkUserCanAuthorBlog(userId?: string | null, userEmail?: string | null): Promise<boolean> {
+  if (!userId && !userEmail) return false;
+
+  // 1. Admin-Prüfung
+  const isAdmin = await checkUserIsAdmin(userId, userEmail);
+  if (isAdmin) return true;
+
+  if (!userId) return false;
+
+  // 2. Rollenprüfung in Supabase profiles (z.B. author / autor)
+  try {
+    const supabase = getSupabase();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('rolle')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const role = profile?.rolle?.toLowerCase();
+    if (role === 'author' || role === 'admin' || role === 'autor') {
+      return true;
+    }
+
+    // 3. User Metadata
+    const { data: { user } } = await supabase.auth.getUser();
+    const metaRole = (user?.user_metadata?.role || user?.app_metadata?.role)?.toLowerCase();
+    if (metaRole === 'author' || metaRole === 'admin' || metaRole === 'autor') {
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    console.warn('[AdminSecurity] Fehler bei Author-Prüfung:', err);
+    return false;
+  }
+}
+
 export const isAdminSessionVerified = (): boolean => {
   if (typeof window === 'undefined') return false;
   const verifiedAt = sessionStorage.getItem('fds_admin_verified_timestamp');

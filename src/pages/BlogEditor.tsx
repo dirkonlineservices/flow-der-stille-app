@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
 import { trackPostCreation, trackImageUpload, trackEditorOpen } from '../lib/analytics';
-import { useNavigate } from 'react-router-dom';
-import { Image, Loader2, ArrowLeft } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Image, Loader2, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { checkUserCanAuthorBlog } from '../lib/adminSecurity';
+import SEO from '../components/SEO';
 
 export default function BlogEditor() {
+  const { user, isAuthenticated } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('Herzkompass');
   const [readTime, setReadTime] = useState('5 Min.');
-  const [isAuthor, setIsAuthor] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [lastUploadedImage, setLastUploadedImage] = useState<string | null>(null);
   
@@ -17,20 +22,41 @@ export default function BlogEditor() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    trackEditorOpen();
-    checkUser();
-  }, []);
+    let isMounted = true;
 
-  async function checkUser() {
-    const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.user_metadata?.role === 'author' || user?.email?.includes('admin')) {
-      setIsAuthor(true);
-    } else {
-      // Allow author or testing access if needed, or redirect back to blog
-      setIsAuthor(true); // relaxed for preview/testing unless strictly required
+    async function verify() {
+      if (!isAuthenticated || !user) {
+        if (isMounted) {
+          setIsAuthorized(false);
+          setIsCheckingAuth(false);
+        }
+        return;
+      }
+
+      try {
+        const canAuthor = await checkUserCanAuthorBlog(user.id, user.email);
+        if (isMounted) {
+          setIsAuthorized(canAuthor);
+          setIsCheckingAuth(false);
+          if (canAuthor) {
+            trackEditorOpen();
+          }
+        }
+      } catch (err) {
+        console.warn('[BlogEditor] Fehler bei Berechtigungsprüfung:', err);
+        if (isMounted) {
+          setIsAuthorized(false);
+          setIsCheckingAuth(false);
+        }
+      }
     }
-  }
+
+    verify();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user, isAuthenticated]);
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -88,11 +114,15 @@ export default function BlogEditor() {
 
   async function handlePublish(e: React.FormEvent) {
     e.preventDefault();
+    if (!isAuthorized || !user) {
+      alert('Keine Berechtigung zum Veröffentlichen.');
+      return;
+    }
+
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     
     const supabase = getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id || 'anonymous';
+    const userId = user.id;
 
     const { error } = await supabase
       .from('blog_posts')
@@ -108,8 +138,41 @@ export default function BlogEditor() {
     }
   }
 
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
+        <SEO title="Berechtigung prüfen – Flow der Stille" description="Blog Editor" noindex={true} />
+        <Loader2 className="w-8 h-8 text-[var(--accent)] animate-spin mb-4" />
+        <p className="text-sm text-[var(--text-muted)] font-medium">Berechtigung wird geprüft...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="max-w-md mx-auto my-16 p-8 bg-[var(--bg-card)] rounded-3xl border border-red-200 dark:border-red-900/40 text-center shadow-lg">
+        <SEO title="Zugriff verweigert – Flow der Stille" description="Blog-Editor geschützt" noindex={true} />
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <ShieldAlert size={32} />
+        </div>
+        <h2 className="text-2xl font-serif font-bold text-[var(--text-main)] mb-2">Zugriff verweigert</h2>
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+          Das Verfassen von Blogbeiträgen ist ausschließlich für autorisierte Administratoren und freigeschaltete Autoren reserviert. Bitte melde dich mit einem berechtigten Konto an.
+        </p>
+        <Link
+          to="/blog"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--accent)] text-white text-xs font-semibold rounded-2xl hover:bg-[var(--accent-hover)] transition-all shadow-md"
+        >
+          <ArrowLeft size={16} />
+          <span>Zurück zum Blog</span>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto py-20 px-4 sm:px-6">
+      <SEO title="Neuen Impuls verfassen – Flow der Stille" description="Blog Editor für Autoren" noindex={true} />
       <button 
         onClick={() => navigate('/blog')}
         className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] mb-8 transition-colors"
