@@ -5,7 +5,7 @@ import {
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift, User
+  ShieldCheck, Gift, User, Heart, Sparkles
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -232,76 +232,169 @@ export default function Layout() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-col items-center justify-center gap-3 transition-all duration-300">
-        {/* Primäre Hauptlinks */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {[
-            { to: '/contact', label: 'Kontakt', isButton: true },
-            { to: '/klangproben', label: 'Klangproben' },
-            { to: '/app', label: 'Android App' },
-            { to: '/faq', label: 'FAQ' },
-            { to: '/impressum', label: 'Impressum' },
-            { to: '/datenschutz', label: 'Datenschutz' },
-            { to: '/agb', label: 'AGB' },
-            { to: '/rechtliches', label: 'Rechtliches' },
-            { to: '/konto-loeschen', label: 'Konto löschen' }
-          ].map((link) => (
-            link.isButton ? (
-              <Link
-                key={link.to}
-                to={link.to}
-                onClick={() => handleMenuClick(link.label)}
-                className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
-              >
-                {link.label}
-              </Link>
-            ) : (
-              <Link 
-                key={link.to} 
-                to={link.to} 
-                onClick={() => handleMenuClick(link.label)}
-                className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
-              >
-                {link.label}
-              </Link>
-            )
-          ))}
+      {/* ─── SEO-OPTIMIERTER LINK-JUICE FOOTER (4 THEMEN-SILOS) ─── */}
+      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-10 pt-8 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] transition-all duration-300">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-left">
+          {/* Silo 1: Kostenlose Angebote & Praxis */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+              Kostenlose Praxis
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/meditation" onClick={() => handleMenuClick('Kostenlose Meditation')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Kostenlose Meditation
+                </Link>
+              </li>
+              <li>
+                <Link to="/selbsthypnose" onClick={() => handleMenuClick('Kostenlose Selbsthypnose')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Kostenlose Selbsthypnose
+                </Link>
+              </li>
+              <li>
+                <Link to="/hoerproben" onClick={() => handleMenuClick('Kostenlose Hörproben')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Kostenlose Hörproben
+                </Link>
+              </li>
+              <li>
+                <Link to="/uebungen" onClick={() => handleMenuClick('Atemübungen & Vagusnerv')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Atemübungen &amp; Vagusnerv
+                </Link>
+              </li>
+              <li>
+                <Link to="/atemchat" onClick={() => handleMenuClick('Interaktiver Atemraum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Interaktiver Atemraum
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Silo 2: Hörbücher & Mediathek */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+              Hörbücher &amp; Audio
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/hoerbuecher" onClick={() => handleMenuClick('Hörbuch-Übersicht')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Hörbuch-Übersicht
+                </Link>
+              </li>
+              <li>
+                <Link to="/hoerbuch/schmetterling" onClick={() => handleMenuClick('Der Schmetterling')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Der Schmetterling (Trauer &amp; Trost)
+                </Link>
+              </li>
+              <li>
+                <Link to="/hoerbuch/mensch_sein" onClick={() => handleMenuClick('Mensch sein')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Mensch sein (Mut zum Echtsein)
+                </Link>
+              </li>
+              <li>
+                <Link to="/premium" onClick={() => handleMenuClick('Premium Mediathek')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Premium Mediathek (ab 1,99 €)
+                </Link>
+              </li>
+              <li>
+                <Link to="/app" onClick={() => handleMenuClick('Android App')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Android App im Play Store
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Silo 3: Wissen & Philosophie */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
+              Wissen &amp; Vision
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" onClick={() => handleMenuClick('Unsere Vision: Warum kein Abo?')} className="text-[var(--accent)] hover:underline transition-colors font-medium">
+                  Unsere Vision (Warum kein Abo?)
+                </Link>
+              </li>
+              <li>
+                <Link to="/wissen" onClick={() => handleMenuClick('Nervensystem verstehen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Nervensystem verstehen
+                </Link>
+              </li>
+              <li>
+                <Link to="/rezepte" onClick={() => handleMenuClick('Darm-Hirn-Achse & Ernährung')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Darm-Hirn-Achse &amp; Ernährung
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" onClick={() => handleMenuClick('Blog & Impulse')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Blog &amp; Impulse
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" onClick={() => handleMenuClick('Häufige Fragen (FAQ)')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Häufige Fragen (FAQ)
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Silo 4: Transparenz & Rechtliches */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
+              Recht &amp; Kontakt
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <Link to="/kontakt" onClick={() => handleMenuClick('Kontakt')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Kontakt &amp; Anfragen
+                </Link>
+              </li>
+              <li>
+                <Link to="/impressum" onClick={() => handleMenuClick('Impressum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Impressum
+                </Link>
+              </li>
+              <li>
+                <Link to="/datenschutz" onClick={() => handleMenuClick('Datenschutz')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Datenschutzerklärung
+                </Link>
+              </li>
+              <li>
+                <Link to="/agb" onClick={() => handleMenuClick('AGB')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  AGB &amp; Widerruf
+                </Link>
+              </li>
+              <li>
+                <Link to="/rechtliches" onClick={() => handleMenuClick('Rechtliches')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Haftungsausschluss
+                </Link>
+              </li>
+              <li>
+                <Link to="/versand" onClick={() => handleMenuClick('Versand & Retouren')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Versand &amp; Retouren
+                </Link>
+              </li>
+              <li>
+                <Link to="/konto-loeschen" onClick={() => handleMenuClick('Konto löschen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+                  Konto &amp; Daten löschen
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        {/* Dezent unter AGB: Akkordeon für Versand & Retouren (Merchant Center & rechtssicher) */}
-        <details className="text-center group cursor-pointer">
-          <summary className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors list-none select-none inline-flex items-center gap-1 opacity-70 hover:opacity-100 font-medium">
-            <span>Shop-, Versand- &amp; Retouren-Richtlinien</span>
-            <span className="text-[9px] transition-transform group-open:rotate-180">▾</span>
-          </summary>
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[10px] text-[var(--text-muted)] animate-fadeIn">
-            <Link 
-              to="/versand" 
-              onClick={() => handleMenuClick('Versand & Lieferung')}
-              className="hover:text-[var(--text-main)] hover:underline"
-            >
-              Versand &amp; Lieferung
-            </Link>
-            <span>•</span>
-            <Link 
-              to="/rueckgaberichtlinie" 
-              onClick={() => handleMenuClick('Rückgaberichtlinie')}
-              className="hover:text-[var(--text-main)] hover:underline"
-            >
-              Rückgaberichtlinie
-            </Link>
-            <span>•</span>
-            <Link 
-              to="/online-widerruf" 
-              onClick={() => handleMenuClick('Online-Widerruf')}
-              className="hover:text-[var(--text-main)] hover:underline"
-            >
-              Online-Widerruf
-            </Link>
+        {/* Bottom Bar: Copyright & Herzensprojekt */}
+        <div className="pt-6 border-t border-[var(--border)]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-[var(--text-muted)]">
+          <div className="flex items-center gap-2">
+            <img src="/logo-transparent.png" alt="Flow der Stille Logo" className="w-5 h-5 object-contain" />
+            <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa &amp; Dirk Schmetzer</span>
           </div>
-        </details>
-        <ProductDisclaimerTrigger />
+          <div className="flex items-center gap-3">
+            <Link to="/kontakt" className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-semibold hover:opacity-90 transition shadow-xs">
+              Kontakt aufnehmen
+            </Link>
+            <ProductDisclaimerTrigger />
+          </div>
+        </div>
       </footer>
 
       {/* Slide-Up Menü (Drawer) für Mobil & Desktop "Mehr" */}
@@ -433,7 +526,7 @@ export default function Layout() {
                   </Link>
                 )}
 
-                {/* Hörbücher-Themenseite (Für alle Nutzer freigeschaltet) */}
+                {/* Hörbücher-Themenseite */}
                 <Link
                   to="/hoerbuecher"
                   onClick={() => handleMenuClick('Hörbücher')}
@@ -448,6 +541,59 @@ export default function Layout() {
                       <span className="text-[9px] bg-[var(--accent)] text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Neu</span>
                     </div>
                     <div className="text-xs text-[var(--text-muted)]">Die Hörbuch-Welt von Flow der Stille</div>
+                  </div>
+                </Link>
+
+                {/* Kostenlose Meditationen */}
+                <Link
+                  to="/meditation"
+                  onClick={() => handleMenuClick('Kostenlose Meditationen')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <Heart size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
+                      <span>Meditationen</span>
+                      <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Gratis</span>
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Kostenlose Meditation &amp; Herzöffnung</div>
+                  </div>
+                </Link>
+
+                {/* Kostenlose Selbsthypnose */}
+                <Link
+                  to="/selbsthypnose"
+                  onClick={() => handleMenuClick('Kostenlose Selbsthypnose')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <Moon size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
+                      <span>Selbsthypnose</span>
+                      <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Gratis</span>
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Kostenlose Selbsthypnose &amp; Schlaf</div>
+                  </div>
+                </Link>
+
+                {/* Blog & Vision */}
+                <Link
+                  to="/blog"
+                  onClick={() => handleMenuClick('Blog & Impulse')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <Sparkles size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
+                      <span>Blog &amp; Vision</span>
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Warum kein Abo? Unsere Mission</div>
                   </div>
                 </Link>
 

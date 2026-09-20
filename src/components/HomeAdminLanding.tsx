@@ -172,7 +172,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
             Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
             Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – für 
-            <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
+            <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>. 
+            <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" className="text-[var(--accent)] hover:underline font-semibold ml-1.5 inline-flex items-center gap-0.5">
+              Unsere Vision lesen →
+            </Link>
           </span>
         </div>
 
@@ -350,11 +353,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           {/* Kategorie 1: Meditationen */}
           <div className="p-5 sm:p-6 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] transition-all flex flex-col justify-between h-full shadow-2xs group">
             <div>
-              <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                🧘‍♀️ Geführte Meditationen
-              </h3>
+              <Link to="/meditation" className="block group-hover:text-[var(--accent)] transition-colors">
+                <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
+                  🧘‍♀️ Geführte Meditationen
+                </h3>
+              </Link>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Herzkompass, Loslassen &amp; Innere Ruhe (Lisa Ragusa)
+                Kostenlose Meditation zur Herzöffnung, Loslassen &amp; Innere Ruhe (Lisa Ragusa)
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -374,10 +379,11 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                   <span>Probe hören</span>
                 </Link>
                 <Link
-                  to="/premium?filter=Meditation"
+                  to="/meditation"
                   className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                  title="Kostenlose Meditationen ansehen & anhören"
                 >
-                  Ansehen
+                  Meditationen
                 </Link>
               </div>
             </div>
@@ -386,11 +392,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           {/* Kategorie 2: Selbsthypnosen */}
           <div className="p-5 sm:p-6 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] transition-all flex flex-col justify-between h-full shadow-2xs group">
             <div>
-              <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                🌀 Selbsthypnosen
-              </h3>
+              <Link to="/selbsthypnose" className="block group-hover:text-[var(--accent)] transition-colors">
+                <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
+                  🌀 Selbsthypnosen
+                </h3>
+              </Link>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Tiefer Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung
+                Kostenlose Selbsthypnose für Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -410,10 +418,11 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                   <span>Probe hören</span>
                 </Link>
                 <Link
-                  to="/premium?filter=Selbsthypnose"
+                  to="/selbsthypnose"
                   className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shrink-0 shadow-xs text-center"
+                  title="Kostenlose Selbsthypnosen ansehen & anhören"
                 >
-                  Ansehen
+                  Selbsthypnose
                 </Link>
               </div>
             </div>

@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { BlogPost } from '../lib/blog';
+import { BlogPost, BLOG_POSTS } from '../data/blogPosts';
 import { BlogCard } from '../components/BlogCard';
 import SEO from '../components/SEO';
 
 export default function Blog() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch('/api/blog')
       .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setPosts(data);
         }
-        setLoading(false);
       })
-      .catch((err) => {
-        console.error('Failed to fetch blog posts:', err);
-        setLoading(false);
+      .catch(() => {
+        // Fallback: BLOG_POSTS bereits aktiv
       });
   }, []);
 

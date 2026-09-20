@@ -30,6 +30,173 @@ var import_bcryptjs = __toESM(require("bcryptjs"), 1);
 var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
 var import_cookie_parser = __toESM(require("cookie-parser"), 1);
 var import_genai = require("@google/genai");
+
+// src/data/blogPosts.ts
+var BLOG_POSTS = [
+  {
+    slug: "warum-flow-der-stille-kostenlose-meditation-ohne-abo",
+    title: "Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen",
+    date: "2026-09-20",
+    excerpt: "Warum wir Flow der Stille gegr\xFCndet haben: Kostenlose Meditationen und Selbsthypnosen f\xFCr alle, bewusster Verzicht auf teure Monats-Abos und wie wir mit Herzblut und KI-Unterst\xFCtzung faire Entspannung schaffen.",
+    category: "Herzensprojekt",
+    readTime: "7 Min.",
+    content: `# Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen
+
+In einer Welt, die immer schneller, lauter und fordernder wird, ist innere Ruhe zu einem seltenen Gut geworden. Fast jeder Mensch kennt Momente von Ersch\xF6pfung, innerer Getriebenheit, Schlafproblemen oder emotionalen Krisen. Doch wer heute nach gef\xFChrten Meditationen oder mentaler Unterst\xFCtzung sucht, st\xF6\xDFt fast immer auf dieselben H\xFCrden: **teure Monats-Abos, aggressive Werbeunterbrechungen mitten in der Entspannung und unpers\xF6nliche Gro\xDFplattformen**.
+
+Wir wollten das nicht l\xE4nger hinnehmen. Genau deshalb haben wir \u2013 **Jacqueline, Lisa und Dirk** \u2013 das Herzensprojekt **Flow der Stille** ins Leben gerufen.
+
+---
+
+## Die Entstehung: Vom Herzenswunsch zur gelebten Plattform
+
+Die Idee zu Flow der Stille entstand im **M\xE4rz 2026** aus langen Gespr\xE4chen und pers\xF6nlichen Erfahrungen. Wir sp\xFCrten den tiefen Wunsch, einen gesch\xFCtzten, ehrlichen Raum f\xFCr Achtsamkeit, Vagusnerv-Regulation und tiefe Regeneration zu schaffen. Nach Monaten intensiver Vorbereitung, dem Verfassen eigener Meditationstexte und Tonaufnahmen ging Flow der Stille im **August/September 2026** ganz offiziell an den Start.
+
+Hinter Flow der Stille steht kein anonymer Konzern oder Investor, sondern drei Menschen, die ihre Talente vereinen:
+
+* **Jacqueline Schmetzer:** Sie schreibt alle Meditationen, Selbsthypnosen, H\xF6rbuchmanuskripte und \xDCbungskonzepte von Hand mit tiefem Fachwissen und gro\xDFem Einf\xFChlungsverm\xF6gen.
+* **Lisa Ragusa:** Mit ihrer unverwechselbar warmen, beruhigenden Menschenstimme spricht sie unsere Meditationen, Selbsthypnosen und ganzheitlichen H\xF6rb\xFCcher ein \u2013 voller Gef\xFChl und Pr\xE4senz.
+* **Dirk Schmetzer:** Er k\xFCmmert sich um die technische Entwicklung der Web-Plattform und Android App sowie die meditative klangliche Untermalung.
+
+---
+
+## Unser oberstes Ziel: Kostenlose Meditation & Selbsthypnose als sofortige Hilfe
+
+Wenn jemand unter akutem Stress steht, nachts nicht einschlafen kann, mit Panikgef\xFChlen k\xE4mpft oder Trauer durchlebt, darf Hilfe nicht an einer Paywall oder Kreditkartenabfrage scheitern.
+
+Deshalb ist unser Versprechen unumst\xF6\xDFlich: **Kernelemente unserer Plattform sind und bleiben 100 % kostenlos zug\xE4nglich.**
+
+* **[Kostenlose Meditationen](/meditation):** Unsere gef\xFChrte *Meditation zur Herz\xF6ffnung* (\xFCber 16 Minuten) steht jedem Menschen sofort und ohne H\xFCrden offen.
+* **[Kostenlose Selbsthypnose & Einschlafhilfe](/selbsthypnose):** Bewusste Trance-Impulse, um das vegetative Nervensystem herunterzufahren und erholsamen Tiefschlaf zu finden.
+* **[Kostenlose Klang- & H\xF6rproben](/hoerproben):** Zu jedem Audioangebot kannst du vorab ausf\xFChrlich und ungest\xF6rt reinh\xF6ren.
+* **[Atem\xFCbungen & Vagusnerv-Praxis](/uebungen):** Wissenschaftlich erprobte Techniken wie die *4-7-8 Atmung*, *Box-Atmung* und *Progressive Muskelentspannung (PMR)* stehen dir jederzeit zur Verf\xFCgung.
+* **[Interaktiver Atemraum](/atemchat):** Ein ruhiger digitaler Begleiter f\xFCr die akute Entlastung bei Stressspitzen.
+
+Wir m\xF6chten Menschen genau in den Lebensphasen abholen, in denen sie Beistand und Erdung am dringendsten brauchen.
+
+---
+
+## Warum wir bewusst auf Abomodelle verzichten
+
+G\xE4ngige Meditations-Apps verlangen oft zwischen 60 und 100 Euro pro Jahr im Dauer-Abo. Vergisst man die K\xFCndigung, verl\xE4ngert sich der Vertrag automatisch. K\xFCndigt man, verliert man augenblicklich jeglichen Zugriff auf seine Lieblingsinhalte.
+
+Kostenlose Plattformen wie YouTube finanzieren sich dagegen \xFCber Werbeclips \u2013 wer m\xF6chte schon mitten in einer tiefen Trance von einem lauten Werbespot aufgeschreckt werden?
+
+Bei **Flow der Stille** gehen wir einen radikal fairen Weg:
+1. **Kein Abo-Zwang:** Du zahlst niemals monatliche oder j\xE4hrliche Geb\xFChren.
+2. **Faire Einzelpreise ab 1,99 \u20AC:** Du kaufst nur genau die Meditation oder Selbsthypnose, die dich anspricht.
+3. **Dauerhafter Zugriff:** Solange du dein kostenloses Kundenkonto bei uns hast, kannst du deine erworbenen Audios immer und \xFCberall abrufen.
+4. **100 % Werbefrei:** Keine Unterbrechungen, keine Pop-ups, keine st\xF6rende Bannerwerbung w\xE4hrend deiner Auszeit.
+
+---
+
+## Volle Transparenz: Wie wir KI-Tools als kreative Helfer einsetzen
+
+Uns ist absolute Ehrlichkeit gegen\xFCber unserer Community wichtig: Wie schaffen wir es, professionell produzierte H\xF6rinhalte f\xFCr 1,99 \u20AC anzubieten, wenn ein herk\xF6mmliches Tonstudio, Komponisten und externe Agenturen Tausende von Euro kosten w\xFCrden?
+
+Die Antwort lautet: **Smarter, transparenter Technologie-Einsatz.**
+
+* **Texte & Skripte:** Sind zu 100 % Originalwerke von Jacqueline Schmetzer \u2013 von Hand geschrieben und fundiert recherchiert.
+* **Sprecherstimme:** Wird von Lisa Ragusa mit echter menschlicher Herzensw\xE4rme eingesprochen \u2013 keine gef\xFChllose Roboterstimme.
+* **Klangwelten & App-Entwicklung:** Wir nutzen moderne KI-gest\xFCtzte Tools gezielt, um beruhigende Hintergrundfrequenzen, meditative Klangteppiche und Softwarearchitekturen effizient zu realisieren.
+
+Dadurch sparen wir astronomische Fremdkosten ein. Und anstatt diesen Vorteil als Gewinn einzustreichen, geben wir ihn eins zu eins an dich weiter: in Form von extrem g\xFCnstigen Preisen und kostenlosen Angeboten f\xFCr alle.
+
+---
+
+## Ausblick: Neue H\xF6rb\xFCcher und Vertiefungen in Arbeit
+
+Flow der Stille w\xE4chst von Tag zu Tag. Neben unseren beliebten H\xF6rb\xFCchern:
+* **[Wenn der Schmetterling dem Wind vertraut](/hoerbuch/schmetterling):** Unser ber\xFChrendes Werk \xFCber Trauerbew\xE4ltigung, Loslassen und Neuanfang.
+* **[Vom \xDCberleben zum Mensch sein](/hoerbuch/mensch_sein):** Ein mutiger Wegbegleiter f\xFCr Selbstakzeptanz, Traumaheilung und innere Befreiung.
+
+arbeiten wir bereits mit Hochdruck an **weiteren ganzheitlichen H\xF6rb\xFCchern**, neuen **gef\xFChrten Meditationen** und spezialisierten **Selbsthypnosen**.
+
+---
+
+## Werde Teil unserer Pionier-Gemeinschaft
+
+Da wir erst im August/September 2026 gestartet sind, ist jeder einzelne Nutzer f\xFCr uns ein wertvoller Weggef\xE4hrte der ersten Stunde. Du kannst unsere Arbeit unterst\xFCtzen, indem du dich [kostenlos registrierst](/registrieren), unsere [Android App im Play Store](/app) herunterl\xE4dst oder Flow der Stille Menschen empfiehlst, die gerade eine Pause f\xFCr ihre Seele brauchen.
+
+Danke, dass du Teil unserer Reise bist. M\xF6gest du in deinem Alltag immer wieder den Weg in deinen eigenen Flow der Stille finden.
+
+*Jacqueline, Lisa und Dirk*`
+  },
+  {
+    slug: "herzkohaerenz-herz-und-verstand",
+    title: "Herz-Koh\xE4renz: Wenn Herz und Verstand im Einklang schwingen",
+    date: "2026-07-28",
+    excerpt: "Entdecke, wie gezielte Herzratenvariabilit\xE4t und koh\xE4rentes Atmen dein emotionales Gleichgewicht st\xE4rken und deine Intuition sch\xE4rfen.",
+    category: "Herzkompass",
+    readTime: "5 Min.",
+    content: `# Herz-Koh\xE4renz: Wenn Herz und Verstand im Einklang schwingen
+
+Das Herz sendet weit mehr Signale an das Gehirn, als es von ihm empf\xE4ngt. Wenn wir in einen Zustand der Herz-Koh\xE4renz gelangen, arbeiten Herz, Atmung und Gehirn in einem harmonischen Rhythmus zusammen.
+
+## Was passiert bei der Koh\xE4renz?
+
+In Koh\xE4renz zu sein bedeutet nicht einfach passive Entspannung. Es ist ein Zustand optimaler physiologischer Funktionsf\xE4higkeit:
+- Der Blutdruck stabilisiert sich.
+- Die Herzratenvariabilit\xE4t (HRV) wird ausgeglichen und harmonisch.
+- Das vegetative Nervensystem schaltet in den Regenerationsmodus.
+- Der Geist wird klar, ruhig und fokussiert.
+
+## Eine einfache \xDCbung f\xFCr den Tag
+
+1. Lege eine Hand sanft auf deinen Brustraum (Herzzentrum).
+2. Atme langsam und gleichm\xE4\xDFig: 5 Sekunden tief ein, 5 Sekunden sanft aus.
+3. Stelle dir vor, wie der Atem direkt durch dein Herz ein- und ausstr\xF6mt.
+
+Sp\xFCre nach wenigen Minuten, wie sich innere Weite und Ruhe ausbreiten. Begleitend dazu hilft dir unsere kostenlose [Meditation zur Herz\xF6ffnung](/meditation).`
+  },
+  {
+    slug: "innere-ruhe-im-alltag",
+    title: "Innere Ruhe im Gedankenkarussell finden",
+    date: "2026-07-15",
+    excerpt: "Gedanken kreisen unaufh\xF6rlich? Mit diesen einfachen Schritten stoppen Sie den mentalen \xDCberfluss und finden zu klarer Pr\xE4senz.",
+    category: "Achtsamkeit",
+    readTime: "6 Min.",
+    content: `# Innere Ruhe im Gedankenkarussell finden
+
+Kennst du das Gef\xFChl, wenn abends im Bett die To-Do-Liste des n\xE4chsten Tages durch den Kopf rast? Gedanken sind oft wie vorbeiziehende Wolken \u2013 wir machen den Fehler, uns an sie zu h\xE4ngen und sie f\xFCr bare M\xFCnze zu nehmen.
+
+## Beobachten statt bewerten
+
+Anstatt gegen kreisende Gedanken anzuk\xE4mpfen, betrachte sie wie ein neutraler Beobachter:
+
+1. **Denke bewusst benennen:** Sage dir innerlich: *"Da ist der Gedanke an das Meeting morgen."*
+2. **K\xF6rper sp\xFCren:** Nimm einen tiefen Atemzug in den Bauch und sp\xFCre den Kontakt deiner F\xFC\xDFe zum Boden.
+3. **Loslassen:** Lass den Gedanken wie ein Blatt auf einem Fluss weitertreiben.
+
+Stille ist kein Zustand, den man k\xFCnstlich erzwingen muss \u2013 sie ist bereits da, sobald der mentale L\xE4rm zur Ruhe kommt. Vertiefe diese Ruhe mit unserer [Selbsthypnose f\xFCr erholsamen Schlaf](/selbsthypnose).`
+  },
+  {
+    slug: "parasympathikus-aktivieren",
+    title: "Den Parasympathikus im Alltag aktivieren",
+    date: "2026-07-01",
+    excerpt: "Erfahren Sie, wie Sie durch gezielte Atemtechniken Ihr Nervensystem beruhigen und tiefen Stress abbauen k\xF6nnen.",
+    category: "Wissenschaft & Praxis",
+    readTime: "4 Min.",
+    content: `# Den Parasympathikus im Alltag aktivieren
+
+In unserer modernen, schnelllebigen Welt ist unser sympathisches Nervensystem oft im Dauereinsatz. Wir stehen unter Strom, Termindruck und st\xE4ndiger Reiz\xFCberflutung. 
+
+## Die physiologische Kraft der verl\xE4ngerten Ausatmung
+
+Der schnellste und biologisch wirksamste Weg, den Parasympathikus (unseren k\xF6rpereigenen Ruhenerv) zu aktivieren, ist die Verl\xE4ngerung der Ausatmung:
+
+Wenn du doppelt so lange ausatmest wie du einatmest, sinkt die Herzfrequenz und der Vagusnerv sch\xFCttet Botenstoffe aus, die den Blutdruck senken und Stresshormone abbauen.
+
+### Die 4-8 Technik:
+- Setze dich aufrecht und bequem hin.
+- Atme 4 Sekunden lang sanft durch die Nase ein.
+- Atme 8 Sekunden lang langsam und kontrolliert durch leicht ge\xF6ffnete Lippen aus.
+
+Wiederhole diesen Zyklus 5-mal. Mehr praktische Anleitungen findest du in unserem Bereich f\xFCr [Atem\xFCbungen & Praxis](/uebungen).`
+  }
+];
+
+// server.ts
 var app = (0, import_express.default)();
 var PORT = 3e3;
 var JWT_SECRET = process.env.JWT_SECRET || "dev-secret-key";
@@ -249,6 +416,16 @@ app.get("/api/recipes/current", (req, res) => {
   const weekIndex = currentWeek % 2 || 1;
   const recipes = db.prepare("SELECT * FROM weekly_recipes WHERE week_number = ?").all(weekIndex);
   res.json(recipes);
+});
+app.get("/api/blog", (_req, res) => {
+  res.json(BLOG_POSTS);
+});
+app.get("/api/blog/:slug", (req, res) => {
+  const post = BLOG_POSTS.find((p) => p.slug === req.params.slug);
+  if (!post) {
+    return res.status(404).json({ error: "Beitrag nicht gefunden" });
+  }
+  res.json(post);
 });
 app.post("/api/chat", authenticateToken, async (req, res) => {
   const { messages } = req.body;

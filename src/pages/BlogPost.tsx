@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { BlogPost } from '../lib/blog';
+import { BlogPost, getBlogPostBySlug } from '../data/blogPosts';
 import { ArrowLeft, Clock, Calendar } from 'lucide-react';
 import SEO from '../components/SEO';
 import ReactMarkdown from 'react-markdown';
@@ -8,25 +8,32 @@ import { BlogCta } from '../components/BlogCta';
 
 export default function BlogPostDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState<BlogPost | null>(() => (slug ? getBlogPostBySlug(slug) || null : null));
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
+    const localPost = getBlogPostBySlug(slug);
+    if (localPost) {
+      setPost(localPost);
+      setError(false);
+    }
     fetch(`/api/blog/${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
       .then((data) => {
-        setPost(data);
-        setLoading(false);
+        if (data && data.title) {
+          setPost(data);
+          setError(false);
+        }
       })
-      .catch((err) => {
-        console.error(err);
-        setError(true);
-        setLoading(false);
+      .catch(() => {
+        if (!localPost) {
+          setError(true);
+        }
       });
   }, [slug]);
 
