@@ -6,39 +6,64 @@
   },
   "entries": [
     {
-      "identifier": "https://flow-der-stille.de/meditation",
+      "identifier": "urn:air:flow-der-stille.de:content:meditation",
       "displayName": "Kostenlose Meditationen",
       "description": "Geführte Meditationen zur Herzöffnung, inneren Ruhe und Stressreduktion von Jacqueline Schmetzer.",
-      "type": "text/html",
-      "url": "https://flow-der-stille.de/meditation"
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://flow-der-stille.de/llms.txt",
+      "representativeQueries": [
+        "kostenlose Meditationen anhören",
+        "Meditation zur Herzöffnung",
+        "Atempausen und innere Ruhe"
+      ]
     },
     {
-      "identifier": "https://flow-der-stille.de/selbsthypnose",
+      "identifier": "urn:air:flow-der-stille.de:content:selbsthypnose",
       "displayName": "Kostenlose Selbsthypnosen",
       "description": "Wissenschaftlich fundierte Selbsthypnosen für tiefen Schlaf, Loslassen, Selbstvertrauen und gesunden Lebensstil.",
-      "type": "text/html",
-      "url": "https://flow-der-stille.de/selbsthypnose"
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://flow-der-stille.de/llms.txt",
+      "representativeQueries": [
+        "Selbsthypnose für tiefen Schlaf",
+        "Selbsthypnose zum Einschlafen",
+        "Fokus und Selbstvertrauen stärken"
+      ]
     },
     {
-      "identifier": "https://flow-der-stille.de/hoerbuecher",
+      "identifier": "urn:air:flow-der-stille.de:content:hoerbuecher",
       "displayName": "Achtsamkeits-Hörbücher",
-      "description": "Hörbuch-Edition mit 'Mensch sein' und 'Der Schmetterling, der nicht fliegen konnte'.",
-      "type": "text/html",
-      "url": "https://flow-der-stille.de/hoerbuecher"
+      "description": "Transformative Hörbuch-Edition: 'Mensch sein' und 'Der Schmetterling, der nicht fliegen konnte'.",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://flow-der-stille.de/llms.txt",
+      "representativeQueries": [
+        "Hörbuch Mensch sein anhören",
+        "Achtsamkeits Hörbücher",
+        "Der Schmetterling der nicht fliegen konnte"
+      ]
     },
     {
-      "identifier": "https://flow-der-stille.de/uebungen",
-      "displayName": "Atemübungen & Entspannung",
+      "identifier": "urn:air:flow-der-stille.de:interactive:atmen",
+      "displayName": "Atemübungen & Vagusnerv",
       "description": "Interaktive Atemübungen (4-7-8 Atmung, Box-Atmung) und Progressive Muskelentspannung (PMR).",
-      "type": "text/html",
-      "url": "https://flow-der-stille.de/uebungen"
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://flow-der-stille.de/llms.txt",
+      "representativeQueries": [
+        "4-7-8 Atemübung online machen",
+        "Vagusnerv aktivieren und beruhigen",
+        "Progressive Muskelentspannung PMR"
+      ]
     },
     {
-      "identifier": "https://flow-der-stille.de/pakete",
+      "identifier": "urn:air:flow-der-stille.de:commerce:pakete",
       "displayName": "Pakete & Angebote",
       "description": "100 % abofreie Modelle: Freier Gast-Zugang, kostenloses Hörer-Konto und faire Einmalkäufe per Magic Link.",
-      "type": "text/html",
-      "url": "https://flow-der-stille.de/pakete"
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://flow-der-stille.de/llms.txt",
+      "representativeQueries": [
+        "Flow der Stille Preise",
+        "Meditation ohne Abo",
+        "Kostenloses Hörer-Konto"
+      ]
     }
   ]
 }
