@@ -57,7 +57,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
-import CartSidebar from './components/CartSidebar';
+const CartSidebar = lazy(() => import('./components/CartSidebar'));
 import ScrollToTop from './components/ScrollToTop';
 import { TransactionErrorOverlay } from './components/TransactionErrorOverlay';
 import CookieBanner from './components/CookieBanner';
@@ -125,7 +125,9 @@ export default function App() {
             <BrowserRouter>
               <ScrollToTop />
               <ReferralCapture />
-              <CartSidebar />
+              <Suspense fallback={null}>
+                <CartSidebar />
+              </Suspense>
               <TransactionErrorOverlay />
               <CookieBanner />
               <ErrorBoundary>

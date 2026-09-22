@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
@@ -455,27 +454,19 @@ export default function Layout() {
       </footer>
 
       {/* Slide-Up Menü (Drawer) für Mobil & Desktop "Mehr" */}
-      <AnimatePresence>
-        {isSlideUpOpen && (
-          <div className="fixed inset-0 z-[100] flex items-end justify-center">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsSlideUpOpen(false)}
-              className="absolute inset-0 bg-black/50 backdrop-blur-xs"
-            />
+      {isSlideUpOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setIsSlideUpOpen(false)}
+            className="absolute inset-0 bg-black/50 transition-opacity duration-200"
+          />
 
-            {/* Slide-Up Content Card */}
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-              className="relative w-full max-w-xl bg-[var(--bg-card)] border-t border-[var(--border)] rounded-t-3xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto text-[var(--text-main)] flex flex-col gap-6"
-              onClick={e => e.stopPropagation()}
-            >
+          {/* Slide-Up Content Card */}
+          <div
+            className="relative w-full max-w-xl bg-[var(--bg-card)] border-t border-[var(--border)] rounded-t-3xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto text-[var(--text-main)] flex flex-col gap-6 animate-in slide-in-from-bottom duration-250 ease-out"
+            onClick={e => e.stopPropagation()}
+          >
               {/* Drag Indicator Handle */}
               <div className="w-12 h-1.5 bg-[var(--border)] rounded-full mx-auto -mt-2 opacity-60" />
 
@@ -794,10 +785,9 @@ export default function Layout() {
                 </div>
               </div>
 
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
 
       <AdminTools />
       <NewContentNotification />

@@ -17,7 +17,11 @@
     <!-- 🚀 Web Fonts Preload: Vermeidet Verkettung kritischer Anfragen & eliminiert Layout Shifts (CLS) -->
     <link rel="preload" href="/fonts/inter-v20-latin-regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/cormorant-garamond-v21-latin-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/cormorant-garamond-v21-latin-700.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/inter-v20-latin-600.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- ⚡ LCP Preload: Lädt das Haupt-Hero-Logo sofort parallel zu HTML/Fonts -->
+    <link rel="preload" href="/logo-transparent.png" as="image" type="image/png" fetchpriority="high" />
 
     <!-- 🤖 KI-Agenten & ARD (Agentic Resource Discovery) Manifests für Lighthouse -->
     <link rel="ai-catalog" href="/.well-known/ai-catalog.json" type="application/json" />

@@ -56,8 +56,12 @@ export default function CookieBanner() {
     };
 
     purgeExternalBanners();
-    const timer = setInterval(purgeExternalBanners, 300);
-    return () => clearInterval(timer);
+    const timer1 = setTimeout(purgeExternalBanners, 800);
+    const timer2 = setTimeout(purgeExternalBanners, 2000);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, []);
 
   useEffect(() => {
@@ -293,7 +297,7 @@ export default function CookieBanner() {
   // B) WEB GATE (2 Schritte: Web-Cookies & Datenschutz -> Web-Haftungsausschluss)
   // =====================================================================================
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 overflow-y-auto">
       <div className="rounded-2xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 border relative overflow-hidden my-auto bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-main)]">
         {/* Accent top bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--accent)]"></div>
