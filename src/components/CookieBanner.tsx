@@ -20,7 +20,14 @@ export default function CookieBanner() {
   const publicRoutes = ['/datenschutz', '/impressum', '/agb', '/rechtliches'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+  // 🚀 Synchron initialisieren: Verhindert CLS (Layout Shift) durch nachträgliches Aufpoppen nach Paint
+  const [isVisible, setIsVisible] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const isPublic = ['/datenschutz', '/impressum', '/agb', '/rechtliches'].includes(window.location.pathname);
+    if (isPublic) return false;
+    const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY) || localStorage.getItem(COOKIE_STORAGE_KEY);
+    return !storedConsent;
+  });
   const [showAccordion, setShowAccordion] = useState<boolean>(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [disclaimerChecked, setDisclaimerChecked] = useState<boolean>(false);
@@ -286,8 +293,8 @@ export default function CookieBanner() {
   // B) WEB GATE (2 Schritte: Web-Cookies & Datenschutz -> Web-Haftungsausschluss)
   // =====================================================================================
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="rounded-2xl shadow-2xl max-w-2xl w-full p-8 border relative overflow-hidden transition-all my-8 bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-main)]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
+      <div className="rounded-2xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 border relative overflow-hidden my-auto bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-main)]">
         {/* Accent top bar */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--accent)]"></div>
 

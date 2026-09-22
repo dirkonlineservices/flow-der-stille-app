@@ -50,10 +50,13 @@ export function AppDownloadBanner() {
             title="Flow der Stille im Google Play Store öffnen"
           >
             <img 
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png" 
+              src="/images/google-play-badge.png" 
               alt="Jetzt bei Google Play" 
               width="150" 
+              height="58"
               className="h-11 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
             />
           </a>
 

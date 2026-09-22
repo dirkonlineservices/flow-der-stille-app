@@ -4,19 +4,13 @@ import { X, Star } from 'lucide-react';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.flowderstille.de';
 
 export default function SmartAppBanner() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // 1. Nicht anzeigen wenn wir bereits in der nativen App (Capacitor WebView) sind
-    const isNative = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
-    if (isNative) return;
-
-    // 2. Nicht anzeigen wenn der Nutzer ihn in dieser Sitzung bereits geschlossen hat
-    const isDismissed = sessionStorage.getItem('fds_smart_banner_dismissed') === 'true';
-    if (isDismissed) return;
-
-    setIsVisible(true);
-  }, []);
+  // 🚀 Synchron initialisieren: Verhindert, dass der Banner 100ms nach Render den gesamten Inhalt herunterschiebt (CLS)
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const isNative = Boolean((window as any).Capacitor?.isNativePlatform?.());
+    if (isNative) return false;
+    return sessionStorage.getItem('fds_smart_banner_dismissed') !== 'true';
+  });
 
   const handleDismiss = () => {
     setIsVisible(false);
@@ -36,7 +30,7 @@ export default function SmartAppBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="w-full bg-[var(--bg-card)] border-b border-[var(--border)] px-3 py-2.5 flex items-center justify-between gap-3 shadow-xs relative z-50 text-[var(--text-main)] animate-fadeIn">
+    <div className="w-full bg-[var(--bg-card)] border-b border-[var(--border)] px-3 py-2.5 flex items-center justify-between gap-3 shadow-xs relative z-50 text-[var(--text-main)]">
       {/* Schließen Button */}
       <button
         type="button"
@@ -53,6 +47,8 @@ export default function SmartAppBanner() {
           <img
             src="/logo-transparent.png"
             alt="Flow der Stille App Icon"
+            width="40"
+            height="40"
             className="w-full h-full object-contain"
           />
         </div>

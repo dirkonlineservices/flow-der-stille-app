@@ -142,7 +142,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           <img 
             src="/logo-transparent.png" 
             alt="Flow der Stille Logo" 
+            width="80"
+            height="80"
             className="h-16 sm:h-20 md:h-24 w-auto object-contain mx-auto mb-3 drop-shadow-sm transition-transform hover:scale-105" 
+            decoding="async"
           />
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-bold tracking-wider uppercase inline-block">

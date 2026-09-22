@@ -7,10 +7,63 @@
   RewriteRule . /index.html [L]
 </IfModule>
 
+# 🚀 GZIP / Deflate Komprimierung (Reduziert Übertragungsgröße drastisch)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml image/svg+xml font/woff2
+</IfModule>
+
+# ⚡ Browser-Caching & Ablaufzeiten (PageSpeed Insights: "Effiziente Verweildauer im Cache")
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+
+  # Web Fonts (1 Jahr Cache, da statisch)
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+  ExpiresByType application/font-woff "access plus 1 year"
+
+  # Bilder, Icons & Medien
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType audio/mpeg "access plus 1 year"
+
+  # Vite-Assets (Hashes im Dateinamen -> 1 Jahr Cache)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+
+  # HTML & JSON (Kurzer Cache, damit Updates sofort geladen werden)
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
+
 <IfModule mod_headers.c>
+  # assetlinks.json für Android TWA / App Linking
   <Files "assetlinks.json">
     Header set Content-Type "application/json"
     Header set Access-Control-Allow-Origin "*"
   </Files>
-</IfModule>
 
+  # Immutable Cache-Control für gehashte Vite-Assets & Fonts
+  <FilesMatch "\.(woff2|woff|ttf|otf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # HTML niemals dauerhaft cachen
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>

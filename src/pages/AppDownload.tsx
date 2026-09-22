@@ -66,10 +66,13 @@ export default function AppDownload() {
               className="hover:scale-105 transition-transform shrink-0"
             >
               <img 
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png" 
+                src="/images/google-play-badge.png" 
                 alt="Jetzt bei Google Play" 
                 width="220" 
+                height="85"
                 className="h-16 w-auto object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </a>
             <span className="text-xs text-[var(--color-text-muted)]">Für Smartphone-Nutzer</span>

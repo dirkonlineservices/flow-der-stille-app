@@ -181,7 +181,7 @@ export default function Layout() {
         {/* Desktop Sidebar */}
         <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
           <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--bg-alt)] transition-colors shrink-0">
-            <img src="/logo-transparent.png" alt="Logo" className="w-8 h-8" />
+            <img src="/logo-transparent.png" alt="Logo" width="32" height="32" className="w-8 h-8" decoding="async" />
           </Link>
           
           <div className="flex flex-col gap-6 w-full">
@@ -442,7 +442,7 @@ export default function Layout() {
         {/* Bottom Bar: Copyright & Herzensprojekt */}
         <div className="pt-6 border-t border-[var(--border)]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-[var(--text-muted)]">
           <div className="flex items-center gap-2">
-            <img src="/logo-transparent.png" alt="Flow der Stille Logo" className="w-5 h-5 object-contain" />
+            <img src="/logo-transparent.png" alt="Flow der Stille Logo" width="20" height="20" className="w-5 h-5 object-contain" decoding="async" />
             <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa und Dirk</span>
           </div>
           <div className="flex items-center gap-3">
