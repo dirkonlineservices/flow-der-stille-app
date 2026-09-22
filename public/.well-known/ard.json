@@ -1,34 +1,44 @@
 {
-  "schema_version": "1.0",
-  "name": "Flow der Stille",
-  "description": "Plattform & App für geführte Meditationen, Selbsthypnosen, Vagusnerv-Aktivierung und Achtsamkeits-Hörbücher.",
-  "homepage_url": "https://flow-der-stille.de",
-  "documentation_url": "https://flow-der-stille.de/llms.txt",
-  "resources": [
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Flow der Stille",
+    "identifier": "https://flow-der-stille.de"
+  },
+  "entries": [
     {
-      "name": "Kostenlose Meditationen",
-      "uri": "https://flow-der-stille.de/meditation",
-      "type": "content"
+      "identifier": "https://flow-der-stille.de/meditation",
+      "displayName": "Kostenlose Meditationen",
+      "description": "Geführte Meditationen zur Herzöffnung, inneren Ruhe und Stressreduktion von Jacqueline Schmetzer.",
+      "type": "text/html",
+      "url": "https://flow-der-stille.de/meditation"
     },
     {
-      "name": "Kostenlose Selbsthypnosen",
-      "uri": "https://flow-der-stille.de/selbsthypnose",
-      "type": "content"
+      "identifier": "https://flow-der-stille.de/selbsthypnose",
+      "displayName": "Kostenlose Selbsthypnosen",
+      "description": "Wissenschaftlich fundierte Selbsthypnosen für tiefen Schlaf, Loslassen, Selbstvertrauen und gesunden Lebensstil.",
+      "type": "text/html",
+      "url": "https://flow-der-stille.de/selbsthypnose"
     },
     {
-      "name": "Achtsamkeits-Hörbücher",
-      "uri": "https://flow-der-stille.de/hoerbuecher",
-      "type": "content"
+      "identifier": "https://flow-der-stille.de/hoerbuecher",
+      "displayName": "Achtsamkeits-Hörbücher",
+      "description": "Hörbuch-Edition mit 'Mensch sein' und 'Der Schmetterling, der nicht fliegen konnte'.",
+      "type": "text/html",
+      "url": "https://flow-der-stille.de/hoerbuecher"
     },
     {
-      "name": "Atemübungen & Entspannung",
-      "uri": "https://flow-der-stille.de/uebungen",
-      "type": "interactive"
+      "identifier": "https://flow-der-stille.de/uebungen",
+      "displayName": "Atemübungen & Entspannung",
+      "description": "Interaktive Atemübungen (4-7-8 Atmung, Box-Atmung) und Progressive Muskelentspannung (PMR).",
+      "type": "text/html",
+      "url": "https://flow-der-stille.de/uebungen"
     },
     {
-      "name": "Pakete & Angebote",
-      "uri": "https://flow-der-stille.de/pakete",
-      "type": "pricing"
+      "identifier": "https://flow-der-stille.de/pakete",
+      "displayName": "Pakete & Angebote",
+      "description": "100 % abofreie Modelle: Freier Gast-Zugang, kostenloses Hörer-Konto und faire Einmalkäufe per Magic Link.",
+      "type": "text/html",
+      "url": "https://flow-der-stille.de/pakete"
     }
   ]
 }

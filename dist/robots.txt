@@ -29,3 +29,4 @@ Disallow: /blog/new
 Sitemap: https://flow-der-stille.de/sitemap.xml
 # Google Merchant Center Product Feed: https://flow-der-stille.de/google-shopping-feed.xml
 # AI Agent Discovery: https://flow-der-stille.de/llms.txt
+Agentmap: https://flow-der-stille.de/.well-known/ai-catalog.json
