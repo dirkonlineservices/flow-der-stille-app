@@ -104,9 +104,9 @@ export default function PricingPackages() {
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">0 €</span>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">dauerhaft kostenfrei</span>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)] tracking-tight whitespace-nowrap">0 €</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium whitespace-nowrap">dauerhaft kostenfrei</span>
                 </div>
                 <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block mt-0.5 font-medium">
                   Keine E-Mail • Keine Zahlungsdaten
@@ -178,9 +178,9 @@ export default function PricingPackages() {
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">0 €</span>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">dauerhaft kostenfrei</span>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)] tracking-tight whitespace-nowrap">0 €</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium whitespace-nowrap">dauerhaft kostenfrei</span>
                 </div>
                 <span className="text-[11px] text-[var(--accent)] block mt-0.5 font-semibold">
                   Garantiert kein Abo • Keine Zahlungsdaten
@@ -198,14 +198,14 @@ export default function PricingPackages() {
                     <span className="text-[var(--text-main)] font-semibold">
                       Selbsthypnose: Tiefer &amp; erholsamer Schlaf
                     </span>
-                    <span className="text-[10px] font-mono opacity-80">(12:54 Min.)</span>
+                    <span className="text-[10px] font-mono opacity-80 whitespace-nowrap">(12:54 Min.)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart size={14} className="text-[var(--accent)] shrink-0" />
                     <span className="text-[var(--text-main)] font-semibold">
                       Meditation: Zur Herzöffnung &amp; Schutzpanzer ablegen
                     </span>
-                    <span className="text-[10px] font-mono opacity-80">(16:45 Min.)</span>
+                    <span className="text-[10px] font-mono opacity-80 whitespace-nowrap">(16:45 Min.)</span>
                   </div>
                 </div>
               </div>
@@ -268,9 +268,11 @@ export default function PricingPackages() {
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">1,99 € – 4,99 €</span>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">einmalig</span>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="text-2xl sm:text-3xl xl:text-4xl font-bold font-serif text-[var(--text-main)] tracking-tight whitespace-nowrap">
+                    1,99&nbsp;€&nbsp;–&nbsp;4,99&nbsp;€
+                  </span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium whitespace-nowrap">einmalig</span>
                 </div>
                 <span className="text-[11px] text-amber-700 dark:text-amber-300 block mt-0.5 font-semibold">
                   Express-Gastkauf mit PayPal, Apple Pay &amp; Karte
@@ -282,10 +284,10 @@ export default function PricingPackages() {
                 <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
                   <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
                     <span className="flex items-center gap-1.5">
-                      <BookOpen size={13} className="text-amber-600" />
+                      <BookOpen size={13} className="text-amber-600 shrink-0" />
                       <span>Hörbücher (4,99 €)</span>
                     </span>
-                    <span className="text-[10px] font-mono text-[var(--accent)]">58 Min.</span>
+                    <span className="text-[10px] font-mono text-[var(--accent)] shrink-0 whitespace-nowrap">58 Min.</span>
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)]">
                     Ganze Geschichten über Wandel, Loslassen &amp; echtes Menschsein.
@@ -295,10 +297,10 @@ export default function PricingPackages() {
                 <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
                   <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
                     <span className="flex items-center gap-1.5">
-                      <Moon size={13} className="text-indigo-500" />
+                      <Moon size={13} className="text-indigo-500 shrink-0" />
                       <span>Gezielte Selbsthypnosen (1,99 €)</span>
                     </span>
-                    <span className="text-[10px] font-mono text-[var(--accent)]">15 Min.</span>
+                    <span className="text-[10px] font-mono text-[var(--accent)] shrink-0 whitespace-nowrap">15 Min.</span>
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)]">
                     Gesunde Ernährung, Selbstbewusstsein, Fokus &amp; Konzentration.
@@ -308,10 +310,10 @@ export default function PricingPackages() {
                 <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
                   <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
                     <span className="flex items-center gap-1.5">
-                      <Heart size={13} className="text-rose-500" />
+                      <Heart size={13} className="text-rose-500 shrink-0" />
                       <span>Geführte Meditationen (1,99 €)</span>
                     </span>
-                    <span className="text-[10px] font-mono text-[var(--accent)]">16–20 Min.</span>
+                    <span className="text-[10px] font-mono text-[var(--accent)] shrink-0 whitespace-nowrap">16–20 Min.</span>
                   </div>
                   <p className="text-[11px] text-[var(--text-muted)]">
                     Innere Ruhe &amp; Erdung, Inneres Kind, Herzkompass.
@@ -365,20 +367,20 @@ export default function PricingPackages() {
             <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[600px]">
               <thead>
                 <tr className="border-b border-[var(--border)] bg-[var(--bg-alt)]/60 text-[var(--text-main)]">
-                  <th className="p-4 sm:p-5 font-bold">Kriterium</th>
-                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Freier Gast-Zugang</th>
-                  <th className="p-4 sm:p-5 font-bold text-center w-1/4 text-[var(--accent)] bg-[var(--accent)]/10">
+                  <th className="p-4 sm:p-5 font-bold whitespace-nowrap">Kriterium</th>
+                  <th className="p-4 sm:p-5 font-bold text-center w-1/4 whitespace-nowrap">Freier Gast-Zugang</th>
+                  <th className="p-4 sm:p-5 font-bold text-center w-1/4 text-[var(--accent)] bg-[var(--accent)]/10 whitespace-nowrap">
                     Hörer-Konto (0 €)
                   </th>
-                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Einmalkauf (ab 1,99 €)</th>
+                  <th className="p-4 sm:p-5 font-bold text-center w-1/4 whitespace-nowrap">Einmalkauf (ab 1,99 €)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-[var(--text-muted)]">
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Kosten &amp; Gebühren</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-emerald-600">0 € dauerhaft</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-[var(--accent)] bg-[var(--accent)]/5">0 € (Kein Abo)</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-amber-600">Einmalig 1,99 € – 4,99 €</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)] whitespace-nowrap">Kosten &amp; Gebühren</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-emerald-600 whitespace-nowrap">0 € dauerhaft</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-[var(--accent)] bg-[var(--accent)]/5 whitespace-nowrap">0 € (Kein Abo)</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-amber-600 whitespace-nowrap">Einmalig 1,99 € – 4,99 €</td>
                 </tr>
                 <tr>
                   <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Kapitel 1 &amp; Schnupper-Übungen</td>
