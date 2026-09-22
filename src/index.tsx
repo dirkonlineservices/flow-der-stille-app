@@ -51,6 +51,7 @@ const MeditationLanding = lazy(() => import('./pages/MeditationLanding'));
 const HypnosisLanding = lazy(() => import('./pages/HypnosisLanding'));
 const SoundSamplesLanding = lazy(() => import('./pages/SoundSamplesLanding'));
 const AudioSessionPage = lazy(() => import('./pages/AudioSessionPage'));
+const PricingPackages = lazy(() => import('./pages/PricingPackages'));
 
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -225,6 +226,10 @@ export default function App() {
                       <Route path="meditation/:id" element={<AudioSessionPage />} />
                       <Route path="klangproben" element={<SoundSamplesLanding />} />
                       <Route path="hoerproben" element={<SoundSamplesLanding />} />
+                      <Route path="pakete" element={<PricingPackages />} />
+                      <Route path="preise" element={<PricingPackages />} />
+                      <Route path="vorteile" element={<PricingPackages />} />
+                      <Route path="angebote" element={<PricingPackages />} />
 
                       {/* Newsletter */}
                       <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />
