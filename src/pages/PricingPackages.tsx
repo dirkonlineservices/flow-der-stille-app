@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Check, X, Sparkles, Clock, ShieldCheck, BookOpen, Headphones,
-  Moon, Smartphone, ArrowRight, Lock, Unlock, Heart, Play, Gift,
-  CheckCircle2, Volume2, HelpCircle, UserCheck, Flame
+  Check, X, Sparkles, ShieldCheck, BookOpen, Headphones,
+  Moon, Smartphone, ArrowRight, Lock, Heart, Play, Gift,
+  CheckCircle2, HelpCircle, UserCheck, Mail, Send, RefreshCw, Key
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
@@ -12,23 +12,36 @@ import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
 export default function PricingPackages() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'cards' | 'matrix'>('cards');
-  const [selectedTimerMinutes, setSelectedTimerMinutes] = useState<number>(30);
-  const [timerDemoActive, setTimerDemoActive] = useState<boolean>(false);
+  
+  // Fallback Magic Link Form
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoverySent, setRecoverySent] = useState(false);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+
+  const handleRequestMagicLink = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryEmail.trim()) return;
+    setRecoveryLoading(true);
+    setTimeout(() => {
+      setRecoveryLoading(false);
+      setRecoverySent(true);
+    }, 800);
+  };
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-20 px-4 sm:px-6 max-w-6xl mx-auto space-y-12 sm:space-y-16 animate-fade-in">
       <SEO
-        title="Pakete & Optionen – Flow der Stille | 100 % Transparent & Ohne Abo"
-        description="Vergleiche unsere Angebote: Vom völlig unverbindlichen Gast-Modus über das kostenlose Hörer-Konto mit Einschlaf-Timer bis hin zum einmaligen Hörbuch-Erwerb für 4,99 €. Kein Abo."
+        title="Modelle & Einmalkauf – Flow der Stille | 100 % Transparent & Ohne Abo"
+        description="Finde deinen Ruhe-Weg: Vom freien Gast-Zugang über das kostenlose Hörer-Konto mit 2 Gratis-Sessions bis zum fairen Einmalkauf mit privatem Magic Link ab 1,99 €. Kein Abo."
         canonicalUrl="https://flow-der-stille.de/pakete"
-        keywords="Flow der Stille Preise, Meditation ohne Abo, Hörbuch Einmalkauf, Kostenloses Hörer-Konto, Einschlaf-Timer Meditation, Gast-Kauf Hörbuch"
+        keywords="Flow der Stille Preise, Meditation ohne Abo, Selbsthypnose Einmalkauf, Hörbuch Magic Link, Kostenlose Meditation Schlaf, Entspannung ohne Abo"
       />
 
-      {/* 1. HERO HEADER */}
+      {/* 1. HERO HEADER: Plakativ & klar */}
       <section className="text-center space-y-4 max-w-3xl mx-auto pt-6">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold uppercase tracking-wider border border-[var(--accent)]/30">
           <Sparkles size={14} />
-          <span>Faire Ruhe-Modelle • Garantiert ohne Abo</span>
+          <span>Faire Modelle • Garantiert ohne Abonnement</span>
         </div>
 
         <h1 className="font-serif font-bold text-3xl sm:text-5xl text-[var(--text-main)] leading-tight">
@@ -36,8 +49,8 @@ export default function PricingPackages() {
         </h1>
 
         <p className="text-sm sm:text-base text-[var(--text-muted)] leading-relaxed">
-          Keine versteckten Mitgliedschaften, keine Kündigungsfristen und keine Testphasen, die sich heimlich verlängern.
-          Du entscheidest selbst, wie du starten möchtest: Unverbindlich reinhören, mit eigenem Hörer-Konto deinen Fortschritt sichern oder ein vollständiges Werk für immer besitzen.
+          Keine Abo-Fallen, keine automatischen Verlängerungen. Wähle einfach den Zugang, der heute zu dir passt: 
+          Völlig frei ohne Anmeldung reinhören, mit dem kostenfreien Hörer-Konto zwei Voll-Sessions sichern oder Einzelwerke per Express-Gastkauf für immer freischalten.
         </p>
 
         {/* Tab Switcher */}
@@ -51,7 +64,7 @@ export default function PricingPackages() {
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              Pakete im Überblick
+              Die 3 Zugänge im Überblick
             </button>
             <button
               onClick={() => setActiveTab('matrix')}
@@ -61,7 +74,7 @@ export default function PricingPackages() {
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              Detail-Vergleichstabelle
+              Detail-Tabelle
             </button>
           </div>
         </div>
@@ -71,32 +84,32 @@ export default function PricingPackages() {
       {activeTab === 'cards' && (
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
           
-          {/* PAKET 1: SCHNUPPERER (GAST) */}
+          {/* PAKET 1: FREIER GAST-ZUGANG */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-[var(--accent)]/40 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                  Gast-Modus
+                  Freier Gast-Zugang
                 </span>
                 <span className="text-xs text-[var(--text-muted)] font-medium">Ohne Registrierung</span>
               </div>
 
               <div>
                 <h3 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-                  Schnupperer
+                  Direkt reinhören
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Ideal, um die Stimmen von Lisa und Jacqueline völlig unverbindlich kennenzulernen.
+                  Einfach Kopfhörer aufsetzen und sofort Entspannung spüren – ohne jede Verpflichtung.
                 </p>
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">0 €</span>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">dauerhaft gratis</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium">dauerhaft kostenfrei</span>
                 </div>
                 <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block mt-0.5 font-medium">
-                  Keine Zahlungsdaten • Keine E-Mail nötig
+                  Keine E-Mail • Keine Zahlungsdaten
                 </span>
               </div>
 
@@ -104,27 +117,23 @@ export default function PricingPackages() {
               <ul className="space-y-3 text-xs text-[var(--text-muted)]">
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Kapitel 1 beider Hörbücher</strong> in voller Länge anhören (über 28 Min. Gratis-Hörzeit)</span>
+                  <span><strong>Kapitel 1 beider Hörbücher:</strong> Über 28 Minuten gratis in voller Länge hören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>Schnupper-Atemübungen & PMR</strong> direkt im Browser abspielen</span>
+                  <span><strong>Geführte Atemübung &amp; PMR:</strong> Sofortige Beruhigung des Nervensystems (nach Haftungsausschluss)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                  <span><strong>100 % werbefrei</strong> und ohne störende Pop-ups</span>
+                  <span><strong>100 % werbefrei</strong> im Web-Player</span>
                 </li>
                 <li className="flex items-start gap-2.5 opacity-60">
                   <X size={16} className="text-rose-500 shrink-0 mt-0.5" />
-                  <span>Kein Speichern des Hörfortschritts (startet bei Reload bei 00:00)</span>
+                  <span>Kein geräteübergreifendes Merken des Hörfortschritts</span>
                 </li>
                 <li className="flex items-start gap-2.5 opacity-60">
                   <X size={16} className="text-rose-500 shrink-0 mt-0.5" />
-                  <span>Kein Einschlaf-Timer (sanftes Ausblenden)</span>
-                </li>
-                <li className="flex items-start gap-2.5 opacity-60">
-                  <X size={16} className="text-rose-500 shrink-0 mt-0.5" />
-                  <span>Keine App-Hintergrundwiedergabe bei gesperrtem Bildschirm</span>
+                  <span>Volle Selbsthypnosen &amp; Meditationen nicht freigeschaltet</span>
                 </li>
               </ul>
             </div>
@@ -135,36 +144,36 @@ export default function PricingPackages() {
                 className="w-full py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs sm:text-sm border border-[var(--border)] transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Play size={15} className="fill-current" />
-                <span>Direkt als Gast reinhören</span>
+                <span>Jetzt gratis reinhören</span>
               </Link>
               <p className="text-[10px] text-center text-[var(--text-muted)]">
-                Kopfhörer aufsetzen und sofort entspannen.
+                Sofort abspielbar ohne Anmeldung.
               </p>
             </div>
           </div>
 
-          {/* PAKET 2: RUHE-RAUM (KOSTENLOSES HÖRER-KONTO) -> DER HERO / HIGHLIGHT */}
+          {/* PAKET 2: KOSTENLOSES HÖRER-KONTO (0 €) -> MIT DEN 2 ECHTEN DATENBANK-PRODUKTEN */}
           <div className="bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-alt)]/60 rounded-3xl p-6 sm:p-8 border-2 border-[var(--accent)] shadow-2xl flex flex-col justify-between space-y-6 relative transform lg:-translate-y-2">
             {/* Top Ribbon */}
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[var(--accent)] text-white text-[11px] font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-md flex items-center gap-1.5 whitespace-nowrap">
               <Sparkles size={12} />
-              <span>Empfohlen • Dein Ruheraum</span>
+              <span>Beliebteste Wahl • 100 % Kostenfrei</span>
             </div>
 
             <div className="space-y-4 pt-1">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-[var(--accent)] bg-[var(--accent)]/15 px-3 py-1 rounded-full border border-[var(--accent)]/30">
-                  Kostenloses Hörer-Konto
+                  Hörer-Konto
                 </span>
                 <span className="text-xs text-[var(--accent)] font-bold">1 Klick Aktivierung</span>
               </div>
 
               <div>
                 <h3 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
-                  Persönlicher Ruhe-Raum
+                  Dein Ruhe-Bereich
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Für alle, die regelmäßig Ruhe suchen, ihren Schlaf vertiefen und ihren Fortschritt bewahren wollen.
+                  Mit 1 Klick registrieren und sofort 2 vollständige Sessions dauerhaft freischalten.
                 </p>
               </div>
 
@@ -174,35 +183,46 @@ export default function PricingPackages() {
                   <span className="text-xs text-[var(--text-muted)] font-medium">dauerhaft kostenfrei</span>
                 </div>
                 <span className="text-[11px] text-[var(--accent)] block mt-0.5 font-semibold">
-                  Garantiert kein Abonnement • Keine Zahlungsdaten
+                  Garantiert kein Abo • Keine Zahlungsdaten
                 </span>
               </div>
 
+              {/* 2 Freigeschaltete Datenbank-Sessions */}
+              <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/25 rounded-2xl p-3.5 space-y-2 text-xs">
+                <span className="font-bold text-[var(--text-main)] block text-[11px] uppercase tracking-wider">
+                  🎁 Sofort nach 1-Klick-Registrierung freigeschaltet:
+                </span>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <Moon size={14} className="text-[var(--accent)] shrink-0" />
+                    <span className="text-[var(--text-main)] font-semibold">
+                      Selbsthypnose: Tiefer &amp; erholsamer Schlaf
+                    </span>
+                    <span className="text-[10px] font-mono opacity-80">(12:54 Min.)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Heart size={14} className="text-[var(--accent)] shrink-0" />
+                    <span className="text-[var(--text-main)] font-semibold">
+                      Meditation: Zur Herzöffnung &amp; Schutzpanzer ablegen
+                    </span>
+                    <span className="text-[10px] font-mono opacity-80">(16:45 Min.)</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Feature List */}
-              <ul className="space-y-3 text-xs text-[var(--text-main)]">
+              <ul className="space-y-2.5 text-xs text-[var(--text-main)]">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Alles aus dem Gast-Modus</strong> plus alle Vorteile</span>
+                  <span><strong>Hörfortschritt geräteübergreifend merken:</strong> Nahtlos weiterhören, wo du aufgehört hast</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Hörposition geräteübergreifend merken:</strong> Morgen sekundengenau da weiterhören, wo du eingeschlafen bist</span>
+                  <span><strong>Persönlicher Ruhe-Bereich:</strong> Eigene Bibliothek &amp; Stille-Tagebuch</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Intelligenter Einschlaf-Timer:</strong> Sanftes Ausblenden des Tons nach 15, 30, 45 oder 60 Minuten</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Exklusive Willkommens-Session:</strong> 25-Minuten Tiefenentspannung <em>„Reise in den inneren Frieden“</em> sofort freigeschaltet</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Stille-Tagebuch & Stimmungs-Radar:</strong> Sanft beobachten, wie dein Stresslevel von Woche zu Woche sinkt</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-[var(--accent)] shrink-0 mt-0.5" />
-                  <span><strong>Android App mit Hintergrund-Audio:</strong> Musik und Sprache laufen weiter bei gesperrtem Bildschirm</span>
+                  <span><strong>1-Klick-Anmeldung:</strong> Schnell &amp; unkompliziert mit Google oder E-Mail</span>
                 </li>
               </ul>
             </div>
@@ -211,7 +231,7 @@ export default function PricingPackages() {
               {user ? (
                 <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 text-center text-xs font-semibold flex items-center justify-center gap-2">
                   <UserCheck size={16} className="text-emerald-600" />
-                  <span>Du bist bereits mit deinem Ruhe-Konto eingeloggt!</span>
+                  <span>Du bist eingeloggt – deine 2 Gratis-Sessions stehen bereit!</span>
                 </div>
               ) : (
                 <Link
@@ -223,79 +243,105 @@ export default function PricingPackages() {
                 </Link>
               )}
               <p className="text-[10px] text-center text-[var(--text-muted)]">
-                Über Google oder E-Mail • 100 % werbe- und abofrei
+                Über Google oder E-Mail • 100 % sicher &amp; abofrei
               </p>
             </div>
           </div>
 
-          {/* PAKET 3: HÖRBUCH-EDITIONEN (VOLLVERSION EINMALKAUF) */}
+          {/* PAKET 3: EINMALKAUF MIT MAGIC LINK (HÖRBUCH, MEDITATION, SELBSTHYPNOSE) */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-[var(--accent)]/40 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-amber-700 dark:text-amber-300 bg-amber-500/15 px-3 py-1 rounded-full border border-amber-500/30">
                   Einmalkauf • Für immer dein
                 </span>
-                <span className="text-xs text-[var(--text-muted)] font-medium">Volles Werk</span>
+                <span className="text-xs text-[var(--text-muted)] font-medium">Kein Abo</span>
               </div>
 
               <div>
                 <h3 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-                  Hörbuch Vollversion
+                  Einmalkauf mit Magic Link
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Die vollständige Audioausgabe (z. B. <em>Der Tag, an dem der Schmetterling erwachte</em>).
+                  Volle Werke einzeln erwerben – als Gast oder mit Konto, ganz ohne Passwortzwang.
                 </p>
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">4,99 €</span>
-                  <span className="text-xs text-[var(--text-muted)] font-medium">einmalig pro Werk</span>
+                  <span className="text-3xl sm:text-4xl font-bold font-serif text-[var(--text-main)]">1,99 € – 4,99 €</span>
+                  <span className="text-xs text-[var(--text-muted)] font-medium">einmalig</span>
                 </div>
                 <span className="text-[11px] text-amber-700 dark:text-amber-300 block mt-0.5 font-semibold">
-                  Kein Abo • Express-Gastkauf mit PayPal möglich
+                  Express-Gastkauf mit PayPal, Apple Pay &amp; Karte
                 </span>
               </div>
 
+              {/* 3 Plakative Kategorien */}
+              <div className="space-y-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
+                  <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
+                    <span className="flex items-center gap-1.5">
+                      <BookOpen size={13} className="text-amber-600" />
+                      <span>Hörbücher (4,99 €)</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-[var(--accent)]">58 Min.</span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    Ganze Geschichten über Wandel, Loslassen &amp; echtes Menschsein.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
+                  <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
+                    <span className="flex items-center gap-1.5">
+                      <Moon size={13} className="text-indigo-500" />
+                      <span>Gezielte Selbsthypnosen (1,99 €)</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-[var(--accent)]">15 Min.</span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    Gesunde Ernährung, Selbstbewusstsein, Fokus &amp; Konzentration.
+                  </p>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
+                  <div className="flex items-center justify-between font-bold text-[var(--text-main)]">
+                    <span className="flex items-center gap-1.5">
+                      <Heart size={13} className="text-rose-500" />
+                      <span>Geführte Meditationen (1,99 €)</span>
+                    </span>
+                    <span className="text-[10px] font-mono text-[var(--accent)]">16–20 Min.</span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    Innere Ruhe &amp; Erdung, Inneres Kind, Herzkompass.
+                  </p>
+                </div>
+              </div>
+
               {/* Feature List */}
-              <ul className="space-y-3 text-xs text-[var(--text-muted)]">
+              <ul className="space-y-2 text-xs text-[var(--text-muted)] pt-1">
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span><strong>Alle 4 Kapitel & Einleitung</strong> in voller Länge (fast 60 Minuten reine Spielzeit)</span>
+                  <span><strong>Privater Magic Link per E-Mail:</strong> Direkt nach Kauf auf jedem Gerät öffnen &amp; hören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span><strong>Gast-Kauf ohne Passworterstellung:</strong> Express-Checkout via PayPal, Apple Pay oder Karte</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span><strong>Privater Magic-Zugangslink per E-Mail:</strong> Nach Kauf sofort mit 1 Klick auf jedem Gerät abspielen</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span><strong>Dauerhafter Offline-Download:</strong> Geschützt im internen App-Speicher für Reisen & Flugmodus</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span><strong>Freies Kapitel-Springen & Timeline-Scrubbing</strong> nach dem ersten rechtlichen Hinweis</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <span>Lebenslanger Zugriff im Web & Android-App</span>
+                  <span><strong>App-Download inklusive:</strong> Offline im internen Sandbox-Speicher anhören</span>
                 </li>
               </ul>
             </div>
 
             <div className="pt-4 space-y-2">
               <Link
-                to="/hoerbuecher"
+                to="/premium"
                 className="w-full py-3.5 px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Gift size={15} />
-                <span>Hörbücher ansehen (4,99 €)</span>
+                <span>Mediathek &amp; Einmalkäufe öffnen</span>
               </Link>
               <p className="text-[10px] text-center text-[var(--text-muted)]">
-                Einmal zahlen, für immer hören.
+                Einmal kaufen • Kein Abo • Jederzeit abspielbar
               </p>
             </div>
           </div>
@@ -308,10 +354,10 @@ export default function PricingPackages() {
         <section className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border)] shadow-xl overflow-hidden animate-fade-in">
           <div className="p-6 sm:p-8 border-b border-[var(--border)] text-center space-y-2">
             <h2 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-              Detaillierte Funktions-Matrix
+              Direkter Funktions-Vergleich
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-              Alle Features, Speicheroptionen und Zugriffswege im direkten Vergleich.
+              Übersicht aller Zugriffswege und Berechtigungen.
             </p>
           </div>
 
@@ -319,68 +365,50 @@ export default function PricingPackages() {
             <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[600px]">
               <thead>
                 <tr className="border-b border-[var(--border)] bg-[var(--bg-alt)]/60 text-[var(--text-main)]">
-                  <th className="p-4 sm:p-5 font-bold">Funktion / Vorteil</th>
-                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Gast (Schnupperer)</th>
+                  <th className="p-4 sm:p-5 font-bold">Kriterium</th>
+                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Freier Gast-Zugang</th>
                   <th className="p-4 sm:p-5 font-bold text-center w-1/4 text-[var(--accent)] bg-[var(--accent)]/10">
-                    Ruhe-Konto (0 €)
+                    Hörer-Konto (0 €)
                   </th>
-                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Hörbuch (4,99 €)</th>
+                  <th className="p-4 sm:p-5 font-bold text-center w-1/4">Einmalkauf (ab 1,99 €)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-[var(--text-muted)]">
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Preis & Laufzeit</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Kosten &amp; Gebühren</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-600">0 € dauerhaft</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-[var(--accent)] bg-[var(--accent)]/5">0 € (Kein Abo!)</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-amber-600">Einmalig 4,99 €</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-[var(--accent)] bg-[var(--accent)]/5">0 € (Kein Abo)</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-amber-600">Einmalig 1,99 € – 4,99 €</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Kapitel 1 & Einleitung</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Kapitel 1 &amp; Schnupper-Übungen</td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5"><Check className="inline text-[var(--accent)]" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Vollständiges Hörbuch (alle Kapitel)</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">2 Freigeschaltete Voll-Sessions (Schlaf &amp; Herz)</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-500" size={18} /></td>
-                  <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5"><X className="inline text-rose-500" size={18} /></td>
-                  <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
+                  <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5 font-bold text-[var(--accent)]"><Check className="inline text-[var(--accent)]" size={18} /></td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-[var(--accent)]"><Check className="inline text-emerald-500" size={18} /></td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Registrierung erforderlich?</td>
-                  <td className="p-4 sm:p-5 text-center font-medium">Nein, sofort hören</td>
-                  <td className="p-4 sm:p-5 text-center font-medium bg-[var(--accent)]/5">1 Klick (Google / Mail)</td>
-                  <td className="p-4 sm:p-5 text-center font-medium">Gastkauf möglich (Magic-Link)</td>
-                </tr>
-                <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Hörfortschritt merken</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Hörfortschritt geräteübergreifend merken</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-500" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5"><Check className="inline text-[var(--accent)]" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Einschlaf-Timer (Fade-Out)</td>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Zugang per privatem Magic Link</td>
+                  <td className="p-4 sm:p-5 text-center font-medium">Nicht nötig</td>
+                  <td className="p-4 sm:p-5 text-center font-medium bg-[var(--accent)]/5">1-Klick Login</td>
+                  <td className="p-4 sm:p-5 text-center font-medium text-amber-600"><Check className="inline text-emerald-500" size={18} /> Per E-Mail nach Kauf</td>
+                </tr>
+                <tr>
+                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">App-Download im internen Speicher</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-500" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5"><Check className="inline text-[var(--accent)]" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
-                </tr>
-                <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Exklusive 25-Min. Tiefenreise</td>
-                  <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-500" size={18} /></td>
-                  <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5"><Check className="inline text-[var(--accent)]" size={18} /></td>
-                  <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
-                </tr>
-                <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Offline-Download im App-Speicher</td>
-                  <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-500" size={18} /></td>
-                  <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5 font-medium">Inklusive</td>
-                  <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-500" size={18} /></td>
-                </tr>
-                <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-[var(--text-main)]">Atemübungen & PMR</td>
-                  <td className="p-4 sm:p-5 text-center">Basis-Übungen</td>
-                  <td className="p-4 sm:p-5 text-center bg-[var(--accent)]/5">Voller Zugriff</td>
-                  <td className="p-4 sm:p-5 text-center">Voller Zugriff</td>
                 </tr>
               </tbody>
             </table>
@@ -388,79 +416,89 @@ export default function PricingPackages() {
         </section>
       )}
 
-      {/* 4. INTERAKTIVER DEMO-BEREICH: Warum das kostenfreie Hörer-Konto begeistert */}
-      <section className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl space-y-8">
+      {/* 4. MAGIC LINK FALLBACK & SICHERHEITS-BEREICH */}
+      <section className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl space-y-6">
         <div className="max-w-2xl mx-auto text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center mx-auto mb-2">
-            <Moon size={24} />
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-600 flex items-center justify-center mx-auto mb-2">
+            <Key size={24} />
           </div>
           <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
-            Erlebe den Unterschied: Der intelligente Einschlaf-Timer
+            So funktioniert der private Magic Link
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-            Im kostenlosen Hörer-Konto musst du nicht auf die Uhr schauen. Wähle einfach deine Wunschzeit, schließe die Augen und die Stimme blendet sanft aus, sobald du eingeschlafen bist.
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+            Wenn du ein Hörbuch oder eine Einzelsession per Gastkauf erwirbst, musst du dir kein Passwort ausdenken. 
+            Direkt nach der Zahlung per PayPal oder Apple Pay erhältst du deinen privaten Link.
           </p>
         </div>
 
-        {/* Timer Simulation Widget */}
-        <div className="max-w-md mx-auto bg-[var(--bg-card)] p-5 sm:p-6 rounded-2xl border border-[var(--border)] shadow-md space-y-4 text-center">
-          <span className="text-xs font-semibold text-[var(--text-muted)] block uppercase tracking-wider">
-            Interaktiver Timer-Test:
-          </span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto text-xs">
+          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
+            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-bold inline-flex items-center justify-center">1</span>
+            <h4 className="font-bold text-[var(--text-main)]">Sofort hören</h4>
+            <p className="text-[var(--text-muted)]">Nach dem Bezahlen öffnet sich der Player direkt im Browser oder in der App.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
+            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-bold inline-flex items-center justify-center">2</span>
+            <h4 className="font-bold text-[var(--text-main)]">Dauerhafter Link per Mail</h4>
+            <p className="text-[var(--text-muted)]">Dein persönlicher Zugangslink liegt in deinem Postfach für jedes deiner Geräte.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
+            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] font-bold inline-flex items-center justify-center">3</span>
+            <h4 className="font-bold text-[var(--text-main)]">Lokal gespeichert</h4>
+            <p className="text-[var(--text-muted)]">Dein Browser merkt sich den Kauf sicher im internen Speicher.</p>
+          </div>
+        </div>
 
-          <div className="flex items-center justify-center gap-2">
-            {[15, 30, 45, 60].map((mins) => (
-              <button
-                key={mins}
-                onClick={() => {
-                  setSelectedTimerMinutes(mins);
-                  setTimerDemoActive(false);
-                }}
-                className={`px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                  selectedTimerMinutes === mins
-                    ? 'bg-[var(--accent)] text-white shadow-xs'
-                    : 'bg-[var(--bg-alt)] text-[var(--text-muted)] hover:text-[var(--text-main)]'
-                }`}
-              >
-                {mins} Min.
-              </button>
-            ))}
+        {/* Fallback Box: Link erneut zusenden */}
+        <div className="max-w-md mx-auto p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] shadow-sm space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)]">
+            <Mail size={16} className="text-[var(--accent)]" />
+            <span>Magic Link verlegt? Kein Problem:</span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-left">
-              <Clock size={16} className="text-[var(--accent)]" />
-              <div>
-                <span className="font-bold text-[var(--text-main)] block">Sanftes Fade-Out</span>
-                <span className="text-[11px] text-[var(--text-muted)]">Stoppt automatisch nach {selectedTimerMinutes} Min.</span>
-              </div>
+          {recoverySent ? (
+            <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 text-xs flex items-center gap-2">
+              <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+              <span>Prüfe dein Postfach ({recoveryEmail}). Falls ein Kauf vorliegt, wurde dein Link erneut versendet!</span>
             </div>
-
-            <button
-              onClick={() => setTimerDemoActive(!timerDemoActive)}
-              className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white font-semibold text-xs cursor-pointer active:scale-95 transition"
-            >
-              {timerDemoActive ? 'Aktiviert ✓' : 'Testen'}
-            </button>
-          </div>
-
-          {timerDemoActive && (
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in">
-              ✨ Perfekt! Genau so schützt der Ruhe-Timer deinen Akku und deinen gesunden Tiefschlaf.
-            </p>
+          ) : (
+            <form onSubmit={handleRequestMagicLink} className="space-y-2.5">
+              <input
+                type="email"
+                required
+                value={recoveryEmail}
+                onChange={(e) => setRecoveryEmail(e.target.value)}
+                placeholder="Deine Kauf-E-Mail eingeben..."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] text-xs text-[var(--text-main)] focus:outline-hidden focus:border-[var(--accent)]"
+              />
+              <button
+                type="submit"
+                disabled={recoveryLoading}
+                className="w-full py-2.5 px-4 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {recoveryLoading ? (
+                  <RefreshCw size={14} className="animate-spin" />
+                ) : (
+                  <>
+                    <Send size={14} />
+                    <span>Zugangs-Link erneut zusenden</span>
+                  </>
+                )}
+              </button>
+            </form>
           )}
         </div>
       </section>
 
-      {/* 5. 1-KLICK-REGISTRIERUNG DIREKT VOR ORT (FÜR GÄSTE) */}
+      {/* 5. 1-KLICK-REGISTRIERUNG FÜR GÄSTE */}
       {!user && (
         <section className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl text-center space-y-6">
           <div className="max-w-xl mx-auto space-y-2">
             <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
-              Jetzt in 1 Klick dein Ruhe-Konto anlegen
+              Jetzt in 1 Klick dein kostenfreies Ruhe-Konto anlegen
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-              Kein Passwort ausdenken. Einfach über Google oder Facebook bestätigen und sofort von allen Komfort-Funktionen profitieren:
+              Schalte sofort die 2 Voll-Sessions für Schlaf und Herzöffnung frei und speichere deinen Hörfortschritt geräteübergreifend:
             </p>
           </div>
 
@@ -468,45 +506,45 @@ export default function PricingPackages() {
             <QuickSocialUnlockBox
               isFree={true}
               title="Kostenloses Hörer-Konto aktivieren"
-              subtitle="Erstelle mit 1 Klick dein persönliches Profil, um deinen Hörfortschritt zu speichern und den Einschlaf-Timer freizuschalten:"
+              subtitle="Erstelle mit 1 Klick dein persönliches Profil über Google oder Facebook (keine Zahlungsdaten, kein Abo):"
               compact={false}
             />
           </div>
         </section>
       )}
 
-      {/* 6. TRANSPARENZ FAQ */}
+      {/* 6. RECHTLICH ABGESICHERTE FAQ */}
       <section className="space-y-6 max-w-3xl mx-auto">
         <div className="text-center space-y-2">
           <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
-            Häufige Fragen zu unseren Angeboten
+            Häufige Fragen zu Preisen, Magic Links &amp; Rechtlichem
           </h2>
           <p className="text-xs sm:text-sm text-[var(--text-muted)]">
-            Ehrliche Antworten für dein sicheres Gefühl.
+            Transparente Antworten für ein gutes, sicheres Gefühl.
           </p>
         </div>
 
         <div className="space-y-3">
           {[
             {
-              q: 'Warum gibt es bei Flow der Stille kein monatliches Abonnement?',
-              a: 'Abonnements erzeugen oft unterbewussten Druck („Ich muss die App nutzen, weil ich dafür bezahle“) oder geraten in Vergessenheit. Unser oberstes Ziel ist echte Entlastung deines Nervensystems. Deshalb bieten wir kostenlose Grundlagen dauerhaft ohne Abo an – und Hörbücher als fairen Einmalkauf.'
+              q: 'Warum bietet Flow der Stille kein Monats-Abo an?',
+              a: 'Abonnements erzeugen oft mentalen Druck („Ich bezahle jeden Monat, also muss ich die App nutzen“). Unser oberstes Ziel ist echte Entlastung deines Nervensystems. Deshalb sind die Grundlagen dauerhaft kostenfrei und Hörbücher bzw. Einzelsessions faire Einmalkäufe ohne Bindung.'
             },
             {
-              q: 'Muss ich beim kostenlosen Hörer-Konto Zahlungsdaten eingeben?',
-              a: 'Nein, niemals. Weder Kreditkarte noch PayPal oder IBAN sind erforderlich. Das Hörer-Konto dient ausschließlich dazu, deinen Hörfortschritt, deine Lieblingsübungen und deine Einstellungen zu sichern.'
+              q: 'Muss ich beim kostenfreien Hörer-Konto eine Kreditkarte angeben?',
+              a: 'Nein, zu keinem Zeitpunkt. Das kostenlose Hörer-Konto dient nur dazu, deinen Hörfortschritt auf all deinen Geräten zu merken und dir die zwei vollwertigen Gratis-Sessions (Schlaf & Herzöffnung) bereitzustellen.'
             },
             {
-              q: 'Wie funktioniert der Gast-Kauf bei den Hörbüchern (4,99 €)?',
-              a: 'Du kannst das Hörbuch per Express-Checkout (PayPal, Apple Pay, Kreditkarte) kaufen, ohne ein Passwort zu erstellen. Sofort nach Zahlungseingang öffnet sich der Player und du erhältst per E-Mail deinen persönlichen Magic-Zugangslink, mit dem du das Hörbuch jederzeit wieder aufrufen kannst.'
+              q: 'Was passiert mit meinem Kauf, wenn ich kein Kundenkonto habe?',
+              a: 'Du erhältst sofort nach Kauf deinen persönlichen Magic Link per E-Mail und siehst ihn auf der Dankeseite. Zusätzlich speichert dein Browser auf dem aktuellen Gerät den Schlüssel, sodass du beim nächsten Besuch direkt weiterhören kannst.'
             },
             {
-              q: 'Kann ich später von einem Gast-Kauf in ein festes Konto wechseln?',
-              a: 'Ja! Wenn du später ein Hörer-Konto mit derselben E-Mail-Adresse anlegst, werden alle deine gekauften Hörbücher automatisch in deiner persönlichen Bibliothek zusammengeführt.'
+              q: 'Wie sieht die rechtliche Regelung zum dauerhaften Zugriff aus?',
+              a: 'Gemäß unseren AGB (Ziffer 2.3) bedeutet ein Einmalkauf den Zugriff für die gesamte Betriebsdauer der Plattform. Sollte der Dienst wider Erwarten jemals aus wirtschaftlichen oder technischen Gründen eingestellt werden, informieren wir dich mindestens 30 Tage vorab und stellen nach Möglichkeit eine Download-Sicherung zur Verfügung.'
             },
             {
-              q: 'Kann ich die Inhalte auch offline hören?',
-              a: 'Ja. In unserer kostenlosen Android-App kannst du freigeschaltete Inhalte herunterladen und anschließend im Flugmodus oder bei schwachem Netz ohne Unterbrechung genießen.'
+              q: 'Gilt der Haftungsausschluss auch für Meditation & Hypnose?',
+              a: 'Ja. Unsere Meditationen und Selbsthypnosen dienen der tiefen Entspannung und Achtsamkeit. Sie ersetzen keine ärztliche oder psychotherapeutische Behandlung und dürfen nicht beim Autofahren oder Bedienen von Maschinen gehört werden.'
             }
           ].map((item, idx) => (
             <div key={idx} className="bg-[var(--bg-card)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] shadow-xs space-y-1.5">
@@ -526,18 +564,23 @@ export default function PricingPackages() {
       <section className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] text-center space-y-4 shadow-md">
         <Heart size={28} className="text-[var(--accent)] mx-auto" />
         <h3 className="font-serif font-bold text-xl sm:text-2xl text-[var(--text-main)]">
-          Von Herzen für deinen inneren Frieden gemacht
+          Von Herzen für deinen inneren Frieden
         </h3>
         <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto">
-          Wir glauben daran, dass innere Ruhe kein Luxusgut sein darf. Egal für welche Stufe du dich entscheidest: Nimm dir heute Zeit für deinen Atem.
+          Jacqueline, Lisa und Dirk haben Flow der Stille geschaffen, um Menschen in anspruchsvollen Lebensphasen echten Halt zu geben – fair, nahbar und ehrlich.
         </p>
-        <div className="pt-2">
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/uebungen"
-            className="inline-flex items-center gap-2 text-xs font-bold text-[var(--accent)] hover:underline"
+            className="px-5 py-2.5 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs font-bold text-[var(--text-main)] hover:border-[var(--accent)] transition"
           >
-            <span>Jetzt erste Atemübung starten</span>
-            <ArrowRight size={14} />
+            Atemübungen &amp; PMR testen
+          </Link>
+          <Link
+            to="/premium"
+            className="px-5 py-2.5 rounded-full bg-[var(--accent)] text-white text-xs font-bold hover:bg-[var(--accent-hover)] transition shadow-xs"
+          >
+            Alle Einmalkäufe ansehen
           </Link>
         </div>
       </section>

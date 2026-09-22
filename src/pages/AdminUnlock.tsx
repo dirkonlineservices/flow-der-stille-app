@@ -588,6 +588,16 @@ export default function AdminUnlock() {
             <ArrowLeft size={16} />
             <span>Zurück zur App</span>
           </Link>
+
+          <Link
+            to="/pakete"
+            target="_blank"
+            className="p-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white rounded-2xl inline-flex items-center gap-1.5 text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            title="Neue Angebots- &amp; Pakete-Seite ansehen (/pakete)"
+          >
+            <Sparkles size={15} />
+            <span>Pakete &amp; Modelle ansehen (/pakete)</span>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
