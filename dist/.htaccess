@@ -44,6 +44,12 @@
 AddDefaultCharset UTF-8
 
 <IfModule mod_headers.c>
+  # 🔒 Sicherheits-Header (Best Practices & HSTS mit preload)
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
   # 🤖 KI & LLM Discovery (llms.txt & ard.json)
   <FilesMatch "^(llms|llms-full)\.txt$">
     Header set Content-Type "text/markdown; charset=utf-8"

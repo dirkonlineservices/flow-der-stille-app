@@ -37,10 +37,8 @@ export function PlayStoreUpdateModal() {
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
 
   useEffect(() => {
-    // Nur auf Android-Geräten ausführen (nicht auf der reinen Desktop-Webseite)
-    const isNative = Capacitor.isNativePlatform();
-    const isAndroid = isNative || /android/i.test(navigator.userAgent);
-    if (!isAndroid) return;
+    // 🚀 Nur in der nativen Android-App (Capacitor) ausführen – verhindert 404-Fehler & unnötige Abfragen im Web-Browser!
+    if (!Capacitor.isNativePlatform()) return;
 
     let isMounted = true;
 
