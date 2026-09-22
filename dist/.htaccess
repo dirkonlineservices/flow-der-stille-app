@@ -41,7 +41,20 @@
   ExpiresByType application/json "access plus 0 seconds"
 </IfModule>
 
+AddDefaultCharset UTF-8
+
 <IfModule mod_headers.c>
+  # 🤖 KI & LLM Discovery (llms.txt & ard.json)
+  <FilesMatch "^(llms|llms-full)\.txt$">
+    Header set Content-Type "text/markdown; charset=utf-8"
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+
+  <FilesMatch "\.json$">
+    Header set Content-Type "application/json; charset=utf-8"
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+
   # assetlinks.json für Android TWA / App Linking
   <Files "assetlinks.json">
     Header set Content-Type "application/json"
