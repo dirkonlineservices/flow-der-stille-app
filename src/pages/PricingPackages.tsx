@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Check, X, Sparkles, ShieldCheck, BookOpen, Headphones,
@@ -7,16 +7,42 @@ import {
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
 import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
 
 export default function PricingPackages() {
   const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('flow_admin_preview') === 'true';
+    }
+    return false;
+  });
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'cards' | 'matrix'>('cards');
   
   // Fallback Magic Link Form
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [recoverySent, setRecoverySent] = useState(false);
   const [recoveryLoading, setRecoveryLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!user) {
+      if (localStorage.getItem('flow_admin_preview') !== 'true') {
+        setIsAdmin(false);
+      }
+      setIsCheckingAdmin(false);
+      return;
+    }
+    checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+      if (isMounted) {
+        setIsAdmin(Boolean(adminStatus || localStorage.getItem('flow_admin_preview') === 'true'));
+        setIsCheckingAdmin(false);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [user]);
 
   const handleRequestMagicLink = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +53,36 @@ export default function PricingPackages() {
       setRecoverySent(true);
     }, 800);
   };
+
+  // 🔒 Sicherheits-Sperre: Nur für eingeloggte Admins oder Admin-Vorschau zugänglich
+  if (!isCheckingAdmin && !isAdmin) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center p-6 space-y-5 animate-fade-in max-w-lg mx-auto">
+        <SEO
+          title="Interner Bereich – Flow der Stille"
+          description="Interner Bereich"
+          robots="noindex, nofollow"
+        />
+        <div className="w-16 h-16 rounded-3xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20 shadow-sm">
+          <Lock size={32} />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-serif font-bold text-[var(--text-main)]">
+            Vorschau nur für Administratoren
+          </h2>
+          <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+            Diese Seite befindet sich aktuell in der internen Konzeption und ist noch nicht öffentlich freigegeben.
+          </p>
+        </div>
+        <Link
+          to="/"
+          className="px-6 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition cursor-pointer"
+        >
+          Zurück zur Startseite
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-20 px-4 sm:px-6 max-w-6xl mx-auto space-y-12 sm:space-y-16 animate-fade-in">

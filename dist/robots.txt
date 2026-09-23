@@ -26,6 +26,12 @@ Disallow: /blog/schreiben
 Disallow: /blog/neu
 Disallow: /blog/new
 
+# 🛑 Interne Entwurfs- & Admin-Vorschauseiten sperren
+Disallow: /pakete
+Disallow: /preise
+Disallow: /vorteile
+Disallow: /angebote
+
 Sitemap: https://flow-der-stille.de/sitemap.xml
 # Google Merchant Center Product Feed: https://flow-der-stille.de/google-shopping-feed.xml
 # AI Agent Discovery: https://flow-der-stille.de/llms.txt
