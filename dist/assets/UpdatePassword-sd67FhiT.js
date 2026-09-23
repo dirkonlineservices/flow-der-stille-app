@@ -1,0 +1,1 @@
+import{j as r}from"./vendor-motion-DQE7g07c.js";import t from"./ResetPassword-B9RiMXp5.js";import"./vendor-react-B_eEWaqR.js";import"./index-COZWsgoc.js";import"./vendor-supabase-CWalYZyV.js";import"./vendor-icons-DYXFMLVK.js";function a(){return r.jsx(t,{})}export{a as default};
