@@ -949,7 +949,7 @@ export default function PremiumShopDashboard() {
               </div>
 
               {/* Produktdetails: 2-Spalten für eingeloggte Nutzer und für Gastkäufe, 1-Spalte bei freigeschalteten Werken */}
-              <div className={`flex flex-col ${!hatZugriff && (user || !istKostenlos) ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-8`}>
+              <div className={`flex flex-col ${!hatZugriff && (user || !istKostenlos) ? 'lg:flex-row' : ''} items-start gap-6 lg:gap-8`}>
                 
                 <div className="flex-1 flex flex-col w-full">
                     <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-1 leading-tight">{produkt.titel}</h3>
@@ -960,34 +960,35 @@ export default function PremiumShopDashboard() {
                       average={productRatings[produkt.id]?.average}
                       count={productRatings[produkt.id]?.count}
                       variant="summary"
-                      className="mb-3"
+                      className="mb-2.5"
                     />
                     {!hatZugriff && !istKostenlos && (
-                        <div className="text-[1.5rem] font-bold text-stone-900 dark:text-stone-100 mb-4">
-                            {produkt.preis} € <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 font-sans">einmalig • kein Abo</span>
+                        <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-3 flex items-baseline gap-2">
+                            <span className="whitespace-nowrap font-serif text-2xl sm:text-3xl font-bold">{typeof produkt.preis === 'number' ? produkt.preis.toFixed(2).replace('.', ',') : String(produkt.preis).replace('.', ',')}&nbsp;€</span>{' '}
+                            <span className="text-xs font-semibold text-[var(--text-muted)] font-sans">einmalig • kein Abo</span>
                         </div>
                     )}
                     {!hatZugriff && istKostenlos && (
-                        <div className="flex flex-wrap items-center gap-2 mb-4">
-                          <span className="text-[1.3rem] font-bold text-emerald-700 dark:text-emerald-300">
-                            100% Kostenfrei
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <span className="text-xl sm:text-2xl font-bold font-serif text-emerald-800">
+                            100 % Kostenfrei
                           </span>
-                          <span className="text-xs font-mono line-through text-stone-500">
-                            1,99 €
+                          <span className="text-xs font-mono line-through text-[var(--text-muted)]">
+                            1,99&nbsp;€
                           </span>
-                          <span className="text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
-                            Gratis mit Hörer-Konto (Wert: 1,99 €)
+                          <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full border border-emerald-300/70 whitespace-nowrap">
+                            Gratis mit Hörer-Konto (Wert: 1,99&nbsp;€)
                           </span>
                         </div>
                     )}
                     
-                    <p className="text-stone-700 dark:text-stone-300 text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
+                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
 
                     {produkt.audio_hinweis && (
-                      <div className="mt-4 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-stone-700 dark:text-stone-300 flex items-start gap-3 shadow-2xs">
-                        <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="mt-3.5 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] flex items-start gap-3 shadow-2xs">
+                        <Sparkles className="w-4 h-4 text-emerald-800 shrink-0 mt-0.5" />
                         <div className="leading-relaxed">
-                          <span className="font-semibold text-stone-900 dark:text-stone-100 block mb-0.5">
+                          <span className="font-bold text-[var(--text-main)] block mb-0.5">
                             {istKostenlos ? '🌿 Kostenfreie Anwendung (nach 1-Klick-Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
                           </span>
                           <span className="whitespace-pre-line leading-relaxed">
@@ -1003,11 +1004,11 @@ export default function PremiumShopDashboard() {
 
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-5 md:mt-6">
+                      <div className="mt-4 pt-1">
                         {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
                           <Link
                             to={produkt.id?.includes('mensch') || produkt.id?.includes('echt') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
-                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group text-center"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
                             <span>Kapitel 1 kostenlos reinhören &amp; Anleitung öffnen →</span>
@@ -1015,7 +1016,7 @@ export default function PremiumShopDashboard() {
                         ) : (
                           <Link
                             to={`/audio/${produkt.id}?autoplay=true`}
-                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group text-center"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
                             <span>Kostenlose Hörprobe &amp; Anleitung öffnen →</span>
@@ -1027,27 +1028,27 @@ export default function PremiumShopDashboard() {
 
                 {/* Checkout-Button Spalte – für eingeloggte Nutzer ODER Gastkauf bei kostenpflichtigen Produkten */}
                 {!hatZugriff && (user || !istKostenlos) && (
-                    <div className="lg:w-[380px] xl:w-[420px] shrink-0 pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:pl-8 flex flex-col justify-center">
+                    <div className="lg:w-[380px] xl:w-[420px] shrink-0 pt-5 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:pl-6 xl:lg:pl-8 flex flex-col gap-3">
                         <div className="w-full flex flex-col gap-3">
                             {!user && !isNativeApp && (
-                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-stone-800 dark:text-stone-200 text-left space-y-2">
-                                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-                                  <Key size={15} className="text-amber-700 shrink-0" />
+                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2">
+                                <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                                  <Key size={15} className="text-amber-800 shrink-0" />
                                   <span>Express-Gastkauf mit Magic Link</span>
                                 </div>
-                                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
-                                  <strong>Keine Registrierung &amp; kein Passwort nötig:</strong> Bezahle einfach einmalig per PayPal, Karte oder SEPA. Du musst mehr als bezahlen nicht tun.
+                                <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                                  <strong className="text-[var(--text-main)]">Keine Registrierung &amp; kein Passwort nötig:</strong> Bezahle einfach einmalig per PayPal, Karte oder SEPA. Du musst mehr als bezahlen nicht tun.
                                 </p>
-                                <div className="pt-1.5 border-t border-amber-500/20 text-[11px] text-stone-700 dark:text-stone-300 space-y-1">
-                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                <div className="pt-1.5 border-t border-amber-500/20 text-[11px] text-[var(--text-muted)] space-y-1">
+                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
                                     <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
                                     <span>Sofort im Web-Player abspielen</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
                                     <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
                                     <span>Direkt im Web-Player &amp; in der App streamen</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
                                     <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
                                     <span>Privater Magic Link per E-Mail für jedes Gerät</span>
                                   </div>
@@ -1073,13 +1074,15 @@ export default function PremiumShopDashboard() {
                             )}
 
                             {!user && !isNativeApp && (
-                              <div className="text-center pt-1">
-                                <Link
-                                  to={`/registrieren?redirectTo=${encodeURIComponent(location.pathname + `#product-${produkt.id}`)}`}
-                                  className="text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 underline transition"
-                                >
-                                  Oder lieber vorab ein kostenloses Hörer-Konto anlegen?
-                                </Link>
+                              <div className="pt-2">
+                                <QuickSocialUnlockBox
+                                  produkt={produkt}
+                                  isFree={true}
+                                  title="Oder erst 1-Klick Hörer-Konto (0 €)"
+                                  subtitle="Über Google, Meta (Facebook) oder E-Mail – garantiert 0 € und kein Abo. Schaltet sofort 2 Gratis-Vollversionen frei."
+                                  compact={true}
+                                  returnPath={location.pathname + location.search}
+                                />
                               </div>
                             )}
                         </div>
@@ -1106,16 +1109,22 @@ export default function PremiumShopDashboard() {
 
               {/* Für freigeschaltete Produkte: Audio Player Button (auch im Flugmodus sofort verfügbar) */}
               {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
+                <div className="mt-6 pt-5 border-t border-[var(--border)] flex flex-col gap-3">
                     {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch')) ? (
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Link
-                          to={`/hoerbuch/${produkt.id}`}
-                          className="flex-1 py-3 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <Sparkles size={16} />
-                          <span>Hörbuch-Player öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'})</span>
-                        </Link>
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)]">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+                            <span>Hörbuch Web-Player:</span>
+                          </div>
+                          <Link
+                            to={`/hoerbuch/${produkt.id}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs active:scale-95 cursor-pointer"
+                          >
+                            <Sparkles size={13} />
+                            <span>Hörbuch-Player mit Kapiteln öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'}) →</span>
+                          </Link>
+                        </div>
                         <AudioPlayerButton 
                           produkt={produkt}  
                           getUrl={async (p: any) => {
@@ -1137,35 +1146,40 @@ export default function PremiumShopDashboard() {
                         />
                       </div>
                     ) : (
-                      <div className="flex flex-col sm:flex-row gap-3 items-stretch">
-                        <Link
-                          to={`/audio/${produkt.id}`}
-                          className="py-2.5 px-4 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-                        >
-                          <Headphones size={15} />
-                          <span>Hörseite &amp; Anleitung</span>
-                        </Link>
-                        <div className="flex-1 min-w-0">
-                          <AudioPlayerButton 
-                            produkt={produkt}  
-                            getUrl={async (p: any) => {
-                              if (p.audio_path && p.audio_path.startsWith('http')) {
-                                return p.audio_path;
-                              }
-                              const off = getOfflineProductById(p.id);
-                              if (off?.audio_path && off.audio_path.startsWith('http')) {
-                                return off.audio_path;
-                              }
-                              try {
-                                const supabase = getSupabase();
-                                const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                                return data?.publicUrl || '';
-                              } catch {
-                                return '';
-                              }
-                            }} 
-                          />
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)]">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+                            <span>Web-Player bereit:</span>
+                          </div>
+                          <Link
+                            to={`/audio/${produkt.id}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs active:scale-95 cursor-pointer"
+                            title="Eigene Hörseite mit 4-Schritte-Anleitung öffnen"
+                          >
+                            <Headphones size={13} />
+                            <span>Hörseite &amp; Anleitung öffnen →</span>
+                          </Link>
                         </div>
+                        <AudioPlayerButton 
+                          produkt={produkt}  
+                          getUrl={async (p: any) => {
+                            if (p.audio_path && p.audio_path.startsWith('http')) {
+                              return p.audio_path;
+                            }
+                            const off = getOfflineProductById(p.id);
+                            if (off?.audio_path && off.audio_path.startsWith('http')) {
+                              return off.audio_path;
+                            }
+                            try {
+                              const supabase = getSupabase();
+                              const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                              return data?.publicUrl || '';
+                            } catch {
+                              return '';
+                            }
+                          }} 
+                        />
                       </div>
                     )}
 

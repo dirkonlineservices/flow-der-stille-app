@@ -171,8 +171,8 @@ export default function QuickSocialUnlockBox({
   return (
     <div className={`w-full rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] shadow-xs transition-all ${compact ? 'p-3.5 sm:p-4' : 'p-4 sm:p-6'}`}>
       <div className="space-y-1 mb-3 text-left">
-        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
-          <Sparkles size={14} className="shrink-0" />
+        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-900">
+          <Sparkles size={14} className="shrink-0 text-emerald-800" />
           <span>{displayTitle}</span>
         </div>
         {displaySubtitle && (
@@ -189,7 +189,7 @@ export default function QuickSocialUnlockBox({
           type="button"
           onClick={() => handleSocialSignIn('google')}
           disabled={socialLoading !== null}
-          className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] hover:border-[var(--accent)] font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+          className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] hover:border-emerald-600 font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
         >
           {socialLoading === 'google' ? (
             <span className="w-3.5 h-3.5 border-2 border-[var(--text-main)] border-t-transparent rounded-full animate-spin shrink-0" />
@@ -225,12 +225,12 @@ export default function QuickSocialUnlockBox({
       {/* Transparenter Haftungsausschluss & Kenntnisnahme bei der 1-Klick-Registrierung */}
       <div className="mt-3 p-2.5 rounded-xl bg-[var(--bg-alt)]/70 border border-[var(--border)] text-[11px] text-[var(--text-muted)] space-y-1 text-left">
         <div className="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
-          <ShieldCheck size={14} className="text-emerald-700 dark:text-emerald-300 shrink-0" />
+          <ShieldCheck size={14} className="text-emerald-800 shrink-0" />
           <span>Haftungsausschluss &amp; Nutzungsbedingungen:</span>
         </div>
         <p className="leading-relaxed">
           Mit Klick auf Google oder Facebook bestätigst du, dass du unseren{' '}
-          <Link to="/rechtliches#haftungsausschluss" target="_blank" className="text-[var(--accent)] underline font-medium hover:opacity-80">
+          <Link to="/rechtliches#haftungsausschluss" target="_blank" className="text-emerald-800 underline font-bold hover:opacity-80">
             Haftungsausschluss
           </Link>{' '}
           (Entspannungsanwendung, kein Heilversprechen, niemals beim Autofahren hören) sowie unsere{' '}
@@ -244,7 +244,7 @@ export default function QuickSocialUnlockBox({
       <div className="mt-2.5 pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs">
         <Link
           to={`/registrieren?redirectTo=${encodeURIComponent(targetPath)}`}
-          className="text-[var(--text-muted)] hover:text-[var(--accent)] font-medium inline-flex items-center gap-1 transition-colors hover:underline"
+          className="text-[var(--text-muted)] hover:text-emerald-800 font-bold inline-flex items-center gap-1 transition-colors hover:underline"
         >
           <Mail size={12} />
           <span>Oder klassisch per E-Mail registrieren</span>
@@ -254,7 +254,7 @@ export default function QuickSocialUnlockBox({
         {showAppPush && (
           <Link
             to="/app"
-            className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
+            className="text-[10px] font-mono text-emerald-800 hover:underline inline-flex items-center gap-1 font-semibold"
           >
             <Smartphone size={11} />
             <span>Android App laden</span>

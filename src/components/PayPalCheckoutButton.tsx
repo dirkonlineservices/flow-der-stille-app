@@ -82,22 +82,22 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   const clientId = runtimeClientId.trim();
 
   return (
-    <div className="w-full flex flex-col gap-4 mt-4 lg:mt-2">
-      <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors border ${acceptedTerms ? 'bg-[var(--bg-main)] border-[var(--accent)]' : 'bg-[var(--bg-alt)] border-[var(--border)] hover:bg-[var(--bg-main)]'}`}>
+    <div className="w-full flex flex-col gap-2.5 mt-1.5">
+      <label className={`flex items-start gap-2.5 p-3 rounded-xl cursor-pointer transition-colors border ${acceptedTerms ? 'bg-emerald-500/10 border-emerald-600' : 'bg-[var(--bg-alt)] border-[var(--border)] hover:bg-[var(--bg-main)]'}`}>
         <input
           type="checkbox"
           checked={acceptedTerms}
           onChange={(e) => setAcceptedTerms(e.target.checked)}
-          className="mt-1 w-5 h-5 accent-[var(--accent)] cursor-pointer shrink-0"
+          className="mt-0.5 w-4 h-4 accent-emerald-700 cursor-pointer shrink-0"
         />
-        <span className="flex-1 text-sm text-[var(--text-muted)] leading-relaxed">
-          Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. <strong>Mir ist bekannt, dass ich dadurch mein Widerrufsrecht verliere.</strong>
+        <span className="flex-1 text-xs text-[var(--text-muted)] leading-relaxed">
+          Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. <strong className="text-[var(--text-main)] font-semibold">Mir ist bekannt, dass ich dadurch mein Widerrufsrecht verliere.</strong>
         </span>
       </label>
 
       {!acceptedTerms && (
-        <div className="w-full p-4 text-center rounded-xl bg-[var(--bg-alt)] border border-dashed border-[var(--border)]">
-          <p className="text-sm text-[var(--text-muted)] font-medium">
+        <div className="w-full p-3 text-center rounded-xl bg-[var(--bg-alt)] border border-dashed border-[var(--border)]">
+          <p className="text-xs text-[var(--text-muted)] font-medium">
             Bitte bestätige die Bedingungen, um die Zahlungsmöglichkeiten freizuschalten.
           </p>
         </div>
