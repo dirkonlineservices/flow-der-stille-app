@@ -230,7 +230,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                   <span className="px-2 py-0.5 rounded-md bg-emerald-700 text-white font-bold text-[11px]">0 €</span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
-                  2 geführte Vollversionen (Schlaf-Hypnose &amp; Herz-Meditation) mit 1-Klick aktivieren, Streaks &amp; Favoriten speichern.
+                  2 geführte Vollversionen (Schlaf-Selbsthypnose &amp; Herz-Meditation) mit 1-Klick aktivieren, Streaks &amp; Favoriten speichern.
                 </p>
               </div>
               <div className="pt-2 flex items-center justify-between">

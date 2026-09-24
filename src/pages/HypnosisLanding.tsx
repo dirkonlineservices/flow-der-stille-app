@@ -134,7 +134,7 @@ export default function HypnosisLanding() {
         title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen – Flow der Stille"
         description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen – 100% werbe- & abofrei."
         canonicalUrl="https://flow-der-stille.de/selbsthypnose"
-        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu programmieren, Hypnose Einschlafhilfe, Hypnose MP3 ohne Abo, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille"
+        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu ausrichten, Selbsthypnose Einschlafhilfe, Selbsthypnose ohne Abo, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille"
       />
 
       <audio
@@ -466,7 +466,7 @@ export default function HypnosisLanding() {
               Kostenfreie Schnupperübungen
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto">
-              Optimiere deine Trancefähigkeit: Nutze diese kurzen somatischen Übungen, um körperliche Restspannung vor der Hypnose abzustreifen.
+              Optimiere deine Trancefähigkeit: Nutze diese kurzen somatischen Übungen, um körperliche Restspannung vor der Selbsthypnose abzustreifen.
             </p>
           </div>
 

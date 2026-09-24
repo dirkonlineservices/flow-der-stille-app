@@ -616,7 +616,7 @@ export default function Layout() {
                       <span>Ruhe-Shop</span>
                       <span className="text-[9px] bg-emerald-700 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Ohne Abo</span>
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">Hörbücher &amp; Hypnosen ab 1,99 €</div>
+                    <div className="text-xs text-[var(--text-muted)]">Hörbücher &amp; Selbsthypnosen ab 1,99&nbsp;€</div>
                   </div>
                 </Link>
 

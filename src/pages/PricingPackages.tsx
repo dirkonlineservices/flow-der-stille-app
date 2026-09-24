@@ -233,7 +233,7 @@ export default function PricingPackages() {
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Hypnose &amp; Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Selbsthypnose &amp; Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -581,7 +581,7 @@ export default function PricingPackages() {
               a: 'Gemäß unseren AGB (Ziffer 2.3) bedeutet ein Einmalkauf den Zugriff für die gesamte Betriebsdauer der Plattform. Sollte der Dienst wider Erwarten jemals aus wirtschaftlichen oder technischen Gründen eingestellt werden, informieren wir dich mindestens 30 Tage vorab und stellen nach Möglichkeit eine Download-Sicherung zur Verfügung.'
             },
             {
-              q: 'Gilt der Haftungsausschluss auch für Meditation & Hypnose?',
+              q: 'Gilt der Haftungsausschluss auch für Meditation & Selbsthypnose?',
               a: 'Ja. Unsere Meditationen und Selbsthypnosen dienen der tiefen Entspannung und Achtsamkeit. Sie ersetzen keine ärztliche oder psychotherapeutische Behandlung und dürfen nicht beim Autofahren oder Bedienen von Maschinen gehört werden.'
             }
           ].map((item, idx) => (

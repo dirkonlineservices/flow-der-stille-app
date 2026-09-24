@@ -48,7 +48,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'fds_hypnose_fokus',
     title: 'Selbsthypnose: Fokus & Absolute Klarheit',
-    description: 'Geführte Hypnose-Session zur Steigerung der Konzentration und ultimativen mentalen Schärfe.',
+    description: 'Geführte Selbsthypnose-Session zur Steigerung der Konzentration und ultimativen mentalen Schärfe.',
     highlights: ['Fokus & Produktivität steigern', 'Mentale Klarheit gewinnen', 'Ablenkungen ausblenden'],
     priceNum: 1.99,
     price: '1,99 €',
