@@ -279,7 +279,7 @@ export default function PricingPackages() {
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition-all">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-amber-900 dark:text-amber-200 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/40 whitespace-nowrap">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-stone-900 dark:text-stone-100 bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full border border-stone-300 dark:border-stone-700 whitespace-nowrap">
                   Ruhe-Shop Einmalkauf
                 </span>
                 <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">Für immer dein • Kein Abo</span>
@@ -301,7 +301,7 @@ export default function PricingPackages() {
                   </span>
                   <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
                 </div>
-                <span className="text-xs text-amber-800 dark:text-amber-300 block mt-1 font-bold">
+                <span className="text-xs text-stone-900 dark:text-stone-100 block mt-1 font-bold">
                   Express-Gastkauf mit PayPal, Apple Pay &amp; Karte
                 </span>
                 <span className="text-[11px] text-stone-600 dark:text-stone-400 block mt-0.5 font-medium">
@@ -370,7 +370,7 @@ export default function PricingPackages() {
             <div className="pt-4 space-y-2">
               <Link
                 to="/ruhe-shop"
-                className="w-full py-3.5 px-4 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
+                className="w-full py-3.5 px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Gift size={15} />
                 <span>Zum Ruhe-Shop &amp; Einmalkauf (ab 1,99&nbsp;€)</span>

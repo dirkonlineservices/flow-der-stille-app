@@ -170,34 +170,34 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </p>
 
         {/* Unser Versprechen: Echte Handarbeit – flach und in die Breite gezogen */}
-        <div className="p-3 sm:p-4 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-2xs">
-          <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
+        <div className="p-3.5 sm:p-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-xs">
+          <Sparkles className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
           <span className="flex-1">
-            <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
-            Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
+            <strong className="text-stone-900 dark:text-stone-100">Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
+            Unsere Premium-Inhalte spricht <strong className="text-stone-900 dark:text-stone-100 font-bold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
             Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – für 
-            <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>. 
-            <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" className="text-[var(--accent)] hover:underline font-semibold ml-1.5 inline-flex items-center gap-0.5">
+            <strong className="text-stone-900 dark:text-stone-100 font-bold whitespace-nowrap"> dauerhaft faire Einzelpreise ab 1,99&nbsp;€ ganz ohne Abo</strong>. 
+            <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" className="text-emerald-800 dark:text-emerald-300 hover:underline font-bold ml-1.5 inline-flex items-center gap-0.5">
               Unsere Vision lesen →
             </Link>
           </span>
         </div>
 
         {/* 🌟 FAIRE MODELLE PREVIEW (100% OHNE ABO) */}
-        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto text-left">
+        <div className="mt-5 p-5 sm:p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] shadow-xs max-w-4xl mx-auto text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-0.5">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 mb-0.5">
                 <Sparkles size={13} />
                 <span>100 % Ohne Abo • Dauerhaft faire Preise</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 leading-snug">
                 Faire Modelle für jeden Weg
               </h3>
             </div>
             <Link
               to="/pakete"
-              className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition inline-flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition inline-flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
             >
               <span>Alle Pakete &amp; Modelle ansehen</span>
               <ArrowRight size={15} />
@@ -205,71 +205,71 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
 
           {/* 3 Spalten: Gast, Registriert, Express-Gastkauf */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-3.5">
             {/* Modell 1: Freier Gastzugang */}
-            <div className="p-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col justify-between shadow-2xs">
               <div>
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-xs font-bold text-[var(--text-main)]">1. Freier Gast-Zugang</span>
-                  <span className="px-2 py-0.5 rounded-md bg-stone-500/10 text-stone-700 dark:text-stone-300 font-bold text-[11px]">0 €</span>
+                <div className="flex items-center justify-between gap-1 mb-1.5">
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">1. Freier Gast-Zugang</span>
+                  <span className="px-2 py-0.5 rounded-md bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-stone-100 font-bold text-[11px]">0 €</span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
                   Sofort reinhören ohne Anmeldung. Klangproben, geführte Atemübungen &amp; täglicher Impuls direkt im Web.
                 </p>
               </div>
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold pt-2 block">
+              <span className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold pt-2.5 block">
                 ✓ Ohne Passwort sofort starten
               </span>
             </div>
 
             {/* Modell 2: Kostenloses Hörer-Konto */}
-            <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/30 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-600 dark:border-emerald-500 flex flex-col justify-between shadow-xs">
               <div>
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">2. Hörer-Konto</span>
+                <div className="flex items-center justify-between gap-1 mb-1.5">
+                  <span className="text-xs font-bold text-emerald-950 dark:text-emerald-200">2. Hörer-Konto</span>
                   <span className="px-2 py-0.5 rounded-md bg-emerald-700 text-white font-bold text-[11px]">0 €</span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
                   2 geführte Vollversionen (Schlaf-Selbsthypnose &amp; Herz-Meditation) mit 1-Klick aktivieren, Streaks &amp; Favoriten speichern.
                 </p>
               </div>
-              <div className="pt-2 flex items-center justify-between">
-                <Link to="/registrieren" className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold hover:underline inline-flex items-center gap-0.5">
+              <div className="pt-2.5 flex items-center justify-between">
+                <Link to="/registrieren" className="text-xs text-emerald-800 dark:text-emerald-300 font-bold hover:underline inline-flex items-center gap-0.5">
                   1-Klick aktivieren →
                 </Link>
-                <Link to="/anmelden" className="text-[11px] text-[var(--text-muted)] hover:underline">
+                <Link to="/anmelden" className="text-xs text-stone-700 dark:text-stone-300 font-medium hover:underline">
                   Einloggen
                 </Link>
               </div>
             </div>
 
             {/* Modell 3: Express-Gastkauf */}
-            <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/30 flex flex-col justify-between">
+            <div className="p-4 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col justify-between shadow-2xs">
               <div>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf</span>
-                  <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-[11px] whitespace-nowrap shrink-0">ab 1,99&nbsp;€</span>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">3. Express-Gastkauf</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 font-bold text-[11px] whitespace-nowrap shrink-0">ab 1,99&nbsp;€</span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
                   Hörbücher, Selbsthypnosen &amp; Meditationen einzeln kaufen. Privater Magic Link per E-Mail für jedes Gerät – kein Passwort nötig.
                 </p>
               </div>
-              <span className="text-[10px] text-amber-800 dark:text-amber-300 font-semibold pt-2 block">
+              <span className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold pt-2.5 block">
                 ✓ Sofort im Web-Player &amp; in der App streamen
               </span>
             </div>
           </div>
 
           {/* Vertrauens-Signale dezent in einer flachen Zeile */}
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
-            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
-              <Check size={14} strokeWidth={2.5} /> Kein Abo &amp; keine versteckten Kosten
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-1.5 text-xs text-stone-700 dark:text-stone-300 pt-3 mt-3 border-t border-[var(--border)]">
+            <span className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-bold">
+              <Check size={15} strokeWidth={2.5} /> Kein Abo &amp; keine versteckten Kosten
             </span>
-            <span className="flex items-center gap-1">
-              <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten für Gratis-Inhalte
+            <span className="flex items-center gap-1.5 font-medium">
+              <Check size={15} strokeWidth={2.5} className="text-emerald-700 dark:text-emerald-400" /> Keine Zahlungsdaten für Gratis-Inhalte
             </span>
-            <span className="flex items-center gap-1">
-              <Check size={14} strokeWidth={2.5} /> 100 % Werbefrei
+            <span className="flex items-center gap-1.5 font-medium">
+              <Check size={15} strokeWidth={2.5} className="text-emerald-700 dark:text-emerald-400" /> 100 % Werbefrei
             </span>
           </div>
         </div>
@@ -859,17 +859,17 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
       </section>
 
       {/* ─── 5. CALL-TO-ACTION FÜR GÄSTE AM SEITENENDE (Faire Modelle & Magic Link) ─── */}
-      <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-7 text-center shadow-sm space-y-3">
-        <h4 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)]">
+      <section className="bg-[var(--bg-card)] border-2 border-emerald-600/30 rounded-2xl p-6 sm:p-8 text-center shadow-xs space-y-4">
+        <h4 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
           Bereit für deinen persönlichen Ruhepol?
         </h4>
-        <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed">
-          Wähle deinen Weg: Starte 100 % kostenfrei mit unserem Hörer-Konto (0 €) inklusive 2 Vollversionen nach 1-Klick Registrierung – oder sichere dir dein Lieblings-Hörbuch oder deine Selbsthypnose per Express-Gastkauf (ab 1,99 €) mit direktem Magic Link per E-Mail, ganz ohne Registrierung.
+        <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 max-w-xl mx-auto leading-relaxed">
+          Wähle deinen Weg: Starte 100 % kostenfrei mit unserem Hörer-Konto (0 €) inklusive 2 Vollversionen nach 1-Klick Registrierung – oder sichere dir dein Lieblings-Hörbuch oder deine Selbsthypnose per Express-Gastkauf (ab 1,99&nbsp;€) mit direktem Magic Link per E-Mail, ganz ohne Registrierung.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
           <Link
             to="/registrieren"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>👉 1-Klick Hörer-Konto (0 €)</span>
             <ArrowRight size={16} />
@@ -878,14 +878,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             to="/pakete"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>⚡ Express-Gastkauf im Ruhe-Shop (ab 1,99 €)</span>
+            <span>⚡ Express-Gastkauf im Ruhe-Shop (ab 1,99&nbsp;€)</span>
             <ArrowRight size={16} />
           </Link>
           <Link
             to="/anmelden"
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] border border-[var(--border)] text-stone-900 dark:text-stone-100 text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
           >
-            <LogIn size={16} className="text-[var(--accent)]" />
+            <LogIn size={16} className="text-emerald-700 dark:text-emerald-400" />
             <span>Hier einloggen</span>
           </Link>
         </div>
