@@ -205,22 +205,26 @@ export default function PricingPackages() {
               {/* 2 Freigeschaltete Datenbank-Sessions */}
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3.5 space-y-2 text-xs">
                 <span className="font-bold text-stone-900 dark:text-stone-100 block text-xs uppercase tracking-wider">
-                  🎁 Sofort nach 1-Klick-Registrierung freigeschaltet:
+                  🎁 Gratis nach 1-Klick-Registrierung freigeschaltet:
                 </span>
                 <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <Moon size={14} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
-                    <span className="text-stone-900 dark:text-stone-100 font-bold">
-                      Selbsthypnose: Tiefer &amp; erholsamer Schlaf
-                    </span>
-                    <span className="text-xs font-mono text-stone-600 dark:text-stone-400 whitespace-nowrap">(12:54 Min.)</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Moon size={14} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
+                      <span className="text-stone-900 dark:text-stone-100 font-bold truncate">
+                        Selbsthypnose: Tiefer Schlaf
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">12:54&nbsp;Min.</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
-                    <span className="text-stone-900 dark:text-stone-100 font-bold">
-                      Meditation: Zur Herzöffnung &amp; Schutzpanzer ablegen
-                    </span>
-                    <span className="text-xs font-mono text-stone-600 dark:text-stone-400 whitespace-nowrap">(16:45 Min.)</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
+                      <span className="text-stone-900 dark:text-stone-100 font-bold truncate">
+                        Meditation: Herzöffnung
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16:45&nbsp;Min.</span>
                   </div>
                 </div>
               </div>
@@ -229,15 +233,15 @@ export default function PricingPackages() {
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Hypnose &amp; Herz-Meditation (Wert: 3,98 €)</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <span><strong className="text-stone-900 dark:text-stone-100">Hörfortschritt geräteübergreifend merken:</strong> Nahtlos weiterhören, wo du aufgehört hast</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Persönlicher Ruhe-Bereich:</strong> Eigene Bibliothek &amp; Stille-Tagebuch</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Schnell &amp; unkompliziert mit Google oder E-Mail</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google oder E-Mail – garantiert 0 € und kein Abo</span>
                 </li>
               </ul>
             </div>
@@ -282,55 +286,61 @@ export default function PricingPackages() {
                 </p>
               </div>
 
-              <div className="py-2 border-y border-[var(--border)]">
+              <div className="py-2.5 border-y border-[var(--border)]">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-2xl sm:text-3xl xl:text-4xl font-bold font-serif text-stone-900 dark:text-stone-100 tracking-tight whitespace-nowrap">
                     1,99&nbsp;€&nbsp;–&nbsp;4,99&nbsp;€
                   </span>
-                  <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">einmalig</span>
+                  <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
                 </div>
-                <span className="text-xs text-amber-800 dark:text-amber-300 block mt-0.5 font-bold">
+                <span className="text-xs text-amber-800 dark:text-amber-300 block mt-1 font-bold">
                   Express-Gastkauf mit PayPal, Apple Pay &amp; Karte
+                </span>
+                <span className="text-[11px] text-stone-600 dark:text-stone-400 block mt-0.5 font-medium">
+                  Keine Registrierung notwendig • Kein Passwort nötig • Nur zahlen &amp; sofort hören
                 </span>
               </div>
 
-              {/* 3 Plakative Kategorien */}
+              {/* 3 Plakative Kategorien ohne hässliche Zeilenumbrüche */}
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-stone-900 dark:text-stone-100">
-                    <span className="flex items-center gap-1.5">
-                      <BookOpen size={13} className="text-amber-700 dark:text-amber-300 shrink-0" />
-                      <span>Hörbücher (4,99 €)</span>
+                <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <BookOpen size={14} className="text-amber-700 dark:text-amber-300 shrink-0" />
+                      <span className="truncate">Hörbücher</span>
+                      <span className="text-[11px] font-mono text-amber-800 dark:text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">4,99&nbsp;€</span>
                     </span>
-                    <span className="text-xs font-mono text-emerald-800 dark:text-emerald-300 font-bold shrink-0 whitespace-nowrap">58 Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">58&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400">
+                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                     Ganze Geschichten über Wandel, Loslassen &amp; echtes Menschsein.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-stone-900 dark:text-stone-100">
-                    <span className="flex items-center gap-1.5">
-                      <Moon size={13} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
-                      <span>Gezielte Selbsthypnosen (1,99 €)</span>
+                <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <Moon size={14} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
+                      <span className="truncate">Gezielte Selbsthypnosen</span>
+                      <span className="text-[11px] font-mono text-indigo-800 dark:text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
                     </span>
-                    <span className="text-xs font-mono text-emerald-800 dark:text-emerald-300 font-bold shrink-0 whitespace-nowrap">15 Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">15&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400">
+                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                     Gesunde Ernährung, Selbstbewusstsein, Fokus &amp; Konzentration.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-stone-900 dark:text-stone-100">
-                    <span className="flex items-center gap-1.5">
-                      <Heart size={13} className="text-rose-600 dark:text-rose-400 shrink-0" />
-                      <span>Geführte Meditationen (1,99 €)</span>
+                <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
+                      <span className="truncate">Geführte Meditationen</span>
+                      <span className="text-[11px] font-mono text-rose-800 dark:text-rose-300 bg-rose-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
                     </span>
-                    <span className="text-xs font-mono text-emerald-800 dark:text-emerald-300 font-bold shrink-0 whitespace-nowrap">16–20 Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16–20&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400">
+                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                     Innere Ruhe &amp; Erdung, Inneres Kind, Herzkompass.
                   </p>
                 </div>
@@ -344,7 +354,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">App-Download inklusive:</strong> Offline im Flugmodus anhören</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Offline-Download inklusive:</strong> Als MP3 herunterladen oder in der App offline anhören</span>
                 </li>
               </ul>
             </div>

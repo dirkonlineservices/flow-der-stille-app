@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { AdminTools } from './AdminTools';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
+import NewsletterBanner from './NewsletterBanner';
 import { getSupabase } from '../lib/supabaseClient';
 import { getOfflineHoerproben } from '../lib/offlineProductsService';
 import { AppDownloadBanner } from './AppDownloadBanner';
@@ -54,6 +55,7 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
+  const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
   const [hasHoerproben, setHasHoerproben] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [openFooterSilos, setOpenFooterSilos] = useState<Record<string, boolean>>({
@@ -422,6 +424,15 @@ export default function Layout() {
                 </Link>
               </li>
               <li>
+                <button
+                  type="button"
+                  onClick={() => setIsNewsletterOpen(true)}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5 cursor-pointer text-left font-medium"
+                >
+                  ✉️ Newsletter abonnieren
+                </button>
+              </li>
+              <li>
                 <Link to="/konto-loeschen" onClick={() => handleMenuClick('Konto löschen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Konto &amp; Daten löschen
                 </Link>
@@ -436,7 +447,14 @@ export default function Layout() {
             <img src="/logo-transparent.png" alt="Flow der Stille Logo" width="20" height="20" className="w-5 h-5 object-contain" decoding="async" />
             <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa und Dirk</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsNewsletterOpen(true)}
+              className="px-3 py-1 rounded-lg bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-[11px] font-semibold hover:border-[var(--accent)] transition shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+            >
+              <span>✉️ Newsletter</span>
+            </button>
             <Link to="/kontakt" className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-semibold hover:opacity-90 transition shadow-xs">
               Kontakt aufnehmen
             </Link>
@@ -444,6 +462,24 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+
+      {/* 🌟 Newsletter Modal Dialog */}
+      {isNewsletterOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[var(--border)] relative">
+            <button
+              onClick={() => setIsNewsletterOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition cursor-pointer"
+              aria-label="Schließen"
+            >
+              <X size={20} />
+            </button>
+            <div className="pt-2">
+              <NewsletterBanner variant="in-content" />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Slide-Up Menü (Drawer) für Mobil & Desktop "Mehr" */}
       {isSlideUpOpen && (

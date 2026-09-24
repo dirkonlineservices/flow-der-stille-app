@@ -5,7 +5,6 @@ import {
   Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import NewsletterBanner from './NewsletterBanner';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
 
@@ -183,48 +182,90 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </span>
         </div>
 
-        {/* 🌟 LOGIN- & REGISTRIERUNGS-BEREICH (Flach, symmetrisch, raumsparend) */}
-        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <div className="flex-1 min-w-0">
-              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
+        {/* 🌟 FAIRE MODELLE PREVIEW (100% OHNE ABO) */}
+        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--accent)]/40 shadow-2xs max-w-4xl mx-auto text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-0.5">
                 <Sparkles size={13} />
-                <span>Kostenlos mitmachen &amp; unser Herzensprojekt unterstützen</span>
+                <span>100 % Ohne Abo • Dauerhaft faire Preise</span>
               </div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
-                Jetzt registrieren oder einloggen
+                Faire Modelle für jeden Weg
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1 leading-relaxed">
-                Hilf uns zu wachsen, damit wir echte Entspannung dauerhaft günstig ohne Abo und ohne Werbung anbieten können. Gratis-Meditation sofort aktiv!
-              </p>
+            </div>
+            <Link
+              to="/pakete"
+              className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition inline-flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            >
+              <span>Alle Pakete &amp; Modelle ansehen</span>
+              <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          {/* 3 Spalten: Gast, Registriert, Express-Gastkauf */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3">
+            {/* Modell 1: Freier Gastzugang */}
+            <div className="p-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span className="text-xs font-bold text-[var(--text-main)]">1. Freier Gast-Zugang</span>
+                  <span className="px-2 py-0.5 rounded-md bg-stone-500/10 text-stone-700 dark:text-stone-300 font-bold text-[11px]">0 €</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                  Sofort reinhören ohne Anmeldung. Klangproben, geführte Atemübungen &amp; täglicher Impuls direkt im Web.
+                </p>
+              </div>
+              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold pt-2 block">
+                ✓ Ohne Passwort sofort starten
+              </span>
             </div>
 
-            {/* Kompakte, symmetrische Buttons direkt daneben auf Desktop */}
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full md:w-auto">
-              <Link
-                to="/registrieren"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Kostenlos registrieren</span>
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/anmelden"
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs sm:text-sm font-bold active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-              >
-                <LogIn size={16} className="text-[var(--accent)]" />
-                <span>Einloggen</span>
-              </Link>
+            {/* Modell 2: Kostenloses Hörer-Konto */}
+            <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/30 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">2. Hörer-Konto</span>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-700 text-white font-bold text-[11px]">0 €</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                  2 geführte Vollversionen (Schlaf-Hypnose &amp; Herz-Meditation) mit 1-Klick aktivieren, Streaks &amp; Favoriten speichern.
+                </p>
+              </div>
+              <div className="pt-2 flex items-center justify-between">
+                <Link to="/registrieren" className="text-[11px] text-emerald-800 dark:text-emerald-300 font-bold hover:underline inline-flex items-center gap-0.5">
+                  1-Klick aktivieren →
+                </Link>
+                <Link to="/anmelden" className="text-[11px] text-[var(--text-muted)] hover:underline">
+                  Einloggen
+                </Link>
+              </div>
+            </div>
+
+            {/* Modell 3: Express-Gastkauf */}
+            <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/30 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf</span>
+                  <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-[11px]">ab 1,99 €</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
+                  Hörbücher &amp; Selbsthypnosen einzeln kaufen. Privater Magic Link per E-Mail für jedes Gerät – kein Passwort nötig.
+                </p>
+              </div>
+              <span className="text-[10px] text-amber-800 dark:text-amber-300 font-semibold pt-2 block">
+                ✓ Sofort abspielen &amp; MP3-Download
+              </span>
             </div>
           </div>
 
           {/* Vertrauens-Signale dezent in einer flachen Zeile */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
-            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <Check size={14} strokeWidth={2.5} /> Gratis Meditation sofort aktiv
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-1 text-[11px] sm:text-xs text-[var(--text-muted)] pt-2.5 mt-2.5 border-t border-[var(--border)]/60">
+            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium">
+              <Check size={14} strokeWidth={2.5} /> Kein Abo &amp; keine versteckten Kosten
             </span>
             <span className="flex items-center gap-1">
-              <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten nötig
+              <Check size={14} strokeWidth={2.5} /> Keine Zahlungsdaten für Gratis-Inhalte
             </span>
             <span className="flex items-center gap-1">
               <Check size={14} strokeWidth={2.5} /> 100 % Werbefrei
@@ -232,6 +273,98 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
         </div>
       </section>
+
+      {/* ─── TAGESIMPULS DIREKT UNTER DEM HERO (Schlank & Angenehm groß) ── */}
+      <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-6 shadow-2xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={16} className="text-[var(--accent)]" />
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
+                Täglicher Impuls
+              </span>
+            </div>
+            <blockquote className="text-base sm:text-lg text-[var(--text-main)] italic font-serif leading-relaxed border-l-2 border-[var(--accent)] pl-4 py-1">
+              {todaysWisdom.text}
+            </blockquote>
+          </div>
+
+          <div className="shrink-0 sm:self-center">
+            <button
+              onClick={() => {
+                handleCompleteWisdom();
+                if (!user) {
+                  setShowWisdomProgressModal(true);
+                }
+              }}
+              disabled={loading}
+              className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
+                isCompleted 
+                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' 
+                  : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-xs active:scale-95'
+              }`}
+            >
+              {isCompleted ? <Check size={15} /> : null}
+              {isCompleted ? 'Reflektiert' : 'Als reflektiert markieren'}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 🌟 DIALOG: FORTSCHRITT SPEICHERN NACH REFLEXION FÜR GÄSTE */}
+      {showWisdomProgressModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[var(--accent)] text-center relative">
+            <button
+              onClick={() => setShowWisdomProgressModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition cursor-pointer"
+              aria-label="Schließen"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 flex items-center justify-center mx-auto mb-4">
+              <Check size={28} strokeWidth={2.5} />
+            </div>
+
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
+              Täglicher Impuls reflektiert
+            </span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)] mt-1 mb-2.5">
+              Fortschritt dauerhaft speichern?
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
+              Wunderbar, du hast dir heute einen Moment der Stille geschenkt! 
+              Dein täglicher Reflexions-Fortschritt und deine Serie (Streak) können dauerhaft in deinem Profil gespeichert werden, sobald du dich kostenlos registriert hast.
+            </p>
+
+            <div className="space-y-2.5">
+              <Link
+                to="/registrieren"
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>👉 Jetzt kostenlos registrieren &amp; Fortschritt sichern</span>
+                <ArrowRight size={17} />
+              </Link>
+              <Link
+                to="/anmelden"
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="w-full py-3 px-6 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <LogIn size={16} className="text-[var(--accent)]" />
+                <span>Bereits registriert? Hier einloggen</span>
+              </Link>
+              <button
+                onClick={() => setShowWisdomProgressModal(false)}
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] pt-2 transition cursor-pointer"
+              >
+                Schließen (ohne Speichern fortfahren)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── 2. CUSTOMER JOURNEY: BEDÜRFNIS-FINDER (FÜR GESTRESSTE NUTZER) ── */}
       <section className="space-y-4">
@@ -708,145 +841,27 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 5. TAGESIMPULS ÜBER DIE VOLLE BREITE (Schlank & Angenehm groß) ── */}
-      <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-5 sm:p-6 shadow-2xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles size={16} className="text-[var(--accent)]" />
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--accent)]">
-                Täglicher Impuls
-              </span>
-            </div>
-            <blockquote className="text-base sm:text-lg text-[var(--text-main)] italic font-serif leading-relaxed border-l-2 border-[var(--accent)] pl-4 py-1">
-              {todaysWisdom.text}
-            </blockquote>
-          </div>
-
-          <div className="shrink-0 sm:self-center">
-            <button
-              onClick={() => {
-                handleCompleteWisdom();
-                if (!user) {
-                  setShowWisdomProgressModal(true);
-                }
-              }}
-              disabled={loading}
-              className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
-                isCompleted 
-                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' 
-                  : 'bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-xs active:scale-95'
-              }`}
-            >
-              {isCompleted ? <Check size={15} /> : null}
-              {isCompleted ? 'Reflektiert' : 'Als reflektiert markieren'}
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 🌟 DIALOG: FORTSCHRITT SPEICHERN NACH REFLEXION FÜR GÄSTE */}
-      {showWisdomProgressModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[var(--accent)] text-center relative">
-            <button
-              onClick={() => setShowWisdomProgressModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition cursor-pointer"
-              aria-label="Schließen"
-            >
-              <X size={20} />
-            </button>
-
-            <div className="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
-              <Check size={28} strokeWidth={2.5} />
-            </div>
-
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
-              Täglicher Impuls reflektiert
-            </span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)] mt-1 mb-2.5">
-              Fortschritt dauerhaft speichern?
-            </h3>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-6">
-              Wunderbar, du hast dir heute einen Moment der Stille geschenkt! 
-              Dein täglicher Reflexions-Fortschritt und deine Serie (Streak) können dauerhaft in deinem Profil gespeichert werden, sobald du dich kostenlos registriert hast.
-            </p>
-
-            <div className="space-y-2.5">
-              <Link
-                to="/registrieren"
-                onClick={() => setShowWisdomProgressModal(false)}
-                className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>👉 Jetzt kostenlos registrieren &amp; Fortschritt sichern</span>
-                <ArrowRight size={17} />
-              </Link>
-              <Link
-                to="/anmelden"
-                onClick={() => setShowWisdomProgressModal(false)}
-                className="w-full py-3 px-6 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-main)] text-sm font-semibold hover:border-[var(--accent)] active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <LogIn size={16} className="text-[var(--accent)]" />
-                <span>Bereits registriert? Hier einloggen</span>
-              </Link>
-              <button
-                onClick={() => setShowWisdomProgressModal(false)}
-                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] pt-2 transition cursor-pointer"
-              >
-                Schließen (ohne Speichern fortfahren)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── 6. KOSTENLOSE HÖRPROBEN (Kompakt & Angenehm lesbar) ───────────── */}
-      {hoerprobenList.length > 0 && (
-        <section className="bg-[var(--bg-card)] p-5 sm:p-6 rounded-2xl border border-[var(--border)] shadow-2xs space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-md bg-[var(--accent)] text-white">
-                Hörproben
-              </span>
-              <h3 className="font-serif font-semibold text-base sm:text-lg text-[var(--text-main)]">
-                Kostenlose Hörproben ({hoerprobenList.length})
-              </h3>
-            </div>
-            <Link
-              to="/premium?filter=H%C3%B6rprobe"
-              className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1"
-            >
-              Alle im Shop →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {hoerprobenList.slice(0, 4).map((p: any) => (
-              <HoerprobenPlayer key={p.id} produkt={p} variant="compact" />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ─── 7. NEWSLETTER (KOMPAKT & SCHLANK) ────────────────────────────── */}
-      <section className="pt-1">
-        <NewsletterBanner variant="in-content" />
-      </section>
-
-      {/* ─── ZUSÄTZLICHER SCHLANKER CALL-TO-ACTION FÜR GÄSTE AM SEITENENDE ─── */}
-      <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-6 text-center shadow-sm space-y-3">
-        <h4 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)]">
+      {/* ─── 5. CALL-TO-ACTION FÜR GÄSTE AM SEITENENDE (Faire Modelle & Magic Link) ─── */}
+      <section className="bg-gradient-to-r from-[var(--accent)]/15 via-[var(--bg-card)] to-[var(--accent)]/15 border-2 border-[var(--accent)]/40 rounded-2xl p-5 sm:p-7 text-center shadow-sm space-y-3">
+        <h4 className="text-xl sm:text-2xl font-serif font-bold text-[var(--text-main)]">
           Bereit für deinen persönlichen Ruhepol?
         </h4>
-        <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
-          Registriere dich jetzt in 20 Sekunden kostenlos – deine erste Meditation ist sofort für dich freigeschaltet.
+        <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed">
+          Wähle deinen Weg: Starte 100 % kostenfrei mit unserem Hörer-Konto (0 €) inklusive 2 Vollversionen nach 1-Klick Registrierung – oder sichere dir dein Lieblings-Hörbuch oder deine Selbsthypnose per Express-Gastkauf (ab 1,99 €) mit direktem Magic Link per E-Mail, ganz ohne Registrierung.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <Link
             to="/registrieren"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>👉 Jetzt kostenlos registrieren (0 €)</span>
+            <span>👉 1-Klick Hörer-Konto (0 €)</span>
+            <ArrowRight size={16} />
+          </Link>
+          <Link
+            to="/pakete"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span>⚡ Express-Gastkauf &amp; Modelle (ab 1,99 €)</span>
             <ArrowRight size={16} />
           </Link>
           <Link

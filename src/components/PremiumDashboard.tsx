@@ -948,8 +948,8 @@ export default function PremiumShopDashboard() {
                 )}
               </div>
 
-              {/* Produktdetails: 2-Spalten für eingeloggtes Kaufen, 1-Spalte Vollbreite für Gäste */}
-              <div className={`flex flex-col ${!hatZugriff && user ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-10`}>
+              {/* Produktdetails: 2-Spalten für eingeloggte Nutzer und für Gastkäufe, 1-Spalte bei freigeschalteten Werken */}
+              <div className={`flex flex-col ${!hatZugriff && (user || !istKostenlos) ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-8`}>
                 
                 <div className="flex-1 flex flex-col w-full">
                     <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-1 leading-tight">{produkt.titel}</h3>
@@ -963,8 +963,8 @@ export default function PremiumShopDashboard() {
                       className="mb-3"
                     />
                     {!hatZugriff && !istKostenlos && (
-                        <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-4">
-                            {produkt.preis} €
+                        <div className="text-[1.5rem] font-bold text-stone-900 dark:text-stone-100 mb-4">
+                            {produkt.preis} € <span className="text-xs font-semibold text-stone-600 dark:text-stone-400 font-sans">einmalig • kein Abo</span>
                         </div>
                     )}
                     {!hatZugriff && istKostenlos && (
@@ -972,23 +972,23 @@ export default function PremiumShopDashboard() {
                           <span className="text-[1.3rem] font-bold text-emerald-700 dark:text-emerald-300">
                             100% Kostenfrei
                           </span>
-                          <span className="text-xs font-mono line-through text-[var(--text-muted)]">
+                          <span className="text-xs font-mono line-through text-stone-500">
                             1,99 €
                           </span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
-                            Wert: 1,99 €
+                          <span className="text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/25">
+                            Gratis mit Hörer-Konto (Wert: 1,99 €)
                           </span>
                         </div>
                     )}
                     
-                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
+                    <p className="text-stone-700 dark:text-stone-300 text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
 
                     {produkt.audio_hinweis && (
-                      <div className="mt-4 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] flex items-start gap-3 shadow-2xs">
-                        <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
+                      <div className="mt-4 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-stone-700 dark:text-stone-300 flex items-start gap-3 shadow-2xs">
+                        <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <div className="leading-relaxed">
-                          <span className="font-semibold text-[var(--text-main)] block mb-0.5">
-                            {istKostenlos ? '🌿 Kostenfreie Anwendung (nach Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
+                          <span className="font-semibold text-stone-900 dark:text-stone-100 block mb-0.5">
+                            {istKostenlos ? '🌿 Kostenfreie Anwendung (nach 1-Klick-Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
                           </span>
                           <span className="whitespace-pre-line leading-relaxed">
                             {istKostenlos 
@@ -1003,22 +1003,22 @@ export default function PremiumShopDashboard() {
 
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-5 md:mt-7">
+                      <div className="mt-5 md:mt-6">
                         {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
                           <Link
                             to={produkt.id?.includes('mensch') || produkt.id?.includes('echt') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
-                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
+                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group text-center"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                            <span>Mit 1 Klick Kapitel 1 kostenlos anhören →</span>
+                            <span>Kapitel 1 kostenlos reinhören &amp; Anleitung öffnen →</span>
                           </Link>
                         ) : (
                           <Link
                             to={`/audio/${produkt.id}?autoplay=true`}
-                            className="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group"
+                            className="w-full py-3.5 px-5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 group text-center"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                            <span>Mit 1 Klick kostenlose Hörprobe &amp; Anleitung abspielen →</span>
+                            <span>Kostenlose Hörprobe &amp; Anleitung öffnen →</span>
                           </Link>
                         )}
                       </div>
@@ -1027,43 +1027,75 @@ export default function PremiumShopDashboard() {
 
                 {/* Checkout-Button Spalte – für eingeloggte Nutzer ODER Gastkauf bei kostenpflichtigen Produkten */}
                 {!hatZugriff && (user || !istKostenlos) && (
-                    <div className="lg:w-[45%] xl:w-[40%] pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)]">
-                        <div className="h-full w-full flex flex-col justify-center items-center lg:pl-8">
-                            <div className="w-full max-w-md lg:max-w-[340px] flex flex-col gap-3">
-                                {!user && !isNativeApp && (
-                                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-stone-800 dark:text-stone-200 text-center space-y-1">
-                                    <span className="font-bold flex items-center justify-center gap-1.5 text-amber-800 dark:text-amber-300">
-                                      <Key size={14} /> Express-Gastkauf mit Magic Link
-                                    </span>
-                                    <p className="text-[11px] text-stone-600 dark:text-stone-400">
-                                      Direkt per PayPal/Karte zahlen – dein Zugangslink kommt sofort per Mail. Kein Passwort nötig.
-                                    </p>
+                    <div className="lg:w-[380px] xl:w-[420px] shrink-0 pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:pl-8 flex flex-col justify-center">
+                        <div className="w-full flex flex-col gap-3">
+                            {!user && !isNativeApp && (
+                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-stone-800 dark:text-stone-200 text-left space-y-2">
+                                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
+                                  <Key size={15} className="text-amber-700 shrink-0" />
+                                  <span>Express-Gastkauf mit Magic Link</span>
+                                </div>
+                                <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed">
+                                  <strong>Keine Registrierung &amp; kein Passwort nötig:</strong> Bezahle einfach einmalig per PayPal, Karte oder SEPA. Du musst mehr als bezahlen nicht tun.
+                                </p>
+                                <div className="pt-1.5 border-t border-amber-500/20 text-[11px] text-stone-700 dark:text-stone-300 space-y-1">
+                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
+                                    <span>Sofort im Web-Player abspielen</span>
                                   </div>
-                                )}
-                                {isNativeApp ? (
-                                    <GooglePlayCheckoutButton 
-                                      produkt={produkt}
-                                      user={user}
-                                      setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={() => handleProductPurchaseSuccess(produkt)}
-                                    />
-                                ) : (
-                                    <PayPalCheckoutButton 
-                                      produkt={produkt} 
-                                      user={user} 
-                                      setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={() => handleProductPurchaseSuccess(produkt)} 
-                                      paypalClientId={PAYPAL_CLIENT_ID}
-                                    />
-                                )}
-                            </div>
+                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
+                                    <span>Offline-Download als MP3 &amp; in der App</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
+                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
+                                    <span>Privater Magic Link per E-Mail für jedes Gerät</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {isNativeApp ? (
+                                <GooglePlayCheckoutButton 
+                                  produkt={produkt}
+                                  user={user}
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={() => handleProductPurchaseSuccess(produkt)}
+                                />
+                            ) : (
+                                <PayPalCheckoutButton 
+                                  produkt={produkt} 
+                                  user={user} 
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={() => handleProductPurchaseSuccess(produkt)} 
+                                  paypalClientId={PAYPAL_CLIENT_ID}
+                                />
+                            )}
+
+                            {!user && !isNativeApp && (
+                              <div className="text-center pt-1">
+                                <Link
+                                  to={`/registrieren?redirectTo=${encodeURIComponent(location.pathname + `#product-${produkt.id}`)}`}
+                                  className="text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 underline transition"
+                                >
+                                  Oder lieber vorab ein kostenloses Hörer-Konto anlegen?
+                                </Link>
+                              </div>
+                            )}
                         </div>
                     </div>
                 )}
               </div>
 
               {!hatZugriff && !user && istKostenlos && (
-                <div className="mt-6 md:mt-8">
+                <div className="mt-6 md:mt-8 p-4 sm:p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+                  <div className="flex items-center gap-2 mb-2 font-bold text-emerald-950 dark:text-emerald-200 text-sm">
+                    <Sparkles size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
+                    <span>Diese Anwendung ist 100 % kostenfrei nach Registrierung</span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mb-3 leading-relaxed">
+                    Registriere dich kostenlos mit 1 Klick über Google oder E-Mail, um die vollständige Session sofort und dauerhaft freizuschalten (keine Zahlungsdaten, kein Abo):
+                  </p>
                   <QuickSocialUnlockBox
                     produkt={produkt}
                     returnPath={`/premium-dashboard#product-${produkt.id}`}
