@@ -365,7 +365,7 @@ export default function PricingPackages() {
                 className="w-full py-3.5 px-4 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Gift size={15} />
-                <span>Mediathek &amp; Einmalkäufe öffnen</span>
+                <span>Zum Ruhe-Shop &amp; Einmalkauf (ab 1,99 €)</span>
               </Link>
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
                 Einmal kaufen • Kein Abo • Jederzeit abspielbar
@@ -610,7 +610,7 @@ export default function PricingPackages() {
             to="/premium"
             className="px-5 py-2.5 rounded-full bg-emerald-700 text-white text-xs sm:text-sm font-bold hover:bg-emerald-800 transition shadow-xs cursor-pointer"
           >
-            Alle Einmalkäufe ansehen
+            Ruhe-Shop öffnen
           </Link>
         </div>
       </section>

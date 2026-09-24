@@ -567,8 +567,8 @@ export default function PremiumShopDashboard() {
           <ArrowLeft size={14} />
           <span>Zurück</span>
         </Link>
-        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Premium Inhalte</h1>
-        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
+        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Ruhe-Shop</h1>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Hörbücher, Meditationen &amp; Selbsthypnosen einzeln ab 1,99 € – 100 % ohne Abo.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">
@@ -576,7 +576,7 @@ export default function PremiumShopDashboard() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
           <input 
             type="text"
-            placeholder="Suche nach Inhalten..."
+            placeholder="Suche im Ruhe-Shop (z. B. Schlaf, Herzöffnung, Loslassen)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all shadow-sm"

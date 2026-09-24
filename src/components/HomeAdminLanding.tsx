@@ -246,7 +246,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/30 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf</span>
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf (Ruhe-Shop)</span>
                   <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-[11px]">ab 1,99 €</span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
@@ -472,7 +472,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--border)] mb-5">
           <div>
             <h2 className="font-serif font-semibold text-xl sm:text-2xl text-[var(--text-main)]">
-              Unsere Mediathek nach Kategorien
+              Unser Ruhe-Shop nach Kategorien
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
               Alle Inhalte einzeln freischaltbar – 100 % werbefrei und ohne Abonnement.
@@ -482,7 +482,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             to="/premium" 
             className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
           >
-            Gesamter Shop →
+            Gesamter Ruhe-Shop →
           </Link>
         </div>
 
@@ -861,7 +861,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             to="/pakete"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-md active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>⚡ Express-Gastkauf &amp; Modelle (ab 1,99 €)</span>
+            <span>⚡ Express-Gastkauf im Ruhe-Shop (ab 1,99 €)</span>
             <ArrowRight size={16} />
           </Link>
           <Link

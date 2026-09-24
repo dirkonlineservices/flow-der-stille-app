@@ -318,10 +318,10 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-serif font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors mb-1">
-                    Premium-Mediathek: Einzeln ab 1,99 €
+                    Ruhe-Shop: Einzeln ab 1,99 €
                   </h3>
                   <p className="text-[var(--color-text-muted)] text-sm sm:text-base leading-relaxed">
-                    Entdecke Selbsthypnosen, geführte Meditationen und Klangwelten – ohne monatliches Abo, verfügbar in deinem registrierten Konto.
+                    Entdecke Selbsthypnosen, geführte Meditationen und Hörbücher – ohne monatliches Abo, einzeln freischaltbar.
                   </p>
                 </div>
                 <ArrowRight size={20} className="text-[var(--color-accent-primary)] shrink-0 hidden sm:block group-hover:translate-x-1 transition-transform" />

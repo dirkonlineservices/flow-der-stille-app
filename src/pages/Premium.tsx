@@ -12,10 +12,10 @@ export default function Premium() {
   return (
     <div className="pt-20">
       <SEO 
-        title="Premium Mediathek – Hörbücher, Meditationen & Selbsthypnosen"
-        description="Entdecke exklusive Hörbücher, geführte Meditationen und gezielte Selbsthypnosen einzeln ab 1,99 € ohne monatliches Abonnement. Sofort anhören & downloaden."
+        title="Ruhe-Shop – Hörbücher, Meditationen & Selbsthypnosen (Ohne Abo)"
+        description="Entdecke Hörbücher, geführte Meditationen und gezielte Selbsthypnosen einzeln ab 1,99 € ohne monatliches Abonnement im Flow der Stille Ruhe-Shop. Sofort anhören & downloaden."
         canonicalUrl="https://flow-der-stille.de/premium"
-        keywords="Premium Meditationen, Hörbücher Achtsamkeit, Selbsthypnose MP3, Meditation ohne Abo, Flow der Stille Mediathek, Lisa Ragusa, Jacqueline Schmetzer, Audio Download Meditation"
+        keywords="Ruhe-Shop, Meditation ohne Abo, Hörbücher kaufen, Selbsthypnose MP3, Flow der Stille Shop, Lisa Ragusa, Jacqueline Schmetzer, Audio Download Meditation"
         schemaJson={productsSchema}
       />
       <PremiumDashboard />
