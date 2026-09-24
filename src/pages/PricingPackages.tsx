@@ -270,7 +270,10 @@ export default function PricingPackages() {
                 </Link>
               )}
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
-                Über Google, Meta (Facebook) oder E-Mail • 100 % sicher &amp; abofrei
+                <span>Über Google, Meta (Facebook) oder E-Mail</span>
+                <span className="block mt-0.5 whitespace-nowrap font-medium text-emerald-800 dark:text-emerald-300">
+                  100&nbsp;% sicher &amp; abofrei
+                </span>
               </p>
             </div>
           </div>
@@ -370,10 +373,15 @@ export default function PricingPackages() {
             <div className="pt-4 space-y-2">
               <Link
                 to="/ruhe-shop"
-                className="w-full py-3.5 px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
+                className="w-full py-3.5 px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex flex-col items-center justify-center gap-0.5 cursor-pointer text-center"
               >
-                <Gift size={15} />
-                <span>Zum Ruhe-Shop &amp; Einmalkauf (ab 1,99&nbsp;€)</span>
+                <div className="flex items-center justify-center gap-1.5">
+                  <Gift size={15} className="shrink-0" />
+                  <span>Zum Ruhe-Shop &amp; Einmalkauf</span>
+                </div>
+                <span className="text-xs font-semibold text-emerald-100 whitespace-nowrap">
+                  (ab 1,99&nbsp;€)
+                </span>
               </Link>
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
                 Einmal kaufen • Kein Abo • Jederzeit abspielbar
@@ -452,7 +460,7 @@ export default function PricingPackages() {
       )}
 
       {/* 4. MAGIC LINK FALLBACK & SICHERHEITS-BEREICH */}
-      <section className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl space-y-6">
+      <section id="magic-link" className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl space-y-6">
         <div className="max-w-2xl mx-auto text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-2 border border-amber-500/30">
             <Key size={24} />

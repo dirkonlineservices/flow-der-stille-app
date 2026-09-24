@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key, ExternalLink } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -1042,7 +1042,7 @@ export default function PremiumShopDashboard() {
 
                                 {/* Kaufanleitung in 3 einfachen Schritten */}
                                 <div className="pt-2 border-t border-amber-500/20 space-y-2 text-[11px] text-[var(--text-main)]">
-                                  <span className="font-bold text-amber-950 block text-xs">Kaufanleitung in 3 Schritten:</span>
+                                  <span className="font-bold text-amber-950 dark:text-amber-200 block text-xs">Kaufanleitung in 3 Schritten:</span>
                                   <div className="flex items-start gap-2">
                                     <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
                                     <span>Unten das Häkchen für den sofortigen Beginn setzen.</span>
@@ -1055,6 +1055,30 @@ export default function PremiumShopDashboard() {
                                     <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
                                     <span>Fertig! Du kannst sofort im Web-Player hören. Dein privater Magic Link wird zusätzlich per E-Mail gesendet.</span>
                                   </div>
+
+                                  {/* Direkt vor Ort integrierte Magic-Link Erklärung */}
+                                  <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[11px] space-y-1">
+                                    <div className="flex items-center gap-1.5 font-bold text-amber-950 dark:text-amber-200">
+                                      <Sparkles size={12} className="text-amber-800 dark:text-amber-300 shrink-0" />
+                                      <span>Wie funktioniert der Magic Link?</span>
+                                    </div>
+                                    <p className="text-[var(--text-muted)] leading-relaxed">
+                                      Ganz ohne Passwort: Nach dem Kauf klickst du einfach auf den Link in deiner E-Mail und deine Session öffnet sich sofort auf Smartphone, Tablet oder PC. Zudem speichert dein aktueller Browser den Zugang automatisch.
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="pt-1 flex items-center justify-end">
+                                  <Link
+                                    to="/pakete#magic-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] text-amber-900 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 font-semibold underline inline-flex items-center gap-1"
+                                    title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
+                                  >
+                                    <span>Ausführliche Details &amp; FAQ zum Magic Link ansehen</span>
+                                    <ExternalLink size={11} className="shrink-0" />
+                                  </Link>
                                 </div>
                               </div>
                             )}
