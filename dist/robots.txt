@@ -27,8 +27,6 @@ Disallow: /blog/neu
 Disallow: /blog/new
 
 # 🛑 Interne Entwurfs- & Admin-Vorschauseiten sperren
-Disallow: /pakete
-Disallow: /preise
 Disallow: /vorteile
 Disallow: /angebote
 

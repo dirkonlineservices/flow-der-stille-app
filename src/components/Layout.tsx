@@ -319,6 +319,11 @@ export default function Layout() {
                 </Link>
               </li>
               <li>
+                <Link to="/pakete" onClick={() => handleMenuClick('Modelle & Pakete')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
+                  🌿 Modelle &amp; Pakete (Ohne Abo)
+                </Link>
+              </li>
+              <li>
                 <Link to="/app" onClick={() => handleMenuClick('Android App')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Android App im Play Store
                 </Link>

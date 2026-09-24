@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
@@ -1025,11 +1025,21 @@ export default function PremiumShopDashboard() {
                     )}
                 </div>
 
-                {/* Checkout-Button Spalte – nur wenn eingeloggt und noch kein Zugriff */}
-                {!hatZugriff && user && (
+                {/* Checkout-Button Spalte – für eingeloggte Nutzer ODER Gastkauf bei kostenpflichtigen Produkten */}
+                {!hatZugriff && (user || !istKostenlos) && (
                     <div className="lg:w-[45%] xl:w-[40%] pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)]">
                         <div className="h-full w-full flex flex-col justify-center items-center lg:pl-8">
                             <div className="w-full max-w-md lg:max-w-[340px] flex flex-col gap-3">
+                                {!user && !isNativeApp && (
+                                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-stone-800 dark:text-stone-200 text-center space-y-1">
+                                    <span className="font-bold flex items-center justify-center gap-1.5 text-amber-800 dark:text-amber-300">
+                                      <Key size={14} /> Express-Gastkauf mit Magic Link
+                                    </span>
+                                    <p className="text-[11px] text-stone-600 dark:text-stone-400">
+                                      Direkt per PayPal/Karte zahlen – dein Zugangslink kommt sofort per Mail. Kein Passwort nötig.
+                                    </p>
+                                  </div>
+                                )}
                                 {isNativeApp ? (
                                     <GooglePlayCheckoutButton 
                                       produkt={produkt}
@@ -1052,7 +1062,7 @@ export default function PremiumShopDashboard() {
                 )}
               </div>
 
-              {!hatZugriff && !user && (
+              {!hatZugriff && !user && istKostenlos && (
                 <div className="mt-6 md:mt-8">
                   <QuickSocialUnlockBox
                     produkt={produkt}

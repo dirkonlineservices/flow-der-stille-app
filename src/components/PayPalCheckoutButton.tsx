@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { HelpCircle, X, CreditCard, Users, Building2 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
@@ -7,6 +8,7 @@ import { transactionLogger } from '../lib/transactionLogger';
 import { reportCriticalError } from '../lib/errorLogger';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { trackMetaPurchase } from '../lib/metaPixel';
+import { offlineManager } from '../lib/offlineAudioService';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -23,6 +25,8 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   onSuccess,
   paypalClientId,
 }) => {
+  const navigate = useNavigate();
+
   if (!produkt || !produkt.id || !produkt.preis) {
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
@@ -160,6 +164,33 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   const amountVal = details?.purchase_units?.[0]?.amount?.value || parseFloat(produkt?.preis || '0').toFixed(2);
                   const priceValue = parseFloat(amountVal);
                   const orderId = details?.id || 'PP_' + Date.now();
+                  const buyerEmail = details?.payer?.email_address;
+                  const buyerName = details?.payer?.name?.given_name || 'Hörer';
+
+                  // 1. Sofortige lokale Freischaltung auf dem aktuellen Gerät (auch offline im Flugmodus!)
+                  const unlockIds = [produkt?.id];
+                  if (produkt?.id?.includes('mensch')) unlockIds.push('mensch_sein', 'fds_mensch_sein');
+                  if (produkt?.id?.includes('schmetterling')) unlockIds.push('schmetterling', 'fds_schmetterling', 'fds_hoerbuch_schmetterling');
+                  offlineManager.savePurchasedProducts(unlockIds);
+
+                  // 2. Gast-Bestelldaten lokal absichern
+                  try {
+                    const guestOrders = JSON.parse(localStorage.getItem('flow_guest_orders') || '[]');
+                    guestOrders.push({
+                      orderId,
+                      productId: produkt?.id,
+                      productTitle: produkt?.titel,
+                      price: priceValue,
+                      email: buyerEmail,
+                      date: new Date().toISOString()
+                    });
+                    localStorage.setItem('flow_guest_orders', JSON.stringify(guestOrders));
+                    if (buyerEmail) {
+                      localStorage.setItem('flow_guest_email', buyerEmail);
+                    }
+                  } catch (storageErr) {
+                    console.warn('LocalStorage save error:', storageErr);
+                  }
 
                   const supabase = getSupabase();
                   const { data: { session } } = await supabase.auth.getSession();
@@ -168,15 +199,16 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   let edgeFunctionSuccess = false;
                   let isAlreadyCompleted = false;
 
-                  // 1. Invoke Supabase Edge Function process-purchase (updates DB, profile, and sends Resend confirmation email)
-                  // Die Edge Function ist die primäre Source of Truth für den Datenbankeintrag.
+                  // 3. Supabase Edge Function process-purchase aufrufen (mit guest_email & guest_name)
                   try {
                     const fnRes = await supabase.functions.invoke('process-purchase', {
                       body: {
                         transaction_id: orderId,
                         product_id: produkt?.id || 'atemarbeit_herzoeffnung',
                         product_name: produkt?.titel || 'Flow der Stille Premium',
-                        price: priceValue
+                        price: priceValue,
+                        guest_email: buyerEmail,
+                        guest_name: buyerName
                       }
                     });
                     if (fnRes.error) {
@@ -204,12 +236,29 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     );
                   }
 
-                  // 2. Fallback per Upsert:
-                  // Wenn die Edge Function den Kauf erfolgreich verarbeitet hat, startet das Frontend KEINEN eigenen DB-Schreibaufruf mehr.
+                  // 4. Bei Gastkauf: Supabase Magic Link OTP per E-Mail versenden
+                  if (!currentUserId && buyerEmail) {
+                    try {
+                      await supabase.auth.signInWithOtp({
+                        email: buyerEmail,
+                        options: {
+                          emailRedirectTo: `${window.location.origin}/danke?order_id=${encodeURIComponent(orderId)}&product_id=${encodeURIComponent(produkt?.id)}&magic=sent`
+                        }
+                      });
+                      transactionLogger.logSuccess(
+                        'Magic Link Dispatch',
+                        `Magic Link OTP für Gastkauf an ${buyerEmail} übermittelt`,
+                        'auth'
+                      );
+                    } catch (otpErr) {
+                      console.warn('Fallback Magic Link OTP Fehler:', otpErr);
+                    }
+                  }
+
+                  // 5. Fallback per Upsert:
                   // Falls die Edge Function fehlschlägt (!edgeFunctionSuccess), schreibt das Frontend per .upsert() als Fallback in die Datenbank.
-                  if (!edgeFunctionSuccess) {
-                    if (currentUserId) {
-                      // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits als 'completed' verarbeitet war
+                  if (!edgeFunctionSuccess && currentUserId) {
+                    try {
                       const { data: existingKauf } = await supabase
                         .from('kaeufe')
                         .select('status')
@@ -228,7 +277,8 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                             produkt_id: produkt?.id,
                             order_id: orderId,
                             preis: priceValue,
-                            waehrung: 'EUR'
+                            waehrung: 'EUR',
+                            email: user?.email || buyerEmail
                           },
                           { onConflict: 'user_id,produkt_id' }
                         );
@@ -248,13 +298,8 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                           { orderId, priceValue }
                         );
                       }
-                    } else {
-                      transactionLogger.logWarning(
-                        'No User ID for DB Insert',
-                        'Keine User-ID vorhanden für kaeufe-Eintrag. Bitte in der App anmelden.',
-                        'auth',
-                        { orderId }
-                      );
+                    } catch (dbFallbackErr) {
+                      console.warn('Fallback DB error:', dbFallbackErr);
                     }
                   }
 
@@ -283,10 +328,19 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   }
 
                   setShowUnlockBanner(true);
-                  setTimeout(() => {
-                    onSuccess();
-                    setShowUnlockBanner(false);
-                  }, 2000);
+                  if (!currentUserId) {
+                    // Gastkauf: Nach kurzer Bestätigung zur Dankeseite leiten (mit Sofort-Hören & Magic Link Hinweis)
+                    setTimeout(() => {
+                      setShowUnlockBanner(false);
+                      onSuccess();
+                      navigate(`/danke?order_id=${encodeURIComponent(orderId)}&product_id=${encodeURIComponent(produkt?.id)}&magic=sent`);
+                    }, 1200);
+                  } else {
+                    setTimeout(() => {
+                      onSuccess();
+                      setShowUnlockBanner(false);
+                    }, 2000);
+                  }
 
                 } catch (err) {
                   await reportCriticalError({

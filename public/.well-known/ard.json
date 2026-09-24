@@ -54,15 +54,16 @@
       ]
     },
     {
-      "identifier": "urn:air:flow-der-stille.de:content:klangproben",
-      "displayName": "Klangproben & Hörproben",
-      "description": "Kostenlose Klangproben und meditative Hörproben aller Meditationen, Selbsthypnosen und Hörbücher.",
+      "identifier": "urn:air:flow-der-stille.de:commerce:pakete",
+      "displayName": "Modelle & Pakete (Ohne Abo)",
+      "description": "100 % abofreie Modelle: Freier Gast-Zugang, kostenloses Hörer-Konto und faire Einmalkäufe per Magic Link.",
       "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://flow-der-stille.de/llms.txt",
       "representativeQueries": [
-        "Klangproben kostenlos reinhören",
-        "Hörproben Meditation und Hypnose",
-        "Mediathek Audio Vorschau"
+        "Flow der Stille Preise",
+        "Meditation ohne Abo",
+        "Kostenloses Hörer-Konto",
+        "Einmalkauf Magic Link"
       ]
     }
   ]

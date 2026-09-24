@@ -50,21 +50,57 @@ serve(async (req) => {
     if (!bodyText) throw new Error("Request Body ist leer");
     
     const payload = JSON.parse(bodyText);
-    const { transaction_id, product_id, product_name, price } = payload;
+    const { transaction_id, product_id, product_name, price, guest_email, guest_name } = payload;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
-    const supabaseUserClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    let activeUser: any = null;
 
-    const { data: { user }, error: userError } = await supabaseUserClient.auth.getUser();
-    if (userError || !user) throw new Error(`User Auth fehlgeschlagen: ${userError?.message}`);
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const supabaseUserClient = createClient(supabaseUrl, supabaseAnonKey, {
+          global: { headers: { Authorization: authHeader } }
+        });
+        const { data: { user } } = await supabaseUserClient.auth.getUser();
+        if (user) {
+          activeUser = user;
+        }
+      } catch (authErr) {
+        console.warn("User auth header check warning (might be guest):", authErr);
+      }
+    }
 
-    console.log(`Starte Security Check für Order ID: ${transaction_id}`);
+    const userEmail = activeUser?.email || guest_email;
+    if (!userEmail) {
+      throw new Error("Weder authentifizierter Nutzer noch Gast-E-Mail übermittelt.");
+    }
+
+    let activeUserId = activeUser?.id;
+    let magicLinkUrl: string | null = null;
+
+    // Wenn Gast-Kauf vorliegt: Magic Link generieren & ggf. User in Supabase Auth anlegen
+    if (!activeUserId && guest_email) {
+      try {
+        const { data: linkData, error: linkErr } = await supabaseClient.auth.admin.generateLink({
+          type: 'magiclink',
+          email: guest_email,
+          options: {
+            redirectTo: `https://flow-der-stille.de/danke?order_id=${encodeURIComponent(transaction_id || '')}&product_id=${encodeURIComponent(product_id || '')}&magic=sent`
+          }
+        });
+        if (linkData?.user) {
+          activeUserId = linkData.user.id;
+          magicLinkUrl = linkData.properties?.action_link || null;
+        }
+      } catch (linkGenErr) {
+        console.warn("Magic link admin generation warning:", linkGenErr);
+      }
+    }
+
+    console.log(`Starte Security Check für Order ID: ${transaction_id}, User/Gast: ${userEmail}`);
 
     // PayPal Verifizierung (optional in test/dev, but verified if live keys exist)
     const paypalClientId = Deno.env.get('PAYPAL_LIVE_CLIENT_ID') || Deno.env.get('VITE_PAYPAL_CLIENT_ID');
@@ -86,7 +122,6 @@ serve(async (req) => {
     }
 
     const paypalOrderId = transaction_id || ('PP_' + Date.now());
-    const userEmail = user.email;
 
     // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits existierte und den Status 'completed' hatte
     const { data: existingKauf } = await supabaseClient
@@ -98,34 +133,37 @@ serve(async (req) => {
     const isAlreadyCompleted = existingKauf && existingKauf.status === 'completed';
 
     // 1. Transaktion mit .upsert() in DB speichern (onConflict: 'paypal_order_id')
+    const kaufRecord: any = {
+      produkt_id: product_id || 'atemarbeit_herzoeffnung',
+      paypal_order_id: paypalOrderId,
+      preis: price || 1.99,
+      waehrung: 'EUR',
+      status: 'completed',
+      email: userEmail,
+      widerruf_verzicht_akzeptiert: true,
+      updated_at: new Date().toISOString()
+    };
+    if (activeUserId) {
+      kaufRecord.user_id = activeUserId;
+    }
+
     const { data: upsertData, error: dbError } = await supabaseClient
       .from('kaeufe')
-      .upsert(
-        {
-          user_id: user.id,
-          produkt_id: product_id || 'atemarbeit_herzoeffnung',
-          paypal_order_id: paypalOrderId,
-          preis: price || 1.99,
-          waehrung: 'EUR',
-          status: 'completed',
-          email: userEmail,
-          widerruf_verzicht_akzeptiert: true,
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: 'paypal_order_id' }
-      );
+      .upsert(kaufRecord, { onConflict: 'paypal_order_id' });
 
     if (dbError) {
       console.warn("Database upsert warning:", dbError.message);
     }
     
-    // 2. Rollen Update
-    const { error: roleError } = await supabaseClient
-      .from('profiles')
-      .update({ user_role: 'kunde' })
-      .eq('id', user.id);
+    // 2. Rollen Update (falls registrierter User)
+    if (activeUserId) {
+      const { error: roleError } = await supabaseClient
+        .from('profiles')
+        .update({ user_role: 'kunde', is_premium: true })
+        .eq('id', activeUserId);
 
-    if (roleError) console.error("Non-fatal Error Rollen Update:", roleError.message);
+      if (roleError) console.error("Non-fatal Error Rollen Update:", roleError.message);
+    }
 
     // 3. Transaktionsmail via Resend (nur versenden, wenn die Bestellung nicht bereits verarbeitet war)
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
@@ -133,17 +171,35 @@ serve(async (req) => {
     if (isAlreadyCompleted) {
       console.log(`[IDEMPOTENCY] Order ${paypalOrderId} war bereits als 'completed' markiert. Mailversand wird übersprungen.`);
     } else if (resendApiKey && userEmail) {
+      const magicLinkSection = magicLinkUrl ? `
+        <div style="margin: 25px 0; text-align: center;">
+          <a href="${magicLinkUrl}" style="background-color: #3b5c3b; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 30px; font-weight: bold; display: inline-block; font-size: 15px;">
+            ✦ Mit 1 Klick auf jedem Gerät öffnen &amp; anhören
+          </a>
+          <p style="font-size: 11px; color: #78716c; margin-top: 8px;">
+            Kein Passwort nötig – dein persönlicher Magic Link loggt dich direkt ein.
+          </p>
+        </div>
+      ` : `
+        <p>Deine Inhalte stehen ab sofort direkt in der App und im Web-Player für dich bereit.</p>
+      `;
+
       const emailHtml = `
-        <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px;">
-          <h2 style="color: #8A9A8A; margin-top: 0;">Vielen Dank für dein Vertrauen</h2>
-          <p>Dein Kauf von <strong>${product_name || 'Flow der Stille Premium'}</strong> war erfolgreich.</p>
-          <div style="background: #FFFFFF; padding: 15px; border-radius: 8px; border: 1px solid #E3E1D9; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Transaktions-ID:</strong> ${paypalOrderId}</p>
-            <p style="margin: 5px 0;"><strong>Betrag:</strong> ${price || '1.99'} EUR</p>
+        <div style="font-family: sans-serif; color: #3D3B35; background-color: #F7F6F2; padding: 30px; border-radius: 12px; max-width: 600px; margin: auto;">
+          <h2 style="color: #3b5c3b; margin-top: 0; font-family: serif;">Vielen Dank für dein Vertrauen</h2>
+          <p>Liebe/r ${guest_name || 'Hörer/in'},</p>
+          <p>dein Einmalkauf von <strong>${product_name || 'Flow der Stille Audio'}</strong> war erfolgreich.</p>
+          <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E3E1D9; margin: 20px 0;">
+            <p style="margin: 4px 0;"><strong>Transaktions-ID:</strong> ${paypalOrderId}</p>
+            <p style="margin: 4px 0;"><strong>Betrag:</strong> ${(price || '1.99').toString().replace('.', ',')} EUR (Einmalkauf • Kein Abo)</p>
+            <p style="margin: 4px 0;"><strong>Kauf-E-Mail:</strong> ${userEmail}</p>
           </div>
-          <p>Deine Inhalte stehen ab sofort direkt in der App für dich bereit.</p>
-          <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 20px 0;" />
-          <p style="font-size: 12px; color: #78716c;">Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>Kontakt: info@flow-der-stille.de</p>
+          ${magicLinkSection}
+          <hr style="border: none; border-top: 1px solid #E3E1D9; margin: 25px 0;" />
+          <p style="font-size: 12px; color: #78716c; line-height: 1.5;">
+            Flow der Stille – Dein sicherer Raum für innere Ruhe.<br/>
+            Bei Fragen antworte einfach auf diese E-Mail oder schreibe uns an <a href="mailto:info@flow-der-stille.de" style="color: #3b5c3b;">info@flow-der-stille.de</a>.
+          </p>
         </div>
       `;
 
