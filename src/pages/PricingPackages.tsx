@@ -102,11 +102,11 @@ export default function PricingPackages() {
           {/* PAKET 1: FREIER GAST-ZUGANG */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-emerald-500/40 transition-all">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
                   Freier Gast-Zugang
                 </span>
-                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold">Ohne Registrierung</span>
+                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">Ohne Registrierung</span>
               </div>
 
               <div>
@@ -176,11 +176,11 @@ export default function PricingPackages() {
             </div>
 
             <div className="space-y-4 pt-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
                   Hörer-Konto
                 </span>
-                <span className="text-xs text-emerald-800 dark:text-emerald-300 font-bold">1 Klick Aktivierung</span>
+                <span className="text-xs text-emerald-800 dark:text-emerald-300 font-bold whitespace-nowrap">1-Klick-Aktivierung</span>
               </div>
 
               <div>
@@ -233,15 +233,23 @@ export default function PricingPackages() {
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Hypnose &amp; Herz-Meditation (Wert: 3,98 €)</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Hypnose &amp; Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Hörfortschritt geräteübergreifend merken:</strong> Nahtlos weiterhören, wo du aufgehört hast</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Persönlicher Ruhebereich:</strong> Tägliche Impulse reflektieren, Streaks (Serie an Tagen) &amp; Reflexions-Historie speichern</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google oder E-Mail – garantiert 0 € und kein Abo</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Interaktive Praxis:</strong> SOS-Atemübungen, interaktiver Atemraum, Morgen- &amp; Abend-Rituale sowie Ernährungstipps</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming:</strong> Im Web-Player &amp; in der kostenlosen Android App nahtlos weiterhören</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google, Meta (Facebook) oder E-Mail – garantiert 0&nbsp;€ und kein Abo</span>
                 </li>
               </ul>
             </div>
@@ -262,7 +270,7 @@ export default function PricingPackages() {
                 </Link>
               )}
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
-                Über Google oder E-Mail • 100 % sicher &amp; abofrei
+                Über Google, Meta (Facebook) oder E-Mail • 100 % sicher &amp; abofrei
               </p>
             </div>
           </div>
@@ -270,11 +278,11 @@ export default function PricingPackages() {
           {/* PAKET 3: EINMALKAUF MIT MAGIC LINK (HÖRBUCH, MEDITATION, SELBSTHYPNOSE) */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition-all">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-amber-900 dark:text-amber-200 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/40">
-                  Einmalkauf • Für immer dein
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-amber-900 dark:text-amber-200 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-500/40 whitespace-nowrap">
+                  Ruhe-Shop Einmalkauf
                 </span>
-                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold">Kein Abo</span>
+                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">Für immer dein • Kein Abo</span>
               </div>
 
               <div>
@@ -354,18 +362,18 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Offline-Download inklusive:</strong> Als MP3 herunterladen oder in der App offline anhören</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Web- &amp; App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
                 </li>
               </ul>
             </div>
 
             <div className="pt-4 space-y-2">
               <Link
-                to="/premium"
+                to="/ruhe-shop"
                 className="w-full py-3.5 px-4 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 <Gift size={15} />
-                <span>Zum Ruhe-Shop &amp; Einmalkauf (ab 1,99 €)</span>
+                <span>Zum Ruhe-Shop &amp; Einmalkauf (ab 1,99&nbsp;€)</span>
               </Link>
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
                 Einmal kaufen • Kein Abo • Jederzeit abspielbar
@@ -432,7 +440,7 @@ export default function PricingPackages() {
                   <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /> Per E-Mail nach Kauf</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">App-Download im internen Speicher</td>
+                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming (Web &amp; Android App)</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-700 dark:text-rose-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-emerald-500/5"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>

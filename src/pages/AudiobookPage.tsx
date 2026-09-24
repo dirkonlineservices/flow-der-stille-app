@@ -800,7 +800,7 @@ export default function AudiobookPage() {
                 Dieses Hörbuch &amp; alle Meditationen in der App hören
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-xl">
-                Genieße die Hörprobe und deine Inhalte mit <strong className="text-[var(--text-main)]">Hintergrund-Wiedergabe bei gesperrtem Bildschirm</strong>, ohne Browser-Unterbrechungen und mit Offline-Download für unterwegs.
+                Genieße die Hörprobe und deine Inhalte mit <strong className="text-[var(--text-main)]">Hintergrund-Wiedergabe bei gesperrtem Bildschirm</strong>, ohne Browser-Unterbrechungen und ideal für unterwegs.
               </p>
             </div>
 

@@ -1045,7 +1045,7 @@ export default function PremiumShopDashboard() {
                                   </div>
                                   <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
                                     <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
-                                    <span>Offline-Download als MP3 &amp; in der App</span>
+                                    <span>Direkt im Web-Player &amp; in der App streamen</span>
                                   </div>
                                   <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-semibold">
                                     <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />

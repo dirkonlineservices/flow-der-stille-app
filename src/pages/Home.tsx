@@ -213,7 +213,7 @@ export default function Home() {
             "name": "Wie kann ich die Flow der Stille App herunterladen?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Die Flow der Stille App steht kostenlos im Google Play Store zum Download bereit. Sie ermöglicht Hintergrund-Wiedergabe bei ausgeschaltetem Bildschirm und Offline-Downloads für unterwegs."
+              "text": "Die Flow der Stille App steht kostenlos im Google Play Store zum Download bereit. Sie ermöglicht komfortable Hintergrund-Wiedergabe bei ausgeschaltetem Bildschirm für unterwegs."
             }
           }
         ]

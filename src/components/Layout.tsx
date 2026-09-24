@@ -451,7 +451,7 @@ export default function Layout() {
             <button
               type="button"
               onClick={() => setIsNewsletterOpen(true)}
-              className="px-3 py-1 rounded-lg bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] text-[11px] font-semibold hover:border-[var(--accent)] transition shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-1.5"
             >
               <span>✉️ Newsletter</span>
             </button>

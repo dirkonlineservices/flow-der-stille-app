@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones, ChevronDown
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
@@ -60,7 +60,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
   const [showWisdomProgressModal, setShowWisdomProgressModal] = useState(false);
 
   // Aktiver Tab für die Schnupper-Klangprobe auf der Startseite
-  const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch'>('meditation');
+  const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch' | 'hoerbuch_mensch_sein'>('meditation');
+  const [showInlineSamples, setShowInlineSamples] = useState(false);
 
   // Platzhalter-Audio (kann sofort durch die finale Begrüßung ersetzt werden)
   const VOICE_INTRO_URL = "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3";
@@ -245,16 +246,16 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             {/* Modell 3: Express-Gastkauf */}
             <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/30 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf (Ruhe-Shop)</span>
-                  <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-[11px]">ab 1,99 €</span>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200">3. Express-Gastkauf</span>
+                  <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold text-[11px] whitespace-nowrap shrink-0">ab 1,99&nbsp;€</span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-[var(--text-muted)] leading-relaxed">
-                  Hörbücher &amp; Selbsthypnosen einzeln kaufen. Privater Magic Link per E-Mail für jedes Gerät – kein Passwort nötig.
+                  Hörbücher, Selbsthypnosen &amp; Meditationen einzeln kaufen. Privater Magic Link per E-Mail für jedes Gerät – kein Passwort nötig.
                 </p>
               </div>
               <span className="text-[10px] text-amber-800 dark:text-amber-300 font-semibold pt-2 block">
-                ✓ Sofort abspielen &amp; MP3-Download
+                ✓ Sofort im Web-Player &amp; in der App streamen
               </span>
             </div>
           </div>
@@ -638,7 +639,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
         </div>
 
-        {/* 🌟 Interaktive Schnupper-Leiste für Klangproben direkt auf der Startseite */}
+        {/* 🌟 Klangproben Schnupper-Box (Einklappbar, leitet primär auf /klangproben) */}
         <div className="mt-6 pt-5 border-t border-[var(--border)] bg-[var(--bg-main)]/60 rounded-2xl p-4 sm:p-5 border border-[var(--border)] shadow-2xs space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
@@ -660,107 +661,123 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               </div>
             </div>
 
-            <Link
-              to="/klangproben"
-              className="px-3.5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-semibold transition flex items-center gap-1.5 shrink-0 self-start md:self-auto shadow-xs cursor-pointer"
-            >
-              <Headphones size={14} />
-              <span>In alle Klangproben reinhören</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          {/* Schnupper-Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
-            {[
-              { key: 'meditation', label: '🧘‍♀️ Meditation: Herzöffnung', sub: 'Gratis' },
-              { key: 'selbsthypnose', label: '🌀 Selbsthypnose: Tiefer Schlaf', sub: 'Gratis' },
-              { key: 'hoerbuch', label: '🎧 Hörbuch: Schmetterling', sub: 'Auszug' },
-              { key: 'hoerbuch_mensch_sein', label: '🎧 Hörbuch: Mut zum Echtsein', sub: 'Kapitel 1' },
-            ].map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveSampleHighlight(tab.key as any)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeSampleHighlight === tab.key
-                    ? 'bg-[var(--accent)] text-white shadow-xs scale-102'
-                    : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
-                }`}
+            <div className="flex items-center gap-2 flex-wrap self-start md:self-auto shrink-0">
+              <Link
+                to="/klangproben"
+                className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
-                <span>{tab.label}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  activeSampleHighlight === tab.key ? 'bg-white/20 text-white' : 'bg-[var(--bg-alt)] text-[var(--text-muted)]'
-                }`}>
-                  {tab.sub}
-                </span>
+                <Headphones size={15} />
+                <span>In alle Klangproben reinhören</span>
+                <ArrowRight size={15} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowInlineSamples(!showInlineSamples)}
+                className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] transition flex items-center gap-1 cursor-pointer font-medium"
+                title={showInlineSamples ? 'Player einklappen' : 'Hier kurz probehören'}
+              >
+                <span>{showInlineSamples ? 'Einklappen' : 'Hier kurz reinhören'}</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${showInlineSamples ? 'rotate-180' : ''}`} />
               </button>
-            ))}
+            </div>
           </div>
 
-          {/* Aktiver Klangproben-Player */}
-          {(() => {
-            const sampleHighlightProducts: Record<string, { produkt: any; badge: string; desc: string }> = {
-              meditation: {
-                produkt: getOfflineProductById('meditation_zur_herzoeffnung') || {
-                  id: 'meditation_zur_herzoeffnung',
-                  titel: 'Meditation zur Herzöffnung',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
-                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3',
-                  dauer: 1005
-                },
-                badge: 'Geführte Meditation • 100 % Gratis Vollversion verfügbar',
-                desc: 'Spüre die sanfte Herzöffnung und lasse innere Schutzpanzer los. Lisa Ragusa spricht.'
-              },
-              selbsthypnose: {
-                produkt: getOfflineProductById('selbsthypnose_besser_und_erholsamer_schlaf') || {
-                  id: 'selbsthypnose_besser_und_erholsamer_schlaf',
-                  titel: 'Selbsthypnose: Tiefer und erholsamer Schlaf',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
-                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3',
-                  dauer: 774
-                },
-                badge: 'Gezielte Selbsthypnose • 100 % Gratis Vollversion verfügbar',
-                desc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine tiefe Nachtruhe.'
-              },
-              hoerbuch: {
-                produkt: getOfflineProductById('hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') || {
-                  id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
-                  titel: 'Der Tag, an dem der Schmetterling erwachte',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
-                  dauer: 3523
-                },
-                badge: 'Ganzheitliches Hörbuch (58:43 Min. Gesamtlaufzeit)',
-                desc: 'Eine tröstende Hörreise über den Wandel des Lebens und die Leichtigkeit des Loslassens.'
-              },
-              hoerbuch_mensch_sein: {
-                produkt: getOfflineProductById('mensch_sein') || {
-                  id: 'mensch_sein',
-                  titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3',
-                  dauer: 3519
-                },
-                badge: 'Ganzheitliches Hörbuch (58:39 Min. • Kapitel 1 gratis)',
-                desc: 'Erkenne deine Einzigartigkeit und lerne, dein wahres Selbst ohne Masken zu leben.'
-              }
-            };
-
-            const current = sampleHighlightProducts[activeSampleHighlight];
-            if (!current) return null;
-            return (
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
-                  <span className="font-semibold text-[var(--text-main)] flex items-center gap-1.5">
-                    <Sparkles size={13} className="text-[var(--accent)] shrink-0" />
-                    <span>{current.badge}</span>
-                  </span>
-                  <span className="text-[11px] text-[var(--text-muted)]">
-                    {current.desc}
-                  </span>
-                </div>
-                <HoerprobenPlayer produkt={current.produkt} variant="compact" />
+          {/* Einklappbarer Inline-Player */}
+          {showInlineSamples && (
+            <div className="pt-3 border-t border-[var(--border)]/60 space-y-4 animate-in fade-in duration-200">
+              {/* Schnupper-Tabs */}
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { key: 'meditation', label: '🧘‍♀️ Meditation: Herzöffnung', sub: 'Gratis' },
+                  { key: 'selbsthypnose', label: '🌀 Selbsthypnose: Tiefer Schlaf', sub: 'Gratis' },
+                  { key: 'hoerbuch', label: '🎧 Hörbuch: Schmetterling', sub: 'Auszug' },
+                  { key: 'hoerbuch_mensch_sein', label: '🎧 Mut zum Echtsein', sub: 'Kapitel 1' },
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveSampleHighlight(tab.key as any)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      activeSampleHighlight === tab.key
+                        ? 'bg-[var(--accent)] text-white shadow-xs scale-102'
+                        : 'bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border)] hover:bg-[var(--bg-alt)]'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      activeSampleHighlight === tab.key ? 'bg-white/20 text-white' : 'bg-[var(--bg-alt)] text-[var(--text-muted)]'
+                    }`}>
+                      {tab.sub}
+                    </span>
+                  </button>
+                ))}
               </div>
-            );
-          })()}
+
+              {/* Aktiver Klangproben-Player */}
+              {(() => {
+                const sampleHighlightProducts: Record<string, { produkt: any; badge: string; desc: string }> = {
+                  meditation: {
+                    produkt: getOfflineProductById('meditation_zur_herzoeffnung') || {
+                      id: 'meditation_zur_herzoeffnung',
+                      titel: 'Meditation zur Herzöffnung',
+                      audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
+                      hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3',
+                      dauer: 1005
+                    },
+                    badge: 'Geführte Meditation • 100 % Gratis Vollversion verfügbar',
+                    desc: 'Spüre die sanfte Herzöffnung und lasse innere Schutzpanzer los. Lisa Ragusa spricht.'
+                  },
+                  selbsthypnose: {
+                    produkt: getOfflineProductById('selbsthypnose_besser_und_erholsamer_schlaf') || {
+                      id: 'selbsthypnose_besser_und_erholsamer_schlaf',
+                      titel: 'Selbsthypnose: Tiefer und erholsamer Schlaf',
+                      audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
+                      hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3',
+                      dauer: 774
+                    },
+                    badge: 'Gezielte Selbsthypnose • 100 % Gratis Vollversion verfügbar',
+                    desc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine tiefe Nachtruhe.'
+                  },
+                  hoerbuch: {
+                    produkt: getOfflineProductById('hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') || {
+                      id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+                      titel: 'Der Tag, an dem der Schmetterling erwachte',
+                      audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
+                      dauer: 3523
+                    },
+                    badge: 'Ganzheitliches Hörbuch (58:43 Min. Gesamtlaufzeit)',
+                    desc: 'Eine tröstende Hörreise über den Wandel des Lebens und die Leichtigkeit des Loslassens.'
+                  },
+                  hoerbuch_mensch_sein: {
+                    produkt: getOfflineProductById('mensch_sein') || {
+                      id: 'mensch_sein',
+                      titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
+                      audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3',
+                      dauer: 3519
+                    },
+                    badge: 'Ganzheitliches Hörbuch (58:39 Min. • Kapitel 1 gratis)',
+                    desc: 'Erkenne deine Einzigartigkeit und lerne, dein wahres Selbst ohne Masken zu leben.'
+                  }
+                };
+
+                const current = sampleHighlightProducts[activeSampleHighlight];
+                if (!current) return null;
+                return (
+                  <div className="space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                      <span className="font-semibold text-[var(--text-main)] flex items-center gap-1.5">
+                        <Sparkles size={13} className="text-[var(--accent)] shrink-0" />
+                        <span>{current.badge}</span>
+                      </span>
+                      <span className="text-[11px] text-[var(--text-muted)]">
+                        {current.desc}
+                      </span>
+                    </div>
+                    <HoerprobenPlayer produkt={current.produkt} variant="compact" />
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
       </section>
 
