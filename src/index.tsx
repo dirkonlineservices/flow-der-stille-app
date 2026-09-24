@@ -52,6 +52,7 @@ const HypnosisLanding = lazy(() => import('./pages/HypnosisLanding'));
 const SoundSamplesLanding = lazy(() => import('./pages/SoundSamplesLanding'));
 const AudioSessionPage = lazy(() => import('./pages/AudioSessionPage'));
 const PricingPackages = lazy(() => import('./pages/PricingPackages'));
+const Community = lazy(() => import('./pages/Community'));
 
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -233,6 +234,10 @@ export default function App() {
                       <Route path="preise" element={<PricingPackages />} />
                       <Route path="vorteile" element={<PricingPackages />} />
                       <Route path="angebote" element={<PricingPackages />} />
+
+                      {/* Community */}
+                      <Route path="community" element={<Community />} />
+                      <Route path="gemeinschaft" element={<Community />} />
 
                       {/* Newsletter */}
                       <Route path="newsletter-confirmation" element={<NewsletterConfirmation />} />

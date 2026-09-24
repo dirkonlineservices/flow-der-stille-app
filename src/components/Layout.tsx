@@ -4,7 +4,7 @@ import {
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift, User, Heart, Sparkles, ChevronDown
+  ShieldCheck, Gift, User, Heart, Sparkles, ChevronDown, Users
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -374,6 +374,11 @@ export default function Layout() {
                   Häufige Fragen (FAQ)
                 </Link>
               </li>
+              <li>
+                <Link to="/community" onClick={() => handleMenuClick('Geschützte Community')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
+                  🌿 Geschützte Community (0&nbsp;€)
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -438,6 +443,54 @@ export default function Layout() {
                 </Link>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Folge uns auf Facebook & Instagram + Geschützte Community */}
+        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-2xs">
+          <div className="space-y-0.5">
+            <h4 className="text-xs font-bold text-[var(--text-main)] flex items-center justify-center sm:justify-start gap-1.5">
+              <span>Folge uns auf Facebook &amp; Instagram</span>
+            </h4>
+            <p className="text-[11px] text-[var(--text-muted)]">
+              Tägliche Inspirationen, Neuigkeiten &amp; Achtsamkeits-Impulse für deine innere Ruhe.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            <a
+              href="https://www.facebook.com/flowderstille"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] dark:text-[#4599ff] border border-[#1877F2]/30 text-xs font-bold transition hover:scale-105"
+              title="Folge unserer Facebook-Seite"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <span>Facebook-Seite</span>
+            </a>
+            <a
+              href="https://www.instagram.com/flowderstille"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-500/10 hover:bg-pink-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/30 text-xs font-bold transition hover:scale-105"
+              title="Folge unserem Instagram-Kanal"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+              <span>Instagram</span>
+            </a>
+            <Link
+              to="/community"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 text-xs font-bold transition"
+              title="Geschützte Community für registrierte Hörer"
+            >
+              <Users size={14} className="text-emerald-700 dark:text-emerald-400" />
+              <span>Geschützte Community</span>
+            </Link>
           </div>
         </div>
 

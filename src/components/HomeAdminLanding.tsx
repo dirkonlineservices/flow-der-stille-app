@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
   ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
-  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones, ChevronDown
+  Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones, ChevronDown, Lock, Users
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
@@ -891,79 +891,94 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 8. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
-      <section className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300/60 text-[11px] font-bold uppercase tracking-wider mb-1.5">
-            <Sparkles size={12} />
-            <span>Ganz frisch gestartet • August 2026</span>
+      {/* ─── 8. GESCHÜTZTE COMMUNITY & ÖFFENTLICHES SOCIAL MEDIA (FACEBOOK & INSTAGRAM) ─── */}
+      <section className="space-y-4">
+        {/* 8a: Geschützte Community (Exklusiv für registrierte User) */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="space-y-2 max-w-xl">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+              <Lock size={12} />
+              <span>Geschützter Ruheraum • Nur für registrierte User</span>
+            </div>
+            <h4 className="font-serif font-bold text-xl sm:text-2xl text-[var(--text-main)]">
+              Die Flow der Stille Community
+            </h4>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+              Ein geschützter Raum für achtsamen Austausch, persönliche Reflexion und gegenseitigen Halt. 
+              Unsere Community ist bewusst nicht für die ganze Welt öffentlich, sondern exklusiv für angemeldete Hörerinnen und Hörer reserviert.
+            </p>
           </div>
-          <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
-            Werde Pionier unserer neuen Community
-          </h4>
-          <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 max-w-xl">
-            Im März 2026 entstanden, im August/September live gegangen: Unsere Telegram- &amp; WhatsApp-Gruppen öffnen gerade erst ihre Türen. Sei von Tag 1 an dabei und gestalte diesen geschützten Raum für Achtsamkeit mit uns!
-          </p>
+
+          <div className="shrink-0 flex flex-col sm:flex-row items-center gap-3">
+            {user ? (
+              <Link
+                to="/community"
+                className="px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center gap-2 cursor-pointer"
+              >
+                <Users size={16} />
+                <span>Zur Community (Geschützter Bereich) →</span>
+              </Link>
+            ) : (
+              <Link
+                to="/registrieren?redirectTo=/community"
+                className="px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center gap-2 cursor-pointer text-center"
+              >
+                <Sparkles size={16} />
+                <span>Kostenlos registrieren &amp; Community freischalten (0&nbsp;€)</span>
+              </Link>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2.5">
-          {/* Telegram */}
-          <a 
-            href="https://t.me/+ccWPbkn00zs4Zjc6" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--accent)]"
-            title="Folge uns auf Telegram"
-          >
-            <Send size={15} className="text-sky-500" />
-            <span>Telegram</span>
-          </a>
+        {/* 8b: Öffentliche Social-Media Kanäle (Nur Facebook & Instagram) */}
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
+          <div className="space-y-1">
+            <span className="text-xs font-mono uppercase tracking-wider font-bold text-pink-700 dark:text-pink-400 bg-pink-500/10 px-3 py-0.5 rounded-full border border-pink-500/20 inline-block mb-1">
+              Offizielle Kanäle
+            </span>
+            <h4 className="text-lg sm:text-xl font-bold text-[var(--text-main)]">
+              Folge uns auf Facebook &amp; Instagram
+            </h4>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl leading-relaxed">
+              Erhalte tägliche Inspirationen für deine Achtsamkeit, Neuigkeiten zu neuen Werken und blicke hinter die Kulissen unserer Arbeit.
+            </p>
+          </div>
 
-          {/* WhatsApp */}
-          <a 
-            href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--accent)]"
-            title="Folge uns auf WhatsApp"
-          >
-            <MessageCircle size={15} className="text-emerald-500" />
-            <span>WhatsApp</span>
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+            {/* Facebook Seite */}
+            <a 
+              href="https://www.facebook.com/flowderstille" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] dark:text-[#4599ff] border border-[#1877F2]/30 text-xs sm:text-sm font-bold transition shadow-2xs hover:scale-105"
+              title="Besuche unsere offizielle Facebook-Seite"
+            >
+              <FacebookIcon className="w-4 h-4 fill-current shrink-0" />
+              <span>Facebook-Seite</span>
+            </a>
 
-          {/* Instagram */}
-          <a 
-            href="https://www.instagram.com/flowderstille" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--accent)]"
-            title="Folge uns auf Instagram"
-          >
-            <InstagramIcon className="w-4 h-4 text-pink-500" />
-            <span>Instagram</span>
-          </a>
+            {/* Instagram */}
+            <a 
+              href="https://www.instagram.com/flowderstille" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-amber-500/10 hover:from-pink-500/20 hover:to-amber-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/30 text-xs sm:text-sm font-bold transition shadow-2xs hover:scale-105"
+              title="Folge unserem offiziellen Instagram-Profil"
+            >
+              <InstagramIcon className="w-4 h-4 text-pink-600 shrink-0" />
+              <span>Instagram</span>
+            </a>
 
-          {/* Facebook */}
-          <a 
-            href="https://www.facebook.com/flowderstille" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--accent)]"
-            title="Folge uns auf Facebook"
-          >
-            <FacebookIcon className="w-4 h-4 text-blue-600" />
-            <span>Facebook</span>
-          </a>
-
-          {/* Kleiner Teilen-Button */}
-          <button
-            onClick={handleShareApp}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shadow-2xs cursor-pointer active:scale-95"
-            title="App mit Freunden teilen"
-          >
-            <Share2 size={14} />
-            <span>Teilen</span>
-          </button>
+            {/* Kleiner Teilen-Button */}
+            <button
+              onClick={handleShareApp}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition shadow-2xs cursor-pointer active:scale-95"
+              title="App mit Freunden teilen"
+            >
+              <Share2 size={14} />
+              <span>Teilen</span>
+            </button>
+          </div>
         </div>
       </section>
 

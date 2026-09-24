@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { 
   Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, 
   Send, MessageCircle, Share2, Eye, RefreshCw, ArrowRight,
-  Sparkles, Headphones, Check, ChevronDown
+  Sparkles, Headphones, Check, ChevronDown, Users
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -458,76 +458,109 @@ export default function Dashboard() {
           <NewsletterBanner variant="in-content" />
         </div>
 
-        {/* Einheitliche Community & Social Media Bar */}
-        <section className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left mt-8">
-          <div>
-            <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
-              Verbinde dich mit unserer Community
-            </h4>
-            <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-              Tägliche Inspirationen &amp; Austausch auf deinen Lieblings-Kanälen
-            </p>
+        {/* Geschützte Community & Social Media (Facebook & Instagram) */}
+        <section className="space-y-4 mt-8">
+          {/* Geschützte Community für angemeldete Mitglieder */}
+          <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-wider mb-1">
+                <Users size={12} />
+                <span>Exklusiver Ruheraum für Hörer</span>
+              </div>
+              <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
+                Deine geschützte Ruhe-Community
+              </h4>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+                Tausche dich im geschützten Telegram-Ruheraum aus oder erhalte tägliche Impulse per WhatsApp.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <a 
+                href="https://t.me/+ccWPbkn00zs4Zjc6" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+                title="Telegram-Ruheraum beitreten"
+              >
+                <Send size={15} className="text-sky-500" />
+                <span>Telegram</span>
+              </a>
+
+              <a 
+                href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
+                title="WhatsApp-Kanal abonnieren"
+              >
+                <MessageCircle size={15} className="text-emerald-500" />
+                <span>WhatsApp</span>
+              </a>
+
+              <Link
+                to="/community"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold transition shadow-2xs"
+                title="Community-Übersicht & Leitlinien"
+              >
+                <Users size={14} />
+                <span>Details &amp; Leitfaden</span>
+              </Link>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <a 
-              href="https://t.me/+ccWPbkn00zs4Zjc6" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
-              title="Folge uns auf Telegram"
-            >
-              <Send size={15} className="text-sky-500" />
-              <span>Telegram</span>
-            </a>
+          {/* Öffentliche Social-Media Bar: Nur Facebook & Instagram */}
+          <div className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-pink-700 dark:text-pink-400 bg-pink-500/10 px-2.5 py-0.5 rounded-full border border-pink-500/20 inline-block mb-1">
+                Öffentliche Kanäle
+              </span>
+              <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
+                Folge uns auf Facebook &amp; Instagram
+              </h4>
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
+                Besuche unsere offizielle Facebook-Seite und folge uns auf Instagram für tägliche Inspirationen.
+              </p>
+            </div>
 
-            <a 
-              href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
-              title="Folge uns auf WhatsApp"
-            >
-              <MessageCircle size={15} className="text-emerald-500" />
-              <span>WhatsApp</span>
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <a 
+                href="https://www.facebook.com/flowderstille" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[#1877F2] dark:text-[#4599ff] border border-[var(--color-border-main)] text-xs sm:text-sm font-semibold transition shadow-2xs hover:border-[#1877F2]/40"
+                title="Besuche unsere Facebook-Seite"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Facebook-Seite</span>
+              </a>
 
-            <a 
-              href="https://www.instagram.com/flowderstille" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
-              title="Folge uns auf Instagram"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-              <span>Instagram</span>
-            </a>
+              <a 
+                href="https://www.instagram.com/flowderstille" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-pink-700 dark:text-pink-300 border border-[var(--color-border-main)] text-xs sm:text-sm font-semibold transition shadow-2xs hover:border-pink-500/40"
+                title="Folge unserem Instagram-Kanal"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+                <span>Instagram</span>
+              </a>
 
-            <a 
-              href="https://www.facebook.com/flowderstille" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
-              title="Folge uns auf Facebook"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-blue-600" fill="currentColor">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span>Facebook</span>
-            </a>
-
-            <button
-              onClick={handleShareApp}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-semibold transition shadow-2xs cursor-pointer active:scale-95"
-              title="Flow der Stille mit Freunden teilen"
-            >
-              <Share2 size={15} />
-              <span>Teilen</span>
-            </button>
+              <button
+                onClick={handleShareApp}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs sm:text-sm font-semibold transition shadow-2xs cursor-pointer active:scale-95"
+                title="Flow der Stille mit Freunden teilen"
+              >
+                <Share2 size={15} />
+                <span>Teilen</span>
+              </button>
+            </div>
           </div>
         </section>
 
