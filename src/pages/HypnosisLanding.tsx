@@ -132,9 +132,9 @@ export default function HypnosisLanding() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen – Flow der Stille"
-        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen – 100% werbe- & abofrei."
+        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline & Lisa. Jetzt kostenlos testen – 100% werbe- & abofrei."
         canonicalUrl="https://flow-der-stille.de/selbsthypnose"
-        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu ausrichten, Selbsthypnose Einschlafhilfe, Selbsthypnose ohne Abo, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille"
+        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu ausrichten, Selbsthypnose Einschlafhilfe, Selbsthypnose ohne Abo, Lisa, Jacqueline, Flow der Stille"
       />
 
       <audio
@@ -241,7 +241,7 @@ export default function HypnosisLanding() {
                 Tiefer und erholsamer Schlaf (12:54 Min.)
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Lege dich bequem hin, schließe die Augen und lasse den Tag los. Lisa Ragusa begleitet dich sanft in eine tiefe, natürliche Regeneration.
+                Lege dich bequem hin, schließe die Augen und lasse den Tag los. Lisa begleitet dich sanft in eine tiefe, natürliche Regeneration.
               </p>
             </div>
           </div>
@@ -284,8 +284,8 @@ export default function HypnosisLanding() {
               />
 
               <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span>Sprecherin: <strong>Lisa Ragusa</strong></span>
-                <span>Autorin: <strong>Jacqueline Schmetzer</strong></span>
+                <span>Stimme: <strong>Lisa</strong></span>
+                <span>Text: <strong>Jacqueline</strong></span>
               </div>
             </div>
           </div>

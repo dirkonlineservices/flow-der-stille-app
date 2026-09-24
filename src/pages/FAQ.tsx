@@ -25,7 +25,7 @@ const faqData: FAQItem[] = [
   {
     category: "Über Flow der Stille",
     question: "Welche Rolle spielt KI (Künstliche Intelligenz) bei Flow der Stille?",
-    answer: "Transparenz und Ehrlichkeit liegen uns am Herzen: Sämtliche Texte, Meditationen, Selbsthypnosen und Übungen verfasst Jacqueline Schmetzer persönlich von Hand mit fundiertem Fachwissen. Unsere Premium-Meditationen und Hörbücher werden von Lisa Ragusa mit echter, warmer Menschenstimme eingesprochen. Moderne KI-Technologie nutzen wir transparent als Werkzeug für meditative Hintergrund-Klangwelten, Frequenzen sowie beruhigende visuelle Bildwelten & Designs. Dadurch sparen wir extrem teure Produktions- und Tonstudiokosten ein – und geben diesen Preisvorteil direkt an dich weiter: Du erhältst erstklassige, wirksame Entspannung ab 1,99 € einmalig statt teurer Monats-Abos."
+    answer: "Transparenz und Ehrlichkeit liegen uns am Herzen: Sämtliche Texte, Meditationen, Selbsthypnosen und Übungen verfasst Jacqueline persönlich von Hand mit fundiertem Fachwissen. Unsere Meditationen, Selbsthypnosen und Hörbücher werden von Lisa mit echter, warmer Menschenstimme eingesprochen. Moderne KI-Technologie nutzen wir transparent als Werkzeug für meditative Hintergrund-Klangwelten, Frequenzen sowie beruhigende visuelle Bildwelten & Designs. Dadurch sparen wir extrem teure Produktions- und Tonstudiokosten ein – und geben diesen Preisvorteil direkt an dich weiter: Du erhältst erstklassige, wirksame Entspannung ab 1,99 € einmalig statt teurer Monats-Abos."
   },
   {
     category: "Über Flow der Stille",

@@ -144,7 +144,7 @@ export default function AudioSessionPage() {
     },
     "readBy": {
       "@type": "Person",
-      "name": "Lisa Ragusa"
+      "name": "Lisa"
     },
     "publisher": {
       "@type": "Organization",
@@ -165,9 +165,9 @@ export default function AudioSessionPage() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] pt-24 pb-20 px-4 sm:px-6">
       <SEO
         title={`${title} – Kostenlos anhören & freischalten`}
-        description={`${description} Gesprochen von Lisa Ragusa. Jetzt bei Flow der Stille anhören.`}
+        description={`${description} Gesprochen von Lisa. Jetzt bei Flow der Stille anhören.`}
         canonicalUrl={`https://flow-der-stille.de/audio/${id}`}
-        keywords={`${title}, ${category}, kostenlose Selbsthypnose, kostenlose Meditation, geführte Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille`}
+        keywords={`${title}, ${category}, kostenlose Selbsthypnose, kostenlose Meditation, geführte Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa, Jacqueline, Flow der Stille`}
         schemaJson={schemaJson}
       />
 
@@ -235,7 +235,7 @@ export default function AudioSessionPage() {
             </h1>
 
             <p className="text-xs text-[var(--text-muted)] font-medium">
-              Autorin: <strong className="text-[var(--text-main)]">Jacqueline Schmetzer</strong> • Sprecherin: <strong className="text-[var(--text-main)]">Lisa Ragusa</strong>
+              Text erstellt von: <strong className="text-[var(--text-main)]">Jacqueline</strong> • Stimme: <strong className="text-[var(--text-main)]">Lisa</strong> • <Link to="/ueber-uns" className="text-[var(--accent)] hover:underline">Über uns & Vision →</Link>
             </p>
 
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">

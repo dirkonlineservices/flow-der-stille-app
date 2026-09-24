@@ -28,7 +28,7 @@ export default function SEO({
       : 'https://flow-der-stille.de'
   );
 
-  const defaultKeywords = "Meditation, geführte Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Nervensystem regulieren, Stressabbau, Stressreduktion, Selbsthypnose, Einschlafhilfe, tiefer Schlaf, Hörbuch Achtsamkeit, Hörbuch Loslassen, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Lisa Ragusa, Flow der Stille";
+  const defaultKeywords = "Meditation, geführte Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Nervensystem regulieren, Stressabbau, Stressreduktion, Selbsthypnose, Einschlafhilfe, tiefer Schlaf, Hörbuch Achtsamkeit, Hörbuch Loslassen, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Lisa, Flow der Stille";
 
   return (
     <Helmet>

@@ -375,8 +375,13 @@ export default function Layout() {
                 </Link>
               </li>
               <li>
-                <Link to="/community" onClick={() => handleMenuClick('Geschützte Community')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
-                  🌿 Geschützte Community (0&nbsp;€)
+                <Link to="/ueber-uns" onClick={() => handleMenuClick('Über uns & Vision')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
+                  🌿 Über uns &amp; unsere Vision
+                </Link>
+              </li>
+              <li>
+                <Link to="/community" onClick={() => handleMenuClick('Geschützte Community')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
+                  Geschützte Community (0&nbsp;€)
                 </Link>
               </li>
             </ul>

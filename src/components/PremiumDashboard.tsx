@@ -984,23 +984,29 @@ export default function PremiumShopDashboard() {
                     
                     <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
 
-                    {produkt.audio_hinweis && (
-                      <div className="mt-3.5 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] flex items-start gap-3 shadow-2xs">
-                        <Sparkles className="w-4 h-4 text-emerald-800 shrink-0 mt-0.5" />
-                        <div className="leading-relaxed">
-                          <span className="font-bold text-[var(--text-main)] block mb-0.5">
-                            {istKostenlos ? '🌿 Kostenfreie Anwendung (nach 1-Klick-Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
-                          </span>
-                          <span className="whitespace-pre-line leading-relaxed">
-                            {istKostenlos 
-                              ? (produkt.audio_hinweis.includes('Vollständig') 
-                                  ? 'Selbst verfasster Übungstext, vertont zur sanften Beruhigung des Nervensystems. Nach kostenloser Registrierung sofort für dich freigeschaltet.'
-                                  : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, ''))
-                              : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '')}
-                          </span>
+                    {/* Urheber-Hinweis: Text von Jacqueline • Stimme von Lisa + Link zu Über uns */}
+                    <div className="mt-3.5 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] space-y-1.5 shadow-2xs">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-1.5 font-bold text-[var(--text-main)]">
+                          <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <span>Text erstellt von Jacqueline • Stimme: Lisa</span>
                         </div>
+                        <Link 
+                          to="/ueber-uns" 
+                          className="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold inline-flex items-center gap-1"
+                          title="Lerne Jacqueline, Lisa und Dirk sowie unsere Philosophie kennen"
+                        >
+                          <span>Über die Ersteller &amp; Vision →</span>
+                        </Link>
                       </div>
-                    )}
+                      <p className="text-[11px] leading-relaxed text-[var(--text-muted)]">
+                        {istKostenlos
+                          ? 'Vollständig selbst verfasster Entspannungstext, von Lisa mit echter menschlicher Herzenswärme eingesprochen. Nach 1-Klick-Registrierung dauerhaft freigeschaltet.'
+                          : (produkt.audio_hinweis
+                              ? produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '').replace(/Lisa Ragusa/g, 'Lisa').replace(/von uns selbst geschrieben/i, 'Text erstellt von Jacqueline')
+                              : 'Herzenswerk: Text erstellt von Jacqueline, mit warmer Stimme von Lisa persönlich eingesprochen.')}
+                      </p>
+                    </div>
 
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (

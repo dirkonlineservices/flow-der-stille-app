@@ -132,9 +132,9 @@ export default function MeditationLanding() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title="Geführte Meditationen für innere Ruhe & Nervensystem – Flow der Stille"
-        description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Jetzt kostenlos reinhören ohne Abo."
+        description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline, gesprochen von Lisa. Jetzt kostenlos reinhören ohne Abo."
         canonicalUrl="https://flow-der-stille.de/meditation"
-        keywords="Geführte Meditation, Meditation Herzöffnung, Meditation Innere Ruhe, Meditation Nervensystem, Vagusnerv beruhigen, geführte Meditation Deutsch, Stressabbau Meditation, Loslassen lernen, Lisa Ragusa Meditation, Jacqueline Schmetzer, Meditation ohne Abo, Flow der Stille"
+        keywords="Geführte Meditation, Meditation Herzöffnung, Meditation Innere Ruhe, Meditation Nervensystem, Vagusnerv beruhigen, geführte Meditation Deutsch, Stressabbau Meditation, Loslassen lernen, Lisa Meditation, Jacqueline, Meditation ohne Abo, Flow der Stille"
       />
 
       <audio
@@ -241,7 +241,7 @@ export default function MeditationLanding() {
                 Meditation zur Herzöffnung (16:45 Min.)
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Nimm dir einen kurzen Moment für dich. Schließe die Augen, atme tief ein und lausche der warmen Stimme von Lisa Ragusa.
+                Nimm dir einen kurzen Moment für dich. Schließe die Augen, atme tief ein und lausche der warmen Stimme von Lisa.
               </p>
             </div>
           </div>
@@ -284,8 +284,8 @@ export default function MeditationLanding() {
               />
 
               <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span>Sprecherin: <strong>Lisa Ragusa</strong></span>
-                <span>Autorin: <strong>Jacqueline Schmetzer</strong></span>
+                <span>Stimme: <strong>Lisa</strong></span>
+                <span>Text: <strong>Jacqueline</strong></span>
               </div>
             </div>
           </div>
@@ -480,7 +480,7 @@ export default function MeditationLanding() {
               </div>
               <h4 className="font-semibold text-sm text-[var(--text-main)]">Menschliche Wärme</h4>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Keine kühlen Algorithmen. Eingesprochen von Lisa Ragusa mit echter emotionaler Tiefe, die Geborgenheit schenkt.
+                Keine kühlen Algorithmen. Eingesprochen von Lisa mit echter emotionaler Tiefe, die Geborgenheit schenkt.
               </p>
             </div>
 

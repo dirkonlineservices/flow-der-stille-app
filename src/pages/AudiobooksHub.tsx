@@ -116,8 +116,8 @@ export default function AudiobooksHub() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-20 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title="Hörbücher für Achtsamkeit, Trost & Innere Ruhe – Flow der Stille"
-        description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten über Wandel, Loslassen und echtes Menschsein. Kapitel 1 jetzt kostenlos anhören."
-        keywords="Hörbuch Achtsamkeit, Hörbuch Loslassen, Hörbuch Trost und Trauer, Der Tag an dem der Schmetterling erwachte, Mut zum Echtsein, Jacqueline Schmetzer Hörbuch, Lisa Ragusa Hörbuch, Hörbuch Nervensystem, Hörbuch Einschlafen, spirituelles Hörbuch, Hörbuch Lebenskrise bewältigen, Flow der Stille Hörbuch"
+        description="Ganzheitliche Hörbücher von Jacqueline, gesprochen von Lisa. Beruhigende Geschichten über Wandel, Loslassen und echtes Menschsein. Kapitel 1 jetzt kostenlos anhören."
+        keywords="Hörbuch Achtsamkeit, Hörbuch Loslassen, Hörbuch Trost und Trauer, Der Tag an dem der Schmetterling erwachte, Mut zum Echtsein, Jacqueline, Lisa, Hörbuch Nervensystem, Hörbuch Einschlafen, spirituelles Hörbuch, Hörbuch Lebenskrise bewältigen, Flow der Stille Hörbuch"
         image="/images/products/cover_schmetterling.jpg"
       />
 
@@ -254,8 +254,8 @@ export default function AudiobooksHub() {
               </div>
 
               <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span>Sprecherin: <strong>Lisa Ragusa</strong></span>
-                <span>Autorin: <strong>Jacqueline Schmetzer</strong></span>
+                <span>Stimme: <strong>Lisa</strong></span>
+                <span>Text: <strong>Jacqueline</strong></span>
               </div>
             </div>
           </div>
@@ -801,7 +801,7 @@ export default function AudiobooksHub() {
             {
               id: 3,
               q: 'Eignet sich das Werk zum Einschlafen?',
-              a: 'Absolut. Sowohl die Stimmführung von Lisa Ragusa als auch die feinfühlige Audioproduktion sind darauf ausgelegt, das Nervensystem sanft herunterzufahren. Der Player stoppt am Ende automatisch und weckt dich nicht durch neue Tracks auf.'
+              a: 'Absolut. Sowohl die Stimmführung von Lisa als auch die feinfühlige Audioproduktion sind darauf ausgelegt, das Nervensystem sanft herunterzufahren. Der Player stoppt am Ende automatisch und weckt dich nicht durch neue Tracks auf.'
             },
             {
               id: 4,

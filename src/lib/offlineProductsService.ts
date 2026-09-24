@@ -72,7 +72,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 294,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_meditation_loslassen",
     "hoerprobe_url": null,
     "is_active": false
@@ -88,7 +88,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 847,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_hypnose_gesunde_ernaehrung",
     "hoerprobe_url": null,
     "is_active": true
@@ -106,7 +106,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "highlights": [
       "Ruhige Stärke von innen heraus. Verankere tiefes Vertrauen in deine eigenen Fähigkeiten."
     ],
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_hypnose_selbstbewusstsein",
     "hoerprobe_url": null,
     "is_active": true
@@ -124,7 +124,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "highlights": [
       "Schalte den Lärm aus. Aktiviere deinen tiefen Arbeitsmodus in nur wenigen Minuten."
     ],
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_hypnose_fokus",
     "hoerprobe_url": null,
     "is_active": true
@@ -140,7 +140,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 1150,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_meditation_innere_ruhe",
     "hoerprobe_url": null,
     "is_active": true
@@ -156,7 +156,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 970,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_meditation_inneres_kind",
     "hoerprobe_url": null,
     "is_active": true
@@ -172,7 +172,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 1200,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_herzkompass_meditation",
     "hoerprobe_url": null,
     "is_active": true
@@ -188,7 +188,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 1005,
     "highlights": null,
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_herzoeffnung_meditation",
     "hoerprobe_url": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3",
     "is_active": true
@@ -206,7 +206,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "highlights": [
       "Kostenfrei"
     ],
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_selbsthypnose_besserer_tieferer_schlaf",
     "hoerprobe_url": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3",
     "is_active": true
@@ -224,7 +224,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "highlights": [
       "Hoerbuch"
     ],
-    "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
     "play_store_id": "fds_schmetterling",
     "hoerprobe_url": null,
     "is_active": true
@@ -240,7 +240,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "waehrung": "EUR",
     "dauer": 3519,
     "highlights": null,
-    "audio_hinweis": "Audio-Hinweis: Sprecherin Lisa Ragusa, Hintergrundmusik mit KI-Unterstützung erstellt.",
+    "audio_hinweis": "Audio-Hinweis: Text erstellt von Jacqueline • Stimme: Lisa, Hintergrundmusik mit KI-Unterstützung erstellt.",
     "play_store_id": "fds_mensch_sein",
     "hoerprobe_url": null,
     "is_active": true

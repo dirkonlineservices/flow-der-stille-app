@@ -173,12 +173,12 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         <div className="p-3.5 sm:p-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-main)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-xs">
           <Sparkles className="w-5 h-5 text-emerald-700 shrink-0" />
           <span className="flex-1 text-[var(--text-muted)]">
-            <strong className="text-[var(--text-main)] font-bold">Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
-            Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-bold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
+            <strong className="text-[var(--text-main)] font-bold">Echte Handarbeit &amp; faire Preise:</strong> Sämtliche Texte verfasst Jacqueline persönlich von Hand mit viel Herzblut. 
+            Unsere Inhalte spricht <strong className="text-[var(--text-main)] font-bold">Lisa mit warmer Menschenstimme</strong> persönlich ein. 
             Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – für 
             <strong className="text-[var(--text-main)] font-bold whitespace-nowrap"> dauerhaft faire Einzelpreise ab 1,99&nbsp;€ ganz ohne Abo</strong>. 
-            <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" className="text-emerald-800 hover:underline font-bold ml-1.5 inline-flex items-center gap-0.5">
-              Unsere Vision lesen →
+            <Link to="/ueber-uns" className="text-emerald-800 hover:underline font-bold ml-1.5 inline-flex items-center gap-0.5">
+              Über uns &amp; unsere Vision →
             </Link>
           </span>
         </div>
@@ -497,7 +497,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 </h3>
               </Link>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Kostenlose Meditation zur Herzöffnung, Loslassen &amp; Innere Ruhe (Lisa Ragusa)
+                Kostenlose Meditation zur Herzöffnung, Loslassen &amp; Innere Ruhe (Stimme: Lisa)
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -724,7 +724,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                       dauer: 1005
                     },
                     badge: 'Geführte Meditation • 100 % Gratis Vollversion verfügbar',
-                    desc: 'Spüre die sanfte Herzöffnung und lasse innere Schutzpanzer los. Lisa Ragusa spricht.'
+                    desc: 'Spüre die sanfte Herzöffnung und lasse innere Schutzpanzer los. Stimme: Lisa.'
                   },
                   selbsthypnose: {
                     produkt: getOfflineProductById('selbsthypnose_besser_und_erholsamer_schlaf') || {

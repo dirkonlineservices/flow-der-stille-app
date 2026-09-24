@@ -53,6 +53,7 @@ const SoundSamplesLanding = lazy(() => import('./pages/SoundSamplesLanding'));
 const AudioSessionPage = lazy(() => import('./pages/AudioSessionPage'));
 const PricingPackages = lazy(() => import('./pages/PricingPackages'));
 const Community = lazy(() => import('./pages/Community'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
 
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext'; 
@@ -159,6 +160,11 @@ export default function App() {
                       {/* Wissen / Lernen */}
                       <Route path="wissen" element={<Learn />} />
                       <Route path="learn" element={<Learn />} />
+
+                      {/* Über uns & Vision */}
+                      <Route path="ueber-uns" element={<AboutUs />} />
+                      <Route path="about" element={<AboutUs />} />
+                      <Route path="team" element={<AboutUs />} />
 
                       {/* Tagesrituale */}
                       <Route path="morgen" element={<Morning />} />

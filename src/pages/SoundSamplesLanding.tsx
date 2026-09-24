@@ -44,7 +44,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: true,
     cover: '/images/products/cover_herzoeffnung.jpg',
     shortDesc: 'Eine behutsame Einladung, emotionale Schutzpanzer abzulegen und Weite, Sanftheit und innere Wärme im Herzraum zuzulassen.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_herzoeffnung_meditation',
     landingUrl: '/meditation',
@@ -63,7 +63,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_innere_ruhe.jpg',
     shortDesc: 'Schalte das permanente Grundrauschen ab. Finde zurück in dein natürliches Tempo und spüre wieder festen Boden unter den Füßen.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_meditation_innere_ruhe',
     landingUrl: '/meditation',
@@ -81,7 +81,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_inneres_kind.jpg',
     shortDesc: 'Ein geschützter, sicherer Rahmen, um alten Schutzmustern und ungestillten Bedürfnissen mit aufrichtiger Zuwendung zu begegnen.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_meditation_inneres_kind',
     landingUrl: '/meditation',
@@ -99,7 +99,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_herzkompass.jpg',
     shortDesc: 'Verbinde dich wieder mit deiner inneren Stimme und schenke deinen Empfindungen Raum, um stimmige Entscheidungen im Alltag zu treffen.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_herzkompass_meditation',
     landingUrl: '/meditation',
@@ -119,7 +119,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: true,
     cover: '/images/products/cover_schlaf.jpg',
     shortDesc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine schwere, wohlige Tiefenentspannung und regenerierenden Schlaf.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Sanfte Schlafwellen & Frequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_selbsthypnose_besserer_tieferer_schlaf',
     landingUrl: '/selbsthypnose',
@@ -138,7 +138,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_vertrauen.jpg',
     shortDesc: 'Echtes Selbstvertrauen ist nicht laut. Verankere ein unerschütterliches, ruhiges Fundament direkt in deinem Unterbewusstsein.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Stärkende Tiefenklänge (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_hypnose_selbstbewusstsein',
     landingUrl: '/selbsthypnose',
@@ -156,7 +156,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_fokus.jpg',
     shortDesc: 'Beende mentale Zerstreuung. Gelange mühelos und ohne anstrengende Willenskraft in deinen klaren, fokussierten Arbeitsmodus.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Konzentrationsfördernde Klangarchitektur (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_hypnose_fokus',
     landingUrl: '/selbsthypnose',
@@ -174,7 +174,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_ernaehrung.jpg',
     shortDesc: 'Wohlbefinden ohne Verzicht: Richte deine unbewussten Routinen neu aus, sodass gesunde Entscheidungen sich natürlich anfühlen.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Wohlfühlfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_hypnose_gesunde_ernaehrung',
     landingUrl: '/selbsthypnose',
@@ -194,7 +194,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_schmetterling.jpg',
     shortDesc: 'Eine tröstende Reise über den Wandel des Bewusstseins: Warum der Übergang kein finsterer Abgrund ist, sondern der Flug eines Schmetterlings.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Buch & Skript: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_schmetterling',
     landingUrl: '/hoerbuecher',
@@ -212,7 +212,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_mensch_sein.jpg',
     shortDesc: 'Lege die Masken äußerer Erwartungen ab. Lerne, mit deinen eigenen Grenzen und Gefühlen in tiefer Ehrlichkeit und Würde im Einklang zu sein.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Buch & Skript: Jacqueline Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_mensch_sein',
     landingUrl: '/hoerbuecher',
@@ -266,7 +266,7 @@ const FAQS = [
   },
   {
     q: 'Wer spricht die Meditationen und Selbsthypnosen?',
-    a: 'Unsere Meditationen und Selbsthypnosen werden von der professionellen Sprecherin Lisa Ragusa eingesprochen. Die Texte stammen von Entspannungstherapeutin Jacqueline Schmetzer.'
+    a: 'Unsere Meditationen und Selbsthypnosen werden von Sprecherin Lisa mit echter, warmer menschlicher Stimme eingesprochen. Sämtliche Texte werden von Jacqueline persönlich von Hand verfasst.'
   },
   {
     q: 'Wie kann ich die vollständigen Audios freischalten?',
@@ -307,7 +307,7 @@ export default function SoundSamplesLanding() {
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": "Kostenlose Meditationen & Selbsthypnosen bei Flow der Stille",
-      "description": "Kostenlose geführte Meditationen, Selbsthypnosen und Hörproben von Jacqueline Schmetzer, eingesprochen von Lisa Ragusa.",
+      "description": "Kostenlose geführte Meditationen, Selbsthypnosen und Hörproben von Jacqueline, eingesprochen von Lisa.",
       "numberOfItems": ALL_SAMPLES.length,
       "itemListElement": ALL_SAMPLES.map((item, index) => ({
         "@type": "ListItem",
@@ -325,7 +325,7 @@ export default function SoundSamplesLanding() {
           },
           "performer": {
             "@type": "Person",
-            "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa Ragusa"
+            "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa"
           },
           "publisher": {
             "@type": "Organization",
@@ -353,8 +353,8 @@ export default function SoundSamplesLanding() {
     <div className="min-h-screen text-[var(--text-main)] transition-colors duration-300">
       <SEO
         title="Kostenlose Meditation & kostenlose Selbsthypnose – Hörproben | Flow der Stille"
-        description="Entdecke kostenlose Meditationen und geführte Selbsthypnosen zum sofortigen Anhören. Von Jacqueline Schmetzer, gesprochen von Lisa Ragusa – ohne Abo, ohne Risiko."
-        keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation kostenlos anhören, Selbsthypnose Hörprobe, Meditation zum Einschlafen, Herzöffnung, innerer Frieden, Lisa Ragusa Sprecherin, Jacqueline Schmetzer, Flow der Stille Audio"
+        description="Entdecke kostenlose Meditationen und geführte Selbsthypnosen zum sofortigen Anhören. Text von Jacqueline, gesprochen von Lisa – ohne Abo, ohne Risiko."
+        keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation kostenlos anhören, Selbsthypnose Hörprobe, Meditation zum Einschlafen, Herzöffnung, innerer Frieden, Lisa, Jacqueline, Flow der Stille Audio"
         canonicalUrl="https://flow-der-stille.de/hoerproben"
         image="/images/products/cover_herzoeffnung.jpg"
         schemaJson={schemaJson}
@@ -437,7 +437,7 @@ export default function SoundSamplesLanding() {
                 <span>Menschliche Stimme &amp; Herz</span>
               </div>
               <p className="text-[var(--text-muted)]">
-                Alle Meditationen, Selbsthypnosen und Hörbücher sind zu <strong>100 % von Jacqueline Schmetzer</strong> geschrieben und von <strong>Lisa Ragusa</strong> mit ihrer warmen, echten menschlichen Stimme eingesprochen.
+                Alle Meditationen, Selbsthypnosen und Hörbücher sind zu <strong>100 % von Jacqueline</strong> geschrieben und von <strong>Lisa</strong> mit ihrer warmen, echten menschlichen Stimme eingesprochen.
               </p>
             </div>
 

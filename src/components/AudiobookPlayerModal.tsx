@@ -90,8 +90,8 @@ export function AudiobookPlayerModal({
   onClose,
   productId,
   title,
-  author = 'Jacqueline Schmetzer',
-  reader = 'Lisa Ragusa',
+  author = 'Jacqueline',
+  reader = 'Lisa',
   coverImage = '/images/products/cover_schmetterling.jpg',
   audioUrl,
   durationSeconds = 3523,
@@ -809,7 +809,7 @@ export function AudiobookPlayerModal({
                   {title}
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
+                  Text: <strong className="text-[var(--text-main)]">{author}</strong> • Stimme: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
 
                 {/* Offline-Speicher Button oder Freischalt-Hinweis */}

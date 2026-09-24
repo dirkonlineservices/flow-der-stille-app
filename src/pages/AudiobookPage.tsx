@@ -418,7 +418,7 @@ export default function AudiobookPage() {
     },
     "readBy": {
       "@type": "Person",
-      "name": "Lisa Ragusa"
+      "name": "Lisa"
     },
     "publisher": {
       "@type": "Organization",
@@ -470,11 +470,11 @@ export default function AudiobookPage() {
     ? 'Hörbuch: Vom Überleben zum Mensch sein – Flow der Stille' 
     : 'Hörbuch: Wenn der Schmetterling dem Wind vertraut – Flow der Stille';
   const bookSeoDesc = isMenschSein
-    ? "Hörbuch 'Vom Überleben zum Mensch sein' von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Dein Wegweiser für Mut zum Echtsein, Selbstakzeptanz und emotionale Befreiung."
-    : "Hörbuch 'Wenn der Schmetterling dem Wind vertraut' von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Trost, Hoffnung und Loslassen bei Trauer und Neuanfang.";
+    ? "Hörbuch 'Vom Überleben zum Mensch sein' von Jacqueline, gesprochen von Lisa. Dein Wegweiser für Mut zum Echtsein, Selbstakzeptanz und emotionale Befreiung."
+    : "Hörbuch 'Wenn der Schmetterling dem Wind vertraut' von Jacqueline, gesprochen von Lisa. Trost, Hoffnung und Loslassen bei Trauer und Neuanfang.";
   const bookKeywords = isMenschSein
-    ? "Hörbuch Vom Überleben zum Mensch sein, Mut zum Echtsein, Jacqueline Schmetzer, Lisa Ragusa, Trauma heilen, Selbstliebe Hörbuch, Hörbuch Persönlichkeitsentwicklung, Flow der Stille"
-    : "Hörbuch Wenn der Schmetterling dem Wind vertraut, Hörbuch Trauerbewältigung, Loslassen lernen, Hoffnung bei Verlust, Lisa Ragusa, Jacqueline Schmetzer, Flow der Stille";
+    ? "Hörbuch Vom Überleben zum Mensch sein, Mut zum Echtsein, Jacqueline, Lisa, Trauma heilen, Selbstliebe Hörbuch, Hörbuch Persönlichkeitsentwicklung, Flow der Stille"
+    : "Hörbuch Wenn der Schmetterling dem Wind vertraut, Hörbuch Trauerbewältigung, Loslassen lernen, Hoffnung bei Verlust, Lisa, Jacqueline, Flow der Stille";
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10 selection:bg-[var(--accent)] selection:text-white">
@@ -603,7 +603,7 @@ export default function AudiobookPage() {
             </h1>
 
             <p className="text-xs text-[var(--text-muted)] font-medium">
-              Autorin: <strong className="text-[var(--text-main)]">Jacqueline Schmetzer</strong> • Sprecherin: <strong className="text-[var(--text-main)]">Lisa Ragusa</strong>
+              Text: <strong className="text-[var(--text-main)]">Jacqueline</strong> • Stimme: <strong className="text-[var(--text-main)]">Lisa</strong> • <Link to="/ueber-uns" className="text-[var(--accent)] hover:underline">Über uns & Vision →</Link>
             </p>
 
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
@@ -1100,8 +1100,8 @@ export default function AudiobookPage() {
           }}
           productId={productData?.id || productId}
           title={title}
-          author="Jacqueline Schmetzer"
-          reader="Lisa Ragusa"
+          author="Jacqueline"
+          reader="Lisa"
           audioUrl={audioUrl}
           coverImage={coverImage}
           durationSeconds={productData?.dauer || (isMenschSein ? 3519 : 3523)}
