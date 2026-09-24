@@ -1031,26 +1031,29 @@ export default function PremiumShopDashboard() {
                     <div className="lg:w-[380px] xl:w-[420px] shrink-0 pt-5 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:pl-6 xl:lg:pl-8 flex flex-col gap-3">
                         <div className="w-full flex flex-col gap-3">
                             {!user && !isNativeApp && (
-                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2">
+                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2.5 shadow-2xs">
                                 <div className="flex items-center gap-1.5 font-bold text-amber-950">
                                   <Key size={15} className="text-amber-800 shrink-0" />
                                   <span>Express-Gastkauf mit Magic Link</span>
                                 </div>
                                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                                  <strong className="text-[var(--text-main)]">Keine Registrierung &amp; kein Passwort nötig:</strong> Bezahle einfach einmalig per PayPal, Karte oder SEPA. Du musst mehr als bezahlen nicht tun.
+                                  <strong className="text-[var(--text-main)]">Kein Passwort &amp; kein Benutzerkonto nötig:</strong> Du musst nur bezahlen – dein persönlicher Zugangs-Link kommt sofort per E-Mail.
                                 </p>
-                                <div className="pt-1.5 border-t border-amber-500/20 text-[11px] text-[var(--text-muted)] space-y-1">
-                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
-                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
-                                    <span>Sofort im Web-Player abspielen</span>
+
+                                {/* Kaufanleitung in 3 einfachen Schritten */}
+                                <div className="pt-2 border-t border-amber-500/20 space-y-2 text-[11px] text-[var(--text-main)]">
+                                  <span className="font-bold text-amber-950 block text-xs">Kaufanleitung in 3 Schritten:</span>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+                                    <span>Unten das Häkchen für den sofortigen Beginn setzen.</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
-                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
-                                    <span>Direkt im Web-Player &amp; in der App streamen</span>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+                                    <span>Auf den gelben PayPal-Button (oder Karte / SEPA) tippen und sicher bezahlen.</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
-                                    <CheckCircle2 size={13} className="text-emerald-700 shrink-0" />
-                                    <span>Privater Magic Link per E-Mail für jedes Gerät</span>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+                                    <span>Fertig! Du kannst sofort im Web-Player hören. Dein privater Magic Link wird zusätzlich per E-Mail gesendet.</span>
                                   </div>
                                 </div>
                               </div>
@@ -1071,19 +1074,6 @@ export default function PremiumShopDashboard() {
                                   onSuccess={() => handleProductPurchaseSuccess(produkt)} 
                                   paypalClientId={PAYPAL_CLIENT_ID}
                                 />
-                            )}
-
-                            {!user && !isNativeApp && (
-                              <div className="pt-2">
-                                <QuickSocialUnlockBox
-                                  produkt={produkt}
-                                  isFree={true}
-                                  title="Oder erst 1-Klick Hörer-Konto (0 €)"
-                                  subtitle="Über Google, Meta (Facebook) oder E-Mail – garantiert 0 € und kein Abo. Schaltet sofort 2 Gratis-Vollversionen frei."
-                                  compact={true}
-                                  returnPath={location.pathname + location.search}
-                                />
-                              </div>
                             )}
                         </div>
                     </div>
@@ -1207,8 +1197,19 @@ export default function PremiumShopDashboard() {
               )}
 
               {!hatZugriff && (
-                <div className="mt-4 pt-4 border-t border-[var(--border)] flex justify-end">
-                  <ProductDisclaimerTrigger />
+                <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  {!user && (
+                    <Link
+                      to={`/registrieren?redirectTo=${encodeURIComponent(location.pathname + `#product-${produkt.id}`)}`}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-bold transition shadow-2xs active:scale-95 cursor-pointer text-center"
+                    >
+                      <Sparkles size={14} className="text-emerald-800 shrink-0" />
+                      <span>Lieber erst kostenlos testen? 1-Klick Hörer-Konto (0&nbsp;€) anlegen →</span>
+                    </Link>
+                  )}
+                  <div className="sm:ml-auto">
+                    <ProductDisclaimerTrigger />
+                  </div>
                 </div>
               )}
               </div>{/* Ende: innerer p-5/p-7 Container */}
