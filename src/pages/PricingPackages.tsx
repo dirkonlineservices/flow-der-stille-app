@@ -102,7 +102,7 @@ export default function PricingPackages() {
           {/* PAKET 1: FREIER GAST-ZUGANG */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-emerald-500/40 transition-all">
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-center justify-center gap-1.5 text-center">
                 <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
                   Freier Gast-Zugang
                 </span>
@@ -176,7 +176,7 @@ export default function PricingPackages() {
             </div>
 
             <div className="space-y-4 pt-1">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-center justify-center gap-1.5 text-center">
                 <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
                   Hörer-Konto
                 </span>
@@ -281,7 +281,7 @@ export default function PricingPackages() {
           {/* PAKET 3: EINMALKAUF MIT MAGIC LINK (HÖRBUCH, MEDITATION, SELBSTHYPNOSE) */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition-all">
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-center justify-center gap-1.5 text-center">
                 <span className="text-xs font-mono uppercase tracking-wider font-bold text-stone-900 dark:text-stone-100 bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full border border-stone-300 dark:border-stone-700 whitespace-nowrap">
                   Ruhe-Shop Einmalkauf
                 </span>
@@ -305,10 +305,10 @@ export default function PricingPackages() {
                   <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
                 </div>
                 <span className="text-xs text-stone-900 dark:text-stone-100 block mt-1 font-bold">
-                  Express-Gastkauf mit PayPal, Apple Pay &amp; Karte
+                  Express-Gastkauf mit PayPal &amp; Karte
                 </span>
                 <span className="text-[11px] text-stone-600 dark:text-stone-400 block mt-0.5 font-medium">
-                  Keine Registrierung notwendig • Kein Passwort nötig • Nur zahlen &amp; sofort hören
+                  Keine Registrierung notwendig • In der App auch Google Pay • Sofort hören
                 </span>
               </div>
 
@@ -470,7 +470,7 @@ export default function PricingPackages() {
           </h2>
           <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
             Wenn du ein Hörbuch oder eine Einzelsession per Gastkauf erwirbst, musst du dir kein Passwort ausdenken. 
-            Direkt nach der Zahlung per PayPal oder Apple Pay erhältst du deinen privaten Link.
+            Direkt nach der Zahlung per PayPal (oder in der App per Google Pay) erhältst du deinen privaten Link.
           </p>
         </div>
 
