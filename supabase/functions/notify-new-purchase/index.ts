@@ -7,6 +7,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN')
+const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,9 +19,28 @@ const corsHeaders = {
 const PRODUKT_NAMEN: Record<string, string> = {
   'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte': 'Der Tag, an dem der Schmetterling erwachte (Teil 1)',
   'wo_die_seele_den_wind_beruehrt': 'Wo die Seele den Wind berührt (Teil 2)',
-  'mensch_sein': 'Mensch sein',
+  'mensch_sein': 'Mut zum Echtsein (Hörbuch)',
   'morgendliche_selbsthypnose': 'Morgendliche Selbsthypnose',
   'abendliche_selbsthypnose': 'Abendliche Selbsthypnose',
+}
+
+async function sendTelegram(text: string) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return false;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: 'HTML',
+      }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('Telegram notification failed:', err);
+    return false;
+  }
 }
 
 async function sendEmail(to: string, subject: string, html: string) {
@@ -78,7 +99,18 @@ serve(async (req) => {
       }
     }
 
-    // ── 1. Benachrichtigung an dich ──────────────────────────────────────────
+    // ── 0. Telegram Push-Nachricht an dich ──────────────────────────────────
+    await sendTelegram(`
+💰 <b>Neuer Kauf bei Flow der Stille!</b>
+
+🎧 <b>Produkt:</b> ${produktName}
+💶 <b>Betrag:</b> ${preisFormatiert}
+👤 <b>Käufer:</b> ${kaeuferEmail}
+📋 <b>Bestell-ID:</b> <code>${order_id ?? '—'}</code>
+🕒 <b>Zeitpunkt:</b> ${datum}
+    `.trim())
+
+    // ── 1. E-Mail-Benachrichtigung an dich ───────────────────────────────────
     await sendEmail(
       'info@flow-der-stille.de',
       `🎉 Neuer Kauf: ${produktName} (${preisFormatiert})`,
