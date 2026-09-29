@@ -52,6 +52,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>https://flow-der-stille.de/hoerbuch/wo-die-seele-den-wind-beruehrt</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 
   <!-- 3. EINZELNE AUDIO-SESSIONS & MEDITATIONEN -->
   <url>
@@ -209,6 +215,12 @@
     <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flow-der-stille.de/blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://flow-der-stille.de/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo</loc>

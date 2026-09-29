@@ -1,22 +1,4 @@
-export interface BlogPost {
-  slug: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  category: string;
-  readTime: string;
-  content: string;
-}
-
-export const BLOG_POSTS: BlogPost[] = [
-  {
-    slug: 'trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind',
-    title: 'Trauerbegleitung & Trauerbewältigung: Wie ein achtsames Hörbuch mit geführter Meditation hilft, Verlust zu verarbeiten',
-    date: '2026-09-29',
-    excerpt: 'Wie geht man mit tiefem Verlust, Schmerz und Trauer um? Erfahre, warum achtsame Trauerbegleitung ohne Ratgeber-Floskeln heilt, wie eine geführte Meditation das überlastete Nervensystem entlastet und wie das neue Hörbuch „Wo die Seele den Wind berührt“ einen sicheren Hafen zum Loslassen schenkt.',
-    category: 'Trauerbegleitung & Achtsamkeit',
-    readTime: '8 Min.',
-    content: `# Trauerbegleitung & Trauerbewältigung: Wie ein achtsames Hörbuch mit geführter Meditation hilft, Verlust zu verarbeiten
+const i=[{slug:"trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind",title:"Trauerbegleitung & Trauerbewältigung: Wie ein achtsames Hörbuch mit geführter Meditation hilft, Verlust zu verarbeiten",date:"2026-09-29",excerpt:"Wie geht man mit tiefem Verlust, Schmerz und Trauer um? Erfahre, warum achtsame Trauerbegleitung ohne Ratgeber-Floskeln heilt, wie eine geführte Meditation das überlastete Nervensystem entlastet und wie das neue Hörbuch „Wo die Seele den Wind berührt“ einen sicheren Hafen zum Loslassen schenkt.",category:"Trauerbegleitung & Achtsamkeit",readTime:"8 Min.",content:`# Trauerbegleitung & Trauerbewältigung: Wie ein achtsames Hörbuch mit geführter Meditation hilft, Verlust zu verarbeiten
 
 Der Verlust eines geliebten Menschen, eines treuen Tieres oder eines vertrauten Lebensabschnitts reißt eine Lücke, für die es in unserer schnelllebigen Leistungsgesellschaft oft keinen Platz gibt. Während das Umfeld nach wenigen Wochen erwartet, dass man wieder „funktioniert“ und zum Alltag zurückkehrt, beginnt im Inneren erst der eigentliche, stille Sturm.
 
@@ -101,16 +83,7 @@ Wenn du nach einer sanften, verlässlichen Begleitung suchst, die dich an die Ha
 👉 **[Teil 1 der Reihe entdecken: „Der Tag, an dem der Schmetterling erwachte“](/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte)**  
 👉 **[Zum Ruhe-Shop von Flow der Stille](/ruhe-shop)**
 
-*In stiller Verbundenheit – dein Team von Flow der Stille 🌿*`
-  },
-  {
-    slug: 'selbsthypnose-wirkung-anwendung-qualitaetsanspruch',
-    title: 'Selbsthypnose: Wirkung, richtige Anwendung & warum Text- und Stimmqualität den Unterschied machen',
-    date: '2026-09-24',
-    excerpt: 'Warum braucht man Selbsthypnose, wie wendet man sie richtig an und woran erkennt man erstklassige Werke? Erfahre, wie handgeschriebene Texte von Jacqueline und die einfühlsame Stimme von Lisa dein Nervensystem nachhaltig neu ausrichten.',
-    category: 'Selbsthypnose & Wissenschaft',
-    readTime: '9 Min.',
-    content: `# Selbsthypnose: Wirkung, richtige Anwendung & warum Text- und Stimmqualität den Unterschied machen
+*In stiller Verbundenheit – dein Team von Flow der Stille 🌿*`},{slug:"selbsthypnose-wirkung-anwendung-qualitaetsanspruch",title:"Selbsthypnose: Wirkung, richtige Anwendung & warum Text- und Stimmqualität den Unterschied machen",date:"2026-09-24",excerpt:"Warum braucht man Selbsthypnose, wie wendet man sie richtig an und woran erkennt man erstklassige Werke? Erfahre, wie handgeschriebene Texte von Jacqueline und die einfühlsame Stimme von Lisa dein Nervensystem nachhaltig neu ausrichten.",category:"Selbsthypnose & Wissenschaft",readTime:"9 Min.",content:`# Selbsthypnose: Wirkung, richtige Anwendung & warum Text- und Stimmqualität den Unterschied machen
 
 In unserer hektischen, von Reizüberflutung geprägten Welt stoßen rein verstandesmäßige Lösungsansätze oft an ihre Grenzen. Vielleicht kennst du das: Du weißt genau, dass du ruhig bleiben solltest, doch dein Herz rast. Du möchtest einschlafen, doch deine Gedanken kreisen unaufhörlich. Oder du nimmst dir vor, gesünder zu leben, doch automatisierte Verhaltensmuster übernehmen die Kontrolle.
 
@@ -213,16 +186,7 @@ Bei **Flow der Stille** gehen wir ganz bewusst einen anderen Weg:
 
 Wir nennen das nicht "günstig" oder "billig" – denn in jedem einzelnen Werk stecken Wochen liebevoller Handarbeit von Jacqueline, Lisa und Dirk. Wir nennen es **fair, ehrlich und zutiefst menschlich**.
 
-Probiere es heute Abend selbst aus, lass den Tag los und schenke deinem Geist die Ruhe, die er verdient.`
-  },
-  {
-    slug: 'warum-flow-der-stille-kostenlose-meditation-ohne-abo',
-    title: 'Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen',
-    date: '2026-09-20',
-    excerpt: 'Warum wir Flow der Stille gegründet haben: Kostenlose Meditationen und Selbsthypnosen für alle, bewusster Verzicht auf teure Monats-Abos und wie wir mit Herzblut und KI-Unterstützung faire Entspannung schaffen.',
-    category: 'Herzensprojekt',
-    readTime: '7 Min.',
-    content: `# Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen
+Probiere es heute Abend selbst aus, lass den Tag los und schenke deinem Geist die Ruhe, die er verdient.`},{slug:"warum-flow-der-stille-kostenlose-meditation-ohne-abo",title:"Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen",date:"2026-09-20",excerpt:"Warum wir Flow der Stille gegründet haben: Kostenlose Meditationen und Selbsthypnosen für alle, bewusster Verzicht auf teure Monats-Abos und wie wir mit Herzblut und KI-Unterstützung faire Entspannung schaffen.",category:"Herzensprojekt",readTime:"7 Min.",content:`# Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen
 
 In einer Welt, die immer schneller, lauter und fordernder wird, ist innere Ruhe zu einem seltenen Gut geworden. Fast jeder Mensch kennt Momente von Erschöpfung, innerer Getriebenheit, Schlafproblemen oder emotionalen Krisen. Doch wer heute nach geführten Meditationen oder mentaler Unterstützung sucht, stößt fast immer auf dieselben Hürden: **teure Monats-Abos, aggressive Werbeunterbrechungen mitten in der Entspannung und unpersönliche Großplattformen**.
 
@@ -302,16 +266,7 @@ Da wir erst im August/September 2026 gestartet sind, ist jeder einzelne Nutzer f
 
 Danke, dass du Teil unserer Reise bist. Mögest du in deinem Alltag immer wieder den Weg in deinen eigenen Flow der Stille finden.
 
-*Jacqueline, Lisa und Dirk*`
-  },
-  {
-    slug: 'herzkohaerenz-herz-und-verstand',
-    title: 'Herz-Kohärenz: Wenn Herz und Verstand im Einklang schwingen',
-    date: '2026-07-28',
-    excerpt: 'Entdecke, wie gezielte Herzratenvariabilität und kohärentes Atmen dein emotionales Gleichgewicht stärken und deine Intuition schärfen.',
-    category: 'Herzkompass',
-    readTime: '5 Min.',
-    content: `# Herz-Kohärenz: Wenn Herz und Verstand im Einklang schwingen
+*Jacqueline, Lisa und Dirk*`},{slug:"herzkohaerenz-herz-und-verstand",title:"Herz-Kohärenz: Wenn Herz und Verstand im Einklang schwingen",date:"2026-07-28",excerpt:"Entdecke, wie gezielte Herzratenvariabilität und kohärentes Atmen dein emotionales Gleichgewicht stärken und deine Intuition schärfen.",category:"Herzkompass",readTime:"5 Min.",content:`# Herz-Kohärenz: Wenn Herz und Verstand im Einklang schwingen
 
 Das Herz sendet weit mehr Signale an das Gehirn, als es von ihm empfängt. Wenn wir in einen Zustand der Herz-Kohärenz gelangen, arbeiten Herz, Atmung und Gehirn in einem harmonischen Rhythmus zusammen.
 
@@ -329,16 +284,7 @@ In Kohärenz zu sein bedeutet nicht einfach passive Entspannung. Es ist ein Zust
 2. Atme langsam und gleichmäßig: 5 Sekunden tief ein, 5 Sekunden sanft aus.
 3. Stelle dir vor, wie der Atem direkt durch dein Herz ein- und ausströmt.
 
-Spüre nach wenigen Minuten, wie sich innere Weite und Ruhe ausbreiten. Begleitend dazu hilft dir unsere kostenlose [Meditation zur Herzöffnung](/meditation).`
-  },
-  {
-    slug: 'innere-ruhe-im-alltag',
-    title: 'Innere Ruhe im Gedankenkarussell finden',
-    date: '2026-07-15',
-    excerpt: 'Gedanken kreisen unaufhörlich? Mit diesen einfachen Schritten stoppen Sie den mentalen Überfluss und finden zu klarer Präsenz.',
-    category: 'Achtsamkeit',
-    readTime: '6 Min.',
-    content: `# Innere Ruhe im Gedankenkarussell finden
+Spüre nach wenigen Minuten, wie sich innere Weite und Ruhe ausbreiten. Begleitend dazu hilft dir unsere kostenlose [Meditation zur Herzöffnung](/meditation).`},{slug:"innere-ruhe-im-alltag",title:"Innere Ruhe im Gedankenkarussell finden",date:"2026-07-15",excerpt:"Gedanken kreisen unaufhörlich? Mit diesen einfachen Schritten stoppen Sie den mentalen Überfluss und finden zu klarer Präsenz.",category:"Achtsamkeit",readTime:"6 Min.",content:`# Innere Ruhe im Gedankenkarussell finden
 
 Kennst du das Gefühl, wenn abends im Bett die To-Do-Liste des nächsten Tages durch den Kopf rast? Gedanken sind oft wie vorbeiziehende Wolken – wir machen den Fehler, uns an sie zu hängen und sie für bare Münze zu nehmen.
 
@@ -350,16 +296,7 @@ Anstatt gegen kreisende Gedanken anzukämpfen, betrachte sie wie ein neutraler B
 2. **Körper spüren:** Nimm einen tiefen Atemzug in den Bauch und spüre den Kontakt deiner Füße zum Boden.
 3. **Loslassen:** Lass den Gedanken wie ein Blatt auf einem Fluss weitertreiben.
 
-Stille ist kein Zustand, den man künstlich erzwingen muss – sie ist bereits da, sobald der mentale Lärm zur Ruhe kommt. Vertiefe diese Ruhe mit unserer [Selbsthypnose für erholsamen Schlaf](/selbsthypnose).`
-  },
-  {
-    slug: 'parasympathikus-aktivieren',
-    title: 'Den Parasympathikus im Alltag aktivieren',
-    date: '2026-07-01',
-    excerpt: 'Erfahren Sie, wie Sie durch gezielte Atemtechniken Ihr Nervensystem beruhigen und tiefen Stress abbauen können.',
-    category: 'Wissenschaft & Praxis',
-    readTime: '4 Min.',
-    content: `# Den Parasympathikus im Alltag aktivieren
+Stille ist kein Zustand, den man künstlich erzwingen muss – sie ist bereits da, sobald der mentale Lärm zur Ruhe kommt. Vertiefe diese Ruhe mit unserer [Selbsthypnose für erholsamen Schlaf](/selbsthypnose).`},{slug:"parasympathikus-aktivieren",title:"Den Parasympathikus im Alltag aktivieren",date:"2026-07-01",excerpt:"Erfahren Sie, wie Sie durch gezielte Atemtechniken Ihr Nervensystem beruhigen und tiefen Stress abbauen können.",category:"Wissenschaft & Praxis",readTime:"4 Min.",content:`# Den Parasympathikus im Alltag aktivieren
 
 In unserer modernen, schnelllebigen Welt ist unser sympathisches Nervensystem oft im Dauereinsatz. Wir stehen unter Strom, Termindruck und ständiger Reizüberflutung. 
 
@@ -374,10 +311,4 @@ Wenn du doppelt so lange ausatmest wie du einatmest, sinkt die Herzfrequenz und 
 - Atme 4 Sekunden lang sanft durch die Nase ein.
 - Atme 8 Sekunden lang langsam und kontrolliert durch leicht geöffnete Lippen aus.
 
-Wiederhole diesen Zyklus 5-mal. Mehr praktische Anleitungen findest du in unserem Bereich für [Atemübungen & Praxis](/uebungen).`
-  }
-];
-
-export function getBlogPostBySlug(slug: string): BlogPost | undefined {
-  return BLOG_POSTS.find((p) => p.slug === slug);
-}
+Wiederhole diesen Zyklus 5-mal. Mehr praktische Anleitungen findest du in unserem Bereich für [Atemübungen & Praxis](/uebungen).`}];function r(e){return i.find(n=>n.slug===e)}export{i as B,r as g};
