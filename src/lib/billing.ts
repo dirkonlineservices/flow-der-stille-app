@@ -46,12 +46,19 @@ export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'meditation_innere_ruhe': 'fds_meditation_innere_ruhe',
   'pmr_basis': 'fds_pmr_basis',
   'gefuehrte_atemuebung': 'fds_gefuehrte_atemuebung',
+
+  // Hörbücher
+  'mensch_sein': 'fds_mensch_sein',
+  'hoerbuch_mensch_sein': 'fds_mensch_sein',
+  'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte': 'fds_schmetterling',
   'wo_die_seele_den_wind_beruehrt': 'fds_seele_wind',
   'hoerbuch_wo_die_seele_den_wind_beruehrt': 'fds_seele_wind'
 };
 
 export const REVERSE_PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'fds_seele_wind': 'wo_die_seele_den_wind_beruehrt',
+  'fds_mensch_sein': 'mensch_sein',
+  'fds_schmetterling': 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
   'fds_selbsthypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_hypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',

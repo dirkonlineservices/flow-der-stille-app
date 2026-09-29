@@ -13,10 +13,19 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
 // 🗺️ Exakte Zuordnung der Produkt-IDs (Play Store ID <-> Supabase DB ID)
 const PLAY_TO_DB_MAP: Record<string, string> = {
+  // Hörbücher
+  'fds_mensch_sein': 'mensch_sein',
+  'fds_schmetterling': 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+  'fds_seele_wind': 'wo_die_seele_den_wind_beruehrt',
+
+  // Selbsthypnosen & Meditationen
+  'fds_selbsthypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_hypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
   'fds_meditation_loslassen': 'meditation_loslassen',
+  'fds_selbsthypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
   'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
+  'fds_selbsthypnose_fokus_absolute_konzentration': 'selbsthypnose_fokus&konzentration',
   'fds_hypnose_fokus': 'selbsthypnose_fokus&konzentration',
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
@@ -26,13 +35,21 @@ const PLAY_TO_DB_MAP: Record<string, string> = {
 };
 
 const DB_TO_PLAY_MAP: Record<string, string> = {
-  'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
-  'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_hypnose_selbstbewusstsein',
+  // Hörbücher
+  'mensch_sein': 'fds_mensch_sein',
+  'hoerbuch_mensch_sein': 'fds_mensch_sein',
+  'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte': 'fds_schmetterling',
+  'wo_die_seele_den_wind_beruehrt': 'fds_seele_wind',
+  'hoerbuch_wo_die_seele_den_wind_beruehrt': 'fds_seele_wind',
+
+  // Selbsthypnosen & Meditationen
+  'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
+  'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
   'meditation_zur_herzoeffnung': 'fds_herzoeffnung_meditation',
   'meditation_loslassen': 'fds_meditation_loslassen',
-  'selbsthypnose_ernaehrung': 'fds_hypnose_gesunde_ernaehrung',
-  'selbsthypnose_fokus&konzentration': 'fds_hypnose_fokus',
-  'selbsthypnose_fokus_konzentration': 'fds_hypnose_fokus',
+  'selbsthypnose_ernaehrung': 'fds_selbsthypnose_gesunde_ernaehrung',
+  'selbsthypnose_fokus&konzentration': 'fds_selbsthypnose_fokus_absolute_konzentration',
+  'selbsthypnose_fokus_konzentration': 'fds_selbsthypnose_fokus_absolute_konzentration',
   'meditation_herzkompass': 'fds_herzkompass_meditation',
   'meditation_inneres_kind': 'fds_meditation_inneres_kind',
   'meditation_innere_ruhe': 'fds_meditation_innere_ruhe',
