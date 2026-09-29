@@ -58,7 +58,7 @@ export function NewContentNotification() {
     if (latestProduct) {
       localStorage.setItem(LOCAL_STORAGE_KEY, latestProduct.id);
       setIsVisible(false);
-      navigate(`/premium#product-${latestProduct.id}`);
+      navigate(`/ruhe-shop#product-${latestProduct.id}`);
     }
   };
 

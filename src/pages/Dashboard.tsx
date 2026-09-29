@@ -314,7 +314,7 @@ export default function Dashboard() {
 
           {/* Premium Teaser */}
           <div className="mt-6">
-            <Link to="/premium" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] dark:hover:border-stone-400 hover:shadow-md transition-all group">
+            <Link to="/ruhe-shop" className="block p-6 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] dark:hover:border-stone-400 hover:shadow-md transition-all group">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-serif font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors mb-1">
@@ -391,7 +391,7 @@ export default function Dashboard() {
                   showProductLink={true} 
                   onProductClick={(productId) => {
                     const targetId = p.play_store_id || productId;
-                    navigate(`/premium#product-${targetId}`);
+                    navigate(`/ruhe-shop#product-${targetId}`);
                   }}
                 />
               ))}

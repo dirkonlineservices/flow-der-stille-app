@@ -384,7 +384,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
           {/* Bedürfnis 1: Schlaf & Gedankenkreisen */}
           <Link
-            to="/premium?filter=Selbsthypnose"
+            to="/ruhe-shop?filter=Selbsthypnose"
             className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all shadow-2xs hover:shadow-sm group flex items-start gap-4"
           >
             <div className="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
@@ -405,7 +405,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
           {/* Bedürfnis 2: Akuter Stress & Nervensystem */}
           <Link
-            to="/premium?filter=Kostenfreie%20Anwendungen"
+            to="/ruhe-shop?filter=Kostenfreie%20Anwendungen"
             className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all shadow-2xs hover:shadow-sm group flex items-start gap-4"
           >
             <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
@@ -426,7 +426,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
           {/* Bedürfnis 3: Herzöffnung & Loslassen */}
           <Link
-            to="/premium?filter=Meditation"
+            to="/ruhe-shop?filter=Meditation"
             className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-emerald-600 transition-all shadow-2xs hover:shadow-sm group flex items-start gap-4"
           >
             <div className="w-11 h-11 rounded-xl bg-rose-100 text-rose-800 border border-rose-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
@@ -480,7 +480,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </p>
           </div>
           <Link 
-            to="/premium" 
+            to="/ruhe-shop" 
             className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
           >
             Gesamter Ruhe-Shop →
@@ -629,7 +629,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                   <span>Probe hören</span>
                 </Link>
                 <Link
-                  to="/premium?filter=Kostenfreie%20Anwendungen"
+                  to="/ruhe-shop?filter=Kostenfreie%20Anwendungen"
                   className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold transition shrink-0 shadow-xs text-center"
                 >
                   Starten

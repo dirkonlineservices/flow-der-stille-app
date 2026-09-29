@@ -190,7 +190,7 @@ export default function Layout() {
             <NavLink to="/uebungen" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
             <NavLink to="/rezepte" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
             <NavLink to="/wissen" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
-            <NavLink to="/premium" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+            <NavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
             <button 
               onClick={() => {
                 handleBottomNavClick('Mehr');
@@ -208,7 +208,7 @@ export default function Layout() {
         <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
           <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
           <MobileNavLink to="/uebungen" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
-          <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+          <MobileNavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
           <button 
             onClick={() => {
               handleBottomNavClick('Mehr');
@@ -321,7 +321,7 @@ export default function Layout() {
                 </Link>
               </li>
               <li>
-                <Link to="/premium" onClick={() => handleMenuClick('Ruhe-Shop')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
+                <Link to="/ruhe-shop" onClick={() => handleMenuClick('Ruhe-Shop')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
                   Ruhe-Shop (ab 1,99 €)
                 </Link>
               </li>
@@ -667,7 +667,7 @@ export default function Layout() {
 
                 {/* Ruhe-Shop */}
                 <Link
-                  to="/premium"
+                  to="/ruhe-shop"
                   onClick={() => handleMenuClick('Ruhe-Shop')}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
                 >

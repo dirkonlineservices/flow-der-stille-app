@@ -509,7 +509,7 @@ export default function AudiobooksHub() {
                     </Link>
 
                     <Link
-                      to="/premium#product-hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+                      to="/ruhe-shop#product-hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
                       className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
                     >
                       <Gift size={15} />
@@ -715,7 +715,7 @@ export default function AudiobooksHub() {
                     </Link>
 
                     <Link
-                      to="/premium#product-wo_die_seele_den_wind_beruehrt"
+                      to="/ruhe-shop#product-wo_die_seele_den_wind_beruehrt"
                       className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
                     >
                       <Gift size={15} />
@@ -862,7 +862,7 @@ export default function AudiobooksHub() {
                     </Link>
 
                     <Link
-                      to="/premium#product-mensch_sein"
+                      to="/ruhe-shop#product-mensch_sein"
                       className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
                     >
                       <Gift size={15} />

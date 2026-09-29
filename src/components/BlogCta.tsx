@@ -16,7 +16,7 @@ export function BlogCta({ slug }: { slug: string }) {
         Erlebe die Herzkompass-Meditation direkt in unserer App und begleite deinen Tag mit geführten Atem- und Achtsamkeitsübungen.
       </p>
       <Link
-        to="/premium"
+        to="/ruhe-shop"
         onClick={() => trackCtaClick(`blog_post_${slug}`)}
         className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-medium transition-colors shadow-sm"
       >

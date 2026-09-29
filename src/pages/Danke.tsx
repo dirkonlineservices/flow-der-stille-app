@@ -188,7 +188,7 @@ export default function Danke() {
           {/* Navigation Links */}
           <div className="pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-3 text-xs">
             <Link
-              to="/premium"
+              to="/ruhe-shop"
               className="text-stone-700 dark:text-stone-300 hover:text-stone-900 font-semibold inline-flex items-center gap-1.5 transition-colors"
             >
               <ArrowLeft size={14} /> Zurück zur Mediathek

@@ -623,7 +623,7 @@ export default function PricingPackages() {
             Atemübungen &amp; PMR testen
           </Link>
           <Link
-            to="/premium"
+            to="/ruhe-shop"
             className="px-5 py-2.5 rounded-full bg-emerald-700 text-white text-xs sm:text-sm font-bold hover:bg-emerald-800 transition shadow-xs cursor-pointer"
           >
             Ruhe-Shop öffnen

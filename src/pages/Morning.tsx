@@ -55,7 +55,7 @@ export default function Morning() {
           title="Tages-Intention setzen"
           desc="Nimm dir beim ersten Glas Wasser einen Moment Zeit: Welches Gefühl soll deinen heutigen Tag leiten? Setze deinen Fokus vor der ersten E-Mail."
           icon={<Sparkles className="w-6 h-6 text-amber-500" />}
-          linkTo="/premium?filter=Selbsthypnose"
+          linkTo="/ruhe-shop?filter=Selbsthypnose"
           linkText="Fokus-Audio anhören"
           delay={0.2}
         />
@@ -63,7 +63,7 @@ export default function Morning() {
           title="Geführte Morgen-Meditation"
           desc="Erlebe 5 Minuten geführte Aufmerksamkeit, um Gedanken zu ordnen und mit positiver Energie in den Tag zu starten."
           icon={<Headphones className="w-6 h-6 text-emerald-500" />}
-          linkTo="/premium?filter=Meditation"
+          linkTo="/ruhe-shop?filter=Meditation"
           linkText="Morgen-Meditation starten"
           delay={0.3}
         />

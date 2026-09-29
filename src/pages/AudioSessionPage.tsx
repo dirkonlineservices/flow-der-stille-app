@@ -180,7 +180,7 @@ export default function AudioSessionPage() {
         {/* Zurück-Navigation */}
         <div className="flex items-center justify-between">
           <Link
-            to="/premium"
+            to="/ruhe-shop"
             className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full shadow-xs transition-all cursor-pointer"
           >
             <ArrowLeft size={15} />

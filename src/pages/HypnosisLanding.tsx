@@ -440,7 +440,7 @@ export default function HypnosisLanding() {
                     </button>
                   ) : (
                     <Link
-                      to={`/premium#product-${item.id}`}
+                      to={`/ruhe-shop#product-${item.id}`}
                       className="px-4 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] border border-[var(--border)] text-xs font-semibold flex items-center gap-1.5 transition-all"
                     >
                       <span>Freischalten ({item.price})</span>
