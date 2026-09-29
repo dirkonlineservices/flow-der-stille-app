@@ -30,6 +30,62 @@ const STORAGE_KEY_PURCHASES = 'flow_offline_my_purchases_cache';
 // Vorab gebündelter Offline-Katalog für den Flugmodus
 export const DEFAULT_PRODUCTS: ProductData[] = [
   {
+    "id": "hoerbuch_der_tag_an_dem_der_schmetterling_erwachte",
+    "titel": "Der Tag, an dem der Schmetterling erwachte",
+    "beschreibung": "Hast du dich schon einmal gefragt, warum wir solche Angst vor dem Loslassen haben und was passiert, wenn wir die Schwelle überschreiten? \r\n​In diesem Hörbuch betrachten wir den Tod nicht als dunklen Abgrund, sondern als natürlichen Umzug unseres Bewusstseins: wie eine Raupe, die ihren Kokon verlässt, um als Schmetterling zu fliegen.",
+    "kategorie": "Hörbuch",
+    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3",
+    "created_at": "2026-08-19T07:16:41+00:00",
+    "preis": 4.99,
+    "waehrung": "EUR",
+    "dauer": 3523,
+    "highlights": [
+      "Hörbuch",
+      "Teil 1 der Reihe"
+    ],
+    "audio_hinweis": "Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "play_store_id": "fds_schmetterling",
+    "hoerprobe_url": null,
+    "is_active": true
+  },
+  {
+    "id": "wo_die_seele_den_wind_beruehrt",
+    "titel": "Wo die Seele den Wind berührt",
+    "beschreibung": "Sanfte Trauerbegleitung für Herz und Seele – Teil 2 von „Der Tag, an dem der Schmetterling erwachte“. In 9 einfühlsamen Kapiteln und einer sanften Abschluss-Meditation begleitet dich dieses Hörbuch durch alle Phasen des Abschieds – heilsam, berührend und tief tröstend.",
+    "kategorie": "Hörbuch",
+    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Wo%20die%20Seele%20den%20Wind%20ber%C3%BChrt.mp3",
+    "created_at": "2026-09-29T08:00:00+00:00",
+    "preis": 4.99,
+    "waehrung": "EUR",
+    "dauer": 5166,
+    "highlights": [
+      "Hörbuch",
+      "Teil 2 der Reihe",
+      "Trauerbegleitung"
+    ],
+    "audio_hinweis": "Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "play_store_id": "fds_seele_wind",
+    "hoerprobe_url": null,
+    "image_url": "/images/products/cover_seele_wind.jpg",
+    "is_active": true
+  },
+  {
+    "id": "mensch_sein",
+    "titel": "Mut zum Echtsein - Was steckt hinter einem echtem Menschen",
+    "beschreibung": "Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.",
+    "kategorie": "Hörbuch",
+    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3",
+    "created_at": "2026-09-16T07:40:36+00:00",
+    "preis": 4.99,
+    "waehrung": "EUR",
+    "dauer": 3519,
+    "highlights": null,
+    "audio_hinweis": "Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
+    "play_store_id": "fds_mensch_sein",
+    "hoerprobe_url": null,
+    "is_active": true
+  },
+  {
     "id": "gefuehrte_atemuebung",
     "titel": "Geführte Atemübung  ",
     "beschreibung": "Geführte Atemübung\nHöre eine geführte Atemübung zur Beruhigung deines Nervensystems.\n\nStelle sicher, dass deine Gerätelautstärke eingeschaltet ist.",
@@ -210,40 +266,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "play_store_id": "fds_selbsthypnose_besserer_tieferer_schlaf",
     "hoerprobe_url": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3",
     "is_active": true
-  },
-  {
-    "id": "hoerbuch_der_tag_an_dem_der_schmetterling_erwachte",
-    "titel": "Der Tag, an dem der Schmetterling erwachte",
-    "beschreibung": "Hast du dich schon einmal gefragt, warum wir solche Angst vor dem Loslassen haben und was passiert, wenn wir die Schwelle überschreiten? \r\n​In diesem Hörbuch betrachten wir den Tod nicht als dunklen Abgrund, sondern als natürlichen Umzug unseres Bewusstseins: wie eine Raupe, die ihren Kokon verlässt, um als Schmetterling zu fliegen.",
-    "kategorie": "Hörbuch",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3",
-    "created_at": "2026-08-19T07:16:41+00:00",
-    "preis": 4.99,
-    "waehrung": "EUR",
-    "dauer": 3523,
-    "highlights": [
-      "Hoerbuch"
-    ],
-    "audio_hinweis": "Herzenswerk: Text erstellt von Jacqueline • Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_schmetterling",
-    "hoerprobe_url": null,
-    "is_active": true
-  },
-  {
-    "id": "mensch_sein",
-    "titel": "Mut zum Echtsein - Was steckt hinter einem echtem Menschen",
-    "beschreibung": "Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.",
-    "kategorie": "Hörbuch",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3",
-    "created_at": "2026-09-16T07:40:36+00:00",
-    "preis": 4.99,
-    "waehrung": "EUR",
-    "dauer": 3519,
-    "highlights": null,
-    "audio_hinweis": "Audio-Hinweis: Text erstellt von Jacqueline • Stimme: Lisa, Hintergrundmusik mit KI-Unterstützung erstellt.",
-    "play_store_id": "fds_mensch_sein",
-    "hoerprobe_url": null,
-    "is_active": true
   }
 ];
 
@@ -342,6 +364,9 @@ export function getProductCoverImage(prod: any): string {
   const title = (prod.titel || '').toLowerCase();
   const kat = (prod.kategorie || '').toLowerCase();
 
+  if (id.includes('seele') || id.includes('wind') || title.includes('seele') || title.includes('wind')) {
+    return '/images/products/cover_seele_wind.jpg';
+  }
   if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
     return '/images/products/cover_mensch_sein.jpg?v=2';
   }

@@ -36,11 +36,15 @@ export default function Danke() {
   const isAudiobook = Boolean(
     productId?.includes('hoerbuch') ||
     productId?.includes('schmetterling') ||
-    productId?.includes('mensch')
+    productId?.includes('mensch') ||
+    productId?.includes('seele') ||
+    productId?.includes('wind')
   );
 
   const targetPlayUrl = isAudiobook
-    ? (productId?.includes('mensch') ? '/hoerbuch/mensch-sein' : '/hoerbuch/der-tag-an-dem-der-schmetterling-erwachte')
+    ? (productId?.includes('seele') || productId?.includes('wind')
+        ? '/hoerbuch/wo-die-seele-den-wind-beruehrt'
+        : (productId?.includes('mensch') ? '/hoerbuch/mensch_sein' : '/hoerbuch/schmetterling'))
     : (productId ? `/audio/${productId}` : '/hoerbuecher');
 
   const handleResendMagicLink = async (e: React.FormEvent) => {

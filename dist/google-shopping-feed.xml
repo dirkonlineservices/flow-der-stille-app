@@ -5,6 +5,105 @@
     <link>https://flow-der-stille.de</link>
     <description>Entdecke geführte Meditationen, Hörbücher und gezielte Selbsthypnosen für innere Ruhe, Vagusnerv-Entspannung und Achtsamkeit ohne monatliches Abo.</description>
     <item>
+      <g:id>fds_schmetterling</g:id>
+      <g:title>Der Tag, an dem der Schmetterling erwachte</g:title>
+      <g:description>Hast du dich schon einmal gefragt, warum wir solche Angst vor dem Loslassen haben und was passiert, wenn wir die Schwelle überschreiten? ​In diesem Hörbuch betrachten wir den Tod nicht als dunklen Abgrund, sondern als natürlichen Umzug unseres Bewusstseins: wie eine Raupe, die ihren Kokon verlässt, um als Schmetterling zu fliegen.</g:description>
+      <g:link>https://flow-der-stille.de/hoerbuch/schmetterling</g:link>
+      <g:image_link>https://flow-der-stille.de/images/products/cover_schmetterling.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>4.99 EUR</g:price>
+      <g:brand>Flow der Stille</g:brand>
+      <g:google_product_category>927</g:google_product_category>
+      <g:product_type>Hörbuch &gt; Achtsamkeit &amp; Persönlichkeitsentwicklung</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:mpn>FDS-HOERBUCH-DER-TAG-AN-DEM-DER-SCHMETTERLING-ERWACHTE</g:mpn>
+      <g:shipping>
+        <g:country>DE</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>AT</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>CH</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:custom_label_0>Digitales Produkt</g:custom_label_0>
+      <g:custom_label_1>Hörbuch</g:custom_label_1>
+      <g:custom_label_2>Kein Abo</g:custom_label_2>
+    </item>
+    <item>
+      <g:id>fds_seele_wind</g:id>
+      <g:title>Wo die Seele den Wind berührt</g:title>
+      <g:description>Sanfte Trauerbegleitung für Herz und Seele – Teil 2 von „Der Tag, an dem der Schmetterling erwachte“. In 9 einfühlsamen Kapiteln und einer sanften Abschluss-Meditation begleitet dich dieses Hörbuch durch alle Phasen des Abschieds – heilsam, berührend und tief tröstend.</g:description>
+      <g:link>https://flow-der-stille.de/premium#product-fds_seele_wind</g:link>
+      <g:image_link>https://flow-der-stille.de/images/products/cover_innere_ruhe.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>4.99 EUR</g:price>
+      <g:brand>Flow der Stille</g:brand>
+      <g:google_product_category>927</g:google_product_category>
+      <g:product_type>Hörbuch &gt; Achtsamkeit &amp; Persönlichkeitsentwicklung</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:mpn>FDS-WO-DIE-SEELE-DEN-WIND-BERUEHRT</g:mpn>
+      <g:shipping>
+        <g:country>DE</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>AT</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>CH</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:custom_label_0>Digitales Produkt</g:custom_label_0>
+      <g:custom_label_1>Hörbuch</g:custom_label_1>
+      <g:custom_label_2>Kein Abo</g:custom_label_2>
+    </item>
+    <item>
+      <g:id>fds_mensch_sein</g:id>
+      <g:title>Mut zum Echtsein - Was steckt hinter einem echtem Menschen</g:title>
+      <g:description>Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.</g:description>
+      <g:link>https://flow-der-stille.de/hoerbuch/mensch_sein</g:link>
+      <g:image_link>https://flow-der-stille.de/images/products/cover_mensch_sein.jpg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>4.99 EUR</g:price>
+      <g:brand>Flow der Stille</g:brand>
+      <g:google_product_category>927</g:google_product_category>
+      <g:product_type>Hörbuch &gt; Achtsamkeit &amp; Persönlichkeitsentwicklung</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:mpn>FDS-MENSCH-SEIN</g:mpn>
+      <g:shipping>
+        <g:country>DE</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>AT</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:shipping>
+        <g:country>CH</g:country>
+        <g:service>Digitaler Sofort-Zugriff</g:service>
+        <g:price>0.00 EUR</g:price>
+      </g:shipping>
+      <g:custom_label_0>Digitales Produkt</g:custom_label_0>
+      <g:custom_label_1>Hörbuch</g:custom_label_1>
+      <g:custom_label_2>Kein Abo</g:custom_label_2>
+    </item>
+    <item>
       <g:id>fds_hypnose_gesunde_ernaehrung</g:id>
       <g:title>Selbsthypnose: Gesunde Ernährung &amp; Aktiver Lebensstil</g:title>
       <g:description>Kennst du das? Der Kopf weiß genau, was gut für den Körper wäre, doch im stressigen Alltag greifen wir oft automatisch zu alten Mustern. Echte Veränderung beginnt nicht mit Verzicht, sondern mit einer neuen inneren Ausrichtung. Diese 14-minütige Selbsthypnose ist deine tägliche Abkürzung zu mehr Wohlbefinden. Sie verbindet modernste Mentaltechniken mit tiefer Entspannung, um dein Unterbewusstsein sanft auf eine gesunde Ernährung und die Freude an der Bewegung auszurichten. In weniger als einer Viertelstunde baust du inneren Druck ab und stärkst die intuitive Lust auf einen aktiven Lebensstil. Für wen geeignet? Ideal für alle, die wenig Zeit haben, aber nachhaltig und ohne Kampf ihre Gewohnheiten auf ein neues, vitales Level heben möchten.</g:description>
@@ -200,72 +299,6 @@
       </g:shipping>
       <g:custom_label_0>Digitales Produkt</g:custom_label_0>
       <g:custom_label_1>Meditation</g:custom_label_1>
-      <g:custom_label_2>Kein Abo</g:custom_label_2>
-    </item>
-    <item>
-      <g:id>fds_schmetterling</g:id>
-      <g:title>Der Tag, an dem der Schmetterling erwachte</g:title>
-      <g:description>Hast du dich schon einmal gefragt, warum wir solche Angst vor dem Loslassen haben und was passiert, wenn wir die Schwelle überschreiten? ​In diesem Hörbuch betrachten wir den Tod nicht als dunklen Abgrund, sondern als natürlichen Umzug unseres Bewusstseins: wie eine Raupe, die ihren Kokon verlässt, um als Schmetterling zu fliegen.</g:description>
-      <g:link>https://flow-der-stille.de/hoerbuch/schmetterling</g:link>
-      <g:image_link>https://flow-der-stille.de/images/products/cover_schmetterling.jpg</g:image_link>
-      <g:condition>new</g:condition>
-      <g:availability>in_stock</g:availability>
-      <g:price>4.99 EUR</g:price>
-      <g:brand>Flow der Stille</g:brand>
-      <g:google_product_category>927</g:google_product_category>
-      <g:product_type>Hörbuch &gt; Achtsamkeit &amp; Persönlichkeitsentwicklung</g:product_type>
-      <g:identifier_exists>no</g:identifier_exists>
-      <g:mpn>FDS-HOERBUCH-DER-TAG-AN-DEM-DER-SCHMETTERLING-ERWACHTE</g:mpn>
-      <g:shipping>
-        <g:country>DE</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:shipping>
-        <g:country>AT</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:shipping>
-        <g:country>CH</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:custom_label_0>Digitales Produkt</g:custom_label_0>
-      <g:custom_label_1>Hörbuch</g:custom_label_1>
-      <g:custom_label_2>Kein Abo</g:custom_label_2>
-    </item>
-    <item>
-      <g:id>fds_mensch_sein</g:id>
-      <g:title>Mut zum Echtsein - Was steckt hinter einem echtem Menschen</g:title>
-      <g:description>Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.</g:description>
-      <g:link>https://flow-der-stille.de/hoerbuch/mensch_sein</g:link>
-      <g:image_link>https://flow-der-stille.de/images/products/cover_mensch_sein.jpg</g:image_link>
-      <g:condition>new</g:condition>
-      <g:availability>in_stock</g:availability>
-      <g:price>4.99 EUR</g:price>
-      <g:brand>Flow der Stille</g:brand>
-      <g:google_product_category>927</g:google_product_category>
-      <g:product_type>Hörbuch &gt; Achtsamkeit &amp; Persönlichkeitsentwicklung</g:product_type>
-      <g:identifier_exists>no</g:identifier_exists>
-      <g:mpn>FDS-MENSCH-SEIN</g:mpn>
-      <g:shipping>
-        <g:country>DE</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:shipping>
-        <g:country>AT</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:shipping>
-        <g:country>CH</g:country>
-        <g:service>Digitaler Sofort-Zugriff</g:service>
-        <g:price>0.00 EUR</g:price>
-      </g:shipping>
-      <g:custom_label_0>Digitales Produkt</g:custom_label_0>
-      <g:custom_label_1>Hörbuch</g:custom_label_1>
       <g:custom_label_2>Kein Abo</g:custom_label_2>
     </item>
   </channel>

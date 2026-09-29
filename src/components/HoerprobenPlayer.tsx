@@ -31,6 +31,8 @@ interface Props {
   autoPlay?: boolean;
   /** Schwebenden Mini-Player beim Weiterscrollen einblenden */
   enableFloatingPlayer?: boolean;
+  /** Optional: Feste Snippet-Dauer in Sekunden erzwingen (z. B. 60 für 1 Minute) */
+  maxPreviewSeconds?: number;
 }
 
 export function HoerprobenPlayer({ 
@@ -39,7 +41,8 @@ export function HoerprobenPlayer({
   showProductLink = false, 
   onProductClick,
   autoPlay = false,
-  enableFloatingPlayer = true
+  enableFloatingPlayer = true,
+  maxPreviewSeconds
 }: Props) {
   // Bevorzugt eine speziell geschnittene hoerprobe_url, sonst greift er auf das Hauptaudio audio_path zu
   const rawUrl: string = (produkt?.hoerprobe_url && typeof produkt.hoerprobe_url === 'string' && produkt.hoerprobe_url.trim() !== '')
@@ -60,6 +63,9 @@ export function HoerprobenPlayer({
     }
     if (produkt?.id === 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') {
       return 79;
+    }
+    if (produkt?.id?.includes('seele') || produkt?.id?.includes('wind')) {
+      return 384; // Kapitel 1 Beginn ab 06:24 Min. (nach Disclaimer & Intro)
     }
     if (produkt?.id?.includes('ernaehrung')) {
       return 86; // 70s + 16s Pause abgeschnitten -> startet sofort mit beruhigender Stimme
@@ -114,7 +120,10 @@ export function HoerprobenPlayer({
     produkt?.id?.includes('hoerbuch') || 
     produkt?.id?.includes('mensch_sein') || 
     produkt?.id?.includes('schmetterling') ||
-    produkt?.kategorie === 'hoerbuch'
+    produkt?.id?.includes('seele') ||
+    produkt?.id?.includes('wind') ||
+    produkt?.kategorie === 'hoerbuch' ||
+    produkt?.kategorie?.toLowerCase().includes('hörbuch')
   );
 
   // 🎯 Snippet-Dauer:
@@ -125,8 +134,10 @@ export function HoerprobenPlayer({
     ? Math.max(120, 729 - startTime)
     : Math.max(120, 1147 - startTime);
 
-  const actualSnippetDuration = isAudiobook
-    ? audiobookChapter1Duration
+  const actualSnippetDuration = maxPreviewSeconds
+    ? maxPreviewSeconds
+    : isAudiobook
+    ? ((produkt?.id?.includes('seele') || produkt?.id?.includes('wind')) ? 60 : audiobookChapter1Duration)
     : isFreeProduct && user
     ? netDuration
     : isFreeProduct && !user
@@ -305,7 +316,13 @@ export function HoerprobenPlayer({
 
             {isAudiobook && (
               <Link
-                to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                to={
+                  (produkt.id?.includes('seele') || produkt.id?.includes('wind'))
+                    ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
+                    : (produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein'))
+                    ? '/hoerbuch/mensch_sein?autoplay=true'
+                    : '/hoerbuch/schmetterling?autoplay=true'
+                }
                 className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition-all shrink-0 cursor-pointer shadow-xs active:scale-95 flex items-center gap-1.5"
                 title="Mit 1 Klick Kapitel 1 kostenlos anhören"
               >
@@ -401,7 +418,13 @@ export function HoerprobenPlayer({
             ) : isAudiobook ? (
               <div className="flex flex-wrap items-center gap-2">
                 <Link
-                  to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                  to={
+                    (produkt.id?.includes('seele') || produkt.id?.includes('wind'))
+                      ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
+                      : (produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein'))
+                      ? '/hoerbuch/mensch_sein?autoplay=true'
+                      : '/hoerbuch/schmetterling?autoplay=true'
+                  }
                   className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Play size={12} className="fill-white" />
@@ -418,7 +441,13 @@ export function HoerprobenPlayer({
                   </button>
                 )}
                 <Link
-                  to={produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein') ? '/hoerbuch/mensch_sein' : '/hoerbuch/schmetterling'}
+                  to={
+                    (produkt.id?.includes('seele') || produkt.id?.includes('wind'))
+                      ? '/hoerbuch/wo-die-seele-den-wind-beruehrt'
+                      : (produkt.id?.includes('mensch_sein') || produkt.id?.includes('echtsein'))
+                      ? '/hoerbuch/mensch_sein'
+                      : '/hoerbuch/schmetterling'
+                  }
                   className="px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-medium text-xs border border-[var(--border)] transition-all flex items-center gap-1 cursor-pointer"
                 >
                   <BookOpen size={12} />

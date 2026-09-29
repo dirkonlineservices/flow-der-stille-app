@@ -307,7 +307,12 @@ export default function Layout() {
               </li>
               <li>
                 <Link to="/hoerbuch/schmetterling" onClick={() => handleMenuClick('Der Schmetterling')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Der Schmetterling (Trauer &amp; Trost)
+                  Der Schmetterling (Teil 1)
+                </Link>
+              </li>
+              <li>
+                <Link to="/hoerbuch/wo-die-seele-den-wind-beruehrt" onClick={() => handleMenuClick('Seele & Wind')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
+                  Wo die Seele den Wind berührt (Teil 2)
                 </Link>
               </li>
               <li>

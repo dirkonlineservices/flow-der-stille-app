@@ -21,6 +21,7 @@ export default function AudiobooksHub() {
 
   // 1. Besitzprüfung für die Hörbücher
   const [isAudiobookOwned, setIsAudiobookOwned] = useState(false);
+  const [isSeeleWindOwned, setIsSeeleWindOwned] = useState(false);
   const [isMenschSeinOwned, setIsMenschSeinOwned] = useState(false);
 
   // 2. Audio-Probe Zustand (Startet ab 1:19 Min. = 79 Sek. für genau 90 Sekunden)
@@ -42,8 +43,10 @@ export default function AudiobooksHub() {
     async function checkOwnership() {
       // Offline-Fallback prüfen
       const isOfflineSchmetterling = offlineManager.isPurchasedOffline('schmetterling');
+      const isOfflineSeeleWind = offlineManager.isPurchasedOffline('wo_die_seele_den_wind_beruehrt') || offlineManager.isPurchasedOffline('fds_seele_wind');
       const isOfflineMenschSein = offlineManager.isPurchasedOffline('mensch_sein');
       setIsAudiobookOwned(isOfflineSchmetterling);
+      setIsSeeleWindOwned(isOfflineSeeleWind);
       setIsMenschSeinOwned(isOfflineMenschSein);
 
       if (!user) return;
@@ -57,13 +60,18 @@ export default function AudiobooksHub() {
 
         if (purchases) {
           const ownedSchmetterling = purchases.some(p => p.produkt_id?.toLowerCase().includes('schmetterling'));
+          const ownedSeeleWind = purchases.some(p => p.produkt_id?.toLowerCase().includes('seele') || p.produkt_id?.toLowerCase().includes('wind'));
           const ownedMenschSein = purchases.some(p => p.produkt_id?.toLowerCase().includes('mensch_sein'));
           
           setIsAudiobookOwned(ownedSchmetterling);
+          setIsSeeleWindOwned(ownedSeeleWind);
           setIsMenschSeinOwned(ownedMenschSein);
 
           if (ownedSchmetterling) {
             offlineManager.savePurchasedProducts(['schmetterling', 'fds_hoerbuch_schmetterling']);
+          }
+          if (ownedSeeleWind) {
+            offlineManager.savePurchasedProducts(['wo_die_seele_den_wind_beruehrt', 'fds_seele_wind']);
           }
           if (ownedMenschSein) {
             offlineManager.savePurchasedProducts(['mensch_sein', 'fds_mensch_sein']);
@@ -320,19 +328,29 @@ export default function AudiobooksHub() {
         </div>
       </section>
 
-      {/* 4. SHOWCASE: Unser aktuelles Werk im Detail */}
+      {/* 4. SHOWCASE: Die Schmetterling-Reihe (Werk 1 & Werk 2) */}
       <section id="showcase" className="py-16 sm:py-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--accent)]">
-              Aktuelles Meisterwerk
-            </span>
+        <div className="max-w-4xl mx-auto space-y-10">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-xs font-semibold text-[var(--accent)]">
+              <Sparkles size={13} />
+              <span>Die Schmetterling-Reihe • Teil 1 &amp; Teil 2</span>
+            </div>
             <h2 className="font-serif font-bold text-2xl sm:text-4xl text-[var(--text-main)]">
-              Der Tag, an dem der Schmetterling erwachte
+              Zwei Werke, die sich berührend ergänzen
             </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto">
+              Eine tiefgreifende Hörreise über den ewigen Wandel des Lebens (Teil 1) und einfühlsame Trauerbegleitung für die Hinterbliebenen (Teil 2).
+            </p>
           </div>
 
-          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl flex flex-col md:flex-row gap-8 items-center">
+          {/* Werk 1: Der Tag, an dem der Schmetterling erwachte */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl flex flex-col md:flex-row gap-8 items-center relative overflow-hidden">
+            {/* Reihen-Badge */}
+            <div className="absolute top-0 right-0 bg-[var(--accent)]/15 border-b border-l border-[var(--accent)]/30 text-[var(--accent)] font-bold text-[10px] sm:text-xs px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+              Teil 1 der Reihe
+            </div>
+
             {/* Cover Image */}
             <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">
               <img
@@ -348,6 +366,9 @@ export default function AudiobooksHub() {
                   <Gift size={13} />
                   <span>4,99 €</span>
                   <span className="text-[10px] font-normal opacity-90">• Einmalkauf</span>
+                </span>
+                <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-xl uppercase shadow-lg bg-stone-800 text-white flex items-center gap-1 border border-white/20">
+                  <span>Teil 1</span>
                 </span>
               </div>
 
@@ -368,12 +389,15 @@ export default function AudiobooksHub() {
             <div className="space-y-4 flex-1 text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs font-mono text-[var(--text-muted)]">
                 <Clock size={13} className="text-[var(--accent)]" />
-                <span>58:43 Minuten Gesamtlaufzeit</span>
+                <span>58:43 Minuten Gesamtlaufzeit • Teil 1</span>
               </div>
 
               <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
-                Vollständige Audioausgabe
+                Der Tag, an dem der Schmetterling erwachte
               </h3>
+              <p className="text-xs font-semibold text-[var(--accent)]">
+                Teil 1 der Schmetterling-Reihe – Die Reise der Seele &amp; das Loslassen von Ängsten
+              </p>
 
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Eine Geschichte über den Wandel des Lebens, die Raum für Trost, Zuversicht und tiefen Frieden schenkt. Sie begleitet dich dabei, dem Thema Abschied mit mehr innerer Ruhe und Vertrauen zu begegnen.
@@ -522,7 +546,213 @@ export default function AudiobooksHub() {
             </div>
           </div>
 
-          {/* Werk 2: Mut zum Echtsein */}
+          {/* Werk 2: Wo die Seele den Wind berührt */}
+          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl flex flex-col md:flex-row gap-8 items-center relative overflow-hidden">
+            {/* Reihen-Badge */}
+            <div className="absolute top-0 right-0 bg-amber-500/15 border-b border-l border-amber-500/30 text-amber-700 dark:text-amber-400 font-bold text-[10px] sm:text-xs px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+              Teil 2 der Reihe (Trauerbegleitung)
+            </div>
+
+            {/* Cover Image */}
+            <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">
+              <img
+                src="/images/products/cover_seele_wind.jpg"
+                alt="Hörbuch Cover: Wo die Seele den Wind berührt"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+
+              {/* Preis-Tag oben links über dem Bild */}
+              <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
+                <span className="px-3 py-1 text-xs font-bold tracking-wider rounded-xl uppercase shadow-lg bg-[var(--accent)] text-white flex items-center gap-1.5 border border-white/20">
+                  <Gift size={13} />
+                  <span>4,99 €</span>
+                  <span className="text-[10px] font-normal opacity-90">• Einmalkauf</span>
+                </span>
+                <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-xl uppercase shadow-lg bg-amber-600 text-white flex items-center gap-1 border border-white/20">
+                  <span>Teil 2</span>
+                </span>
+              </div>
+
+              {/* Info-Banner über unterem Bildrand */}
+              <div className="absolute bottom-3 inset-x-3 z-10">
+                <div className="px-2.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-white text-center shadow-lg">
+                  <span className="text-[11px] font-semibold block leading-tight">
+                    Kapitel 1 sofort gratis (ohne Anmeldung)
+                  </span>
+                  <span className="text-[10px] text-amber-200 font-medium block mt-0.5">
+                    Gesamtes Hörbuch nach Registrierung für 4,99 €
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content & Action */}
+            <div className="space-y-4 flex-1 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs font-mono text-[var(--text-muted)]">
+                <Clock size={13} className="text-[var(--accent)]" />
+                <span>86:06 Minuten Gesamtlaufzeit • Teil 2</span>
+              </div>
+
+              <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
+                Wo die Seele den Wind berührt
+              </h3>
+              <p className="text-xs font-semibold text-[var(--accent)]">
+                Teil 2 von „Der Tag, an dem der Schmetterling erwachte“ – Sanfte Trauerbegleitung für Herz und Seele
+              </p>
+
+              <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Wenn ein geliebter Mensch geht, bleibt eine Stille zurück, die oft kaum zu ertragen ist. „Wo die Seele den Wind berührt“ schenkt dir einen geschützten Raum der Geborgenheit. In 9 einfühlsamen Kapiteln und einer sanften Abschluss-Meditation begleitet dich dieses Hörbuch durch alle Phasen des Abschieds – heilsam, berührend und tief tröstend.
+              </p>
+
+              {/* Highlights */}
+              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 border border-[var(--border)] text-left space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-semibold text-[var(--text-main)]">
+                  <Sparkles size={14} className="text-[var(--accent)]" />
+                  <span>Themenschwerpunkte der Hörreise</span>
+                </div>
+                <ul className="space-y-1 text-[11px] text-[var(--text-muted)] pl-5 list-disc">
+                  <li>Den Schmerz des Abschieds annehmen und dem Herzen Raum geben</li>
+                  <li>Das vegetative Nervensystem in Zeiten tiefster Trauer sanft stabilisieren</li>
+                  <li>Verbindung und Liebe ehren, die über jede irdische Grenze hinaus weiterlebt</li>
+                  <li>Inklusive 13-minütiger geführter Outro-Meditation für tiefen inneren Frieden</li>
+                </ul>
+              </div>
+
+              {/* Kapitel-Übersicht Werk 2 */}
+              <div className="bg-[var(--bg-alt)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] text-left space-y-3">
+                <div className="flex items-center justify-between font-semibold text-xs text-[var(--text-main)] pb-2 border-b border-[var(--border)]">
+                  <span>Kapitel und Abschnitte</span>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start &amp; Dauer</span>
+                </div>
+
+                <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                  {[
+                    { num: 'Hinweis', title: 'Rechtlicher Hinweis', sub: 'Wichtige Einordnung vor Beginn der Hörreise', start: '00:00', dur: '1:27 Min.' },
+                    { num: 'Einleitung', title: 'Einstimmung & Ankommen', sub: 'Sanfter Übergang in den Raum der Stille', start: 'ab 01:27', dur: '4:57 Min.' },
+                    { num: 'Kapitel 1', title: 'Wenn die Welt stillsteht', sub: 'Dem Schmerz Raum geben und behutsam ankommen', start: 'ab 06:24', dur: '8:20 Min.' },
+                    { num: 'Kapitel 2', title: 'Die Wellen des Schmerzes verstehen', sub: 'Gefühle annehmen, ohne darin zu ertrinken', start: 'ab 14:44', dur: '9:44 Min.' },
+                    { num: 'Kapitel 3', title: 'Das Nervensystem in der Trauer halten', sub: 'Körperliche Geborgenheit und sanfte Erdung', start: 'ab 24:28', dur: '9:20 Min.' },
+                    { num: 'Kapitel 4', title: 'Schutzräume im Alltag schaffen', sub: 'Grenzen setzen und dir selbst Ruhe schenken', start: 'ab 33:48', dur: '4:49 Min.' },
+                    { num: 'Kapitel 5', title: 'Erinnerungen als Kraftquelle bewahren', sub: 'Die Liebe ehren, die ewig weiterlebt', start: 'ab 38:37', dur: '5:10 Min.' },
+                    { num: 'Kapitel 6', title: 'Ungesagtes und Schuldgefühle auflösen', sub: 'Mitgefühl und Vergebung für dich selbst', start: 'ab 43:47', dur: '7:34 Min.' },
+                    { num: 'Kapitel 7', title: 'Der leise Trost des Windes', sub: 'Verbindung spüren, wo Worte nicht mehr reichen', start: 'ab 51:21', dur: '5:29 Min.' },
+                    { num: 'Kapitel 8', title: 'Schritt für Schritt ins Weitergehen', sub: 'Neuen Mut fassen, ohne zu vergessen', start: 'ab 56:50', dur: '5:25 Min.' },
+                    { num: 'Kapitel 9', title: 'Frieden im Herzen finden', sub: 'Dankbarkeit und innere Weite zulassen', start: 'ab 1:02:15', dur: '10:10 Min.' },
+                    { num: 'Outro', title: 'Geführte Abschluss-Meditation', sub: 'Heilsame Verankerung im tiefen Frieden', start: 'ab 1:12:25', dur: '13:41 Min.' }
+                  ].map((ch, idx) => (
+                    <div key={idx} className="flex items-start justify-between gap-3 text-xs">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                            {ch.num}
+                          </span>
+                          <span className="font-semibold text-[var(--text-main)]">{ch.title}</span>
+                        </div>
+                        <p className="text-[11px] text-[var(--text-muted)] italic pl-1">
+                          {ch.sub}
+                        </p>
+                      </div>
+                      <div className="text-right font-mono text-[11px] shrink-0">
+                        <div className="text-[var(--text-main)] font-medium">{ch.start}</div>
+                        <div className="text-[var(--text-muted)] text-[10px]">Dauer: {ch.dur}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2.5 border-t border-[var(--border)] flex justify-between items-center text-xs font-semibold text-[var(--text-main)]">
+                  <span>Gesamtlaufzeit:</span>
+                  <span className="font-mono text-amber-600 dark:text-amber-400">86:06 Minuten (12 Abschnitte)</span>
+                </div>
+              </div>
+
+              {/* Hörproben-Player für Wo die Seele den Wind berührt */}
+              <div className="pt-2">
+                <HoerprobenPlayer
+                  produkt={{
+                    id: 'wo_die_seele_den_wind_beruehrt',
+                    titel: 'Wo die Seele den Wind berührt',
+                    audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Wo%20die%20Seele%20den%20Wind%20ber%C3%BChrt.mp3',
+                    dauer: 5166
+                  }}
+                  variant="compact"
+                />
+              </div>
+
+              {/* Preisanker & Kauf-Verlinkung */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center gap-3">
+                <div className="text-center sm:text-left">
+                  <div className="text-2xl font-bold text-[var(--text-main)]">4,99 €</div>
+                  <div className="text-[11px] text-[var(--text-muted)]">Einmalig • Kein Abo</div>
+                </div>
+
+                {isSeeleWindOwned ? (
+                  <div className="w-full sm:flex-1 flex flex-col sm:flex-row gap-2">
+                    <Link
+                      to="/hoerbuch/wo-die-seele-den-wind-beruehrt"
+                      className="flex-1 py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Play size={16} className="fill-white" />
+                      <span>Vollständiges Hörbuch abspielen</span>
+                    </Link>
+                    <Link
+                      to="/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true"
+                      className="px-4 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Play size={13} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 anhören</span>
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true"
+                      className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer text-center"
+                    >
+                      <Play size={16} className="fill-white" />
+                      <span>Mit 1 Klick Kapitel 1 sofort anhören</span>
+                    </Link>
+
+                    <Link
+                      to="/premium#product-wo_die_seele_den_wind_beruehrt"
+                      className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <Gift size={15} />
+                      <span>Freischalten (4,99 €)</span>
+                    </Link>
+
+                    <Link
+                      to="/hoerbuch/wo-die-seele-den-wind-beruehrt"
+                      className="w-full sm:w-auto py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                    >
+                      <BookOpen size={14} />
+                      <span>Details</span>
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {!user && !isSeeleWindOwned && (
+                <div className="pt-2 text-left">
+                  <QuickSocialUnlockBox
+                    produkt={{
+                      id: 'wo_die_seele_den_wind_beruehrt',
+                      titel: 'Wo die Seele den Wind berührt',
+                      preis: 4.99,
+                      kategorie: 'Hörbuch'
+                    }}
+                    isAudiobook={true}
+                    price="4,99 €"
+                    returnPath="/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true"
+                    compact={true}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Werk 3: Mut zum Echtsein */}
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl flex flex-col md:flex-row gap-8 items-center">
             {/* Cover Image */}
             <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">

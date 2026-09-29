@@ -46,7 +46,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Eine behutsame Einladung, emotionale Schutzpanzer abzulegen und Weite, Sanftheit und innere Wärme im Herzraum zuzulassen.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_herzoeffnung_meditation',
+    shopAnchor: '/ruhe-shop#product-fds_herzoeffnung_meditation',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
@@ -65,7 +65,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Schalte das permanente Grundrauschen ab. Finde zurück in dein natürliches Tempo und spüre wieder festen Boden unter den Füßen.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_meditation_innere_ruhe',
+    shopAnchor: '/ruhe-shop#product-fds_meditation_innere_ruhe',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3'
@@ -83,7 +83,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Ein geschützter, sicherer Rahmen, um alten Schutzmustern und ungestillten Bedürfnissen mit aufrichtiger Zuwendung zu begegnen.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_meditation_inneres_kind',
+    shopAnchor: '/ruhe-shop#product-fds_meditation_inneres_kind',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3'
@@ -101,7 +101,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Verbinde dich wieder mit deiner inneren Stimme und schenke deinen Empfindungen Raum, um stimmige Entscheidungen im Alltag zu treffen.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_herzkompass_meditation',
+    shopAnchor: '/ruhe-shop#product-fds_herzkompass_meditation',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3'
@@ -121,7 +121,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine schwere, wohlige Tiefenentspannung und regenerierenden Schlaf.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Sanfte Schlafwellen & Frequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_selbsthypnose_besserer_tieferer_schlaf',
+    shopAnchor: '/ruhe-shop#product-fds_selbsthypnose_besserer_tieferer_schlaf',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
@@ -140,7 +140,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Echtes Selbstvertrauen ist nicht laut. Verankere ein unerschütterliches, ruhiges Fundament direkt in deinem Unterbewusstsein.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Stärkende Tiefenklänge (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_selbstbewusstsein',
+    shopAnchor: '/ruhe-shop#product-fds_hypnose_selbstbewusstsein',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3'
@@ -158,7 +158,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Beende mentale Zerstreuung. Gelange mühelos und ohne anstrengende Willenskraft in deinen klaren, fokussierten Arbeitsmodus.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Konzentrationsfördernde Klangarchitektur (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_fokus',
+    shopAnchor: '/ruhe-shop#product-fds_hypnose_fokus',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3'
@@ -176,7 +176,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Wohlbefinden ohne Verzicht: Richte deine unbewussten Routinen neu aus, sodass gesunde Entscheidungen sich natürlich anfühlen.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Harmonische Wohlfühlfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_gesunde_ernaehrung',
+    shopAnchor: '/ruhe-shop#product-fds_hypnose_gesunde_ernaehrung',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3'
@@ -187,7 +187,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
     title: 'Der Tag, an dem der Schmetterling erwachte',
     category: 'hoerbuch',
-    categoryLabel: 'Ganzheitliches Hörbuch',
+    categoryLabel: 'Ganzheitliches Hörbuch (Teil 1)',
     badge: 'Meisterwerk über das Loslassen',
     duration: '58:43 Min.',
     priceLabel: '4,99 €',
@@ -196,10 +196,28 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Eine tröstende Reise über den Wandel des Bewusstseins: Warum der Übergang kein finsterer Abgrund ist, sondern der Flug eines Schmetterlings.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_schmetterling',
-    landingUrl: '/hoerbuecher',
-    landingLabel: 'Zur Hörbuch-Themenseite',
+    shopAnchor: '/ruhe-shop#product-fds_schmetterling',
+    landingUrl: '/hoerbuch/schmetterling',
+    landingLabel: 'Zur Hörbuchseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3'
+  },
+  {
+    id: 'wo_die_seele_den_wind_beruehrt',
+    title: 'Wo die Seele den Wind berührt',
+    category: 'hoerbuch',
+    categoryLabel: 'Ganzheitliches Hörbuch (Teil 2)',
+    badge: 'Sanfte Trauerbegleitung',
+    duration: '86:06 Min.',
+    priceLabel: '4,99 €',
+    isFree: false,
+    cover: '/images/products/cover_seele_wind.jpg',
+    shortDesc: 'Sanfte Trauerbegleitung für Herz und Seele – Teil 2 der Schmetterling-Reihe. 9 einfühlsame Kapitel und eine geführte Abschluss-Meditation schenken Raum für Trost, Zuversicht und tiefen Frieden.',
+    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
+    shopAnchor: '/ruhe-shop#product-fds_seele_wind',
+    landingUrl: '/hoerbuch/wo-die-seele-den-wind-beruehrt',
+    landingLabel: 'Zur Hörbuchseite',
+    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Wo%20die%20Seele%20den%20Wind%20ber%C3%BChrt.mp3'
   },
   {
     id: 'mensch_sein',
@@ -214,9 +232,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Lege die Masken äußerer Erwartungen ab. Lerne, mit deinen eigenen Grenzen und Gefühlen in tiefer Ehrlichkeit und Würde im Einklang zu sein.',
     voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_mensch_sein',
-    landingUrl: '/hoerbuecher',
-    landingLabel: 'Zur Hörbuch-Themenseite',
+    shopAnchor: '/ruhe-shop#product-fds_mensch_sein',
+    landingUrl: '/hoerbuch/mensch_sein',
+    landingLabel: 'Zur Hörbuchseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3'
   },
 
@@ -234,7 +252,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Beruhige dein Nervensystem und deinen Vagusnerv in unter zwei Minuten. Ideal bei akutem Stress, innerer Unruhe oder vor wichtigen Terminen.',
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Akustische Frequenz-Ruhezone',
-    shopAnchor: '/premium#product-fds_gefuehrte_atemuebung',
+    shopAnchor: '/ruhe-shop#product-fds_gefuehrte_atemuebung',
     landingUrl: '/exercises',
     landingLabel: 'Zu den Atemübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3'
@@ -252,7 +270,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Das bewährte Prinzip von bewusstem Anspannen und Loslassen: Löst hartnäckige Muskelverspannungen in Schultern, Nacken und Rücken.',
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Sanfte Begleitmelodie',
-    shopAnchor: '/premium#product-fds_pmr_basis',
+    shopAnchor: '/ruhe-shop#product-fds_pmr_basis',
     landingUrl: '/exercises',
     landingLabel: 'Zu den Körperübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/Progressive%20Muskelentspannung.mp3'
@@ -371,7 +389,7 @@ export default function SoundSamplesLanding() {
         </Link>
 
         <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-          <Link to="/premium" className="hover:text-[var(--accent)] transition-colors">Shop</Link>
+          <Link to="/ruhe-shop" className="hover:text-[var(--accent)] transition-colors">Ruhe-Shop</Link>
           <span>/</span>
           <span className="font-semibold text-[var(--text-main)]">Klangproben</span>
         </div>
@@ -591,7 +609,13 @@ export default function SoundSamplesLanding() {
                 {sample.category === 'hoerbuch' && (
                   <div className="pt-2">
                     <Link
-                      to={sample.id === 'mensch_sein' ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                      to={
+                        sample.id === 'wo_die_seele_den_wind_beruehrt' || sample.id === 'fds_seele_wind'
+                          ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
+                          : sample.id === 'mensch_sein' || sample.id === 'fds_mensch_sein'
+                          ? '/hoerbuch/mensch_sein?autoplay=true'
+                          : '/hoerbuch/schmetterling?autoplay=true'
+                      }
                       className="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
                     >
                       <Play size={13} className="fill-white" />
@@ -642,10 +666,10 @@ export default function SoundSamplesLanding() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             {user ? (
               <Link
-                to="/premium"
+                to="/ruhe-shop"
                 className="px-6 py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
               >
-                <span>Zum Premium-Bereich &amp; Mediathek</span>
+                <span>Zum Ruhe-Shop &amp; Mediathek</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (

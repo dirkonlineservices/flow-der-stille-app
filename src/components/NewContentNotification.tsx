@@ -106,15 +106,15 @@ export function NewContentNotification() {
             {getKategorieName(latestProduct.kategorie)} verfügbar!
           </h4>
           <p className="text-xs text-[var(--color-text-muted)] leading-relaxed font-medium">
-            <span className="text-[var(--color-text-main)] font-semibold">„{latestProduct.titel}“</span> ist jetzt im Premium-Bereich verfügbar
-            {parseFloat(latestProduct.preis) > 0 ? ` (${latestProduct.preis} €)` : ' (Kostenfrei)'}.
+            <span className="text-[var(--color-text-main)] font-semibold">„{latestProduct.titel}“</span> ist jetzt im Ruhe-Shop verfügbar
+            {parseFloat(latestProduct.preis) > 0 ? ` (${String(latestProduct.preis).replace('.', ',')}\u00a0€)` : ' (Kostenfrei)'}.
           </p>
         </div>
 
         {/* Aktions-Button */}
         <div className="flex items-center justify-between gap-2 pt-1 border-t border-[var(--color-border-main)]">
           <span className="text-[11px] text-[var(--color-text-muted)] font-mono">
-            {latestProduct.kategorie || 'Premium'}
+            {latestProduct.kategorie || 'Ruhe-Shop'}
           </span>
 
           <button

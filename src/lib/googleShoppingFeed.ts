@@ -1,4 +1,4 @@
-﻿/**
+/**
  * googleShoppingFeed.ts
  *
  * Generiert den offiziellen Google Shopping / Google Merchant Center Feed (XML / RSS 2.0)
@@ -58,6 +58,9 @@ function getProductType(prod: ProductData): string {
 
 function getProductCanonicalUrl(prod: ProductData): string {
   const id = prod.id.toLowerCase();
+  if (id.includes('seele') || id.includes('wind')) {
+    return `${SITE_URL}/hoerbuch/wo-die-seele-den-wind-beruehrt`;
+  }
   if (id.includes('schmetterling')) {
     return `${SITE_URL}/hoerbuch/schmetterling`;
   }

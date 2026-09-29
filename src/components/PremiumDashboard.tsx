@@ -400,6 +400,9 @@ export default function PremiumShopDashboard() {
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
+    if (id.includes('seele') || id.includes('wind') || title.includes('seele') || title.includes('wind')) {
+      return '/images/products/cover_seele_wind.jpg';
+    }
     if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
       return '/images/products/cover_mensch_sein.jpg?v=2';
     }
@@ -551,6 +554,19 @@ export default function PremiumShopDashboard() {
           return parseFloat(a.preis) - parseFloat(b.preis);
       } else if (sortBy === 'Preis: Absteigend') {
           return parseFloat(b.preis) - parseFloat(a.preis);
+      }
+      // Standard-Hierarchie: Hörbücher chronologisch ganz oben untereinander
+      const getPriority = (id: string = '', kat: string = '') => {
+        if (id.includes('schmetterling')) return 1;
+        if (id.includes('seele') || id.includes('wind') || id.includes('trauer')) return 2;
+        if (id.includes('mensch') || id.includes('echt')) return 3;
+        if (kat.toLowerCase().includes('hörbuch') || kat.toLowerCase().includes('hoerbuch')) return 4;
+        return 10;
+      };
+      const prioA = getPriority(a.id, a.kategorie);
+      const prioB = getPriority(b.id, b.kategorie);
+      if (prioA !== prioB) {
+        return prioA - prioB;
       }
       return 0;
   });
@@ -912,6 +928,16 @@ export default function PremiumShopDashboard() {
                   <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md ${getCategoryBadgeStyle(produkt.kategorie)}`}>
                     {produkt.kategorie || 'Kategorie'}
                   </span>
+                  {(produkt.id?.includes('seele') || produkt.id?.includes('wind') || produkt.titel?.toLowerCase().includes('seele')) && (
+                    <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-amber-600 text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
+                      Teil 2 der Reihe
+                    </span>
+                  )}
+                  {(produkt.id?.includes('schmetterling') || produkt.titel?.toLowerCase().includes('schmetterling')) && (
+                    <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-stone-800 text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
+                      Teil 1 der Reihe
+                    </span>
+                  )}
                   {produkt.hoerprobe_url && (
                     <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--accent)] text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
                       🎧 Hörprobe verfügbar
@@ -982,7 +1008,24 @@ export default function PremiumShopDashboard() {
                         </div>
                     )}
                     
-                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
+                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">
+                      {(produkt.beschreibung || '')
+                        .replace(/\\n/g, '\n')
+                        .replace(/\n*Text erstellt von Jacqueline.*$/is, '')
+                        .trim()}
+                    </p>
+
+                    {/* 1-Minuten Hörprobe direkt auf der Produktkarte */}
+                    {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
+                      <div className="mt-3.5">
+                        <HoerprobenPlayer 
+                          produkt={produkt} 
+                          variant="compact" 
+                          enableFloatingPlayer={false} 
+                          maxPreviewSeconds={60} 
+                        />
+                      </div>
+                    )}
 
                     {/* Urheber-Hinweis: Text von Jacqueline • Stimme von Lisa + Link zu Über uns */}
                     <div className="mt-3.5 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] space-y-1.5 shadow-2xs">
@@ -1003,17 +1046,31 @@ export default function PremiumShopDashboard() {
                         {istKostenlos
                           ? 'Vollständig selbst verfasster Entspannungstext, von Lisa mit echter menschlicher Herzenswärme eingesprochen. Nach 1-Klick-Registrierung dauerhaft freigeschaltet.'
                           : (produkt.audio_hinweis
-                              ? produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '').replace(/Lisa Ragusa/g, 'Lisa').replace(/von uns selbst geschrieben/i, 'Text erstellt von Jacqueline')
-                              : 'Herzenswerk: Text erstellt von Jacqueline, mit warmer Stimme von Lisa persönlich eingesprochen.')}
+                              ? ((produkt.id?.includes('seele') || produkt.id?.includes('wind'))
+                                  ? 'Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.'
+                                  : produkt.audio_hinweis
+                                      .replace(/^Audio-Hinweis:\s*/i, '')
+                                      .replace(/Lisa Ragusa/g, 'Lisa')
+                                      .replace(/von uns selbst geschrieben/i, 'Text erstellt von Jacqueline')
+                                      .replace(/Text erstellt von Jacqueline\s*[•,]\s*Stimme:\s*Lisa\s*[,•]?\s*/gi, '')
+                                      .replace(/Text erstellt von Jacqueline\s*[•,]\s*/gi, '')
+                                      .trim())
+                              : 'Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.')}
                       </p>
                     </div>
 
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-4 pt-1">
-                        {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
+                      <div className="mt-3.5 pt-1">
+                        {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('seele') || produkt.titel?.toLowerCase().includes('wind') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
                           <Link
-                            to={produkt.id?.includes('mensch') || produkt.id?.includes('echt') ? '/hoerbuch/mensch_sein?autoplay=true' : '/hoerbuch/schmetterling?autoplay=true'}
+                            to={
+                              produkt.id?.includes('seele') || produkt.id?.includes('wind')
+                                ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
+                                : produkt.id?.includes('mensch') || produkt.id?.includes('echt')
+                                ? '/hoerbuch/mensch_sein?autoplay=true'
+                                : '/hoerbuch/schmetterling?autoplay=true'
+                            }
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
@@ -1083,6 +1140,38 @@ export default function PremiumShopDashboard() {
                                     title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
                                   >
                                     <span>Ausführliche Details &amp; FAQ zum Magic Link ansehen</span>
+                                    <ExternalLink size={11} className="shrink-0" />
+                                  </Link>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Für eingeloggte Nutzer: Kompakte Notiz "Express-Kauf mit Magic Link" direkt über der Zustimmung */}
+                            {user && !isNativeApp && (
+                              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2 shadow-2xs">
+                                <div className="flex items-center justify-between gap-1.5 font-bold text-amber-950 dark:text-amber-200">
+                                  <div className="flex items-center gap-1.5">
+                                    <Key size={14} className="text-amber-800 dark:text-amber-400 shrink-0" />
+                                    <span>Express-Kauf mit Magic Link</span>
+                                  </div>
+                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-950 dark:text-amber-200">
+                                    Eingeloggt
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                                  {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('seele') || produkt.titel?.toLowerCase().includes('wind') || produkt.id?.includes('mensch')
+                                    ? 'Sofort nach dem Kauf wird das Hörbuch in deiner Mediathek freigeschaltet. Zusätzlich erhältst du deinen persönlichen Magic Link per E-Mail, um auch auf Smartphone, Tablet oder PC jederzeit mit 1 Klick ohne Passwort weiterzuhören.'
+                                    : 'Sofort nach dem Kauf wird diese Anwendung in deiner Mediathek freigeschaltet. Zusätzlich erhältst du deinen persönlichen Magic Link per E-Mail, um auf jedem weiteren Gerät mit 1 Klick weiterzuhören.'}
+                                </p>
+                                <div className="pt-0.5 flex items-center justify-end">
+                                  <Link
+                                    to="/pakete#magic-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] text-amber-900 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 font-semibold underline inline-flex items-center gap-1"
+                                    title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
+                                  >
+                                    <span>Details zum Magic Link</span>
                                     <ExternalLink size={11} className="shrink-0" />
                                   </Link>
                                 </div>

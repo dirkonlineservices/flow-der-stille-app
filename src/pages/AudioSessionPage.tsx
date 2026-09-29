@@ -4,7 +4,7 @@ import {
   Sparkles, Headphones, Play, Pause, ShieldCheck, 
   Moon, Clock, Volume2, ArrowLeft, CheckCircle2, 
   HelpCircle, Shield, Award, Wind, Smartphone, ChevronDown, ChevronUp,
-  Brain, Zap, Lock, Gift, Star, BookOpen, AlertCircle
+  Brain, Zap, Lock, Gift, Star, BookOpen, AlertCircle, Key, ExternalLink
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
@@ -38,6 +38,7 @@ export default function AudioSessionPage() {
     if (lower.includes('vertrauen') || lower.includes('selbstbewusstsein')) return 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen';
     if (lower.includes('fokus') || lower.includes('konzentration')) return 'selbsthypnose_fokus&konzentration';
     if (lower.includes('ernaehrung')) return 'selbsthypnose_ernaehrung';
+    if (lower.includes('seele') || lower.includes('wind') || lower.includes('trauer')) return 'wo_die_seele_den_wind_beruehrt';
     if (lower.includes('schmetterling')) return 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte';
     if (lower.includes('mensch_sein') || lower.includes('echtsein')) return 'mensch_sein';
 
@@ -47,9 +48,13 @@ export default function AudioSessionPage() {
   const resolvedId = resolveProductId(id);
 
   useEffect(() => {
-    const isAudiobook = resolvedId.includes('hoerbuch') || resolvedId.includes('schmetterling') || resolvedId.includes('mensch_sein') || resolvedId.includes('echtsein');
+    const isAudiobook = resolvedId.includes('hoerbuch') || resolvedId.includes('schmetterling') || resolvedId.includes('mensch') || resolvedId.includes('echt') || resolvedId.includes('seele') || resolvedId.includes('wind');
     if (isAudiobook) {
-      const targetSlug = (resolvedId.includes('mensch') || resolvedId.includes('echt')) ? 'mensch_sein' : 'schmetterling';
+      const targetSlug = (resolvedId.includes('seele') || resolvedId.includes('wind'))
+        ? 'wo-die-seele-den-wind-beruehrt'
+        : (resolvedId.includes('mensch') || resolvedId.includes('echt'))
+        ? 'mensch_sein'
+        : 'schmetterling';
       navigate(`/hoerbuch/${targetSlug}${location.search}`, { replace: true });
       return;
     }
@@ -223,10 +228,22 @@ export default function AudioSessionPage() {
                   <span>Vollversion aktiv</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-semibold">
-                  <Lock size={12} />
-                  <span>{isFreeProduct ? 'Gratis nach Registrierung (Wert: 1,99 €)' : `Einmalig ${priceDisplay} • Kein Abo`}</span>
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-semibold">
+                    <Lock size={12} />
+                    <span>{isFreeProduct ? 'Gratis nach Registrierung (Wert: 1,99&nbsp;€)' : `Einmalig ${priceDisplay} • Kein Abo`}</span>
+                  </span>
+                  {!isFreeProduct && (
+                    <Link
+                      to={`/ruhe-shop#product-${resolvedId}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-950 dark:text-amber-200 border border-amber-500/35 text-xs font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
+                      title="Ohne Registrierung per Magic Link kaufen"
+                    >
+                      <Key size={13} className="text-amber-800 dark:text-amber-400 shrink-0" />
+                      <span>Express-Kauf mit Magic Link ({priceDisplay})</span>
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
 
@@ -290,31 +307,90 @@ export default function AudioSessionPage() {
                 enableFloatingPlayer={true}
               />
 
-              {/* 1-Klick Quick Unlock Box (Google & Facebook SSO + E-Mail Fallback) – nur für Gäste ohne Kauf */}
+              {/* Wahlmöglichkeit für Gäste: 1-Klick Registrierung ODER Express-Kauf mit Magic Link */}
               {!user && !isOwned && (
-                <div className="pt-3">
-                  <QuickSocialUnlockBox
-                    produkt={productData || { id: resolvedId, titel: title, preis: productData?.preis, kategorie: category }}
-                    returnPath={`/audio/${resolvedId}`}
-                    compact={false}
-                  />
+                <div className="pt-3 space-y-4">
+                  {/* Express-Kauf Box mit Magic Link (ohne Passwort) */}
+                  {!isFreeProduct && (
+                    <div className="p-4 sm:p-5 rounded-3xl bg-amber-500/10 border border-amber-500/25 text-left space-y-3 shadow-2xs">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/20 pb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-800 dark:text-amber-300 shrink-0">
+                            <Key size={16} />
+                          </div>
+                          <div>
+                            <span className="font-bold text-sm text-amber-950 dark:text-amber-200 block">
+                              Option 1: Express-Kauf mit Magic Link ({priceDisplay})
+                            </span>
+                            <span className="text-[11px] text-[var(--text-muted)] block">
+                              100 % ohne Passwort &amp; ohne Benutzerkonto • Sofortiger Zugang
+                            </span>
+                          </div>
+                        </div>
+
+                        <Link
+                          to={`/ruhe-shop#product-${resolvedId}`}
+                          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-95 text-center"
+                        >
+                          <Gift size={14} />
+                          <span>Jetzt mit Magic Link kaufen ({priceDisplay}) →</span>
+                        </Link>
+                      </div>
+
+                      <div className="text-[11px] text-[var(--text-muted)] space-y-1.5 leading-relaxed">
+                        <p>
+                          <strong className="text-[var(--text-main)]">So einfach funktioniert der Magic Link:</strong> Du bezahlst bequem und sicher (PayPal, Karte oder SEPA). Direkt nach Zahlungseingang wird die Sitzung im Web-Player freigeschaltet und dein persönlicher Zugangs-Link kommt per E-Mail. Klicke einfach auf den Link und höre sofort auf Smartphone, Tablet oder PC weiter.
+                        </p>
+                        <div className="flex items-center justify-end pt-1">
+                          <Link
+                            to="/pakete#magic-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-amber-900 dark:text-amber-300 hover:underline font-semibold inline-flex items-center gap-1"
+                          >
+                            <span>Details &amp; FAQ zum Magic Link ansehen</span>
+                            <ExternalLink size={11} className="shrink-0" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 1-Klick Hörer-Konto (SSO / E-Mail) */}
+                  <div className="space-y-2">
+                    {!isFreeProduct && (
+                      <span className="text-xs font-bold text-[var(--text-muted)] block px-1">
+                        Option 2: Kostenloses Hörer-Konto (0 €)
+                      </span>
+                    )}
+                    <QuickSocialUnlockBox
+                      produkt={productData || { id: resolvedId, titel: title, preis: productData?.preis, kategorie: category }}
+                      returnPath={`/audio/${resolvedId}`}
+                      compact={false}
+                    />
+                  </div>
                 </div>
               )}
 
-              {/* Kauf-Button für kostenpflichtige Audios wenn eingeloggt und noch nicht gekauft */}
+              {/* Kauf-Button für eingeloggte Nutzer */}
               {user && !isFreeProduct && !isOwned && (
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)]">
-                  <div>
-                    <span className="font-bold text-sm block text-[var(--text-main)]">Vollversion freischalten ({priceDisplay})</span>
-                    <span className="text-xs text-[var(--text-muted)]">Einmaliger Kauf • Dauerhafter Zugriff im Web &amp; in der Android-App</span>
+                <div className="pt-2 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-sm text-amber-950 dark:text-amber-200">
+                      <Key size={15} className="text-amber-800 dark:text-amber-400 shrink-0" />
+                      <span>Express-Kauf mit Magic Link ({priceDisplay})</span>
+                    </div>
+                    <span className="text-xs text-[var(--text-muted)] block leading-relaxed">
+                      Sofortige Freischaltung in deiner Mediathek + Magic Link per E-Mail für jedes weitere Gerät. Einmalig {priceDisplay} • 100 % ohne Abo.
+                    </span>
                   </div>
 
                   <Link
-                    to={`/premium#product-${resolvedId}`}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                    to={`/ruhe-shop#product-${resolvedId}`}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap active:scale-95 text-center shrink-0"
                   >
                     <Gift size={15} />
-                    <span>Jetzt für {priceDisplay} kaufen</span>
+                    <span>Jetzt für {priceDisplay} kaufen →</span>
                   </Link>
                 </div>
               )}
