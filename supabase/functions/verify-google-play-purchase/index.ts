@@ -65,8 +65,8 @@ serve(async (req) => {
   try {
     const { productId, purchaseToken, userId, price = 1.99 } = await req.json()
 
-    if (!purchaseToken || !productId || !userId) {
-      throw new Error('Fehlende Parameter: purchaseToken, productId oder userId erforderlich.');
+    if (!purchaseToken || !productId) {
+      throw new Error('Fehlende Parameter: purchaseToken oder productId erforderlich.');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -155,40 +155,81 @@ serve(async (req) => {
       orderId = `GPA.${purchaseToken.substring(0, 16)}`;
     }
 
-    // Fetch user's email to see if an alias account (@gmail.com <-> @googlemail.com) exists
+    // Ermittle User-ID (auch für Gäste ohne aktiven Account)
     let userEmail: string | undefined;
-    const targetUserIds: string[] = [userId];
+    const targetUserIds: string[] = [];
 
-    try {
-      const { data: userData } = await supabase.auth.admin.getUserById(userId);
-      userEmail = userData?.user?.email;
+    const isGuest = !userId || userId === 'guest' || userId === 'null' || userId === 'undefined';
 
-      if (userEmail) {
-        const cleanEmail = userEmail.toLowerCase().trim();
-        let aliasEmail: string | null = null;
-        if (cleanEmail.endsWith('@gmail.com')) {
-          aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
-        } else if (cleanEmail.endsWith('@googlemail.com')) {
-          aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
-        }
+    if (isGuest) {
+      // Automatischer Gast-Account für diese Google Play Bestellung
+      const safeId = orderId ? orderId.toLowerCase().replace(/[^a-z0-9]/g, '') : `gplay_${Date.now()}`;
+      const gastEmail = `gplay-gast-${safeId}@flow-der-stille.de`;
 
-        if (aliasEmail) {
-          const { data: aliasProfiles } = await supabase
-            .from('profiles')
-            .select('id')
-            .in('email', [cleanEmail, aliasEmail]);
+      try {
+        const { data: usersData } = await supabase.auth.admin.listUsers();
+        let gastUser = usersData?.users?.find((u: any) => u.email?.toLowerCase() === gastEmail);
 
-          if (aliasProfiles && aliasProfiles.length > 0) {
-            aliasProfiles.forEach((p: any) => {
-              if (p.id && !targetUserIds.includes(p.id)) {
-                targetUserIds.push(p.id);
-              }
+        if (!gastUser) {
+          const { data: newU, error: crErr } = await supabase.auth.admin.createUser({
+            email: gastEmail,
+            email_confirm: true,
+            user_metadata: {
+              is_guest: true,
+              source: 'google_play_inapp',
+              order_id: orderId
+            }
+          });
+          if (newU?.user) {
+            gastUser = newU.user;
+            await supabase.from('profiles').upsert({
+              id: gastUser.id,
+              email: gastEmail,
+              is_premium: true
             });
           }
         }
+
+        if (gastUser) {
+          targetUserIds.push(gastUser.id);
+          userEmail = `Google Play Gast (${orderId})`;
+        }
+      } catch (gErr) {
+        console.warn("Gast-User Erstellung fehlgeschlagen:", gErr);
       }
-    } catch (uErr) {
-      console.warn("Could not fetch user email for alias matching:", uErr);
+    } else {
+      targetUserIds.push(userId);
+      try {
+        const { data: userData } = await supabase.auth.admin.getUserById(userId);
+        userEmail = userData?.user?.email;
+
+        if (userEmail) {
+          const cleanEmail = userEmail.toLowerCase().trim();
+          let aliasEmail: string | null = null;
+          if (cleanEmail.endsWith('@gmail.com')) {
+            aliasEmail = cleanEmail.replace('@gmail.com', '@googlemail.com');
+          } else if (cleanEmail.endsWith('@googlemail.com')) {
+            aliasEmail = cleanEmail.replace('@googlemail.com', '@gmail.com');
+          }
+
+          if (aliasEmail) {
+            const { data: aliasProfiles } = await supabase
+              .from('profiles')
+              .select('id')
+              .in('email', [cleanEmail, aliasEmail]);
+
+            if (aliasProfiles && aliasProfiles.length > 0) {
+              aliasProfiles.forEach((p: any) => {
+                if (p.id && !targetUserIds.includes(p.id)) {
+                  targetUserIds.push(p.id);
+                }
+              });
+            }
+          }
+        }
+      } catch (uErr) {
+        console.warn("Could not fetch user email for alias matching:", uErr);
+      }
     }
 
     // 🔒 Idempotenz-Sperre: Prüfe vorab, ob dieser Kauf bereits existiert

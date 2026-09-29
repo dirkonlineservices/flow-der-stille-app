@@ -359,7 +359,7 @@ export default function PremiumShopDashboard() {
             purchaseToken,
             productId: productId,
             price: 1.99
-          }, user.id);
+          }, user?.id || 'guest');
 
           setShowUnlockBanner(true);
           setTimeout(() => {
@@ -1413,7 +1413,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
               purchaseToken,
               productId: produkt.id,
               price: parseFloat(produkt.preis) || 1.99
-            }, user.id);
+            }, user?.id || 'guest');
 
             setShowUnlockBanner(true);
             await onSuccess(); // Lädt Shop-Daten sofort neu, aktualisiert gekaufteSet und schaltet Play Button frei!
@@ -1556,8 +1556,11 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
         <span>{storeReady ? `Über Google Play kaufen (${produkt.preis} €)` : 'Verbinde Play Store...'}</span>
       </button>
-      <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
-        Sichere Zahlung über dein Google Konto.
+      <div className="text-center mt-3 text-[11px] text-[var(--text-muted)] leading-relaxed">
+        <span className="font-semibold text-emerald-800 dark:text-emerald-400">📱 Sofort-Freischaltung auf diesem Gerät:</span>
+        <span className="block mt-0.5 text-[10px]">
+          Du kannst diesen Titel direkt ohne Registrierung über Google Play kaufen und dauerhaft in dieser App anhören. Möchtest du deine Inhalte später auch im Browser auf dem PC nutzen, kannst du dich jederzeit nachträglich kostenlos mit 1 Klick anmelden.
+        </span>
       </div>
 
       {/* Floating Purchase Toast Notification */}

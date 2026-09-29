@@ -5,7 +5,7 @@ import { trackMetaPurchase } from './metaPixel';
 interface VerifyPurchaseParams {
   purchaseToken: string;
   productId: string;
-  userId: string;
+  userId?: string | null;
   price: number;
 }
 
@@ -23,13 +23,13 @@ export const verifyGooglePlayPurchase = async ({
   const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
   let orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
 
-  // 1. Aufruf der Supabase Edge Function
+  // 1. Aufruf der Supabase Edge Function (übernimmt auch Gastkauf-Archivierung in Supabase!)
   try {
     const { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
       body: {
         purchaseToken,
         productId: playProductId,
-        userId,
+        userId: userId || 'guest',
         price: price || 1.99,
         packageName: 'app.flowderstille.de'
       }
@@ -43,24 +43,29 @@ export const verifyGooglePlayPurchase = async ({
     console.warn("Edge Function notice:", fnErr);
   }
 
-  // 2. WICHTIG: Direkter Eintrag in die zentrale Tabelle public.kaeufe (mit Spalte 'preis' & onConflict: 'user_id,produkt_id')
-  try {
-    const dbKey1 = `${orderId}_${dbProductId}`;
-    await supabase.from('kaeufe').upsert({
-      user_id: userId,
-      produkt_id: dbProductId,
-      preis: price || 1.99,
-      waehrung: 'EUR',
-      order_id: dbKey1
-    }, { onConflict: 'user_id,produkt_id' });
+  // 2. Direkter lokaler Client-Eintrag nur wenn Nutzer wirklich eingeloggt ist (sonst erledigt das die Edge Function per Service Role)
+  if (userId && userId !== 'guest') {
+    try {
+      const dbKey1 = `${orderId}_${dbProductId}`;
+      await supabase.from('kaeufe').upsert({
+        user_id: userId,
+        produkt_id: dbProductId,
+        preis: price || 1.99,
+        waehrung: 'EUR',
+        order_id: dbKey1
+      }, { onConflict: 'user_id,produkt_id' });
 
-    // Profil-Status anpassen
-    await supabase.from('profiles').update({
-      is_premium: true,
-      updated_at: new Date().toISOString()
-    }).eq('id', userId);
+      // Profil-Status anpassen
+      await supabase.from('profiles').update({
+        is_premium: true,
+        updated_at: new Date().toISOString()
+      }).eq('id', userId);
 
-    verifiedSuccessfully = true;
+      verifiedSuccessfully = true;
+    } catch (dbErr) {
+      console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
+    }
+  }
 
     // Meta Pixel In-App Purchase Event mit Plattform-Tag
     trackMetaPurchase({
@@ -71,9 +76,6 @@ export const verifyGooglePlayPurchase = async ({
       content_type: 'app_in_app_purchase',
       platform: 'app'
     });
-  } catch (dbErr) {
-    console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
-  }
 
   return { success: verifiedSuccessfully, orderId };
 };
@@ -84,11 +86,11 @@ export interface GooglePlayPurchase {
   price: number;
 }
 
-export const handlePurchaseSuccess = async (purchase: GooglePlayPurchase, userId: string) => {
+export const handlePurchaseSuccess = async (purchase: GooglePlayPurchase, userId?: string | null) => {
   return await verifyGooglePlayPurchase({
     purchaseToken: purchase.purchaseToken,
     productId: purchase.productId,
-    userId: userId,
+    userId: userId || 'guest',
     price: purchase.price
   });
 };
