@@ -378,10 +378,14 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onError={async (err) => {
-                const errMsg = err?.message || String(err || '');
-                const isPopupClose = errMsg.includes('Detected popup close') || 
-                                     errMsg.includes('popup close') || 
-                                     errMsg.includes('Window was closed') ||
+                const errMsg = (err?.message || String(err || '')).toLowerCase();
+                const isPopupClose = errMsg.includes('popup close') || 
+                                     errMsg.includes('popup closed') || 
+                                     errMsg.includes('window is closed') || 
+                                     errMsg.includes('window was closed') ||
+                                     errMsg.includes('window closed') ||
+                                     errMsg.includes('can not determine type') ||
+                                     errMsg.includes('cannot determine type') ||
                                      errMsg.includes('closed');
 
                 if (isPopupClose) {
