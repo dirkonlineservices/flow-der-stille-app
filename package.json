@@ -59,5 +59,10 @@
   },
   "optionalDependencies": {
     "lightningcss-win32-arm64-msvc": "^1.33.0"
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
   }
 }
