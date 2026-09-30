@@ -9,6 +9,7 @@ import { reportCriticalError } from '../lib/errorLogger';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { trackMetaPurchase } from '../lib/metaPixel';
 import { offlineManager } from '../lib/offlineAudioService';
+import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -370,6 +371,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   'Der Bezahlvorgang wurde vom Nutzer abgebrochen.',
                   'paypal'
                 );
+                reportAbandonedCheckout({
+                  produkt,
+                  paymentMethod: 'PayPal',
+                  userEmail: user?.email,
+                  reason: 'Im PayPal-Fenster auf Abbrechen geklickt'
+                });
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({
                     event: 'checkout_abandoned',
@@ -402,6 +409,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     'Der Nutzer hat das PayPal-Fenster vor Abschluss geschlossen.',
                     'paypal'
                   );
+                  reportAbandonedCheckout({
+                    produkt,
+                    paymentMethod: 'PayPal',
+                    userEmail: user?.email,
+                    reason: 'PayPal-Fenster vor Abschluss geschlossen'
+                  });
                   return;
                 }
 

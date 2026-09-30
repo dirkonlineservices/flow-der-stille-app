@@ -11,6 +11,7 @@ import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import QuickSocialUnlockBox from './QuickSocialUnlockBox';
+import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { offlineManager } from '../lib/offlineAudioService';
@@ -1436,6 +1437,12 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
               title: 'Google Play Kauf abgebrochen',
               productTitle: produkt?.titel,
               message: 'Du hast den Bezahlvorgang in Google Play abgebrochen. Es wurde kein Betrag von deinem Google-Konto abgebucht.'
+            });
+            reportAbandonedCheckout({
+              produkt,
+              paymentMethod: 'Google Play',
+              userEmail: user?.email,
+              reason: 'In Google Play auf Abbrechen geklickt'
             });
           } else {
             setToast({
