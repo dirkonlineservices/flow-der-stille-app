@@ -40,6 +40,22 @@ var BLOG_POSTS = [
     excerpt: "Wie geht man mit tiefem Verlust, Schmerz und Trauer um? Erfahre, warum achtsame Trauerbegleitung ohne Ratgeber-Floskeln heilt, wie eine gef\xFChrte Meditation das \xFCberlastete Nervensystem entlastet und wie das neue H\xF6rbuch \u201EWo die Seele den Wind ber\xFChrt\u201C einen sicheren Hafen zum Loslassen schenkt.",
     category: "Trauerbegleitung & Achtsamkeit",
     readTime: "8 Min.",
+    heroImage: "/images/products/cover_seele_wind.jpg",
+    heroImageAlt: "Cover des H\xF6rbuchs \u201EWo die Seele den Wind ber\xFChrt\u201C mit gef\xFChrter Meditation zur Trauerbew\xE4ltigung",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "audiobook",
+      title: "Wo die Seele den Wind ber\xFChrt",
+      subtitle: "Teil 2 der Schmetterlings-Reihe \u2022 Jacqueline & Lisa",
+      badge: "H\xF6rbuch & gef\xFChrte Meditation",
+      priceFormatted: "4,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_seele_wind.jpg",
+      description: "Ein gesch\xFCtzter Raum bei Verlust, Schmerz und Neuanfang. Text von Jacqueline, gesprochen mit tiefer Herzensw\xE4rme von Lisa \u2013 inklusive beruhigender Trauermeditation und \xFCber 8 Minuten kostenloser H\xF6rprobe.",
+      primaryCtaLabel: "Jetzt Kapitel 1 kostenlos anh\xF6ren",
+      primaryCtaLink: "/hoerbuch/wo-die-seele-den-wind-beruehrt",
+      expressCtaLabel: "Express-Kauf mit Magic Link (4,99\xA0\u20AC)",
+      expressCtaLink: "/ruhe-shop#product-wo_die_seele_den_wind_beruehrt"
+    },
     content: `# Trauerbegleitung & Trauerbew\xE4ltigung: Wie ein achtsames H\xF6rbuch mit gef\xFChrter Meditation hilft, Verlust zu verarbeiten
 
 Der Verlust eines geliebten Menschen, eines treuen Tieres oder eines vertrauten Lebensabschnitts rei\xDFt eine L\xFCcke, f\xFCr die es in unserer schnelllebigen Leistungsgesellschaft oft keinen Platz gibt. W\xE4hrend das Umfeld nach wenigen Wochen erwartet, dass man wieder \u201Efunktioniert\u201C und zum Alltag zur\xFCckkehrt, beginnt im Inneren erst der eigentliche, stille Sturm.
@@ -134,6 +150,22 @@ Wenn du nach einer sanften, verl\xE4sslichen Begleitung suchst, die dich an die 
     excerpt: "Warum braucht man Selbsthypnose, wie wendet man sie richtig an und woran erkennt man erstklassige Werke? Erfahre, wie handgeschriebene Texte von Jacqueline und die einf\xFChlsame Stimme von Lisa dein Nervensystem nachhaltig neu ausrichten.",
     category: "Selbsthypnose & Wissenschaft",
     readTime: "9 Min.",
+    heroImage: "/images/products/cover_loslassen.jpg",
+    heroImageAlt: "Cover der gef\xFChrten Selbsthypnose zum Loslassen",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "session",
+      title: "Selbsthypnose: Altes loslassen",
+      subtitle: "Tiefenentspannung & Neuausrichtung f\xFCr deinen Geist",
+      badge: "Gef\xFChrte Selbsthypnose",
+      priceFormatted: "1,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_loslassen.jpg",
+      description: "Handgeschriebener Text von Jacqueline, mit echter menschlicher Herzensw\xE4rme gesprochen von Lisa. Ohne Abo, dauerhafter Zugang im Web-Player & in der Android App.",
+      primaryCtaLabel: "Selbsthypnose im Ruhe-Shop anh\xF6ren",
+      primaryCtaLink: "/ruhe-shop#product-selbsthypnose_loslassen",
+      expressCtaLabel: "Express-Kauf mit Magic Link (1,99\xA0\u20AC)",
+      expressCtaLink: "/ruhe-shop#product-selbsthypnose_loslassen"
+    },
     content: `# Selbsthypnose: Wirkung, richtige Anwendung & warum Text- und Stimmqualit\xE4t den Unterschied machen
 
 In unserer hektischen, von Reiz\xFCberflutung gepr\xE4gten Welt sto\xDFen rein verstandesm\xE4\xDFige L\xF6sungsans\xE4tze oft an ihre Grenzen. Vielleicht kennst du das: Du wei\xDFt genau, dass du ruhig bleiben solltest, doch dein Herz rast. Du m\xF6chtest einschlafen, doch deine Gedanken kreisen unaufh\xF6rlich. Oder du nimmst dir vor, ges\xFCnder zu leben, doch automatisierte Verhaltensmuster \xFCbernehmen die Kontrolle.
@@ -246,6 +278,22 @@ Probiere es heute Abend selbst aus, lass den Tag los und schenke deinem Geist di
     excerpt: "Warum wir Flow der Stille gegr\xFCndet haben: Kostenlose Meditationen und Selbsthypnosen f\xFCr alle, bewusster Verzicht auf teure Monats-Abos und wie wir mit Herzblut und KI-Unterst\xFCtzung faire Entspannung schaffen.",
     category: "Herzensprojekt",
     readTime: "7 Min.",
+    heroImage: "/images/products/cover_innere_ruhe.jpg",
+    heroImageAlt: "Flow der Stille \u2013 Meditation & Selbsthypnose ohne Abo",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "shop",
+      title: "Der Ruhe-Shop von Flow der Stille",
+      subtitle: "Einmalkauf ab 1,99\xA0\u20AC \u2022 Garantiert kein Abo",
+      badge: "Faire Meditation & Selbsthypnose",
+      priceFormatted: "ab 1,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_innere_ruhe.jpg",
+      description: "Entdecke unsere wachsende Sammlung an handgeschriebenen Selbsthypnosen, Meditationen und ganzheitlichen H\xF6rb\xFCchern. Sofortige Freischaltung ohne H\xFCrden.",
+      primaryCtaLabel: "Ruhe-Shop \xF6ffnen",
+      primaryCtaLink: "/ruhe-shop",
+      expressCtaLabel: "Kostenlose \xDCbungen testen",
+      expressCtaLink: "/uebungen"
+    },
     content: `# Warum Flow der Stille? Kostenlose Meditation, Selbsthypnose & unsere Vision ohne Abo-Fallen
 
 In einer Welt, die immer schneller, lauter und fordernder wird, ist innere Ruhe zu einem seltenen Gut geworden. Fast jeder Mensch kennt Momente von Ersch\xF6pfung, innerer Getriebenheit, Schlafproblemen oder emotionalen Krisen. Doch wer heute nach gef\xFChrten Meditationen oder mentaler Unterst\xFCtzung sucht, st\xF6\xDFt fast immer auf dieselben H\xFCrden: **teure Monats-Abos, aggressive Werbeunterbrechungen mitten in der Entspannung und unpers\xF6nliche Gro\xDFplattformen**.
@@ -335,6 +383,22 @@ Danke, dass du Teil unserer Reise bist. M\xF6gest du in deinem Alltag immer wied
     excerpt: "Entdecke, wie gezielte Herzratenvariabilit\xE4t und koh\xE4rentes Atmen dein emotionales Gleichgewicht st\xE4rken und deine Intuition sch\xE4rfen.",
     category: "Herzkompass",
     readTime: "5 Min.",
+    heroImage: "/images/products/cover_herzkompass.jpg",
+    heroImageAlt: "Herzkompass \u2013 Meditation zur Herz\xF6ffnung",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "meditation",
+      title: "Herzkompass Meditation",
+      subtitle: "Finde deinen inneren Rhythmus",
+      badge: "Achtsame Herzmeditation",
+      priceFormatted: "1,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_herzkompass.jpg",
+      description: "Bringe Herzschlag, Nervensystem und Geist in wohltuende Harmonie. Dauerhafter Zugang zum Streaming im Web-Player & in der Android App.",
+      primaryCtaLabel: "Herzkompass im Ruhe-Shop",
+      primaryCtaLink: "/ruhe-shop#product-herzkompass",
+      expressCtaLabel: "Express-Kauf mit Magic Link (1,99\xA0\u20AC)",
+      expressCtaLink: "/ruhe-shop#product-herzkompass"
+    },
     content: `# Herz-Koh\xE4renz: Wenn Herz und Verstand im Einklang schwingen
 
 Das Herz sendet weit mehr Signale an das Gehirn, als es von ihm empf\xE4ngt. Wenn wir in einen Zustand der Herz-Koh\xE4renz gelangen, arbeiten Herz, Atmung und Gehirn in einem harmonischen Rhythmus zusammen.
@@ -362,6 +426,22 @@ Sp\xFCre nach wenigen Minuten, wie sich innere Weite und Ruhe ausbreiten. Beglei
     excerpt: "Gedanken kreisen unaufh\xF6rlich? Mit diesen einfachen Schritten stoppen Sie den mentalen \xDCberfluss und finden zu klarer Pr\xE4senz.",
     category: "Achtsamkeit",
     readTime: "6 Min.",
+    heroImage: "/images/products/cover_schlaf.jpg",
+    heroImageAlt: "Selbsthypnose f\xFCr erholsamen Schlaf & innere Ruhe",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "session",
+      title: "Selbsthypnose: Tiefer Schlaf & Gedankenstille",
+      subtitle: "Gedankenkarussell stoppen & friedvoll einschlafen",
+      badge: "Gef\xFChrte Selbsthypnose",
+      priceFormatted: "1,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_schlaf.jpg",
+      description: "Lass die To-Do-Liste des Tages hinter dir und gleite mit sanfter Stimmbegleitung in tiefen, regenerierenden Schlaf.",
+      primaryCtaLabel: "Schlaf-Selbsthypnose anh\xF6ren",
+      primaryCtaLink: "/ruhe-shop#product-selbsthypnose_schlaf",
+      expressCtaLabel: "Express-Kauf mit Magic Link (1,99\xA0\u20AC)",
+      expressCtaLink: "/ruhe-shop#product-selbsthypnose_schlaf"
+    },
     content: `# Innere Ruhe im Gedankenkarussell finden
 
 Kennst du das Gef\xFChl, wenn abends im Bett die To-Do-Liste des n\xE4chsten Tages durch den Kopf rast? Gedanken sind oft wie vorbeiziehende Wolken \u2013 wir machen den Fehler, uns an sie zu h\xE4ngen und sie f\xFCr bare M\xFCnze zu nehmen.
@@ -383,6 +463,22 @@ Stille ist kein Zustand, den man k\xFCnstlich erzwingen muss \u2013 sie ist bere
     excerpt: "Erfahren Sie, wie Sie durch gezielte Atemtechniken Ihr Nervensystem beruhigen und tiefen Stress abbauen k\xF6nnen.",
     category: "Wissenschaft & Praxis",
     readTime: "4 Min.",
+    heroImage: "/images/products/cover_atemarbeit.jpg",
+    heroImageAlt: "Atemarbeit & Vagusnerv-Entspannung",
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: "session",
+      title: "Selbsthypnose: Atem & Vagusnerv-Entlastung",
+      subtitle: "Den inneren Ruhenerv sofort aktivieren",
+      badge: "Atem & Selbsthypnose",
+      priceFormatted: "1,99\xA0\u20AC",
+      coverUrl: "/images/products/cover_atemarbeit.jpg",
+      description: "Schalte in wenigen Minuten von Dauerstress auf k\xF6rperliche Regeneration und tiefe Gelassenheit um.",
+      primaryCtaLabel: "Im Ruhe-Shop ansehen",
+      primaryCtaLink: "/ruhe-shop#product-selbsthypnose_atem",
+      expressCtaLabel: "Express-Kauf mit Magic Link (1,99\xA0\u20AC)",
+      expressCtaLink: "/ruhe-shop#product-selbsthypnose_atem"
+    },
     content: `# Den Parasympathikus im Alltag aktivieren
 
 In unserer modernen, schnelllebigen Welt ist unser sympathisches Nervensystem oft im Dauereinsatz. Wir stehen unter Strom, Termindruck und st\xE4ndiger Reiz\xFCberflutung. 

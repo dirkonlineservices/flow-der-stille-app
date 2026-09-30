@@ -12,6 +12,22 @@ export interface BlogPost {
   category: string;
   readTime: string;
   content: string;
+  heroImage?: string;
+  heroImageAlt?: string;
+  heroImageAiGenerated?: boolean;
+  relatedProduct?: {
+    type?: 'audiobook' | 'session' | 'meditation' | 'shop';
+    title: string;
+    subtitle?: string;
+    badge?: string;
+    priceFormatted?: string;
+    coverUrl?: string;
+    description: string;
+    primaryCtaLabel?: string;
+    primaryCtaLink: string;
+    expressCtaLabel?: string;
+    expressCtaLink?: string;
+  };
 }
 
 export function getAllPosts(): BlogPost[] {

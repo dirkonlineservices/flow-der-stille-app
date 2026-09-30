@@ -5,8 +5,22 @@ import { trackBlogClick } from '../lib/analytics';
 
 export function BlogCard({ post }: { post: BlogPost }) {
   return (
-    <article className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 transition-all hover:border-[var(--accent)] flex flex-col justify-between">
+    <article className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 transition-all hover:border-[var(--accent)] hover:shadow-md flex flex-col justify-between group">
       <div>
+        {post.heroImage && (
+          <Link
+            to={`/blog/${post.slug}`}
+            onClick={() => trackBlogClick(post.title, post.slug, post.category)}
+            className="block h-44 w-full rounded-xl overflow-hidden mb-5 border border-[var(--border)]/60 bg-[var(--bg-alt)]"
+          >
+            <img
+              src={post.heroImage}
+              alt={post.heroImageAlt || post.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          </Link>
+        )}
         <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-3">
           <span className="uppercase tracking-wider font-medium text-[var(--accent)]">
             {post.category}
