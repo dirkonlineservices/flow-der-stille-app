@@ -378,6 +378,29 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onError={async (err) => {
+                const errMsg = err?.message || String(err || '');
+                const isPopupClose = errMsg.includes('Detected popup close') || 
+                                     errMsg.includes('popup close') || 
+                                     errMsg.includes('Window was closed') ||
+                                     errMsg.includes('closed');
+
+                if (isPopupClose) {
+                  // Normaler Abbruch durch Schließen des Fensters durch den Nutzer - KEIN Systemfehler!
+                  setToast({
+                    show: true,
+                    type: 'cancelled',
+                    title: 'PayPal-Kauf abgebrochen',
+                    productTitle: produkt?.titel,
+                    message: 'Du hast das PayPal-Fenster geschlossen. Es wurde kein Betrag abgebucht.'
+                  });
+                  transactionLogger.logWarning(
+                    'Kauf abgebrochen (Fenster geschlossen)',
+                    'Der Nutzer hat das PayPal-Fenster vor Abschluss geschlossen.',
+                    'paypal'
+                  );
+                  return;
+                }
+
                 setToast({
                   show: true,
                   type: 'failed',

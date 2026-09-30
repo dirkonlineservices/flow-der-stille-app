@@ -7,6 +7,20 @@ interface ErrorReportOptions {
 }
 
 export async function reportCriticalError({ context, error, userEmail }: ErrorReportOptions) {
+  const errMsg = error?.message || String(error || '');
+
+  // Unkritische Nutzer-Aktionen herausfiltern (z. B. PayPal Popup vom Nutzer geschlossen)
+  if (
+    errMsg.includes('Detected popup close') ||
+    errMsg.includes('popup close') ||
+    errMsg.includes('Window was closed') ||
+    errMsg.includes('user_canceled') ||
+    errMsg.includes('cancelled')
+  ) {
+    console.info(`[INFO] Nutzer hat Bezahlfenster geschlossen (${context}):`, errMsg);
+    return;
+  }
+
   console.error(`[CRITICAL ERROR] ${context}:`, error);
 
   try {
