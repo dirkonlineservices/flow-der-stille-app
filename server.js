@@ -812,6 +812,12 @@ async function startServer() {
     const distPath = import_path.default.join(__dirname, "dist");
     app.use(import_express.default.static(distPath));
   }
+  app.get(["/premium", "/shop"], (_req, res) => {
+    res.redirect(301, "/ruhe-shop");
+  });
+  app.get("/start", (_req, res) => {
+    res.redirect(301, "/");
+  });
   app.get("*", (req, res, next) => {
     if (req.path.startsWith("/api/")) {
       return next();

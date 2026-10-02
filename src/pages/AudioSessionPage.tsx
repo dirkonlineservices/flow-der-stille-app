@@ -157,7 +157,7 @@ export default function AudioSessionPage() {
       "url": "https://flow-der-stille.de"
     },
     "inLanguage": "de-DE",
-    "offers": {
+    offers: {
       "@type": "Offer",
       "url": `https://flow-der-stille.de/audio/${resolvedId}`,
       "priceCurrency": "EUR",
@@ -166,12 +166,16 @@ export default function AudioSessionPage() {
     }
   };
 
+  const canonicalSlug = id?.includes('&') 
+    ? (id.includes('fokus') ? 'selbsthypnose_fokus' : (id.includes('vertrauen') || id.includes('selbstbewusstsein') ? 'selbsthypnose_selbstbewusstsein' : id))
+    : (id || resolvedId);
+
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] pt-24 pb-20 px-4 sm:px-6">
       <SEO
         title={`${title} – Kostenlos anhören & freischalten`}
         description={`${description} Gesprochen von Lisa. Jetzt bei Flow der Stille anhören.`}
-        canonicalUrl={`https://flow-der-stille.de/audio/${id}`}
+        canonicalUrl={`https://flow-der-stille.de/audio/${canonicalSlug}`}
         keywords={`${title}, ${category}, kostenlose Selbsthypnose, kostenlose Meditation, geführte Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa, Jacqueline, Flow der Stille`}
         schemaJson={schemaJson}
       />

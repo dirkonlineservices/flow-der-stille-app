@@ -379,6 +379,14 @@ async function startServer() {
     app.use(express.static(distPath));
   }
 
+  // 301 SEO-Weiterleitungen für konsistente Indexierung (verhindert Duplicate Content & Redirect-Fehler in GSC)
+  app.get(['/premium', '/shop'], (_req, res) => {
+    res.redirect(301, '/ruhe-shop');
+  });
+  app.get('/start', (_req, res) => {
+    res.redirect(301, '/');
+  });
+
   // Das universelle Catch-All-Routing fängt alle F5-Aktualisierungen sicher ab
   app.get('*', (req, res, next) => {
     // Verhindert, dass API-Anfragen fälschlicherweise die index.html zurückbekommen
