@@ -28,3 +28,12 @@
      - **Option 2: Kostenloses Hörer-Konto (0 €)**: 1-Klick-Registrierung über Google, Meta (Facebook) oder E-Mail.
   3. **Für eingeloggte Nutzer (`user`)**: Kompakter Hinweis über den Express-Kauf mit Magic Link (sofortige Freischaltung im bestehenden Mediathek-Konto + E-Mail-Zugangslink für weitere Endgeräte).
 
+## 7. WORKFLOW: SYNCHRONISATION ZWISCHEN WINDOWS-PC UND MACBOOK
+- **Vor Arbeitsbeginn auf dem Windows-Rechner**:
+  - Der Assistent MUSS ZUERST fragen bzw. prüfen: **„Kommst du gerade vom Mac?“**
+  - **Wenn JA (vom Mac gewechselt)**: Vor jeder Codeänderung oder Analyse zwingend `git pull origin main` ausführen, um die neuesten Dateien vom MacBook einzulesen!
+  - **Wenn NEIN (durchgehend hier gearbeitet)**: Kein Pull nötig, direkt weiterarbeiten.
+- **Vor jedem Rechnerwechsel (vom PC zum Mac oder umgekehrt)**:
+  - Zwingend alle Änderungen committen und auf GitHub pushen: `git add .` -> `git commit -m "..."` -> `git push origin main`.
+  - Dadurch wird verhindert, dass funktionierende Änderungen versehentlich überschrieben werden oder Versionskonflikte entstehen.
+
