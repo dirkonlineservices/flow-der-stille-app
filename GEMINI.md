@@ -6,6 +6,27 @@
 > - **Letzter Stand**: 03.10.2026, 11:15 Uhr
 > - **Branch**: `main`
 > - **Status**: iOS In-App-Purchase Dynamisierung, Restore Purchases Button (Shop + Settings), Background Audio in Info.plist & AppDelegate integriert und nativer Xcode-Build erfolgreich. Vor Beginn auf dem Windows-PC muss zwingend `git pull origin main` ausgeführt werden!
+>
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 03.10.2026, 11:20 UHR):
+> 1. **Sicherheitsblock & Workflow-Regeln**: Geräte-Synchronisation zwischen MacBook und Windows-PC verbindlich an oberster Stelle in `GEMINI.md` integriert.
+> 2. **iOS Background Audio**: In `ios/App/App/Info.plist` den Modus `UIBackgroundModes` mit `audio` ergänzt und Sprache auf `de` gesetzt.
+> 3. **iOS AppDelegate Audio-Session**: In `ios/App/App/AppDelegate.swift` `AVAudioSession` mit Kategorie `.playback` aktiviert (Audios laufen bei gesperrtem Bildschirm und Stummschaltung weiter).
+> 4. **In-App-Kauf Dynamisierung**: In `src/components/PremiumDashboard.tsx` (`GooglePlayCheckoutButton`) alle Store-Texte dynamisch über `getStoreName()` (App Store / Google Play) formatiert.
+> 5. **"Käufe wiederherstellen" (Restore Purchases)**:
+>    - Im Ruhe-Shop (`PremiumDashboard.tsx`) Button *„Bereits gekauft? Käufe wiederherstellen“* direkt unter dem Kaufbutton integriert.
+>    - In den Kontoeinstellungen (`src/pages/Settings.tsx`) eigene Karte *„In-App-Käufe wiederherstellen ({getStoreName()})“* eingebaut.
+> 6. **Rechtliche Zahlungsarten**: In `src/pages/AGB.tsx` und `src/pages/Versand.tsx` Apple App Store In-App-Kauf als offizielle Zahlungsart ergänzt.
+> 7. **Build & Verifikation**: Web-Build (`vite build`), Capacitor-Sync (`npx cap sync ios`) und nativer Xcode-Simulator-Build (`xcodebuild`) erfolgreich und fehlerfrei validiert (`BUILD SUCCEEDED`).
+>
+> ### 🎯 NÄCHSTE SCHRITTE FÜR DIE NÄCHSTE SESSION:
+> 1. **„Sign in with Apple“ einrichten** (App Store Guideline 4.8):
+>    - Services ID & Private Key (.p8) im Apple Developer Portal erstellen.
+>    - Supabase Auth Provider für Apple konfigurieren.
+>    - Xcode Capability „Sign in with Apple“ aktivieren und UI-Buttons (`QuickSocialUnlockBox.tsx`, `Login.tsx`, `Register.tsx`) integrieren.
+> 2. **App Store Connect Setup**:
+>    - App `app.flowderstille.de` in App Store Connect registrieren.
+>    - Non-Consumable IAP-Produkte (`fds_...`) und Sandbox-Test-Nutzer anlegen.
+> 3. **Test auf echtem iPhone / TestFlight**.
 
 ---
 
