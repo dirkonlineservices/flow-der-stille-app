@@ -1,5 +1,35 @@
 # Flow der Stille – Projektregeln & Richtlinien
 
+## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
+> ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
+> - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
+> - **Letzter Stand**: 03.10.2026, 11:10 Uhr
+> - **Branch**: `main`
+> - **Status**: Alle aktuellen Änderungen wurden auf dem MacBook bearbeitet. Vor Beginn auf dem Windows-PC muss zwingend `git pull origin main` ausgeführt werden!
+
+---
+
+### 🛡️ VERBINDLICHE WORKFLOW-REGELN ZUR VERHINDERUNG VON DATENVERLUST:
+
+1. **BEI JEDEM ARBEITSBEGINN (AUF JEDEM RECHNER – WINDOWS ODER MAC)**:
+   - Der Assistent MUSS ZUERST den Sicherheitsblock oben prüfen.
+   - **WENN DER RECHNER GEWECHSELT WURDE** (z. B. du bist jetzt am Windows-PC und der letzte Stand war auf dem Mac, oder umgekehrt):
+     -> **ZWINGENDER ERSTER SCHRITT**: Sofort `git pull origin main` ausführen!
+     -> Erst wenn der Pull erfolgreich durchgelaufen ist, dürfen Dateien analysiert, geändert oder gebaut werden.
+   - **WENN DURCHGEHEND AM SELBEN RECHNER GEARBEITET WIRD**:
+     -> Kein Pull nötig, direkt weiterarbeiten.
+
+2. **VOR JEDEM RECHNERWECHSEL / ARBEITSENDE (ZWINGENDER PUSH)**:
+   - Der Assistent MUSS vor dem Beenden der Session:
+     1. Den Sicherheitsblock oben in `GEMINI.md` aktualisieren:
+        - `Zuletzt bearbeiteter Rechner`: Aktuellen Rechner eintragen (z. B. `🍏 Apple Mac (MacBook)` oder `💻 Windows-PC`)
+        - `Letzter Stand`: Aktuelle Uhrzeit & Datum eintragen
+     2. Alle Änderungen committen und zu GitHub pushen:
+        `git add .` -> `git commit -m "..."` -> `git push origin main`
+   - Dadurch ist lückenlos garantiert, dass der andere Rechner beim nächsten Start sofort die neuesten Dateien erhält und niemals Code überschrieben wird.
+
+---
+
 ## 1. RECHTLICHE TERMINOLOGIE: AUSSCHLIESSLICH "SELBSTHYPNOSE"
 - **STRIKTE PFLICHT**: Es darf überall (Webseite, App, Shop, Metadaten, FAQ, Produktbeschreibungen, SEO, Social Media) **NUR "Selbsthypnose" bzw. "Selbsthypnosen"** heißen.
 - **ABSOLUTES VERBOT**: Niemals das Wort "Hypnose" oder "Hypnosen" isoliert verwenden.
@@ -27,13 +57,3 @@
      - **Option 1: Express-Kauf mit Magic Link**: Ohne Passwort, ohne Registrierung, sofortige Freischaltung im Web-Player + Magic Link per E-Mail für alle weiteren Endgeräte.
      - **Option 2: Kostenloses Hörer-Konto (0 €)**: 1-Klick-Registrierung über Google, Meta (Facebook) oder E-Mail.
   3. **Für eingeloggte Nutzer (`user`)**: Kompakter Hinweis über den Express-Kauf mit Magic Link (sofortige Freischaltung im bestehenden Mediathek-Konto + E-Mail-Zugangslink für weitere Endgeräte).
-
-## 7. WORKFLOW: SYNCHRONISATION ZWISCHEN WINDOWS-PC UND MACBOOK
-- **Vor Arbeitsbeginn auf dem Windows-Rechner**:
-  - Der Assistent MUSS ZUERST fragen bzw. prüfen: **„Kommst du gerade vom Mac?“**
-  - **Wenn JA (vom Mac gewechselt)**: Vor jeder Codeänderung oder Analyse zwingend `git pull origin main` ausführen, um die neuesten Dateien vom MacBook einzulesen!
-  - **Wenn NEIN (durchgehend hier gearbeitet)**: Kein Pull nötig, direkt weiterarbeiten.
-- **Vor jedem Rechnerwechsel (vom PC zum Mac oder umgekehrt)**:
-  - Zwingend alle Änderungen committen und auf GitHub pushen: `git add .` -> `git commit -m "..."` -> `git push origin main`.
-  - Dadurch wird verhindert, dass funktionierende Änderungen versehentlich überschrieben werden oder Versionskonflikte entstehen.
-
