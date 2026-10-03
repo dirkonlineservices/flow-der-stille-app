@@ -15,6 +15,7 @@
     "@awesome-cordova-plugins/in-app-purchase-2": "^9.2.0",
     "@capacitor/app": "^8.1.1",
     "@capacitor/browser": "^8.0.4",
+    "@capacitor/ios": "^8.5.2",
     "@capawesome/capacitor-app-update": "^8.0.3",
     "@google/genai": "latest",
     "@google/generative-ai": "^0.24.1",
