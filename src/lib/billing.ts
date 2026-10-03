@@ -1,5 +1,4 @@
 import { Capacitor } from '@capacitor/core';
-import { handlePurchaseSuccess } from './googlePlayVerification';
 
 interface BillingInitProps {
   productId: string;
@@ -19,13 +18,28 @@ export const pushToDataLayer = (eventName: string, payload?: any) => {
   }
 };
 
+// 📱 Plattform-Erkennung: iOS (App Store) oder Android (Google Play)
+export const isIOSApp = (): boolean => {
+  try {
+    return Capacitor.getPlatform() === 'ios';
+  } catch {
+    return false;
+  }
+};
+
+export const getStoreName = (): string => (isIOSApp() ? 'App Store' : 'Google Play');
+
+const getStorePlatform = (CdvPurchase: any) =>
+  isIOSApp() ? CdvPurchase.Platform.APPLE_APPSTORE : CdvPurchase.Platform.GOOGLE_PLAY;
+
 // 🛑 Set zur Verhinderung von Endlosschleifen (Idempotenz-Sperre)
 const processedTransactionsSet = new Set<string>();
 let isGlobalStoreInitialized = false;
 let globalSuccessCallback: ((transaction?: any) => Promise<any> | any) | null = null;
 let activePurchaseFailureCallback: ((msg: string) => void) | null = null;
 
-// 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Google Play Console Produkt-ID
+// 🗺️ Exakte Zuordnung: Datenbank Produkt-ID <-> Store Produkt-ID
+// Die Produkt-IDs werden im App Store identisch zu Google Play angelegt (fds_...).
 export const PLAY_STORE_PRODUCT_MAP: Record<string, string> = {
   'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
   'selbsthypnose_mehr_selbstbewusstsein_&_inneres_vertrauen': 'fds_selbsthypnose_selbstbewusstsein',
@@ -86,11 +100,42 @@ export const getPlayStoreProductId = (input: any): string => {
   return PLAY_STORE_PRODUCT_MAP[dbProductId] || `fds_${dbProductId.replace(/&/g, '_').replace(/__/g, '_')}`;
 };
 
+// Plattformneutraler Name (gleiche IDs für Google Play und App Store)
+export const getStoreProductId = getPlayStoreProductId;
+
+// 🔎 Erkennt "bereits gekauft"-Fehler (Google Play)
+const isAlreadyOwnedError = (error: any): boolean => {
+  if (!error) return false;
+  let errJson = '';
+  try { errJson = JSON.stringify(error); } catch { errJson = String(error); }
+  const msg = String(error?.message || (typeof error === 'string' ? error : ''));
+  return (
+    error?.code === 6 ||
+    error?.code === 6777003 ||
+    errJson.includes('ITEM_ALREADY_OWNED') ||
+    msg.includes('ITEM_ALREADY_OWNED') ||
+    msg.includes('already owned') ||
+    msg.includes('bereits gekauft')
+  );
+};
+
+// 🧾 Einheitliche Auswertung der Rückmeldung von store.order() / offer.order()
+const handleOrderResult = (res: any, storeId: string, onFailure?: (msg: string) => void) => {
+  if (!res || !res.error) return;
+  if (isAlreadyOwnedError(res.error)) {
+    pushToDataLayer('purchase_restored', { item_id: storeId });
+    if (onFailure) onFailure('Kauf gefunden. Inhalte werden synchronisiert...');
+  } else {
+    pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
+    if (onFailure) onFailure(`${getStoreName()}: ${res.error.message || 'Kauf abgebrochen'}`);
+  }
+};
+
 export const BillingService = {
   isNative: (): boolean => {
     if (typeof window === 'undefined') return false;
 
-    // Capacitor Native Platform check (returns true on Android/iOS native app, false on Web)
+    // Capacitor Native Platform check (true in der Android-/iOS-App, false im Web)
     try {
       if (typeof Capacitor !== 'undefined' && typeof Capacitor.isNativePlatform === 'function') {
         return Capacitor.isNativePlatform();
@@ -104,12 +149,16 @@ export const BillingService = {
     return false;
   },
 
-  // 1. Einmalige Globale Registrierung der Produkte & Event Listener
+  isIOS: isIOSApp,
+  getStoreName,
+
+  // 1. Einmalige globale Registrierung der Produkte & Event Listener
   registerAllProducts: (products: any[], onSuccessGlobal?: (transaction?: any) => Promise<any> | any) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
       if (!CdvPurchase || !CdvPurchase.store) return;
       const store = CdvPurchase.store;
+      const platform = getStorePlatform(CdvPurchase);
 
       if (onSuccessGlobal) {
         globalSuccessCallback = onSuccessGlobal;
@@ -118,24 +167,27 @@ export const BillingService = {
       const registeredSet = new Set<string>();
 
       products.forEach((p) => {
-        const playId = getPlayStoreProductId(p);
+        const storeId = getStoreProductId(p);
         const dbId = typeof p === 'object' ? p.id : p;
 
-        [playId, dbId].forEach((idToReg) => {
+        // Auf iOS nur die echten App-Store-IDs registrieren (ungültige IDs erzeugen sonst Fehler)
+        const idsToRegister = isIOSApp() ? [storeId] : [storeId, dbId];
+
+        idsToRegister.forEach((idToReg) => {
           if (idToReg && !registeredSet.has(idToReg)) {
             registeredSet.add(idToReg);
             try {
               store.register({
                 id: idToReg,
                 type: CdvPurchase.ProductType.NON_CONSUMABLE,
-                platform: CdvPurchase.Platform.GOOGLE_PLAY
+                platform
               });
             } catch (e) {}
           }
         });
       });
 
-      // EINMALIGE Listener-Registrierung (Verhindert 6-faches Triggern)
+      // EINMALIGE Listener-Registrierung (verhindert mehrfaches Triggern)
       if (!isGlobalStoreInitialized) {
         isGlobalStoreInitialized = true;
 
@@ -190,10 +242,10 @@ export const BillingService = {
                 }
               });
             } catch (err: any) {
-              console.error("Fehler bei Kaufbestätigung:", err);
+              console.error('Fehler bei Kaufbestätigung:', err);
               pushToDataLayer('purchase_failed', { error_message: err?.message || 'Verifizierung fehlgeschlagen' });
               if (activePurchaseFailureCallback) {
-                activePurchaseFailureCallback(err?.message || "Kauf konnte von Supabase nicht verifiziert werden.");
+                activePurchaseFailureCallback(err?.message || 'Kauf konnte von Supabase nicht verifiziert werden.');
               }
             }
           });
@@ -202,42 +254,34 @@ export const BillingService = {
         // c) Globales Fehler-Handling
         try {
           store.error((error: any) => {
-            let errJson = "";
+            let errJson = '';
             try { errJson = JSON.stringify(error); } catch (e) { errJson = String(error); }
-            console.error("Billing Error:", errJson, error?.message, error?.code);
+            console.error('Billing Error:', errJson, error?.message, error?.code);
 
             const errorMsg = error?.message || (typeof error === 'string' ? error : errJson);
-            const isAlreadyOwned = (error?.code === 6) || 
-                                  (error?.code === 6777003) ||
-                                  (errJson && errJson.includes("ITEM_ALREADY_OWNED")) ||
-                                  (errorMsg && (
-                                    errorMsg.includes("ITEM_ALREADY_OWNED") || 
-                                    errorMsg.includes("already owned") || 
-                                    errorMsg.includes("bereits gekauft")
-                                  ));
 
-            if (isAlreadyOwned) {
+            if (isAlreadyOwnedError(error)) {
               if (activePurchaseFailureCallback) {
-                activePurchaseFailureCallback("Kauf gefunden. Inhalte werden synchronisiert...");
+                activePurchaseFailureCallback('Kauf gefunden. Inhalte werden synchronisiert...');
               }
               return;
             }
 
             pushToDataLayer('purchase_failed', { error_message: errorMsg || 'Billing Error' });
             if (activePurchaseFailureCallback) {
-              activePurchaseFailureCallback(errorMsg || "Kaufvorgang konnte nicht abgeschlossen werden.");
+              activePurchaseFailureCallback(errorMsg || 'Kaufvorgang konnte nicht abgeschlossen werden.');
             }
           });
         } catch (e) {}
 
         try {
-          store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
+          store.initialize([platform]);
         } catch (initErr) {
           try { store.initialize(); } catch (e2) {}
         }
       }
     } catch (err) {
-      console.warn("registerAllProducts notice:", err);
+      console.warn('registerAllProducts notice:', err);
     }
   },
 
@@ -245,7 +289,7 @@ export const BillingService = {
   init: ({ productId, onReady, onSuccess }: BillingInitProps) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
-      
+
       if (!CdvPurchase || !CdvPurchase.store) {
         setTimeout(() => onReady(), 500);
         return;
@@ -256,13 +300,13 @@ export const BillingService = {
       }
 
       const store = CdvPurchase.store;
-      const playId = getPlayStoreProductId(productId);
+      const storeId = getStoreProductId(productId);
 
       try {
         store.register({
-          id: playId,
+          id: storeId,
           type: CdvPurchase.ProductType.NON_CONSUMABLE,
-          platform: CdvPurchase.Platform.GOOGLE_PLAY
+          platform: getStorePlatform(CdvPurchase)
         });
       } catch (e) {}
 
@@ -276,9 +320,9 @@ export const BillingService = {
   startPurchase: async (produkt: any, onFailure?: (errorMsg: string) => void) => {
     try {
       const CdvPurchase = (window as any).CdvPurchase;
-      
+
       if (!CdvPurchase || !CdvPurchase.store) {
-        if (onFailure) onFailure("Google Play Store Bezahl-Plugin auf diesem Gerät nicht verfügbar.");
+        if (onFailure) onFailure(`${getStoreName()}-Bezahlfunktion auf diesem Gerät nicht verfügbar.`);
         return;
       }
 
@@ -286,8 +330,9 @@ export const BillingService = {
         activePurchaseFailureCallback = onFailure;
       }
 
+      const platform = getStorePlatform(CdvPurchase);
       const dbId = typeof produkt === 'object' ? produkt.id : produkt;
-      const playId = getPlayStoreProductId(produkt);
+      const storeId = getStoreProductId(produkt);
       const itemName = (typeof produkt === 'object' && produkt.titel) ? produkt.titel : (typeof produkt === 'object' && produkt.title) ? produkt.title : dbId;
       const itemPrice = (typeof produkt === 'object' && produkt.preis) ? parseFloat(produkt.preis) : 1.99;
 
@@ -304,19 +349,19 @@ export const BillingService = {
 
       const store = CdvPurchase.store;
 
-      let product = store.get(playId, CdvPurchase.Platform.GOOGLE_PLAY)
-                 || store.get(playId)
-                 || store.get(dbId, CdvPurchase.Platform.GOOGLE_PLAY)
+      let product = store.get(storeId, platform)
+                 || store.get(storeId)
+                 || store.get(dbId, platform)
                  || store.get(dbId);
 
       if (!product) {
         try {
           store.register({
-            id: playId,
+            id: storeId,
             type: CdvPurchase.ProductType.NON_CONSUMABLE,
-            platform: CdvPurchase.Platform.GOOGLE_PLAY
+            platform
           });
-          product = store.get(playId) || store.get(dbId);
+          product = store.get(storeId, platform) || store.get(storeId);
         } catch (regErr) {}
       }
 
@@ -325,63 +370,55 @@ export const BillingService = {
         if (typeof offer.order === 'function') {
           try {
             const res = await offer.order();
-            if (res && res.error) {
-              const isOwned = res.error.code === 6 || res.error.code === 6777003 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
-              if (isOwned) {
-                pushToDataLayer('purchase_restored', { item_id: playId });
-                if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
-              } else {
-                pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
-                if (onFailure) onFailure(`Play Store: ${res.error.message || 'Kauf abgebrochen'}`);
-              }
-            }
+            handleOrderResult(res, storeId, onFailure);
             return;
           } catch (eOffer) {}
         }
       }
 
-      const targetOffer = (product && product.offers && product.offers.length > 0) ? product.offers[0] : (product || playId);
-      
+      const targetOffer = (product && product.offers && product.offers.length > 0) ? product.offers[0] : (product || storeId);
+
       if (typeof store.order === 'function') {
         try {
           const res = await store.order(targetOffer);
-          if (res && res.error) {
-            const isOwned = res.error.code === 6 || res.error.code === 6777003 || String(res.error.message).includes("ITEM_ALREADY_OWNED");
-            if (isOwned) {
-              pushToDataLayer('purchase_restored', { item_id: playId });
-              if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
-            } else {
-              pushToDataLayer('purchase_failed', { error_message: res.error.message || 'Kauf abgebrochen' });
-              if (onFailure) onFailure(`Play Store Rückmeldung: ${res.error.message || 'Kauf abgebrochen'}`);
-            }
-          }
+          handleOrderResult(res, storeId, onFailure);
           return;
         } catch (eOrder: any) {
           try {
-            const resStr = await store.order(playId);
-            if (resStr && resStr.error) {
-              const isOwned = resStr.error.code === 6 || resStr.error.code === 6777003 || String(resStr.error.message).includes("ITEM_ALREADY_OWNED");
-              if (isOwned) {
-                pushToDataLayer('purchase_restored', { item_id: playId });
-                if (onFailure) onFailure("Kauf gefunden. Inhalte werden synchronisiert...");
-              } else {
-                pushToDataLayer('purchase_failed', { error_message: resStr.error.message || 'Kauf abgebrochen' });
-                if (onFailure) onFailure(`Play Store Rückmeldung: ${resStr.error.message || 'Kauf abgebrochen'}`);
-              }
-            }
+            const resStr = await store.order(storeId);
+            handleOrderResult(resStr, storeId, onFailure);
             return;
           } catch (eStr) {}
         }
       }
 
       if (onFailure) {
-        onFailure("Store-Verbindung wird geladen... Bitte tippe in Kürze erneut auf Kaufen.");
+        onFailure('Store-Verbindung wird geladen... Bitte tippe in Kürze erneut auf Kaufen.');
       }
-      
+
     } catch (error: any) {
-      console.error("Fataler Fehler bei startPurchase:", error);
+      console.error('Fataler Fehler bei startPurchase:', error);
       pushToDataLayer('purchase_failed', { error_message: error?.message || 'Unerwarteter Fehler' });
       if (onFailure) onFailure(`Bezahlfehler: ${error?.message || 'Unerwarteter Fehler'}`);
+    }
+  },
+
+  // 4. Käufe wiederherstellen (von Apple für iOS vorgeschrieben)
+  // Wiederhergestellte Käufe laufen automatisch über den approved-Listener zur Freischaltung.
+  restorePurchases: async (): Promise<string | null> => {
+    try {
+      const CdvPurchase = (window as any).CdvPurchase;
+      if (!CdvPurchase || !CdvPurchase.store) {
+        return `${getStoreName()}-Bezahlfunktion auf diesem Gerät nicht verfügbar.`;
+      }
+      const err = await CdvPurchase.store.restorePurchases();
+      if (err) {
+        return err.message || 'Wiederherstellung fehlgeschlagen.';
+      }
+      pushToDataLayer('purchase_restore_requested', { platform: getStoreName() });
+      return null;
+    } catch (e: any) {
+      return e?.message || 'Wiederherstellung fehlgeschlagen.';
     }
   }
 };
