@@ -3,9 +3,9 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 03.10.2026, 11:10 Uhr
+> - **Letzter Stand**: 03.10.2026, 11:15 Uhr
 > - **Branch**: `main`
-> - **Status**: Alle aktuellen Änderungen wurden auf dem MacBook bearbeitet. Vor Beginn auf dem Windows-PC muss zwingend `git pull origin main` ausgeführt werden!
+> - **Status**: iOS In-App-Purchase Dynamisierung, Restore Purchases Button (Shop + Settings), Background Audio in Info.plist & AppDelegate integriert und nativer Xcode-Build erfolgreich. Vor Beginn auf dem Windows-PC muss zwingend `git pull origin main` ausgeführt werden!
 
 ---
 

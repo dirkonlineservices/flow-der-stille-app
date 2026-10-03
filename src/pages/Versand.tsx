@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, Zap, ShieldCheck, Download, Globe, CreditCard, Headphones, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -135,8 +135,8 @@ export default function Versand() {
           <ul className="list-disc list-inside pl-2 space-y-1 text-sm">
             <li><strong>PayPal</strong> (inkl. PayPal Guthaben, Lastschrift, Kreditkarte)</li>
             <li><strong>Kreditkarte / Debitkarte</strong> (Visa, Mastercard, American Express via PayPal Checkout)</li>
-            <li><strong>Google Play In-App-Kauf</strong> (beim Kauf über die Android-App)</li>
-            <li><strong>Kostenfreie Anwendungen:</strong> 0,00 € Sofort-Freischaltung ohne Bezahldaten</li>
+            <li><strong>In-App-Kauf (Google Play &amp; Apple App Store)</strong> (beim Kauf über die native Android- oder iOS-App)</li>
+            <li><strong>Kostenfreie Anwendungen:</strong> 0,00&nbsp;€ Sofort-Freischaltung ohne Bezahldaten</li>
           </ul>
         </section>
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key, ExternalLink } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key, ExternalLink, RotateCcw } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
-import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer } from '../lib/billing';
+import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer, getStoreName, isIOSApp } from '../lib/billing';
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
@@ -1342,8 +1342,11 @@ export default function PremiumShopDashboard() {
 }
 
 function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
+  const storeName = getStoreName();
   const [storeReady, setStoreReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreFeedback, setRestoreFeedback] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<PurchaseToastData>({
@@ -1372,6 +1375,25 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     };
   }, [produkt.id]);
 
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    setRestoreFeedback(null);
+    try {
+      const err = await BillingService.restorePurchases();
+      if (err) {
+        setRestoreFeedback(err);
+      } else {
+        setRestoreFeedback(`Käufe über ${storeName} werden synchronisiert...`);
+        await onSuccess();
+      }
+    } catch (e: any) {
+      setRestoreFeedback(e?.message || 'Wiederherstellung fehlgeschlagen.');
+    } finally {
+      setIsRestoring(false);
+      setTimeout(() => setRestoreFeedback(null), 6000);
+    }
+  };
+
   const handlePurchase = async () => {
     if (!acceptedTerms) {
       setError("Bitte stimme vor dem Kauf dem Widerrufsverzicht zu.");
@@ -1392,10 +1414,10 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         );
 
         if (isOwnedMsg) {
-          setError("Kauf in Google Play gefunden. Schalte Inhalte frei...");
+          setError(`Kauf im ${storeName} gefunden. Schalte Inhalte frei...`);
           
           try {
-            let purchaseToken = 'GPLAY_OWNED_' + Date.now();
+            let purchaseToken = (isIOSApp() ? 'APPLE_OWNED_' : 'GPLAY_OWNED_') + Date.now();
             try {
               const CdvPurchase = (window as any).CdvPurchase;
               if (CdvPurchase && CdvPurchase.store) {
@@ -1434,23 +1456,23 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
             setToast({
               show: true,
               type: 'cancelled',
-              title: 'Google Play Kauf abgebrochen',
+              title: `${storeName} Kauf abgebrochen`,
               productTitle: produkt?.titel,
-              message: 'Du hast den Bezahlvorgang in Google Play abgebrochen. Es wurde kein Betrag von deinem Google-Konto abgebucht.'
+              message: `Du hast den Bezahlvorgang in ${storeName} abgebrochen. Es wurde kein Betrag abgebucht.`
             });
             reportAbandonedCheckout({
               produkt,
-              paymentMethod: 'Google Play',
+              paymentMethod: storeName,
               userEmail: user?.email,
-              reason: 'In Google Play auf Abbrechen geklickt'
+              reason: `In ${storeName} auf Abbrechen geklickt`
             });
           } else {
             setToast({
               show: true,
               type: 'failed',
-              title: 'Google Play Kauf nicht möglich',
+              title: `${storeName} Kauf nicht möglich`,
               productTitle: produkt?.titel,
-              message: 'Der Bezahlvorgang konnte über den Play Store nicht durchgeführt werden. Es wurde kein Geld abgebucht.',
+              message: `Der Bezahlvorgang konnte über ${storeName} nicht durchgeführt werden. Es wurde kein Geld abgebucht.`,
               showSupportLink: true
             });
           }
@@ -1462,7 +1484,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       setToast({
         show: true,
         type: 'failed',
-        title: 'Google Play Kauf fehlgeschlagen',
+        title: `${storeName} Kauf fehlgeschlagen`,
         productTitle: produkt?.titel,
         message: err?.message || 'Der Bezahlvorgang konnte nicht gestartet werden. Es wurde kein Geld abgebucht.',
         showSupportLink: true
@@ -1488,7 +1510,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('already owned') || lower.includes('bereits gekauft') || lower.includes('kauf gefunden')) {
       return {
-        text: 'Kauf in Google Play gefunden. Schalte Inhalte frei...',
+        text: `Kauf im ${storeName} gefunden. Schalte Inhalte frei...`,
         isInfo: true,
         showSupport: false
       };
@@ -1496,7 +1518,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('item_unavailable') || lower.includes('not_found') || lower.includes('nicht verfügbar') || lower.includes('nicht gefunden') || lower.includes('unavailable')) {
       return {
-        text: 'Dieses Produkt ist derzeit im Google Play Store noch nicht verfügbar oder wird gerade geprüft.',
+        text: `Dieses Produkt ist derzeit im ${storeName} noch nicht verfügbar oder wird gerade geprüft.`,
         isInfo: false,
         showSupport: true
       };
@@ -1504,7 +1526,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('network') || lower.includes('connection') || lower.includes('verbindung')) {
       return {
-        text: 'Verbindungsfehler zum Google Play Store. Bitte prüfe deine Internetverbindung.',
+        text: `Verbindungsfehler zu ${storeName}. Bitte prüfe deine Internetverbindung.`,
         isInfo: false,
         showSupport: false
       };
@@ -1545,7 +1567,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
           {errorInfo.showSupport && (
             <div className="mt-2 text-center">
               <a
-                href={`mailto:hallo@flow-der-stille.de?subject=${encodeURIComponent(`Kundenservice-Anfrage: Produkt "${produkt.titel}"`)}&body=${encodeURIComponent(`Hallo Flow der Stille Team,\n\nich möchte gerne das Produkt "${produkt.titel}" (ID: ${produkt.id}) kaufen, erhalte aber im App Store folgende Rückmeldung:\n${error}\n\nBitte helft mir beim Kauf/Freischalten.`)}`}
+                href={`mailto:hallo@flow-der-stille.de?subject=${encodeURIComponent(`Kundenservice-Anfrage: Produkt "${produkt.titel}"`)}&body=${encodeURIComponent(`Hallo Flow der Stille Team,\n\nich möchte gerne das Produkt "${produkt.titel}" (ID: ${produkt.id}) kaufen, erhalte aber im Store folgende Rückmeldung:\n${error}\n\nBitte helft mir beim Kauf/Freischalten.`)}`}
                 className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline font-semibold pt-1"
               >
                 <Mail size={14} />
@@ -1561,14 +1583,33 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-        <span>{storeReady ? `Über Google Play kaufen (${produkt.preis} €)` : 'Verbinde Play Store...'}</span>
+        <span>{storeReady ? <>Über {storeName} kaufen (<span className="whitespace-nowrap">{produkt.preis}&nbsp;€</span>)</> : `Verbinde ${storeName}...`}</span>
       </button>
+
       <div className="text-center mt-3 text-[11px] text-[var(--text-muted)] leading-relaxed">
         <span className="font-semibold text-emerald-800 dark:text-emerald-400">📱 Sofort-Freischaltung auf diesem Gerät:</span>
         <span className="block mt-0.5 text-[10px]">
-          Du kannst diesen Titel direkt ohne Registrierung über Google Play kaufen und dauerhaft in dieser App anhören. Möchtest du deine Inhalte später auch im Browser auf dem PC nutzen, kannst du dich jederzeit nachträglich kostenlos mit 1 Klick anmelden.
+          Du kannst diesen Titel direkt ohne Registrierung über {storeName} kaufen und dauerhaft in dieser App anhören. Möchtest du deine Inhalte später auch im Browser auf dem PC nutzen, kannst du dich jederzeit nachträglich kostenlos mit 1 Klick anmelden.
         </span>
       </div>
+
+      {/* 🔄 Apple App Store & Google Play: Käufe wiederherstellen Button */}
+      <button
+        type="button"
+        onClick={handleRestore}
+        disabled={isRestoring}
+        className="mt-3.5 text-xs text-[var(--accent)] hover:underline inline-flex items-center gap-1.5 font-medium cursor-pointer"
+        title={`Bereits über ${storeName} erworben? Hier tippen, um deinen Kauf wiederherzustellen.`}
+      >
+        <RotateCcw size={13} className={isRestoring ? "animate-spin" : ""} />
+        <span>{isRestoring ? "Käufe werden geprüft..." : "Bereits gekauft? Käufe wiederherstellen"}</span>
+      </button>
+
+      {restoreFeedback && (
+        <div className="mt-2 w-full text-[11px] text-center text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-fadeIn">
+          {restoreFeedback}
+        </div>
+      )}
 
       {/* Floating Purchase Toast Notification */}
       <PurchaseToast 

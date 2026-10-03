@@ -46,7 +46,7 @@ export default function AGB() {
         <section>
           <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">4. Preise und Zahlungsbedingungen</h2>
           <p>4.1. Die auf der Plattform angegebenen Preise sind Endpreise. Aufgrund der Anwendung der Kleinunternehmerregelung gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen und berechnet.</p>
-          <p className="mt-2">4.2. Dem Kunden stehen die auf der Plattform jeweils angegebenen Zahlungsmethoden zur Verfügung (z. B. PayPal, Google Play In-App Kauf).</p>
+          <p className="mt-2">4.2. Dem Kunden stehen die auf der Plattform jeweils angegebenen Zahlungsmethoden zur Verfügung (z. B. PayPal, Google Play &amp; Apple App Store In-App Kauf).</p>
           <p className="mt-2">4.3. Die Zahlung ist unmittelbar mit Vertragsschluss fällig. Die digitalen Inhalte werden erst nach erfolgreicher Autorisierung der Zahlung freigeschaltet.</p>
         </section>
 
