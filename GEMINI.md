@@ -2,13 +2,17 @@
 
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
-> - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 03.10.2026, 11:15 Uhr
+> - **Zuletzt bearbeiteter Rechner**: 💻 Windows-PC
+> - **Letzter Stand**: 04.10.2026, 11:10 Uhr
 > - **Branch**: `main`
-> - **Status**: iOS In-App-Purchase Dynamisierung, Restore Purchases Button (Shop + Settings), Background Audio in Info.plist & AppDelegate integriert und nativer Xcode-Build erfolgreich. Vor Beginn auf dem Windows-PC muss zwingend `git pull origin main` ausgeführt werden!
+> - **Status**: Live-Performance Durchbruch: DNS bereinigt (tote IP eliminiert, Latenz von 20s auf 0,18s gesenkt), Lighthouse Performance 98 / Best Practices 100 / SEO 100. Font-Preload für inter-700 integriert. Vor Beginn auf dem Mac muss zwingend `git pull origin main` ausgeführt werden!
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 03.10.2026, 11:20 UHR):
-> 1. **Sicherheitsblock & Workflow-Regeln**: Geräte-Synchronisation zwischen MacBook und Windows-PC verbindlich an oberster Stelle in `GEMINI.md` integriert.
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 04.10.2026, 11:10 UHR):
+> 1. **DNS-Bereinigung & 20s-Timeout Behebung**: Tote IP `147.79.72.156` und Hostinger-CDN CNAME in Cloudflare gelöscht, direkter A-Record auf LiteSpeed `82.198.228.90` gesetzt. Ladezeit von 20.297 ms auf unter 200 ms gesenkt (98,8% schneller!).
+> 2. **Lighthouse Core Web Vitals**: Performance 98, Best Practices 100, SEO 100, Barrierefreiheit 93, Agentisches Browsing 3/3 (FCP: 0,8s, LCP: 0,9s, TBT: 70ms, CLS: 0,04).
+> 3. **Critical Request Chain Font-Preload**: In `index.html` Preload für `inter-v20-latin-700.woff2` ergänzt, um Schriftarten-Kette im Rendering aufzulösen.
+> 4. **Agentur Case Study**: Vollständiger Bericht `agentur-case-study-flow-der-stille.md` für Blog und Referenz erstellt.
+> 5. **iOS In-App-Purchase & Background Audio**: In `billing.ts`, `Info.plist` und `AppDelegate.swift` integriert (Xcode Simulator Build validiert).
 > 2. **iOS Background Audio**: In `ios/App/App/Info.plist` den Modus `UIBackgroundModes` mit `audio` ergänzt und Sprache auf `de` gesetzt.
 > 3. **iOS AppDelegate Audio-Session**: In `ios/App/App/AppDelegate.swift` `AVAudioSession` mit Kategorie `.playback` aktiviert (Audios laufen bei gesperrtem Bildschirm und Stummschaltung weiter).
 > 4. **In-App-Kauf Dynamisierung**: In `src/components/PremiumDashboard.tsx` (`GooglePlayCheckoutButton`) alle Store-Texte dynamisch über `getStoreName()` (App Store / Google Play) formatiert.
