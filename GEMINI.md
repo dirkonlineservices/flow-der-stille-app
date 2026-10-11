@@ -27,11 +27,22 @@
 > 5. **In-App-Käufe (Ruhe-Shop)**:
 >    - Erstes Produkt `fds_selbsthypnose_selbstbewusstsein` vorbereitet (Typ: Nicht-verbrauchsartikel, 1,99 €).
 >
-> ### 🎯 NÄCHSTE SCHRITTE:
-> 1. **TestFlight auf iPhone testen**:
->    - TestFlight-App auf beliebigem iPhone/iPad öffnen und Flow der Stille installieren & testen.
-> 2. **In-App-Käufe im App Store Connect (Ruhe-Shop)**:
->    - Produkte (`fds_...`) im App Store Connect final hinterlegen und bei TestFlight verifizieren.
+> ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):
+> 1. **📱 Sobald das Apple-Testgerät da ist (kommende Woche)**:
+>    - Apple TestFlight App auf dem iPhone/iPad installieren.
+>    - „Flow der Stille“ Build 1.0 (6) installieren und testen:
+>      - Audio-Streaming & Hintergrund-Wiedergabe (bei gesperrtem Bildschirm)
+>      - „Sign in with Apple“ Login & Registrierung live verifizieren
+>      - Mediathek- & Offline-Funktionen prüfen
+> 2. **🛒 In-App-Käufe im App Store Connect (Ruhe-Shop)**:
+>    - Alle Store-Produkte aus `billing.ts` als *Nicht-verbrauchsartikel* hinterlegen:
+>      - Selbsthypnosen & Meditationen (1,99 €): `fds_selbsthypnose_selbstbewusstsein`, `fds_herzoeffnung_meditation`, `fds_meditation_loslassen`, `fds_selbsthypnose_gesunde_ernaehrung`, `fds_selbsthypnose_fokus_absolute_konzentration`, `fds_herzkompass_meditation`, `fds_meditation_inneres_kind`, `fds_meditation_innere_ruhe`, `fds_pmr_basis`, `fds_gefuehrte_atemuebung`.
+>      - Hörbücher (4,99 €, Steuerkategorie Hörbücher): `fds_mensch_sein`, `fds_schmetterling`, `fds_seele_wind`.
+>    - Prüfungs-Screenshots für die In-App-Käufe direkt auf dem echten iPhone im Ruhe-Shop aufnehmen und hochladen.
+> 3. **🚀 Finaler App Store Release (Oktober 2026)**:
+>    - Offizielle App Store Screenshots (iPhone 6.9" / 6.5") erstellen und hochladen.
+>    - Werbetext, App-Beschreibung, Suchbegriffe (Keywords) und Support-URL hinterlegen.
+>    - TestFlight Build & In-App-Käufe verknüpfen und zur offiziellen Apple-Prüfung (App Review) einreichen.
 
 ---
 
