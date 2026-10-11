@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 11.10.2026, 09:12 Uhr
+> - **Letzter Stand**: 11.10.2026, 09:20 Uhr
 > - **Branch**: `main`
 > - **Status**: App Store Connect App angelegt, Altersfreigabe (9+), Preise (Kostenlos) und App-Datenschutz fertig konfiguriert. Xcode Cloud mit GitHub verbunden. Entitlements für Sign in with Apple und ci_scripts für automatisches Xcode Cloud TestFlight-Deployment integriert.
 >
