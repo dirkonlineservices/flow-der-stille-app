@@ -3,35 +3,30 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 11.10.2026, 08:00 Uhr
+> - **Letzter Stand**: 11.10.2026, 09:05 Uhr
 > - **Branch**: `main`
-> - **Status**: "Sign in with Apple" ist vollständig eingerichtet, mit Supabase verknüpft und live verifiziert (HTTP 302 Redirect zu Apple ID Servern aktiv). Nächster Schritt: App in App Store Connect anlegen.
+> - **Status**: App Store Connect App angelegt, Altersfreigabe (9+), Preise (Kostenlos) und App-Datenschutz fertig konfiguriert. Xcode Cloud mit GitHub verbunden. Entitlements für Sign in with Apple und ci_scripts für automatisches Xcode Cloud TestFlight-Deployment integriert.
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 08:00 UHR):
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 09:05 UHR):
 > 1. **"Sign in with Apple" Vollintegration (Frontend + Backend)**:
->    - `src/pages/Login.tsx`: Apple SSO-Button und `handleAppleSignIn` integriert.
->    - `src/pages/Register.tsx`: Apple SSO-Button und `handleAppleSignUp` integriert.
->    - `src/components/QuickSocialUnlockBox.tsx`: Apple SSO 1-Klick-Button für alle Mediathek-, Ruhe-Shop-, Hörbuch- und Detailseiten integriert.
->    - `src/components/FullAudioRegistrationModal.tsx`: Apple SSO 1-Klick-Button in Stimmproben-Modal integriert.
-> 2. **Apple Developer Portal Setup**:
->    - App ID (`app.flowderstille.de`) mit Capability "Sign in with Apple" registriert.
->    - Services ID (`app.flowderstille.de.service`) mit Domain `flow-der-stille.de` und Supabase-Callback konfiguriert.
->    - Apple Auth Key (`AuthKey_S3DUU52HSB.p8`) mit Key ID `S3DUU52HSB` erstellt.
-> 3. **Supabase Provider Konfiguration**:
->    - Sign in with Apple aktiviert mit Client IDs `app.flowderstille.de.service, app.flowderstille.de` und signiertem ES256 Secret JWT.
->    - Live-Test des Supabase OAuth Authorize-Endpunkts erfolgreich mit Redirect auf `appleid.apple.com` bestätigt.
-> 4. **iOS Deep Link URL Scheme & Xcode Build**:
->    - `CFBundleURLTypes` mit Scheme `app.flowderstille.de` in `Info.plist` registriert.
->    - Nativer iOS-Simulator Build erfolgreich (`BUILD SUCCEEDED`).
+>    - Live verifiziert: HTTP 302 Redirect zu Apple ID Servern aktiv.
+>    - `App.entitlements` mit `com.apple.developer.applesignin` in Xcode Target eingebunden.
+> 2. **App Store Connect Voll-Setup**:
+>    - App `Flow der Stille` (`app.flowderstille.de`, SKU `fds-app-01`, Apple ID `6821544372`) erstellt.
+>    - Altersfreigabe auf 9+ (Wellness/Gesundheit) festgelegt.
+>    - Preise auf Kostenlos (0 €) mit In-App-Käufen eingestellt.
+>    - App-Datenschutz vollständig veröffentlicht (kein Tracking, saubere App-Funktionalität).
+> 3. **Xcode Cloud CI/CD Setup**:
+>    - Xcode Cloud mit GitHub verknüpft.
+>    - `ci_scripts/ci_post_clone.sh` für Node.js 20, npm install, build und cap sync ios erstellt.
+>    - Xcode Signing auf Team Dirk Schmetzer (`CUKDXQLBF9`) automatisch konfiguriert.
 >
 > ### 🎯 NÄCHSTE SCHRITTE:
-> 1. **App Store Connect Setup**:
->    - App `app.flowderstille.de` in App Store Connect (`appstoreconnect.apple.com`) anlegen.
->    - In-App-Produkte (`fds_...`) anlegen.
-> 2. **Xcode Signing & Capability**:
->    - Team Dirk Schmetzer in Xcode hinterlegen.
->    - Capability "Sign in with Apple" in Xcode aktivieren.
-> 3. **TestFlight / Erstes Release**.
+> 1. **TestFlight Build über Xcode Cloud / Xcode Archive**:
+>    - Ersten Build in Xcode Cloud starten bzw. Push triggern.
+>    - Build in TestFlight auf echtem iPhone installieren und testen.
+> 2. **In-App-Produkte (Ruhe-Shop)**:
+>    - Produkte (`fds_...`) im App Store Connect eintragen.
 
 ---
 
