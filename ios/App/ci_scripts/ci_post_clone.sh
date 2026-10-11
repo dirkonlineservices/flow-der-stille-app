@@ -2,10 +2,11 @@
 set -e
 
 export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 echo ">>> Xcode Cloud post-clone starting..."
 
-# 1. Check Node.js
+# 1. Install Node.js if not available
 if ! command -v node &> /dev/null; then
     echo ">>> Installing Node.js via Homebrew..."
     brew install node@20
@@ -15,17 +16,18 @@ fi
 echo "Node version: $(node -v)"
 echo "NPM version: $(npm -v)"
 
-# 2. Move to project root
-# If running from ios/App/ci_scripts:
-if [ -f "../../package.json" ]; then
+# 2. Move to project root repository
+if [ -n "$CI_PRIMARY_REPOSITORY_PATH" ]; then
+    cd "$CI_PRIMARY_REPOSITORY_PATH"
+elif [ -n "$CI_WORKSPACE" ]; then
+    cd "$CI_WORKSPACE"
+elif [ -f "../../package.json" ]; then
     cd ../..
-elif [ -f "package.json" ]; then
-    echo "Already in root"
 elif [ -f "../package.json" ]; then
     cd ..
 fi
 
-echo "Current dir: $(pwd)"
+echo "Current working dir: $(pwd)"
 
 # 3. Install NPM dependencies
 echo ">>> Installing npm dependencies..."
@@ -35,7 +37,7 @@ npm install --legacy-peer-deps
 echo ">>> Building web assets..."
 npm run build
 
-# 5. Sync Capacitor iOS
+# 5. Sync Capacitor iOS project
 echo ">>> Syncing Capacitor iOS..."
 npx cap sync ios
 
