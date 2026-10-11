@@ -3,29 +3,32 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 11.10.2026, 09:20 Uhr
+> - **Letzter Stand**: 11.10.2026, 10:20 Uhr
 > - **Branch**: `main`
-> - **Status**: App Store Connect App angelegt, Altersfreigabe (9+), Preise (Kostenlos) und App-Datenschutz fertig konfiguriert. Xcode Cloud mit GitHub verbunden. Entitlements für Sign in with Apple und ci_scripts für automatisches Xcode Cloud TestFlight-Deployment integriert.
+> - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live, verarbeitet und steht für interne Tester bereit („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert.
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 09:05 UHR):
-> 1. **"Sign in with Apple" Vollintegration (Frontend + Backend)**:
->    - Live verifiziert: HTTP 302 Redirect zu Apple ID Servern aktiv.
->    - `App.entitlements` mit `com.apple.developer.applesignin` in Xcode Target eingebunden.
-> 2. **App Store Connect Voll-Setup**:
->    - App `Flow der Stille` (`app.flowderstille.de`, SKU `fds-app-01`, Apple ID `6821544372`) erstellt.
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:20 UHR):
+> 1. **TestFlight Release 1.0 (6) Live**:
+>    - Build 1.0 (6) erfolgreich in Apple TestFlight veröffentlicht.
+>    - Interne Testgruppe „Dirk Test“ mit Dirk Schmetzer angelegt und verknüpft.
+>    - Export Compliance gelöst und mit `<key>ITSAppUsesNonExemptEncryption</key><false/>` in `Info.plist` für künftige Builds automatisiert.
+> 2. **Vollautomatisches Xcode Cloud CI/CD**:
+>    - Xcode Cloud mit GitHub verbunden.
+>    - `ci_scripts/ci_post_clone.sh` optimiert: Node 22+ via Homebrew, `npm install --legacy-peer-deps --ignore-scripts` (keine Server-C++-Kompilierung von better-sqlite3 nötig), automatischer Vite Web-Build und Capacitor iOS Sync.
+>    - Workflow auf „Archivieren (TestFlight)“ umgestellt.
+> 3. **"Sign in with Apple" Vollintegration**:
+>    - Live verifiziert (HTTP 302 Redirect zu Apple ID Servern).
+>    - `App.entitlements` mit `com.apple.developer.applesignin` eingebunden.
+> 4. **App Store Connect Voll-Setup**:
+>    - App `Flow der Stille` (`app.flowderstille.de`, Apple ID `6821544372`) eingerichtet.
 >    - Altersfreigabe auf 9+ (Wellness/Gesundheit) festgelegt.
 >    - Preise auf Kostenlos (0 €) mit In-App-Käufen eingestellt.
->    - App-Datenschutz vollständig veröffentlicht (kein Tracking, saubere App-Funktionalität).
-> 3. **Xcode Cloud CI/CD Setup**:
->    - Xcode Cloud mit GitHub verknüpft.
->    - `ci_scripts/ci_post_clone.sh` für Node.js 20, npm install, build und cap sync ios erstellt.
->    - Xcode Signing auf Team Dirk Schmetzer (`CUKDXQLBF9`) automatisch konfiguriert.
+>    - App-Datenschutz vollständig veröffentlicht.
 >
 > ### 🎯 NÄCHSTE SCHRITTE:
-> 1. **TestFlight Build über Xcode Cloud / Xcode Archive**:
->    - Ersten Build in Xcode Cloud starten bzw. Push triggern.
->    - Build in TestFlight auf echtem iPhone installieren und testen.
-> 2. **In-App-Produkte (Ruhe-Shop)**:
+> 1. **TestFlight auf iPhone testen**:
+>    - TestFlight-App auf beliebigem iPhone/iPad öffnen und Flow der Stille installieren & testen.
+> 2. **In-App-Käufe im App Store Connect (Ruhe-Shop)**:
 >    - Produkte (`fds_...`) im App Store Connect eintragen.
 
 ---
