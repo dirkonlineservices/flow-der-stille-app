@@ -3,11 +3,11 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 11.10.2026, 10:20 Uhr
+> - **Letzter Stand**: 11.10.2026, 10:40 Uhr
 > - **Branch**: `main`
-> - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live, verarbeitet und steht für interne Tester bereit („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert.
+> - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live und verarbeitet („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert. Erstes In-App-Kauf Produkt vorbereitet.
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:20 UHR):
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
 > 1. **TestFlight Release 1.0 (6) Live**:
 >    - Build 1.0 (6) erfolgreich in Apple TestFlight veröffentlicht.
 >    - Interne Testgruppe „Dirk Test“ mit Dirk Schmetzer angelegt und verknüpft.
@@ -24,12 +24,14 @@
 >    - Altersfreigabe auf 9+ (Wellness/Gesundheit) festgelegt.
 >    - Preise auf Kostenlos (0 €) mit In-App-Käufen eingestellt.
 >    - App-Datenschutz vollständig veröffentlicht.
+> 5. **In-App-Käufe (Ruhe-Shop)**:
+>    - Erstes Produkt `fds_selbsthypnose_selbstbewusstsein` vorbereitet (Typ: Nicht-verbrauchsartikel, 1,99 €).
 >
 > ### 🎯 NÄCHSTE SCHRITTE:
 > 1. **TestFlight auf iPhone testen**:
 >    - TestFlight-App auf beliebigem iPhone/iPad öffnen und Flow der Stille installieren & testen.
 > 2. **In-App-Käufe im App Store Connect (Ruhe-Shop)**:
->    - Produkte (`fds_...`) im App Store Connect eintragen.
+>    - Produkte (`fds_...`) im App Store Connect final hinterlegen und bei TestFlight verifizieren.
 
 ---
 
