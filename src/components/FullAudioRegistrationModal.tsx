@@ -51,7 +51,7 @@ export default function FullAudioRegistrationModal({
     navigate(`/anmelden?redirectTo=${encodeURIComponent(targetPath)}`);
   };
 
-  const handleSocialSignIn = async (provider: 'facebook' | 'google') => {
+  const handleSocialSignIn = async (provider: 'facebook' | 'google' | 'apple') => {
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({ 
         event: 'login_attempt', 
@@ -169,11 +169,22 @@ export default function FullAudioRegistrationModal({
 
           <div className="space-y-2.5 pt-3 border-t border-[var(--border)]">
             {/* 1-Klick Social Quick Login im dezenten CI-Stil */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleSocialSignIn('apple')}
+                className="w-full py-2.5 px-3 rounded-xl bg-black hover:bg-neutral-900 border border-black dark:border-neutral-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer"
+              >
+                <svg className="w-3.5 h-3.5 fill-white shrink-0" viewBox="0 0 24 24">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.85.94-2.94-.92.04-2.03.62-2.69 1.39-.58.67-1.09 1.76-.95 2.82 1.03.08 2.07-.5 2.7-1.27z"/>
+                </svg>
+                <span>Mit Apple 1-Klick</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => handleSocialSignIn('google')}
-                className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] font-semibold text-xs flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -187,7 +198,7 @@ export default function FullAudioRegistrationModal({
               <button
                 type="button"
                 onClick={() => handleSocialSignIn('facebook')}
-                className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] hover:border-[#1877F2]/60 text-[var(--text-main)] font-semibold text-xs flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="w-full py-2.5 px-3 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-card)] border border-[var(--border)] hover:border-[#1877F2]/60 text-[var(--text-main)] font-semibold text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 fill-[#1877F2] shrink-0" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>

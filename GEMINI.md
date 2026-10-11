@@ -2,35 +2,31 @@
 
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
-> - **Zuletzt bearbeiteter Rechner**: 💻 Windows-PC
-> - **Letzter Stand**: 04.10.2026, 11:10 Uhr
+> - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
+> - **Letzter Stand**: 11.10.2026, 07:30 Uhr
 > - **Branch**: `main`
-> - **Status**: Live-Performance Durchbruch: DNS bereinigt (tote IP eliminiert, Latenz von 20s auf 0,18s gesenkt), Lighthouse Performance 98 / Best Practices 100 / SEO 100. Font-Preload für inter-700 integriert. Vor Beginn auf dem Mac muss zwingend `git pull origin main` ausgeführt werden!
+> - **Status**: "Sign in with Apple" Frontend- & App-Integration vollständig umgesetzt. Apple Developer Account (Einzelunternehmer) beantragt und bezahlt (Wartet auf Apple-Freischaltung). Nativer iOS-Build mit Deep Link Scheme (`app.flowderstille.de`) erfolgreich validiert (`BUILD SUCCEEDED`).
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 04.10.2026, 11:10 UHR):
-> 1. **DNS-Bereinigung & 20s-Timeout Behebung**: Tote IP `147.79.72.156` und Hostinger-CDN CNAME in Cloudflare gelöscht, direkter A-Record auf LiteSpeed `82.198.228.90` gesetzt. Ladezeit von 20.297 ms auf unter 200 ms gesenkt (98,8% schneller!).
-> 2. **Lighthouse Core Web Vitals**: Performance 98, Best Practices 100, SEO 100, Barrierefreiheit 93, Agentisches Browsing 3/3 (FCP: 0,8s, LCP: 0,9s, TBT: 70ms, CLS: 0,04).
-> 3. **Critical Request Chain Font-Preload**: In `index.html` Preload für `inter-v20-latin-700.woff2` ergänzt, um Schriftarten-Kette im Rendering aufzulösen.
-> 4. **Agentur Case Study**: Vollständiger Bericht `agentur-case-study-flow-der-stille.md` für Blog und Referenz erstellt.
-> 5. **iOS In-App-Purchase & Background Audio**: In `billing.ts`, `Info.plist` und `AppDelegate.swift` integriert (Xcode Simulator Build validiert).
-> 2. **iOS Background Audio**: In `ios/App/App/Info.plist` den Modus `UIBackgroundModes` mit `audio` ergänzt und Sprache auf `de` gesetzt.
-> 3. **iOS AppDelegate Audio-Session**: In `ios/App/App/AppDelegate.swift` `AVAudioSession` mit Kategorie `.playback` aktiviert (Audios laufen bei gesperrtem Bildschirm und Stummschaltung weiter).
-> 4. **In-App-Kauf Dynamisierung**: In `src/components/PremiumDashboard.tsx` (`GooglePlayCheckoutButton`) alle Store-Texte dynamisch über `getStoreName()` (App Store / Google Play) formatiert.
-> 5. **"Käufe wiederherstellen" (Restore Purchases)**:
->    - Im Ruhe-Shop (`PremiumDashboard.tsx`) Button *„Bereits gekauft? Käufe wiederherstellen“* direkt unter dem Kaufbutton integriert.
->    - In den Kontoeinstellungen (`src/pages/Settings.tsx`) eigene Karte *„In-App-Käufe wiederherstellen ({getStoreName()})“* eingebaut.
-> 6. **Rechtliche Zahlungsarten**: In `src/pages/AGB.tsx` und `src/pages/Versand.tsx` Apple App Store In-App-Kauf als offizielle Zahlungsart ergänzt.
-> 7. **Build & Verifikation**: Web-Build (`vite build`), Capacitor-Sync (`npx cap sync ios`) und nativer Xcode-Simulator-Build (`xcodebuild`) erfolgreich und fehlerfrei validiert (`BUILD SUCCEEDED`).
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 07:30 UHR):
+> 1. **"Sign in with Apple" Code-Integration**:
+>    - `src/pages/Login.tsx`: Apple SSO-Button und `handleAppleSignIn` integriert.
+>    - `src/pages/Register.tsx`: Apple SSO-Button und `handleAppleSignUp` integriert.
+>    - `src/components/QuickSocialUnlockBox.tsx`: Apple SSO 1-Klick-Button für alle Mediathek-, Ruhe-Shop-, Hörbuch- und Detailseiten integriert.
+>    - `src/components/FullAudioRegistrationModal.tsx`: Apple SSO 1-Klick-Button in Stimmproben-Modal integriert.
+> 2. **iOS Deep Link URL Scheme**: In `ios/App/App/Info.plist` `CFBundleURLTypes` mit Scheme `app.flowderstille.de` registriert, damit OAuth-Rücksprünge aus dem Safari/System-Browser direkt in die App leiten.
+> 3. **Apple Developer Account**: Account als Einzelunternehmer beantragt und bezahlt (99 €). Status aktuell bei Apple in Bearbeitung ("Enroll").
+> 4. **Build & Verifikation**: Web-Build (`npm run build`), Capacitor-Sync (`npx cap sync ios`) und nativer Xcode-Simulator-Build (`xcodebuild`) erfolgreich und fehlerfrei validiert (`BUILD SUCCEEDED`).
 >
-> ### 🎯 NÄCHSTE SCHRITTE FÜR DIE NÄCHSTE SESSION:
-> 1. **„Sign in with Apple“ einrichten** (App Store Guideline 4.8):
->    - Services ID & Private Key (.p8) im Apple Developer Portal erstellen.
->    - Supabase Auth Provider für Apple konfigurieren.
->    - Xcode Capability „Sign in with Apple“ aktivieren und UI-Buttons (`QuickSocialUnlockBox.tsx`, `Login.tsx`, `Register.tsx`) integrieren.
-> 2. **App Store Connect Setup**:
->    - App `app.flowderstille.de` in App Store Connect registrieren.
->    - Non-Consumable IAP-Produkte (`fds_...`) und Sandbox-Test-Nutzer anlegen.
-> 3. **Test auf echtem iPhone / TestFlight**.
+> ### 🎯 NÄCHSTE SCHRITTE (SOBALD APPLE DEVELOPER ACCOUNT AKTIVIERT IST):
+> 1. **Apple Developer Portal & Supabase**:
+>    - App ID (`app.flowderstille.de`) mit Capability "Sign in with Apple" im Developer Portal anlegen.
+>    - Services ID & Private Key (.p8) für Supabase Auth anlegen.
+>    - Apple Auth Provider im Supabase Dashboard konfigurieren.
+> 2. **Xcode Capability**: Capability "Sign in with Apple" in Xcode aktivieren.
+> 3. **App Store Connect**:
+>    - App in App Store Connect registrieren.
+>    - In-App-Produkte (`fds_...`) und Sandbox-Test-Nutzer anlegen.
+> 4. **TestFlight / Erstes Release**.
 
 ---
 
