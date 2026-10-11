@@ -6,11 +6,13 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 echo ">>> Xcode Cloud post-clone starting..."
 
-# 1. Install Node.js if not available
-if ! command -v node &> /dev/null; then
-    echo ">>> Installing Node.js via Homebrew..."
-    brew install node@20
-    brew link --overwrite --force node@20
+# 1. Ensure Node.js >= 22 (Capacitor requirement)
+NODE_MAJOR=$(node -v 2>/dev/null | tr -d 'v' | cut -d. -f1 || echo "0")
+if [ -z "$NODE_MAJOR" ] || [ "$NODE_MAJOR" -lt 22 ]; then
+    echo ">>> Current Node version is '$NODE_MAJOR' (< 22). Installing Node.js >= 22 via Homebrew..."
+    brew unlink node@20 2>/dev/null || true
+    brew install node
+    brew link --overwrite --force node
 fi
 
 echo "Node version: $(node -v)"
