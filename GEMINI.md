@@ -34,6 +34,7 @@
 >    - [ ] **Tag 1 – Hauptseiten**: `/`, `/meditation`, `/selbsthypnose`, `/hoerbuecher`, `/ruhe-shop`, `/hoerproben`, `/ueber-uns`, `/blog`, `/uebungen`, `/faq`
 >    - [ ] **Tag 2 – Produkte**: `/audio/selbsthypnose_besser_und_erholsamer_schlaf`, `/audio/selbsthypnose_selbstbewusstsein`, `/audio/selbsthypnose_fokus`, `/audio/selbsthypnose_ernaehrung`, `/audio/meditation_innere_ruhe`, `/audio/meditation_loslassen`, `/audio/meditation_zur_herzoeffnung`, `/audio/pmr_muskelentspannung`, `/hoerbuch/mensch_sein`, `/hoerbuch/schmetterling`
 >    - [ ] **Tag 3 – Blog & Inhalte**: `/hoerbuch/wo-die-seele-den-wind-beruehrt`, `/blog/innere-ruhe-im-alltag`, `/blog/parasympathikus-aktivieren`, `/blog/herzkohaerenz-herz-und-verstand`, `/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo`, `/blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind`, `/wissen`, `/morgen`, `/abend`, `/rezepte`
+>    - [ ] **Tag 4 – neue Beiträge**: `/blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit`, `/blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch`
 >    - (Alle URLs mit `https://flow-der-stille.de` davor.)
 > 2. **💶 Käufe seit 28.09.2026 nachtragen**: Bis zum Fix am 17.10. landeten PayPal-Käufe und Google-Play-Gastkäufe nicht in `kaeufe`. In PayPal & Google Play Console echte Zahlungen 28.09.–17.10. prüfen und ggf. über das Admin-Dashboard freischalten.
 > 3. **🍏 iOS-Käufe vor App-Store-Release prüfen**: Apple-Käufe laufen aktuell über `verify-google-play-purchase`, das nur Google-Belege prüft → eigene Apple-Verifizierung nötig.
