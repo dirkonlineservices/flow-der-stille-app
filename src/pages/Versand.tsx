@@ -164,7 +164,7 @@ export default function Versand() {
           </h2>
           <p className="text-sm">
             Unser Kundenservice steht dir jederzeit zur Seite. Schreibe uns gerne über unser{' '}
-            <Link to="/contact" className="text-[var(--color-accent-primary)] font-semibold hover:underline">
+            <Link to="/kontakt" className="text-[var(--color-accent-primary)] font-semibold hover:underline">
               Kontaktformular
             </Link>{' '}
             oder per E-Mail an{' '}

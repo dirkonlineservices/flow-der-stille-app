@@ -22,11 +22,11 @@ export default function SEO({
   const fullTitle = title.includes('Flow der Stille') ? title : `${title} | Flow der Stille`;
 
   // 🛡️ SEO-Korrektur: Canonical URLs dürfen NIEMALS Query-Strings (z.B. ?autoplay=true, ?fbclid=...) enthalten!
-  const cleanCanonicalUrl = canonicalUrl || (
-    typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}`
-      : 'https://flow-der-stille.de'
-  );
+  // Domain fest verdrahtet (nicht window.location.origin), damit beim Vorrendern (localhost) und in der App korrekte Canonicals entstehen.
+  const currentPath = typeof window !== 'undefined'
+    ? (window.location.pathname.replace(/\/+$/, '') || '/')
+    : '/';
+  const cleanCanonicalUrl = canonicalUrl || `https://flow-der-stille.de${currentPath}`;
 
   const defaultKeywords = "Meditation, geführte Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Nervensystem regulieren, Stressabbau, Stressreduktion, Selbsthypnose, Einschlafhilfe, tiefer Schlaf, Hörbuch Achtsamkeit, Hörbuch Loslassen, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Lisa, Flow der Stille";
 
@@ -42,8 +42,6 @@ export default function SEO({
         name="robots" 
         content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} 
       />
-      <meta name="google-site-verification" content="Hxvh5vEnODGC_YArOCRnJymGuAPlqPJwVCm46l2sFFo" />
-      
       {/* Canonical Tag immer sauber ohne URL-Parameter */}
       <link rel="canonical" href={cleanCanonicalUrl} />
 

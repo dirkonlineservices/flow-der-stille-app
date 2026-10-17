@@ -47,7 +47,7 @@ export default function Morning() {
           title="Sanfte Vagus-Aktivierung"
           desc="Starte nicht mit Hektik. Zwei Minuten bewusste Bauchatmung direkt nach dem Aufstehen signalisieren deinem Gehirn Sicherheit und innere Ruhe."
           icon={<Wind className="w-6 h-6 text-blue-400" />}
-          linkTo="/exercises"
+          linkTo="/uebungen"
           linkText="Zur Atemübung"
           delay={0.1}
         />

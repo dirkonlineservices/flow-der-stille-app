@@ -253,7 +253,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Akustische Frequenz-Ruhezone',
     shopAnchor: '/ruhe-shop#product-fds_gefuehrte_atemuebung',
-    landingUrl: '/exercises',
+    landingUrl: '/uebungen',
     landingLabel: 'Zu den Atemübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3'
   },
@@ -271,7 +271,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Sanfte Begleitmelodie',
     shopAnchor: '/ruhe-shop#product-fds_pmr_basis',
-    landingUrl: '/exercises',
+    landingUrl: '/uebungen',
     landingLabel: 'Zu den Körperübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/Progressive%20Muskelentspannung.mp3'
   }

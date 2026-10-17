@@ -38,7 +38,7 @@ export default function Evening() {
           title="Tief durchatmen"
           desc="Nutze die Atemführung, um dein Nervensystem herunterzufahren. Die 4-7-8 Atemtechnik eignet sich besonders gut, um in den Schlaf zu gleiten."
           icon={<Wind className="w-6 h-6 text-blue-400" />}
-          linkTo="/exercises"
+          linkTo="/uebungen"
           linkText="Zur Atemübung"
           delay={0.2}
         />
@@ -46,7 +46,7 @@ export default function Evening() {
           title="Meditation & Klänge"
           desc="Höre einer sanften Meditation oder beruhigenden Klängen zu, um Gedankenkreisen zu stoppen und den Geist auf Entspannung zu programmieren."
           icon={<Headphones className="w-6 h-6 text-purple-400" />}
-          linkTo="/learn"
+          linkTo="/wissen"
           linkText="Mehr erfahren"
           delay={0.3}
         />

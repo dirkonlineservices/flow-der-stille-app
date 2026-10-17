@@ -227,19 +227,19 @@ export default function Home() {
             "@type": "ListItem",
             "position": 1,
             "name": "Kostenlose Meditation zur Herzöffnung",
-            "url": "https://flow-der-stille.de/klangproben"
+            "url": "https://flow-der-stille.de/hoerproben"
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Kostenlose Selbsthypnose für tiefen Schlaf",
-            "url": "https://flow-der-stille.de/klangproben"
+            "url": "https://flow-der-stille.de/hoerproben"
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Geführte Atemübung zur Vagusnerv-Entspannung",
-            "url": "https://flow-der-stille.de/exercises"
+            "url": "https://flow-der-stille.de/uebungen"
           }
         ]
       }

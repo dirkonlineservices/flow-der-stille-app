@@ -135,6 +135,7 @@ export default function App() {
               <ErrorBoundary>
                 <Suspense fallback={<PageLoadingFallback />}>
                   <Routes>
+                    {/* ⚠️ Neue Top-Level-Route? Auch in public/.htaccess (Schritt 4, Routen-Liste) eintragen – sonst antwortet der Server mit 404-Status. */}
                     {/* Standard Layout mit deutscher & englischer URL-Struktur */}
                     <Route path="/" element={<Layout />}>
                       <Route index element={<Home />} />

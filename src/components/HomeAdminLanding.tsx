@@ -509,7 +509,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Link
-                  to="/klangproben?category=meditation"
+                  to="/hoerproben?category=meditation"
                   className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
                   title="Kostenlose Klangprobe für Meditationen anhören"
                 >
@@ -548,7 +548,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Link
-                  to="/klangproben?category=selbsthypnose"
+                  to="/hoerproben?category=selbsthypnose"
                   className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
                   title="Kostenlose Klangprobe für Selbsthypnosen anhören"
                 >
@@ -585,7 +585,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Link
-                  to="/klangproben?category=hoerbuch"
+                  to="/hoerproben?category=hoerbuch"
                   className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-[var(--accent)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold transition shadow-2xs flex items-center gap-1"
                   title="Kostenlose Hörbuch-Klangprobe anhören"
                 >
@@ -621,7 +621,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Link
-                  to="/klangproben?category=uebung"
+                  to="/hoerproben?category=uebung"
                   className="px-3 py-2 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-main)] text-stone-800 hover:text-emerald-800 border border-[var(--border)] hover:border-emerald-600 text-xs font-bold transition shadow-2xs flex items-center gap-1"
                   title="Kostenlose Schnupper-Klangprobe anhören"
                 >
@@ -663,7 +663,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
             <div className="flex items-center gap-2 flex-wrap self-start md:self-auto shrink-0">
               <Link
-                to="/klangproben"
+                to="/hoerproben"
                 className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <Headphones size={15} />

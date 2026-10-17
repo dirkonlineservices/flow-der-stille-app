@@ -634,7 +634,7 @@ export default function Layout() {
                 {/* Klangproben & Hörproben - zur dedizierten Landingpage */}
                 {hasHoerproben && (
                   <Link
-                    to="/klangproben"
+                    to="/hoerproben"
                     onClick={() => handleMenuClick('Klangproben')}
                     className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
                   >

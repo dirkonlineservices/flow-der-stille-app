@@ -240,7 +240,7 @@ export default function FAQ() {
         </p>
         <div>
           <Link
-            to="/contact"
+            to="/kontakt"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-sm shadow-sm hover:bg-[var(--color-accent-hover)] transition-all cursor-pointer"
           >
             <span>Kontakt aufnehmen</span>

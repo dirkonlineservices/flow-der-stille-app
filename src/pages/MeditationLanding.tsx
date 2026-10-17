@@ -417,7 +417,7 @@ export default function MeditationLanding() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Link
-              to="/exercises"
+              to="/uebungen"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
@@ -438,7 +438,7 @@ export default function MeditationLanding() {
             </Link>
 
             <Link
-              to="/exercises/pmr_basis"
+              to="/uebungen/pmr_basis"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">

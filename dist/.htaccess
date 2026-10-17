@@ -1,11 +1,59 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # 🔀 1. SEO-301-Weiterleitungen: Alt-Slugs & Alias-Adressen → genau EINE kanonische Adresse
+  #    (verhindert Duplicate Content; Ziel-Adressen = sitemap.xml)
+  RewriteRule ^(premium|shop)/?$ https://%{HTTP_HOST}/ruhe-shop [R=301,L]
+  RewriteRule ^start/?$ https://%{HTTP_HOST}/ [R=301,L]
+  RewriteRule ^audio/selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen/?$ https://%{HTTP_HOST}/audio/selbsthypnose_selbstbewusstsein [R=301,L]
+  RewriteRule ^audio/selbsthypnose_fokus&konzentration/?$ https://%{HTTP_HOST}/audio/selbsthypnose_fokus [R=301,L]
+  RewriteRule ^(exercises|atemuebungen)/?$ https://%{HTTP_HOST}/uebungen [R=301,L]
+  RewriteRule ^exercises/([^/]+)/?$ https://%{HTTP_HOST}/uebungen/$1 [R=301,L]
+  RewriteRule ^recipes/?$ https://%{HTTP_HOST}/rezepte [R=301,L]
+  RewriteRule ^recipe/([^/]+)/?$ https://%{HTTP_HOST}/rezepte/$1 [R=301,L]
+  RewriteRule ^learn/?$ https://%{HTTP_HOST}/wissen [R=301,L]
+  RewriteRule ^(about|team)/?$ https://%{HTTP_HOST}/ueber-uns [R=301,L]
+  RewriteRule ^(morning|morgenritual)/?$ https://%{HTTP_HOST}/morgen [R=301,L]
+  RewriteRule ^(evening|abendritual)/?$ https://%{HTTP_HOST}/abend [R=301,L]
+  RewriteRule ^(fragen|haeufige-fragen)/?$ https://%{HTTP_HOST}/faq [R=301,L]
+  RewriteRule ^(android-app|playstore)/?$ https://%{HTTP_HOST}/app [R=301,L]
+  RewriteRule ^contact/?$ https://%{HTTP_HOST}/kontakt [R=301,L]
+  RewriteRule ^(lieferung|versandinformationen)/?$ https://%{HTTP_HOST}/versand [R=301,L]
+  RewriteRule ^widerruf/?$ https://%{HTTP_HOST}/online-widerruf [R=301,L]
+  RewriteRule ^audiobooks/?$ https://%{HTTP_HOST}/hoerbuecher [R=301,L]
+  RewriteRule ^(meditationen|gefuehrte-meditation)/?$ https://%{HTTP_HOST}/meditation [R=301,L]
+  RewriteRule ^hypnose/?$ https://%{HTTP_HOST}/selbsthypnose [R=301,L]
+  RewriteRule ^klangproben/?$ https://%{HTTP_HOST}/hoerproben [R=301,L]
+  RewriteRule ^preise/?$ https://%{HTTP_HOST}/pakete [R=301,L]
+  RewriteRule ^gemeinschaft/?$ https://%{HTTP_HOST}/community [R=301,L]
+
+  # Abschließenden Schrägstrich entfernen (/meditation/ → /meditation)
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # App-Hülle selbst nie umschreiben (auch nicht als ErrorDocument)
   RewriteRule ^index\.html$ - [L]
+
+  # 🛑 2. Vorrender-Ordner nicht direkt aufrufbar (nur intern über Schritt 3)
+  RewriteCond %{THE_REQUEST} \s/prerender/ [NC]
+  RewriteRule ^ - [R=404,L]
+
+  # 🤖 3. Vorgerenderte Seiten (scripts/prerender.mjs): Google bekommt fertiges HTML mit Inhalt
+  RewriteCond %{DOCUMENT_ROOT}/prerender/index.html -f
+  RewriteRule ^$ /prerender/index.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/prerender/$1.html -f
+  RewriteRule ^(.+)$ /prerender/$1.html [L]
+
+  # ⚛️ 4. Bekannte App-Routen (src/index.tsx) → React-App mit Status 200
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+  RewriteRule ^(dashboard|mein-bereich|uebungen|rezepte|wissen|ueber-uns|morgen|abend|einstellungen|settings|profil|anmelden|login|einloggen|registrieren|register|passwort-vergessen|forgot-password|passwort-zuruecksetzen|reset-password|update-password|faq|app|kontakt|datenschutz|konto-loeschen|impressum|agb|rechtliches|rueckgaberichtlinie|versand|online-widerruf|danke|ruhe-shop|premium-dashboard|hoerbuch|hoerbuecher|meditation|selbsthypnose|audio|hoerproben|pakete|vorteile|angebote|community|newsletter-confirmation|newsletter-bestaetigung|newsletter-bestaetigt|confirm-newsletter|blog|admin|admin-freischalten|chat|atemchat|auth)(/.*)?$ /index.html [L]
 </IfModule>
+
+# 🚫 5. Alles Unbekannte: echter 404-Status (kein „Soft 404“) – die App zeigt trotzdem ihre 404-Seite
+ErrorDocument 404 /index.html
 
 # 🚀 GZIP / Deflate Komprimierung (Reduziert Übertragungsgröße drastisch)
 <IfModule mod_deflate.c>

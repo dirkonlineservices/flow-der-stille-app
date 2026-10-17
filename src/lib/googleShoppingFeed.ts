@@ -68,7 +68,7 @@ function getProductCanonicalUrl(prod: ProductData): string {
     return `${SITE_URL}/hoerbuch/mensch_sein`;
   }
   const anchor = prod.play_store_id || prod.id;
-  return `${SITE_URL}/premium#product-${anchor}`;
+  return `${SITE_URL}/ruhe-shop#product-${anchor}`;
 }
 
 /**

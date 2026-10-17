@@ -164,7 +164,7 @@ export default function NewsletterConfirmation() {
                   <ArrowRight size={16} />
                 </Link>
                 <Link
-                  to="/exercises"
+                  to="/uebungen"
                   className="px-6 py-3.5 bg-[var(--color-bg-alt,var(--bg-alt,#F7F6F2))] hover:bg-[var(--color-border-main,var(--border,#E3E1D9))] text-[var(--color-text-main,var(--text-main,#3D3B35))] text-sm font-medium rounded-2xl transition-all flex items-center justify-center border border-[var(--color-border-main,var(--border,#E3E1D9))]"
                 >
                   Übungen erkunden

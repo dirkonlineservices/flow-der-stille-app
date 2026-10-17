@@ -135,10 +135,10 @@ export const FriendInviteWidget: React.FC = () => {
 
   const getRecommendationLink = (cat: string) => {
     const c = (cat || '').toLowerCase();
-    if (c.includes('morgen')) return '/morgenritual';
-    if (c.includes('mittag')) return '/exercises';
-    if (c.includes('abend')) return '/evening';
-    return '/exercises';
+    if (c.includes('morgen')) return '/morgen';
+    if (c.includes('mittag')) return '/uebungen';
+    if (c.includes('abend')) return '/abend';
+    return '/uebungen';
   };
 
   const fetchData = async () => {

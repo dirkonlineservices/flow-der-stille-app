@@ -284,21 +284,21 @@ export default function Dashboard() {
               Wähle eine Übung passend zu deiner aktuellen Tageszeit:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link to="/morgenritual" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
+              <Link to="/morgen" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
                 <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
                   <Sun size={20} />
                 </div>
                 <span className="text-sm font-medium text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors">Für ein kurzes Morgenritual</span>
               </Link>
               
-              <Link to="/exercises" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
+              <Link to="/uebungen" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
                 <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
                   <Coffee size={20} />
                 </div>
                 <span className="text-sm font-medium text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors">In deiner Mittagspause</span>
               </Link>
 
-              <Link to="/evening" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
+              <Link to="/abend" className="p-4 bg-[var(--color-bg-alt)] rounded-2xl border border-[var(--color-border-main)] flex flex-col items-center justify-center text-center gap-2.5 transition-all hover:border-[var(--color-accent-primary)] hover:shadow-sm group">
                 <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 transition-transform">
                   <Moon size={20} />
                 </div>
@@ -347,7 +347,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <Link
-                to="/klangproben"
+                to="/hoerproben"
                 className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer active:scale-95"
               >
                 <Headphones size={14} />
@@ -414,7 +414,7 @@ export default function Dashboard() {
                 </button>
                 
                 <Link 
-                  to="/klangproben" 
+                  to="/hoerproben" 
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-accent-primary)] hover:underline"
                 >
                   <span>Zur großen Mediathek</span>
@@ -431,25 +431,25 @@ export default function Dashboard() {
             title={t('home.card.morning.title')} 
             description={t('home.card.morning.desc')}
             icon={<Sun className="text-amber-500" />}
-            to="/morgenritual"
+            to="/morgen"
           />
           <QuickActionCard 
             title={t('home.card.breathing.title')} 
             description={t('home.card.breathing.desc')}
             icon={<Wind className="text-blue-400" />}
-            to="/exercises"
+            to="/uebungen"
           />
           <QuickActionCard 
             title={t('home.card.meal.title')} 
             description={t('home.card.meal.desc')}
             icon={<Coffee className="text-emerald-600" />}
-            to="/recipes"
+            to="/rezepte"
           />
           <QuickActionCard 
             title={t('home.card.evening.title')} 
             description={t('home.card.evening.desc')}
             icon={<Moon className="text-indigo-400" />}
-            to="/evening"
+            to="/abend"
           />
         </div>
 

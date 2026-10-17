@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 11.10.2026, 10:40 Uhr
+> - **Letzter Stand**: 17.10.2026, 12:13 Uhr (SEO-Update: Vorrendern, 301-Weiterleitungen, echte 404-Seiten)
 > - **Branch**: `main`
 > - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live und verarbeitet („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert. Erstes In-App-Kauf Produkt vorbereitet.
 >
@@ -94,3 +94,12 @@
      - **Option 1: Express-Kauf mit Magic Link**: Ohne Passwort, ohne Registrierung, sofortige Freischaltung im Web-Player + Magic Link per E-Mail für alle weiteren Endgeräte.
      - **Option 2: Kostenloses Hörer-Konto (0 €)**: 1-Klick-Registrierung über Google, Meta (Facebook) oder E-Mail.
   3. **Für eingeloggte Nutzer (`user`)**: Kompakter Hinweis über den Express-Kauf mit Magic Link (sofortige Freischaltung im bestehenden Mediathek-Konto + E-Mail-Zugangslink für weitere Endgeräte).
+
+## 7. SEO: BUILD MIT VORRENDERN & SERVER-REGELN
+- **Web-Build immer mit `npm run build:web`** (= `npm run build` + `scripts/prerender.mjs`). Das Skript rendert jede Adresse aus `public/sitemap.xml` mit dem lokalen Chrome vor und legt das fertige HTML in `dist/prerender/` ab. Ohne diesen Schritt sieht Google wieder nur eine leere Seite.
+  - Auf dem Mac läuft es am zuverlässigsten mit `caffeinate -dimsu npm run build:web` (sonst friert der Ruhezustand den Chrome-Lauf ein).
+  - Kein Chrome gefunden? `CHROME_PATH` setzen.
+- **Neue Seite für Google** → in `public/sitemap.xml` eintragen (wird automatisch vorgerendert).
+- **Neue Top-Level-Route in `src/index.tsx`** → zusätzlich in `public/.htaccess` (Schritt 4, Routen-Liste) eintragen. Unbekannte Pfade antworten bewusst mit echtem 404-Status (verhindert „Soft 404“ in der Search Console).
+- **Alias-/Alt-Adressen** werden in `public/.htaccess` (Schritt 1) per 301 auf die kanonische Adresse umgeleitet. Interne Links immer auf die kanonische Adresse setzen (`/uebungen`, `/hoerproben`, `/ruhe-shop`, `/kontakt` …), nie auf Aliase.
+- **Live läuft kein Node-/Express-Server** (Hostinger liefert nur `dist/` aus). Weiterleitungen gehören daher in die `.htaccess`, nicht in `server.ts`.

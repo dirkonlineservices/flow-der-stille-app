@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO from './SEO';
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const NotFound = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-main)] p-4 text-center">
+      {/* 🛡️ 404-Seite niemals indexieren (verhindert „Soft 404“ in der Search Console) */}
+      <SEO title="Seite nicht gefunden" description="Diese Seite existiert leider nicht." noindex={true} />
       <h1 className="text-[var(--text-muted)] text-xl font-light mb-6">
         Dieser Raum der Stille existiert leider nicht.
       </h1>
