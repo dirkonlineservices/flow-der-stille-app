@@ -27,6 +27,8 @@
   RewriteRule ^klangproben/?$ https://%{HTTP_HOST}/hoerproben [R=301,L]
   RewriteRule ^preise/?$ https://%{HTTP_HOST}/pakete [R=301,L]
   RewriteRule ^gemeinschaft/?$ https://%{HTTP_HOST}/community [R=301,L]
+  # Atem-Chat vorübergehend ausgeblendet (302 = temporär; beim Reaktivieren diese Zeile entfernen)
+  RewriteRule ^(atemchat|chat)/?$ https://%{HTTP_HOST}/uebungen [R=302,L]
 
   # Abschließenden Schrägstrich entfernen (/meditation/ → /meditation)
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -65,7 +67,6 @@
   RewriteRule ^uebungen/box-breathing$ /prerender/uebungen/box-breathing.html [L]
   RewriteRule ^uebungen/pmr$ /prerender/uebungen/pmr.html [L]
   RewriteRule ^uebungen/neck-stretches$ /prerender/uebungen/neck-stretches.html [L]
-  RewriteRule ^atemchat$ /prerender/atemchat.html [L]
   RewriteRule ^morgen$ /prerender/morgen.html [L]
   RewriteRule ^abend$ /prerender/abend.html [L]
   RewriteRule ^rezepte$ /prerender/rezepte.html [L]

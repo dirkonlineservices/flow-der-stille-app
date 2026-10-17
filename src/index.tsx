@@ -102,8 +102,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 // NEU: Zuweisung zur richtigen Chat-Komponente
+// Atem-Chat „Aura“ vorübergehend ausgeblendet → Atemübungen. Reaktivieren: auf <AtemChat /> zurückstellen
 const ChatRoute = () => {
-  return <Navigate to="/atemchat" replace />;
+  return <Navigate to="/uebungen" replace />;
 };
 
 function ReferralCapture() {
@@ -269,7 +270,7 @@ export default function App() {
                     </Route>
 
                     {/* Spezielle Routen außerhalb des Layouts */}
-                    <Route path="/atemchat" element={<AtemChat />} />
+                    <Route path="/atemchat" element={<ChatRoute />} />
                     <Route path="/auth/callback" element={<AuthCallback />} />
 
                     <Route path="*" element={<NotFound />} />

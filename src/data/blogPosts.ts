@@ -316,7 +316,6 @@ Deshalb ist unser Versprechen unumstößlich: **Kernelemente unserer Plattform s
 * **[Kostenlose Selbsthypnose & Einschlafhilfe](/selbsthypnose):** Bewusste Trance-Impulse, um das vegetative Nervensystem herunterzufahren und erholsamen Tiefschlaf zu finden.
 * **[Kostenlose Klang- & Hörproben](/hoerproben):** Zu jedem Audioangebot kannst du vorab ausführlich und ungestört reinhören.
 * **[Atemübungen & Vagusnerv-Praxis](/uebungen):** Wissenschaftlich erprobte Techniken wie die *4-7-8 Atmung*, *Box-Atmung* und *Progressive Muskelentspannung (PMR)* stehen dir jederzeit zur Verfügung.
-* **[Interaktiver Atemraum](/atemchat):** Ein ruhiger digitaler Begleiter für die akute Entlastung bei Stressspitzen.
 
 Wir möchten Menschen genau in den Lebensphasen abholen, in denen sie Beistand und Erdung am dringendsten brauchen.
 

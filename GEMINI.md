@@ -37,7 +37,7 @@
 >    - (Alle URLs mit `https://flow-der-stille.de` davor.)
 > 2. **💶 Käufe seit 28.09.2026 nachtragen**: Bis zum Fix am 17.10. landeten PayPal-Käufe und Google-Play-Gastkäufe nicht in `kaeufe`. In PayPal & Google Play Console echte Zahlungen 28.09.–17.10. prüfen und ggf. über das Admin-Dashboard freischalten.
 > 3. **🍏 iOS-Käufe vor App-Store-Release prüfen**: Apple-Käufe laufen aktuell über `verify-google-play-purchase`, das nur Google-Belege prüft → eigene Apple-Verifizierung nötig.
-> 4. **💬 Atem-Chat „Aura“** (`/atemchat`): antwortet live nicht (`/api/chat` braucht den nicht laufenden Express-Server) → als Supabase Edge Function mit Gemini-Secret neu bauen oder ausblenden.
+> 4. **💬 Atem-Chat „Aura“** – seit 17.10. **ausgeblendet** (antwortete live nicht, `/api/chat` braucht den nicht laufenden Express-Server). Zum Reaktivieren: Edge Function mit Gemini-Secret bauen, dann in `public/.htaccess` die 302-Zeile für `atemchat|chat` entfernen, in `src/index.tsx` `/atemchat` wieder auf `<AtemChat />` stellen, Menüpunkt in `Layout.tsx` zurückholen und `/atemchat` in `public/sitemap.xml` eintragen.
 >
 > ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):
 > 1. **📱 Sobald das Apple-Testgerät da ist (kommende Woche)**:

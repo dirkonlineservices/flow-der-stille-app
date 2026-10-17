@@ -276,11 +276,7 @@ export default function Layout() {
                   Atemübungen &amp; Vagusnerv
                 </Link>
               </li>
-              <li>
-                <Link to="/atemchat" onClick={() => handleMenuClick('Interaktiver Atemraum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Interaktiver Atemraum
-                </Link>
-              </li>
+              {/* Atem-Chat „Aura“ vorübergehend ausgeblendet (braucht neues Backend, siehe GEMINI.md To-dos) */}
             </ul>
           </div>
 
