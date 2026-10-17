@@ -463,30 +463,16 @@ export default function Settings() {
 
      setDeleteLoading(true);
      try {
-        const supabase = getSupabase();
-        // 1. Delete purchases from Supabase
-        const { error: purchaseError } = await supabase
-           .from('kaeufe')
-           .delete()
-           .eq('user_id', user!.id);
-        
-        if (purchaseError) {
-           throw new Error('Fehler beim Löschen der Käufe.');
-        }
-
-        // 2. Call server API for local SQLite deletion
-        const response = await fetch('/api/user/delete', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' }
-        });
-        if (!response.ok) {
-           throw new Error('Fehler beim Löschen des lokalen Profils.');
+        // Edge Function „delete-account“: anonymisiert Käufe (Aufbewahrungspflicht), löscht Profil & Supabase-Konto
+        const { data, error: deleteError } = await getSupabase().functions.invoke('delete-account', { method: 'POST' });
+        if (deleteError || !data?.success) {
+           throw new Error('Dein Konto konnte gerade nicht gelöscht werden. Bitte versuche es erneut oder schreib uns über das Kontaktformular.');
         }
 
         (window as any).dataLayer = (window as any).dataLayer || [];
         (window as any).dataLayer.push({ event: 'account_deleted', user_id: user.id });
 
-        // 3. Optional: Sign user out of Supabase
+        // Lokale Sitzung beenden (das Konto existiert nicht mehr)
         await logout();
         navigate('/login');
      } catch (err: any) {
