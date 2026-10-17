@@ -1,6 +1,8 @@
 // @ts-nocheck
 // Supabase Edge Function: notify-new-purchase
-// Wird per Database Webhook bei INSERT auf public.kaeufe aufgerufen
+// Wird per Database Webhook (Trigger tr_notify_new_purchase) bei INSERT auf public.kaeufe aufgerufen.
+// Deploy OHNE JWT-Prüfung (--no-verify-jwt): der Trigger sendet keinen Authorization-Header.
+// Schutz vor gefälschten Aufrufen: Der Kauf wird per ID aus der Datenbank geladen – nur echte Käufe lösen Meldungen aus.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
@@ -15,7 +17,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Produkt-Namen-Mapping
+// Quelle des Kaufs aus dem order_id-Präfix ableiten (einheitliches kaeufe-Schema)
+function kaufQuelle(orderId: string = ''): string {
+  if (orderId.startsWith('GESCHENK_')) return '🎁 Admin-Freischaltung (Geschenk)'
+  if (orderId.startsWith('GPA.TEST')) return '🧪 Google Play (Testkauf)'
+  if (orderId.startsWith('GPA.')) return '🤖 Google Play'
+  if (orderId.startsWith('MOCK_')) return '🧪 Testkauf'
+  if (orderId.startsWith('VIP')) return '⭐ VIP-Zugang'
+  if (orderId.startsWith('SSO_SYNC')) return '🔄 Konto-Synchronisierung'
+  return '💳 PayPal'
+}
+
+// Produkt-Namen-Mapping (Fallback, falls produkte.titel fehlt)
 const PRODUKT_NAMEN: Record<string, string> = {
   'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte': 'Der Tag, an dem der Schmetterling erwachte (Teil 1)',
   'wo_die_seele_den_wind_beruehrt': 'Wo die Seele den Wind berührt (Teil 2)',
@@ -70,7 +83,19 @@ serve(async (req) => {
     const payload = await req.json()
 
     // Webhook-Payload: { type: 'INSERT', table: 'kaeufe', record: {...} }
-    const record = payload.record ?? payload
+    const payloadRecord = payload.record ?? payload
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
+
+    // Nur echte Käufe melden: Datensatz per ID aus der Datenbank laden (Payload wird nicht vertraut)
+    const { data: record } = payloadRecord?.id
+      ? await supabase.from('kaeufe').select('*').eq('id', payloadRecord.id).maybeSingle()
+      : { data: null }
+    if (!record) {
+      return new Response(JSON.stringify({ ignored: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
 
     const {
       user_id,
@@ -79,9 +104,12 @@ serve(async (req) => {
       waehrung = 'EUR',
       order_id,
       created_at,
+      email: kaufEmail,
     } = record
 
-    const produktName = PRODUKT_NAMEN[produkt_id] ?? produkt_id
+    const { data: produkt } = await supabase.from('produkte').select('titel').eq('id', produkt_id).maybeSingle()
+    const produktName = produkt?.titel ?? PRODUKT_NAMEN[produkt_id] ?? produkt_id
+    const quelle = kaufQuelle(order_id)
     const preisFormatiert = `${Number(preis).toFixed(2).replace('.', ',')} ${waehrung === 'EUR' ? '€' : waehrung}`
     const datum = new Date(created_at ?? Date.now()).toLocaleString('de-DE', {
       timeZone: 'Europe/Berlin',
@@ -90,9 +118,8 @@ serve(async (req) => {
     })
 
     // Käufer-E-Mail aus Supabase Auth laden
-    let kaeuferEmail = 'Unbekannt (Gast/Magic Link)'
-    if (user_id && SUPABASE_SERVICE_ROLE_KEY) {
-      const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY)
+    let kaeuferEmail = kaufEmail || 'Unbekannt (Gast/Magic Link)'
+    if (!kaufEmail && user_id) {
       const { data: userData } = await supabase.auth.admin.getUserById(user_id)
       if (userData?.user?.email) {
         kaeuferEmail = userData.user.email
@@ -106,7 +133,7 @@ serve(async (req) => {
 🎧 <b>Produkt:</b> ${produktName}
 💶 <b>Betrag:</b> ${preisFormatiert}
 👤 <b>Käufer:</b> ${kaeuferEmail}
-📋 <b>Bestell-ID:</b> <code>${order_id ?? '—'}</code>
+🏷️ <b>Quelle:</b> ${quelle}
 🕒 <b>Zeitpunkt:</b> ${datum}
     `.trim())
 

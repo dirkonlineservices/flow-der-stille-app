@@ -7,9 +7,8 @@ serve(async (req) => {
     const newUser = payload.record
 
     // Secrets aus den Supabase-Umgebungsvariablen laden
-    // Eigener Kanal „Notifier für neue User“ (TELEGRAM_USER_*); Fallback: allgemeiner Kanal (Umsatzalert)
-    const botToken = Deno.env.get('TELEGRAM_USER_BOT_TOKEN') || Deno.env.get('TELEGRAM_BOT_TOKEN')
-    const chatId = Deno.env.get('TELEGRAM_USER_CHAT_ID') || Deno.env.get('TELEGRAM_CHAT_ID')
+    const botToken = Deno.env.get('TELEGRAM_BOT_TOKEN')
+    const chatId = Deno.env.get('TELEGRAM_CHAT_ID')
 
     if (!botToken || !chatId) {
       return new Response("Missing Telegram Secrets", { status: 500 })
@@ -20,10 +19,13 @@ serve(async (req) => {
       ? new Date(newUser.created_at).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })
       : 'Gerade eben'
 
-    const message = `🎉 *Neuer App-User bei Flow der Stille!*\n\n` +
+    const provider = newUser.raw_app_meta_data?.provider || newUser.app_metadata?.provider || 'email'
+    const anmeldung = ({ google: 'Google', apple: 'Apple', facebook: 'Meta (Facebook)', email: 'E-Mail' } as Record<string, string>)[provider] || provider
+
+    const message = `🎉 *Neuer User bei Flow der Stille!*\n\n` +
                     `📧 *E-Mail:* \`${newUser.email || 'Keine Angabe'}\`\n` +
-                    `📅 *Datum:* ${createdAt}\n` +
-                    `🆔 *ID:* \`${newUser.id}\``
+                    `🔑 *Anmeldung über:* ${anmeldung}\n` +
+                    `📅 *Datum:* ${createdAt}`
 
     // Nachricht an Telegram API senden
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`
