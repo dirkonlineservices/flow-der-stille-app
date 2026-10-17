@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 17.10.2026, 12:13 Uhr (SEO-Update: Vorrendern, 301-Weiterleitungen, echte 404-Seiten)
+> - **Letzter Stand**: 17.10.2026, 13:18 Uhr (SEO-Vorrendern live, Konto-Löschen, Kauf-Speicherung PayPal/Google repariert, Telegram-Kanäle getrennt)
 > - **Branch**: `main`
 > - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live und verarbeitet („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert. Erstes In-App-Kauf Produkt vorbereitet.
 >
@@ -26,6 +26,20 @@
 >    - App-Datenschutz vollständig veröffentlicht.
 > 5. **In-App-Käufe (Ruhe-Shop)**:
 >    - Erstes Produkt `fds_selbsthypnose_selbstbewusstsein` vorbereitet (Typ: Nicht-verbrauchsartikel, 1,99 €).
+>
+> ### ✅ OFFENE TO-DOS AUS DER SEO-/BACKEND-SESSION (17.10.2026)
+> 1. **🔎 Google Search Console – ab 18.10. morgens** (max. ~10× „Indexierung beantragen“ pro Tag; je URL: oben einfügen → *Live-URL testen* → *Indexierung beantragen*):
+>    - [ ] Einmalig: *Sitemaps* → `https://flow-der-stille.de/sitemap.xml` neu einreichen.
+>    - [ ] Einmalig: *Seiten* → „Gefunden – zurzeit nicht indexiert“, „Seite mit Weiterleitung“, „Alternative Seite mit richtigem kanonischen Tag“ → jeweils *Fehlerbehebung prüfen*.
+>    - [ ] **Tag 1 – Hauptseiten**: `/`, `/meditation`, `/selbsthypnose`, `/hoerbuecher`, `/ruhe-shop`, `/hoerproben`, `/ueber-uns`, `/blog`, `/uebungen`, `/faq`
+>    - [ ] **Tag 2 – Produkte**: `/audio/selbsthypnose_besser_und_erholsamer_schlaf`, `/audio/selbsthypnose_selbstbewusstsein`, `/audio/selbsthypnose_fokus`, `/audio/selbsthypnose_ernaehrung`, `/audio/meditation_innere_ruhe`, `/audio/meditation_loslassen`, `/audio/meditation_zur_herzoeffnung`, `/audio/pmr_muskelentspannung`, `/hoerbuch/mensch_sein`, `/hoerbuch/schmetterling`
+>    - [ ] **Tag 3 – Blog & Inhalte**: `/hoerbuch/wo-die-seele-den-wind-beruehrt`, `/blog/innere-ruhe-im-alltag`, `/blog/parasympathikus-aktivieren`, `/blog/herzkohaerenz-herz-und-verstand`, `/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo`, `/blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind`, `/wissen`, `/morgen`, `/abend`, `/rezepte`
+>    - (Alle URLs mit `https://flow-der-stille.de` davor.)
+> 2. **🤖 Telegram „Notifier für neue User“ einrichten**: Neue-User-Meldungen (`notify-telegram`, `notify-new-user`) nutzen jetzt eigene Secrets und fallen sonst auf den Umsatzalert zurück. Setzen im Terminal (Werte nicht in den Chat kopieren):
+>    `npx supabase secrets set TELEGRAM_USER_BOT_TOKEN=<Token des User-Bots> TELEGRAM_USER_CHAT_ID=<Chat-ID> --project-ref fsfoxgezrcqkjhfyqcwa`
+> 3. **💶 Käufe seit 28.09.2026 nachtragen**: Bis zum Fix am 17.10. landeten PayPal-Käufe und Google-Play-Gastkäufe nicht in `kaeufe`. In PayPal & Google Play Console echte Zahlungen 28.09.–17.10. prüfen und ggf. über das Admin-Dashboard freischalten.
+> 4. **🍏 iOS-Käufe vor App-Store-Release prüfen**: Apple-Käufe laufen aktuell über `verify-google-play-purchase`, das nur Google-Belege prüft → eigene Apple-Verifizierung nötig.
+> 5. **💬 Atem-Chat „Aura“** (`/atemchat`): antwortet live nicht (`/api/chat` braucht den nicht laufenden Express-Server) → als Supabase Edge Function mit Gemini-Secret neu bauen oder ausblenden.
 >
 > ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):
 > 1. **📱 Sobald das Apple-Testgerät da ist (kommende Woche)**:

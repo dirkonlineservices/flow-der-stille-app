@@ -3,8 +3,9 @@
 // Wird per Database Webhook bei INSERT auf public.profiles aufgerufen
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN')
-const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID')
+// Eigener Kanal „Notifier für neue User“ (TELEGRAM_USER_*); Fallback: allgemeiner Kanal (Umsatzalert)
+const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_USER_BOT_TOKEN') || Deno.env.get('TELEGRAM_BOT_TOKEN')
+const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_USER_CHAT_ID') || Deno.env.get('TELEGRAM_CHAT_ID')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
