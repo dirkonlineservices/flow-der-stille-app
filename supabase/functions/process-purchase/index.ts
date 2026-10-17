@@ -123,43 +123,47 @@ serve(async (req) => {
 
     const paypalOrderId = transaction_id || ('PP_' + Date.now());
 
-    // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits existierte und den Status 'completed' hatte
+    // Einheitliches kaeufe-Schema für ALLE Kaufwege (PayPal, Google Play, Admin-Freischaltung):
+    // user_id (Pflicht), produkt_id, order_id (eindeutig, Präfix zeigt die Quelle), preis, waehrung, email,
+    // widerruf_verzicht_akzeptiert – ein Eintrag pro Nutzer & Produkt (onConflict: 'user_id,produkt_id').
+
+    // Idempotenz-Sperre: Wurde genau diese PayPal-Bestellung schon gespeichert?
     const { data: existingKauf } = await supabaseClient
       .from('kaeufe')
-      .select('status, paypal_order_id')
-      .eq('paypal_order_id', paypalOrderId)
+      .select('id')
+      .eq('order_id', paypalOrderId)
       .maybeSingle();
 
-    const isAlreadyCompleted = existingKauf && existingKauf.status === 'completed';
+    const isAlreadyCompleted = !!existingKauf;
 
-    // 1. Transaktion mit .upsert() in DB speichern (onConflict: 'paypal_order_id')
-    const kaufRecord: any = {
-      produkt_id: product_id || 'atemarbeit_herzoeffnung',
-      paypal_order_id: paypalOrderId,
-      preis: price || 1.99,
-      waehrung: 'EUR',
-      status: 'completed',
-      email: userEmail,
-      widerruf_verzicht_akzeptiert: true,
-      updated_at: new Date().toISOString()
-    };
-    if (activeUserId) {
-      kaufRecord.user_id = activeUserId;
+    // 1. Kauf speichern
+    let dbError: any = null;
+    if (!activeUserId) {
+      dbError = { message: 'Kein Nutzerkonto für den Kauf ermittelt (user_id ist Pflicht).' };
+    } else if (!isAlreadyCompleted) {
+      const { error } = await supabaseClient
+        .from('kaeufe')
+        .upsert({
+          user_id: activeUserId,
+          produkt_id: product_id || 'atemarbeit_herzoeffnung',
+          order_id: paypalOrderId,
+          preis: price || 1.99,
+          waehrung: 'EUR',
+          email: userEmail,
+          widerruf_verzicht_akzeptiert: true
+        }, { onConflict: 'user_id,produkt_id' });
+      dbError = error;
     }
-
-    const { data: upsertData, error: dbError } = await supabaseClient
-      .from('kaeufe')
-      .upsert(kaufRecord, { onConflict: 'paypal_order_id' });
 
     if (dbError) {
-      console.warn("Database upsert warning:", dbError.message);
+      console.error(`Kauf ${paypalOrderId} konnte NICHT in kaeufe gespeichert werden:`, dbError.message);
     }
-    
+
     // 2. Rollen Update (falls registrierter User)
     if (activeUserId) {
       const { error: roleError } = await supabaseClient
         .from('profiles')
-        .update({ user_role: 'kunde', is_premium: true })
+        .update({ is_premium: true, updated_at: new Date().toISOString() }) // profiles hat keine Spalte user_role
         .eq('id', activeUserId);
 
       if (roleError) console.error("Non-fatal Error Rollen Update:", roleError.message);
@@ -237,6 +241,14 @@ serve(async (req) => {
       } catch (mailErr: any) {
         console.error("Non-fatal Error E-Mail Versand:", mailErr.message);
       }
+    }
+
+    // Speichern fehlgeschlagen → Fehler melden, damit das Frontend seinen Fallback-Upsert ausführt
+    if (dbError) {
+      return new Response(
+        JSON.stringify({ success: false, error: `Kauf nicht gespeichert: ${dbError.message}` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      )
     }
 
     return new Response(

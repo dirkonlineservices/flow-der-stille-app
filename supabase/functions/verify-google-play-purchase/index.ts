@@ -248,7 +248,9 @@ serve(async (req) => {
       produkt_id: dbProductId,
       preis: price,
       waehrung: 'EUR',
-      paypal_order_id: `${orderId}_${dbProductId}_${idx}`,
+      // Gleiches Format wie der direkte App-Eintrag (googlePlayVerification.ts); weitere verknüpfte Konten mit Suffix
+      order_id: idx === 0 ? `${orderId}_${dbProductId}` : `${orderId}_${dbProductId}_${idx}`,
+      email: userEmail || null,
       created_at: new Date().toISOString(),
       widerruf_verzicht_akzeptiert: true
     }));
