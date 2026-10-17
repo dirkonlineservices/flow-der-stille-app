@@ -1,1 +1,0 @@
-import{j as r}from"./vendor-motion-Cesy2opz.js";import t from"./ResetPassword-gVKvGzE2.js";import"./vendor-react-Cg1PyC-W.js";import"./index-xsDSfl7H.js";import"./vendor-supabase-Bfd5Thr0.js";import"./vendor-icons-Vpx9_mEJ.js";function a(){return r.jsx(t,{})}export{a as default};

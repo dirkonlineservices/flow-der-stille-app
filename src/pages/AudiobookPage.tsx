@@ -11,6 +11,7 @@ import { OfflineDownloadButton } from '../components/OfflineDownloadButton';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
+import { trackMetaViewContent } from '../lib/metaPixel';
 import { getOfflineProductById } from '../lib/offlineProductsService';
 import { Browser } from '@capacitor/browser';
 import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
@@ -460,6 +461,17 @@ export default function AudiobookPage() {
       : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3');
   const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || fallbackAudioUrl;
   const priceDisplay = productData?.preis ? `${productData.preis} €` : '4,99 €';
+
+  // Meta „ViewContent“: einmal pro Hörbuch, sobald die Produktdaten geladen sind (Retargeting & Optimierung)
+  useEffect(() => {
+    if (!productData?.id) return;
+    trackMetaViewContent({
+      content_name: title,
+      content_ids: [productData.id],
+      content_category: 'Hörbuch',
+      value: Number(productData.preis) || 4.99,
+    });
+  }, [productData?.id]);
   const durationDisplay = isSeeleWind ? '86:06 Minuten' : (isMenschSein ? '58:39 Minuten' : '58:43 Minuten');
   const durationSecondsTotal = isSeeleWind ? 5166 : (isMenschSein ? 3519 : 3523);
   const disclaimerDurationText = isSeeleWind ? '1:27' : (isMenschSein ? '1:08' : '1:19');

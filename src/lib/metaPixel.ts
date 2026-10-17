@@ -25,6 +25,9 @@ declare global {
 }
 
 let isInitialized = false;
+// Zuletzt gemeldete Adresse: verhindert doppelte PageViews (Pixel-Start + Routen-Tracking für dieselbe Seite)
+let lastPageViewPath = '';
+const currentPath = () => (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '');
 
 /**
  * Ermittelt ob der Nutzer in der nativen Android-App oder im Webbrowser ist
@@ -125,6 +128,7 @@ export function initMetaPixel(userData?: { email?: string; firstName?: string; l
       traffic_source: traffic.source || 'organic',
       campaign: traffic.campaign || undefined
     });
+    lastPageViewPath = currentPath();
     isInitialized = true;
   }
 }
@@ -161,6 +165,8 @@ export function trackMetaPageView(): void {
     return;
   }
   if (window.fbq) {
+    if (currentPath() === lastPageViewPath) return;
+    lastPageViewPath = currentPath();
     const platform = getPlatformType();
     const traffic = captureTrafficSource();
     window.fbq('track', 'PageView', {
@@ -174,8 +180,15 @@ export function trackMetaPageView(): void {
 /**
  * Event: Registrierung abgeschlossen (mit klarer App- vs. Web-Kennzeichnung)
  */
-export function trackMetaRegistration(params?: { method?: string; email?: string; firstName?: string }): void {
-  if (typeof window === 'undefined' || !isInitialized || !window.fbq) return;
+export function trackMetaRegistration(params?: { method?: string; email?: string; firstName?: string; userId?: string }): boolean {
+  if (typeof window === 'undefined' || !isInitialized || !window.fbq) return false;
+
+  // Pro Konto nur EINMAL melden (E-Mail-Registrierung + spätere Bestätigung, Social Login, Web & App)
+  const dedupeKey = params?.userId ? `fds_meta_registration_${params.userId}` : '';
+  try {
+    if (dedupeKey && localStorage.getItem(dedupeKey)) return false;
+  } catch {}
+
   const platform = getPlatformType();
   const traffic = captureTrafficSource();
 
@@ -186,6 +199,32 @@ export function trackMetaRegistration(params?: { method?: string; email?: string
   window.fbq('track', 'CompleteRegistration', {
     content_name: params?.method || 'Email',
     status: true,
+    platform, // 'app' oder 'web'
+    traffic_source: traffic.source || 'direct',
+    campaign: traffic.campaign || undefined
+  });
+
+  try {
+    if (dedupeKey) localStorage.setItem(dedupeKey, new Date().toISOString());
+  } catch {}
+  return true;
+}
+
+/**
+ * Event: Kauf gestartet (PayPal-Button bzw. In-App-Kauf angetippt)
+ */
+export function trackMetaInitiateCheckout(params: { value: number; content_name?: string; content_ids?: string[]; currency?: string }): void {
+  if (typeof window === 'undefined' || !isInitialized || !window.fbq) return;
+  const platform = getPlatformType();
+  const traffic = captureTrafficSource();
+
+  window.fbq('track', 'InitiateCheckout', {
+    value: params.value,
+    currency: params.currency || 'EUR',
+    content_name: params.content_name || 'Produktkauf',
+    content_ids: params.content_ids || [],
+    content_type: 'product',
+    num_items: 1,
     platform, // 'app' oder 'web'
     traffic_source: traffic.source || 'direct',
     campaign: traffic.campaign || undefined

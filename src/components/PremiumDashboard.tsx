@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { trackMetaInitiateCheckout } from '../lib/metaPixel';
 import { getSupabase } from '../lib/supabaseClient';
 import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key, ExternalLink, RotateCcw } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
@@ -1401,6 +1402,12 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
     setError(null);
     setIsProcessing(true);
+
+    trackMetaInitiateCheckout({
+      value: parseFloat(produkt?.preis) || 1.99,
+      content_name: produkt?.titel,
+      content_ids: [produkt?.id]
+    });
 
     try {
       await BillingService.startPurchase(produkt, async (msg) => {

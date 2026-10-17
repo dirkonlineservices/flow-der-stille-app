@@ -6,7 +6,24 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { APP_VERSION } from '../version';
-import { setMetaUserProperties } from '../lib/metaPixel';
+import { setMetaUserProperties, trackMetaRegistration } from '../lib/metaPixel';
+
+// Neues Konto? (frisch angelegt) → Meta „CompleteRegistration“ für ALLE Wege:
+// Google, Apple, Facebook, E-Mail-Bestätigung, Magic Link – Web & App. Doppelte Meldungen verhindert trackMetaRegistration.
+const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
+function trackRegistrationIfNewAccount(authUser: any) {
+  const createdAt = authUser?.created_at ? new Date(authUser.created_at).getTime() : 0;
+  if (!createdAt || Date.now() - createdAt > NEW_ACCOUNT_WINDOW_MS) return;
+  const provider = authUser.app_metadata?.provider || 'email';
+  const method = ({ google: 'Google', apple: 'Apple', facebook: 'Meta (Facebook)', email: 'Email' } as Record<string, string>)[provider] || provider;
+  const meta = authUser.user_metadata || {};
+  trackMetaRegistration({
+    method,
+    email: authUser.email,
+    firstName: meta.first_name || meta.given_name || meta.full_name?.split(' ')[0],
+    userId: authUser.id,
+  });
+}
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -115,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mapAndSetUser(session.user);
         // Gast-Consent mit echter user_id verknüpfen (fire-and-forget)
         syncConsentAfterLogin(session.user.id).catch(() => {});
+        trackRegistrationIfNewAccount(session.user);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       } else if (session?.user) {

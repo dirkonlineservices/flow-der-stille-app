@@ -15,6 +15,7 @@ import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import { offlineManager } from '../lib/offlineAudioService';
+import { trackMetaViewContent } from '../lib/metaPixel';
 
 export default function AudioSessionPage() {
   const { id } = useParams<{ id: string }>();
@@ -122,6 +123,17 @@ export default function AudioSessionPage() {
   const description = productData?.beschreibung || 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine schwere, wohlige Tiefenentspannung und regenerierenden Schlaf.';
   const category = productData?.kategorie || (resolvedId.includes('meditation') ? 'Meditation' : 'Selbsthypnose');
   const priceDisplay = isFreeProduct ? '100% Kostenfrei' : (productData?.preis ? `${productData.preis} €` : '1,99 €');
+
+  // Meta „ViewContent“: einmal pro Produkt, sobald die Produktdaten geladen sind (Retargeting & Optimierung)
+  useEffect(() => {
+    if (!productData?.id) return;
+    trackMetaViewContent({
+      content_name: title,
+      content_ids: [productData.id],
+      content_category: category,
+      value: Number(productData.preis) || 0,
+    });
+  }, [productData?.id]);
   const durationMinutes = Math.floor((productData?.dauer || 774) / 60);
 
   const getCoverImage = () => {

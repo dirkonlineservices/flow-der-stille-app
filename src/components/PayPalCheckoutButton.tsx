@@ -7,7 +7,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
 import { reportCriticalError } from '../lib/errorLogger';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
-import { trackMetaPurchase } from '../lib/metaPixel';
+import { trackMetaPurchase, trackMetaInitiateCheckout } from '../lib/metaPixel';
 import { offlineManager } from '../lib/offlineAudioService';
 import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
 
@@ -130,6 +130,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
               style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
               createOrder={(data, actions) => {
                 const safePrice = parseFloat(produkt?.preis || '0').toFixed(2);
+
+                trackMetaInitiateCheckout({
+                  value: parseFloat(safePrice),
+                  content_name: produkt?.titel || 'Flow der Stille Premium',
+                  content_ids: [produkt?.id || 'unknown']
+                });
 
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({ ecommerce: null });
