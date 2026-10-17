@@ -26,6 +26,86 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'ki-mit-herz-kuenstliche-intelligenz-achtsamkeit',
+    title: 'KI mit Herz: Warum wir künstliche Intelligenz nur für Gutes nutzen',
+    date: '2026-10-17',
+    excerpt: 'Künstliche Intelligenz macht vielen Menschen Sorgen. Wir zeigen offen, wofür wir KI bei Flow der Stille einsetzen, was bewusst Menschen vorbehalten bleibt – und warum KI für uns vor allem ein Werkzeug ist, um mehr Menschen Ruhe zu schenken.',
+    category: 'Über Flow der Stille',
+    readTime: '6 Min.',
+    heroImage: '/images/products/cover_herzoeffnung.jpg',
+    heroImageAlt: 'Meditation zur Herzöffnung – Achtsamkeit und KI mit Herz bei Flow der Stille',
+    heroImageAiGenerated: true,
+    relatedProduct: {
+      type: 'meditation',
+      title: 'Meditation zur Herzöffnung',
+      subtitle: 'Gesprochen von Lisa – geschrieben von Jacqueline',
+      badge: 'Kostenlose Meditation',
+      priceFormatted: '0 €',
+      coverUrl: '/images/products/cover_herzoeffnung.jpg',
+      description: 'Erlebe selbst, wie sich eine echte menschliche Stimme mit sanften Klangwelten verbindet. Kostenlos, ohne Abo – Streaming im Web-Player und in der App.',
+      primaryCtaLabel: 'Kostenlos anhören',
+      primaryCtaLink: '/audio/meditation_zur_herzoeffnung'
+    },
+    content: `# KI mit Herz: Warum wir künstliche Intelligenz nur für Gutes nutzen
+
+Künstliche Intelligenz ist überall: in den Nachrichten, im Job, auf dem Smartphone. Und mit ihr kommen Fragen. *Was macht das mit uns? Ersetzt KI bald, was uns Menschen ausmacht?* Viele spüren dabei eher Unruhe als Neugier – und das ist absolut verständlich.
+
+Gerade weil Flow der Stille ein Ort für innere Ruhe ist, möchten wir dir offen sagen, wie wir mit dem Thema umgehen. Unsere Haltung ist einfach:
+
+> **KI ist für uns ein Werkzeug. Das Herz bleibt menschlich.**
+
+## Was bei uns immer Menschen machen
+
+Das, worauf es bei Meditation und Selbsthypnose wirklich ankommt, überlassen wir keiner Maschine:
+
+* **Die Texte:** Jede Meditation, jede Selbsthypnose, jedes Hörbuch und jede Übung schreibt **Jacqueline** selbst – mit Fachwissen, Erfahrung und viel Gefühl für die richtigen Worte.
+* **Die Stimme:** Unsere Meditationen, Selbsthypnosen und Hörbücher spricht **Lisa** mit ihrer echten, warmen Stimme ein. Eine menschliche Stimme mit ihren Pausen, ihrem Atem und ihrer Wärme schenkt Geborgenheit, die man spürt.
+* **Die Verantwortung:** Was bei Flow der Stille erscheint, wählen wir bewusst aus und prüfen es selbst. Die Verantwortung tragen immer wir.
+
+## Wofür wir KI einsetzen – ganz transparent
+
+KI hilft uns überall dort, wo sie Menschen entlastet, ohne ihnen etwas wegzunehmen:
+
+* **Klangwelten:** Die sanfte Hintergrundmusik unserer Audios wird mit KI-Unterstützung komponiert und anschließend von Hand ausgewählt und abgestimmt.
+* **Bildwelten:** Viele unserer Cover und Grafiken entstehen mit KI-Unterstützung. Wir kennzeichnen sie mit einem kleinen Hinweis.
+* **Technik:** Website und App bauen wir mit KI-gestützten Entwicklungswerkzeugen. So bleibt mehr Zeit für die Inhalte.
+* **Zwei kostenlose Schnupper-Übungen:** Die geführte Atemübung und die Progressive Muskelentspannung nutzen eine digitale Sprecherstimme – damit du ohne Hürde sofort und kostenlos starten kannst.
+
+Alle Details findest du jederzeit in unserem [Transparenzhinweis zur KI-Nutzung](/rechtliches#ki-transparenz).
+
+## Warum wir das machen: für die Menschen
+
+Ein professionelles Tonstudio, Komponisten, Grafikdesign – all das kostet viel Zeit und Geld. Ohne Unterstützung könnten wir nur einen Bruchteil unserer Inhalte anbieten, und das zu deutlich höheren Preisen.
+
+KI macht es möglich, dass **mehr Menschen Zugang zu Ruhe und Entspannung bekommen**: mit kostenlosen Meditationen und Übungen für jeden, ohne Abo und ohne Hürden. Genau darum geht es uns. Nicht um Technik als Selbstzweck, sondern darum, Menschen etwas Gutes zu schenken – einen Moment der Stille in einem lauten Alltag.
+
+## Was KI bei uns niemals tut
+
+Damit es ganz klar ist:
+
+* KI schreibt **keine** Meditationen, Selbsthypnosen oder Hörbücher.
+* KI ersetzt **nicht** Lisas Stimme in unseren Meditationen, Selbsthypnosen und Hörbüchern.
+* Wir nutzen KI **nicht**, um Ängste zu schüren oder Druck aufzubauen – weder in unseren Inhalten noch in unserer Werbung.
+
+## KI muss keine Angst machen
+
+Wie jedes Werkzeug ist KI weder gut noch schlecht. Entscheidend ist, wer sie in der Hand hält und wofür. Ein Messer kann verletzen – oder ein liebevoll gekochtes Essen zubereiten.
+
+Wenn du beim Thema KI Unruhe spürst, probiere einen kleinen Moment der Achtsamkeit:
+
+1. **Atme** viermal ruhig ein und langsam wieder aus.
+2. **Frage dich:** Was davon betrifft mich gerade wirklich, hier und jetzt?
+3. **Richte den Blick** auf etwas, das dir heute gutgetan hat.
+
+Oft zeigt sich: Die Sorge ist größer als das, was im Moment tatsächlich passiert.
+
+## Unser Versprechen
+
+Wir werden KI auch in Zukunft nur dort einsetzen, wo sie Menschen etwas Gutes tut – und es dir immer offen sagen. Das Herz von Flow der Stille sind und bleiben Menschen: Jacqueline, Lisa und alle, die bei uns einen Moment der Ruhe finden.
+
+Möchtest du selbst hören, wie sich das anfühlt? Unsere [Meditation zur Herzöffnung](/audio/meditation_zur_herzoeffnung) ist kostenlos und ohne Abo – gesprochen von Lisa, geschrieben von Jacqueline. 💚`
+  },
+  {
     slug: 'trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind',
     title: 'Trauerbegleitung & Trauerbewältigung: Wie ein achtsames Hörbuch mit geführter Meditation hilft, Verlust zu verarbeiten',
     date: '2026-09-29',

@@ -45,7 +45,7 @@ export default function Rechtliches() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>Bildmaterial & Grafiken:</strong> Ausgewählte visuelle Inhalte auf dieser Seite wurden unter Zuhilfenahme von KI-Assistenten generiert bzw. entworfen. Die finale Auswahl und Einbindung unterlag menschlicher Kontrolle.</li>
-              <li><strong>Audio- & Musikdateien:</strong> Die bereitgestellten Audioinhalte basieren auf selbst verfassten Texten. Die technische Umsetzung (Stimmerzeugung, Arrangement) erfolgte teilweise unter Verwendung von KI-gestützten Tools (insb. Suno AI).</li>
+              <li><strong>Audio- & Musikdateien:</strong> Alle Audioinhalte basieren auf selbst verfassten Texten von Jacqueline Schmetzer. Meditationen, Selbsthypnosen und Hörbücher werden von Lisa mit echter menschlicher Stimme eingesprochen. Die Hintergrundmusik wurde unter Verwendung von KI-gestützten Tools komponiert (insb. Suno AI). Die kostenlosen Schnupper-Übungen (geführte Atemübung, Progressive Muskelentspannung) nutzen digitale Sprachsynthese.</li>
               <li><strong>Quellcode & Webentwicklung:</strong> Das technische Grundgerüst wurde mittels KI-gestützter Entwicklungsumgebungen realisiert.</li>
             </ul>
             <p>

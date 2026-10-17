@@ -77,6 +77,8 @@
   RewriteRule ^app$ /prerender/app.html [L]
   RewriteRule ^faq$ /prerender/faq.html [L]
   RewriteRule ^blog$ /prerender/blog.html [L]
+  RewriteRule ^blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit$ /prerender/blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit.html [L]
+  RewriteRule ^blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch$ /prerender/blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch.html [L]
   RewriteRule ^blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind$ /prerender/blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind.html [L]
   RewriteRule ^blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo$ /prerender/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo.html [L]
   RewriteRule ^blog/herzkohaerenz-herz-und-verstand$ /prerender/blog/herzkohaerenz-herz-und-verstand.html [L]
