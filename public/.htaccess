@@ -39,12 +39,11 @@
   RewriteCond %{THE_REQUEST} \s/prerender/ [NC]
   RewriteRule ^ - [R=404,L]
 
-  # 🤖 3. Vorgerenderte Seiten (scripts/prerender.mjs): Google bekommt fertiges HTML mit Inhalt
-  RewriteCond %{DOCUMENT_ROOT}/prerender/index.html -f
-  RewriteRule ^$ /prerender/index.html [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{DOCUMENT_ROOT}/prerender/$1.html -f
-  RewriteRule ^(.+)$ /prerender/$1.html [L]
+  # 🤖 3. Vorgerenderte Seiten: Google bekommt fertiges HTML mit Inhalt (dist/prerender/<pfad>.html).
+  #    Die Regeln erzeugt scripts/prerender.mjs beim „npm run build:web“ in dist/.htaccess –
+  #    nur für erfolgreich gerenderte Seiten. Hier in public/ bleibt der Block leer.
+  # >>> PRERENDER-START
+  # <<< PRERENDER-END
 
   # ⚛️ 4. Bekannte App-Routen (src/index.tsx) → React-App mit Status 200
   RewriteCond %{REQUEST_FILENAME} !-f

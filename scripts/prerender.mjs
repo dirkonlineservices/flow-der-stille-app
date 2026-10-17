@@ -2,8 +2,9 @@
 // FLOW DER STILLE – Vorrendern (Prerendering) für Google & KI-Crawler
 // -----------------------------------------------------------------------------
 // Rendert jede Adresse aus dist/sitemap.xml in einem lokalen Chrome und speichert
-// das fertige HTML nach dist/prerender/<pfad>.html. Die .htaccess liefert diese
-// Dateien aus, sodass Google Titel, Beschreibung, Canonical UND Text sofort im
+// das fertige HTML nach dist/prerender/<pfad>.html. Für jede erfolgreich gerenderte
+// Seite schreibt es eine feste Rewrite-Regel in dist/.htaccess, die diese
+// Dateien ausliefert, sodass Google Titel, Beschreibung, Canonical UND Text sofort im
 // ersten HTML sieht (statt einer leeren <div id="root">).
 //
 // Aufruf:   npm run build:web     (= npm run build + dieses Skript)
@@ -18,6 +19,22 @@ import puppeteer from 'puppeteer-core';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, '..', 'dist');
 const OUT = path.join(DIST, 'prerender');
+const HTACCESS = path.join(DIST, '.htaccess');
+
+// Feste Rewrite-Regeln (eine pro Seite) zwischen die Marker in dist/.htaccess schreiben.
+// Bewusst ohne Dateisystem-Prüfungen (-f / DOCUMENT_ROOT), die sich bei Hostinger/LiteSpeed anders verhalten.
+function writeHtaccessRules(renderedPaths) {
+  const escape = (p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const rules = renderedPaths.map((p) =>
+    p === '/'
+      ? '  RewriteRule ^$ /prerender/index.html [L]'
+      : `  RewriteRule ^${escape(p.slice(1))}$ /prerender${p}.html [L]`,
+  );
+  const htaccess = fs.readFileSync(HTACCESS, 'utf8');
+  const block = /(  # >>> PRERENDER-START\n)[\s\S]*?(  # <<< PRERENDER-END)/;
+  if (!block.test(htaccess)) throw new Error('PRERENDER-Marker in dist/.htaccess fehlen.');
+  fs.writeFileSync(HTACCESS, htaccess.replace(block, (_, start, end) => `${start}${rules.map((r) => r + '\n').join('')}${end}`));
+}
 const SITE = 'https://flow-der-stille.de';
 
 // Externe Dienste beim Vorrendern blockieren (keine Tracking-Hits, keine fremden Skripte im HTML)
@@ -137,6 +154,7 @@ async function main() {
 
   let ok = 0;
   const failed = [];
+  const rendered = [];
   for (const urlPath of paths) {
     // Chrome stürzt gelegentlich ab („Connection closed“) → neu starten und bis zu 3× versuchen
     for (let attempt = 1; attempt <= 3; attempt++) {
@@ -163,6 +181,7 @@ async function main() {
         fs.mkdirSync(path.dirname(target), { recursive: true });
         fs.writeFileSync(target, html);
         ok++;
+        rendered.push(urlPath);
         console.log(`  ✓ ${urlPath} (${new Date().toLocaleTimeString("de-DE")})`);
         break;
       } catch (err) {
@@ -175,7 +194,8 @@ async function main() {
 
   await browser.close().catch(() => browser.process()?.kill('SIGKILL'));
   server.close();
-  console.log(`\nVorgerendert: ${ok}/${paths.length} Seiten → dist/prerender/`);
+  writeHtaccessRules(rendered);
+  console.log(`\nVorgerendert: ${ok}/${paths.length} Seiten → dist/prerender/ (+ Regeln in dist/.htaccess)`);
   if (failed.length) {
     console.warn(`Nicht vorgerendert (werden wie bisher als normale App ausgeliefert): ${failed.join(', ')}`);
     process.exitCode = 1;
