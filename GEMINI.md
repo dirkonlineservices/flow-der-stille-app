@@ -96,10 +96,11 @@
   3. **Für eingeloggte Nutzer (`user`)**: Kompakter Hinweis über den Express-Kauf mit Magic Link (sofortige Freischaltung im bestehenden Mediathek-Konto + E-Mail-Zugangslink für weitere Endgeräte).
 
 ## 7. SEO: BUILD MIT VORRENDERN & SERVER-REGELN
-- **Web-Build immer mit `npm run build:web`** (= `npm run build` + `scripts/prerender.mjs`). Das Skript rendert jede Adresse aus `public/sitemap.xml` mit dem lokalen Chrome vor und legt das fertige HTML in `dist/prerender/` ab. Ohne diesen Schritt sieht Google wieder nur eine leere Seite.
+- **Web-Build immer mit `npm run build:web`** (= `npm run build` + `scripts/prerender.mjs`). Das Skript rendert jede Adresse aus `public/sitemap.xml` mit dem lokalen Chrome vor, legt das fertige HTML in `public/prerender/` ab und trägt pro Seite eine Regel in `public/.htaccess` ein. **Ergebnis immer mitcommitten** – Hostinger baut nach jedem Push selbst neu (`npm run build`) und übernimmt nur, was in `public/` liegt. Ohne diesen Schritt sieht Google wieder nur eine leere Seite.
+  - Nach Text-/Layout-Änderungen an Seiten aus der Sitemap neu vorrendern, sonst zeigt Google den alten Stand (Nutzer sehen immer den aktuellen).
   - Auf dem Mac läuft es am zuverlässigsten mit `caffeinate -dimsu npm run build:web` (sonst friert der Ruhezustand den Chrome-Lauf ein).
   - Kein Chrome gefunden? `CHROME_PATH` setzen.
 - **Neue Seite für Google** → in `public/sitemap.xml` eintragen (wird automatisch vorgerendert).
 - **Neue Top-Level-Route in `src/index.tsx`** → zusätzlich in `public/.htaccess` (Schritt 4, Routen-Liste) eintragen. Unbekannte Pfade antworten bewusst mit echtem 404-Status (verhindert „Soft 404“ in der Search Console).
 - **Alias-/Alt-Adressen** werden in `public/.htaccess` (Schritt 1) per 301 auf die kanonische Adresse umgeleitet. Interne Links immer auf die kanonische Adresse setzen (`/uebungen`, `/hoerproben`, `/ruhe-shop`, `/kontakt` …), nie auf Aliase.
-- **Live läuft kein Node-/Express-Server** (Hostinger liefert nur `dist/` aus). Weiterleitungen gehören daher in die `.htaccess`, nicht in `server.ts`.
+- **Live läuft kein Node-/Express-Server** (Hostinger baut per `npm run build` und liefert nur das statische `dist/` aus). Weiterleitungen gehören daher in die `.htaccess`, nicht in `server.ts`.

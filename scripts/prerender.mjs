@@ -2,15 +2,20 @@
 // FLOW DER STILLE – Vorrendern (Prerendering) für Google & KI-Crawler
 // -----------------------------------------------------------------------------
 // Rendert jede Adresse aus dist/sitemap.xml in einem lokalen Chrome und speichert
-// das fertige HTML nach dist/prerender/<pfad>.html. Für jede erfolgreich gerenderte
-// Seite schreibt es eine feste Rewrite-Regel in dist/.htaccess, die diese
+// das fertige HTML nach public/prerender/<pfad>.html. Für jede erfolgreich gerenderte
+// Seite schreibt es eine feste Rewrite-Regel in public/.htaccess, die diese
 // Dateien ausliefert, sodass Google Titel, Beschreibung, Canonical UND Text sofort im
 // ersten HTML sieht (statt einer leeren <div id="root">).
+//
+// Warum public/ und nicht dist/? Hostinger baut nach jedem Push selbst neu
+// („npm run build“) und verwirft das mitgeschickte dist/. Alles in public/ kopiert
+// Vite bei jedem Build mit – auch bei Hostinger. Darum: Ergebnis IMMER committen.
 //
 // Aufruf:   npm run build:web     (= npm run build + dieses Skript)
 // Chrome:   wird automatisch gesucht, sonst CHROME_PATH=/pfad/zu/chrome setzen
 // =============================================================================
 import http from 'node:http';
+import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,22 +23,23 @@ import puppeteer from 'puppeteer-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, '..', 'dist');
-const OUT = path.join(DIST, 'prerender');
-const HTACCESS = path.join(DIST, '.htaccess');
+const PUBLIC = path.resolve(__dirname, '..', 'public');
+const OUT = path.join(PUBLIC, 'prerender');
+const DIST_OUT = path.join(DIST, 'prerender');
 
-// Feste Rewrite-Regeln (eine pro Seite) zwischen die Marker in dist/.htaccess schreiben.
+// Feste Rewrite-Regeln (eine pro Seite) zwischen die Marker in .htaccess schreiben.
 // Bewusst ohne Dateisystem-Prüfungen (-f / DOCUMENT_ROOT), die sich bei Hostinger/LiteSpeed anders verhalten.
-function writeHtaccessRules(renderedPaths) {
+function writeHtaccessRules(htaccessPath, renderedPaths) {
   const escape = (p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const rules = renderedPaths.map((p) =>
     p === '/'
       ? '  RewriteRule ^$ /prerender/index.html [L]'
       : `  RewriteRule ^${escape(p.slice(1))}$ /prerender${p}.html [L]`,
   );
-  const htaccess = fs.readFileSync(HTACCESS, 'utf8');
+  const htaccess = fs.readFileSync(htaccessPath, 'utf8');
   const block = /(  # >>> PRERENDER-START\n)[\s\S]*?(  # <<< PRERENDER-END)/;
-  if (!block.test(htaccess)) throw new Error('PRERENDER-Marker in dist/.htaccess fehlen.');
-  fs.writeFileSync(HTACCESS, htaccess.replace(block, (_, start, end) => `${start}${rules.map((r) => r + '\n').join('')}${end}`));
+  if (!block.test(htaccess)) throw new Error(`PRERENDER-Marker in ${htaccessPath} fehlen.`);
+  fs.writeFileSync(htaccessPath, htaccess.replace(block, (_, start, end) => `${start}${rules.map((r) => r + '\n').join('')}${end}`));
 }
 const SITE = 'https://flow-der-stille.de';
 
@@ -69,7 +75,7 @@ function startServer() {
   const server = http.createServer((req, res) => {
     const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     const file = path.join(DIST, urlPath);
-    if (file.startsWith(DIST) && !file.startsWith(OUT) && fs.existsSync(file) && fs.statSync(file).isFile()) {
+    if (file.startsWith(DIST) && !file.startsWith(DIST_OUT) && fs.existsSync(file) && fs.statSync(file).isFile()) {
       res.writeHead(200, { 'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream' });
       return fs.createReadStream(file).pipe(res);
     }
@@ -123,6 +129,12 @@ async function renderPage(browser, origin, urlPath) {
         if (!s.getAttribute('src').startsWith('/')) s.remove();
       });
 
+      // Sicherheitsnetz: Erzeugt ein späterer Build (z. B. bei Hostinger) andere Datei-Hashes,
+      // fehlen JS/CSS dieses Snapshots → dann sofort die aktuelle App-Hülle laden statt einer kaputten Seite.
+      const fallback = "window.__fdsShell||(window.__fdsShell=1,fetch('/index.html',{cache:'no-store'}).then(function(r){return r.text()}).then(function(h){document.open();document.write(h);document.close()}))";
+      document.querySelectorAll('script[type="module"][src^="/assets/"], link[rel="stylesheet"][href^="/assets/"]')
+        .forEach((n) => n.setAttribute('onerror', fallback));
+
       const notFound = /existiert leider nicht/.test(document.body.innerText);
       const robots = document.querySelector('meta[name="robots"][data-prerender]')?.content || '';
       return { html: '<!doctype html>\n' + document.documentElement.outerHTML, notFound, robots };
@@ -140,7 +152,8 @@ async function renderPage(browser, origin, urlPath) {
 async function main() {
   if (!fs.existsSync(path.join(DIST, 'index.html'))) throw new Error('dist/index.html fehlt – zuerst "npm run build" ausführen.');
 
-  fs.rmSync(OUT, { recursive: true, force: true });
+  // Erst in einen Temp-Ordner rendern, am Ende austauschen → nie halbe Ergebnisse in public/
+  const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'fds-prerender-'));
   const paths = readSitemapPaths();
   const server = await startServer();
   const origin = `http://127.0.0.1:${server.address().port}`;
@@ -177,7 +190,7 @@ async function main() {
         } finally {
           clearTimeout(timer);
         }
-        const target = path.join(OUT, urlPath === '/' ? 'index.html' : `${urlPath}.html`);
+        const target = path.join(TMP, urlPath === '/' ? 'index.html' : `${urlPath}.html`);
         fs.mkdirSync(path.dirname(target), { recursive: true });
         fs.writeFileSync(target, html);
         ok++;
@@ -194,8 +207,15 @@ async function main() {
 
   await browser.close().catch(() => browser.process()?.kill('SIGKILL'));
   server.close();
-  writeHtaccessRules(rendered);
-  console.log(`\nVorgerendert: ${ok}/${paths.length} Seiten → dist/prerender/ (+ Regeln in dist/.htaccess)`);
+  fs.rmSync(OUT, { recursive: true, force: true });
+  fs.cpSync(TMP, OUT, { recursive: true });
+  fs.rmSync(TMP, { recursive: true, force: true });
+  writeHtaccessRules(path.join(PUBLIC, '.htaccess'), rendered);
+  // Gleicher Stand sofort auch in dist/ (für lokales Testen & die App)
+  fs.rmSync(DIST_OUT, { recursive: true, force: true });
+  fs.cpSync(OUT, DIST_OUT, { recursive: true });
+  fs.copyFileSync(path.join(PUBLIC, '.htaccess'), path.join(DIST, '.htaccess'));
+  console.log(`\nVorgerendert: ${ok}/${paths.length} Seiten → public/prerender/ (+ Regeln in public/.htaccess) – bitte committen`);
   if (failed.length) {
     console.warn(`Nicht vorgerendert (werden wie bisher als normale App ausgeliefert): ${failed.join(', ')}`);
     process.exitCode = 1;
