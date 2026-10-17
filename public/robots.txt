@@ -30,6 +30,9 @@ Disallow: /blog/new
 Disallow: /vorteile
 Disallow: /angebote
 
+# 🛑 Vorgerenderte Rohdateien (werden intern unter den sauberen Adressen ausgeliefert)
+Disallow: /prerender/
+
 Sitemap: https://flow-der-stille.de/sitemap.xml
 # Google Merchant Center Product Feed: https://flow-der-stille.de/google-shopping-feed.xml
 # AI Agent Discovery: https://flow-der-stille.de/llms.txt

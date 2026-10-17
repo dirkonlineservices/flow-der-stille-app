@@ -35,9 +35,8 @@
   # App-Hülle selbst nie umschreiben (auch nicht als ErrorDocument)
   RewriteRule ^index\.html$ - [L]
 
-  # 🛑 2. Vorrender-Ordner nicht direkt aufrufbar (nur intern über Schritt 3)
-  RewriteCond %{THE_REQUEST} \s/prerender/ [NC]
-  RewriteRule ^ - [R=404,L]
+  # ℹ️ 2. /prerender/ ist per robots.txt gesperrt; eine Rewrite-Sperre hier würde bei LiteSpeed
+  #    auch die interne Auslieferung aus Schritt 3 blockieren.
 
   # 🤖 3. Vorgerenderte Seiten: Google bekommt fertiges HTML mit Inhalt (dist/prerender/<pfad>.html).
   #    Die Regeln erzeugt scripts/prerender.mjs beim „npm run build:web“ in dist/.htaccess –
