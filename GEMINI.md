@@ -29,9 +29,9 @@
 >
 > ### ✅ OFFENE TO-DOS AUS DER SEO-/BACKEND-SESSION (17.10.2026)
 > 1. **🔎 Google Search Console – ab 18.10. morgens** (max. ~10× „Indexierung beantragen“ pro Tag; je URL: oben einfügen → *Live-URL testen* → *Indexierung beantragen*):
->    - [ ] Einmalig: *Sitemaps* → `https://flow-der-stille.de/sitemap.xml` neu einreichen.
+>    - [x] Einmalig (erledigt 18.10.): *Sitemaps* → `https://flow-der-stille.de/sitemap.xml` neu einreichen.
 >    - [ ] Einmalig: *Seiten* → „Gefunden – zurzeit nicht indexiert“, „Seite mit Weiterleitung“, „Alternative Seite mit richtigem kanonischen Tag“ → jeweils *Fehlerbehebung prüfen*.
->    - [ ] **Tag 1 – Hauptseiten**: `/`, `/meditation`, `/selbsthypnose`, `/hoerbuecher`, `/ruhe-shop`, `/hoerproben`, `/ueber-uns`, `/blog`, `/uebungen`, `/faq`
+>    - [x] **Tag 1 – Hauptseiten** (erledigt 18.10.): `/`, `/meditation`, `/selbsthypnose`, `/hoerbuecher`, `/ruhe-shop`, `/hoerproben`, `/ueber-uns`, `/blog`, `/uebungen`, `/faq`
 >    - [ ] **Tag 2 – Produkte**: `/audio/selbsthypnose_besser_und_erholsamer_schlaf`, `/audio/selbsthypnose_selbstbewusstsein`, `/audio/selbsthypnose_fokus`, `/audio/selbsthypnose_ernaehrung`, `/audio/meditation_innere_ruhe`, `/audio/meditation_loslassen`, `/audio/meditation_zur_herzoeffnung`, `/audio/pmr_muskelentspannung`, `/hoerbuch/mensch_sein`, `/hoerbuch/schmetterling`
 >    - [ ] **Tag 3 – Blog & Inhalte**: `/hoerbuch/wo-die-seele-den-wind-beruehrt`, `/blog/innere-ruhe-im-alltag`, `/blog/parasympathikus-aktivieren`, `/blog/herzkohaerenz-herz-und-verstand`, `/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo`, `/blog/trauerbegleitung-trauerbewaeltigung-hoerbuch-seele-wind`, `/wissen`, `/morgen`, `/abend`, `/rezepte`
 >    - [ ] **Tag 4 – neue Beiträge**: `/blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit`, `/blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch`
