@@ -43,6 +43,14 @@
 >    - [ ] `verify-apple-purchase` und `notify-new-purchase` deployen, danach Testkauf in TestFlight (Sandbox-Konto).
 > 4. **💬 Atem-Chat „Aura“** – seit 17.10. **ausgeblendet** (antwortete live nicht, `/api/chat` braucht den nicht laufenden Express-Server). Zum Reaktivieren: Edge Function mit Gemini-Secret bauen, dann in `public/.htaccess` die 302-Zeile für `atemchat|chat` entfernen, in `src/index.tsx` `/atemchat` wieder auf `<AtemChat />` stellen, Menüpunkt in `Layout.tsx` zurückholen und `/atemchat` in `public/sitemap.xml` eintragen.
 >
+> 5. **🔐 Kauf-Sicherheit (Code fertig 23.10., noch nicht live) – Reihenfolge einhalten!**
+>    - [ ] **Sofort:** `supabase/migrations/20261023_profiles_rollenschutz.sql` im Supabase SQL-Editor ausführen (Nutzer konnten sich über `profiles.rolle` selbst zum Admin machen). Die Kontrollabfrage am Ende zeigt alle Admins → nur bekannte Adressen?
+>    - [ ] Prüfen, dass die Secrets `GOOGLE_SERVICE_ACCOUNT` und `PAYPAL_LIVE_CLIENT_ID`/`PAYPAL_LIVE_SECRET` in Supabase gesetzt sind. Ohne sie lehnen die Funktionen jetzt **jeden** Kauf ab (keine Test-/Ersatz-IDs mehr).
+>    - [ ] Edge Functions deployen: `process-purchase`, `verify-google-play-purchase`, `verify-apple-purchase`, `notify-new-purchase`. Danach je einen echten Testkauf (PayPal, Google Play) machen.
+>    - [ ] Push → Web live; neuen Android-Build (Play Store) und iOS-Build veröffentlichen.
+>    - [ ] **Zuletzt:** `supabase/migrations/20261023_kaeufe_nur_admin_insert.sql` ausführen (nur noch Server & Admins schreiben in `kaeufe`).
+>    - Hinweis: Scheitert die Server-Prüfung bei PayPal, bekommt der Kunde „Zahlung eingegangen, Freischaltung wird geprüft“ und es geht ein Alarm über `send-error-alert` raus → manuell im Admin-Dashboard freischalten.
+
 > ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):
 > 1. **📱 Sobald das Apple-Testgerät da ist (kommende Woche)**:
 >    - Apple TestFlight App auf dem iPhone/iPad installieren.

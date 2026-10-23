@@ -366,10 +366,10 @@ export default function PremiumShopDashboard() {
           const vResult = isIOSApp()
             ? await verifyApplePurchase({ transactionId: transaction.transactionId, productId })
             : await handlePurchaseSuccess({
-                purchaseToken: transaction?.purchaseId || transaction?.transactionId || ('GPLAY_' + Date.now()),
+                purchaseToken: transaction?.purchaseId || transaction?.transactionId,
                 productId,
                 price
-              }, user?.id || 'guest');
+              });
 
           setShowUnlockBanner(true);
           setTimeout(() => {
@@ -1442,26 +1442,19 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
               return;
             }
 
-            let purchaseToken = 'GPLAY_OWNED_' + Date.now();
-            try {
-              const CdvPurchase = (window as any).CdvPurchase;
-              if (CdvPurchase && CdvPurchase.store) {
-                const p = CdvPurchase.store.get(playId) || CdvPurchase.store.get(produkt.id);
-                if (p && p.transaction) {
-                  purchaseToken = p.transaction.purchaseToken || p.transaction.id || purchaseToken;
-                  if (typeof p.transaction.finish === 'function') {
-                    await p.transaction.finish();
-                  }
-                }
-              }
-            } catch (e) {}
+            // Echten Kauf-Token aus dem lokalen Google-Beleg holen und serverseitig prüfen lassen
+            const CdvPurchase = (window as any).CdvPurchase;
+            const p = CdvPurchase?.store?.get(playId) || CdvPurchase?.store?.get(produkt.id);
+            const ownedTx = p ? CdvPurchase.store.findInLocalReceipts(p) : undefined;
+            if (!ownedTx?.purchaseId) {
+              throw new Error('Kein Google-Play-Beleg für dieses Produkt gefunden.');
+            }
 
-            // WICHTIG: Erzwinge Eintrag in Supabase public.kaeufe & Profil-Update!
             await handlePurchaseSuccess({
-              purchaseToken,
+              purchaseToken: ownedTx.purchaseId,
               productId: produkt.id,
               price: parseFloat(produkt.preis) || 1.99
-            }, user?.id || 'guest');
+            });
 
             setShowUnlockBanner(true);
             await onSuccess(); // Lädt Shop-Daten sofort neu, aktualisiert gekaufteSet und schaltet Play Button frei!
@@ -1471,6 +1464,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
             }, 2000);
           } catch (syncErr) {
             console.error("Sync-Fehler bei ITEM_ALREADY_OWNED:", syncErr);
+            setError(`Kauf konnte nicht bestätigt werden. Bitte später erneut versuchen oder an info@flow-der-stille.de wenden.`);
             onSuccess();
           }
         } else {

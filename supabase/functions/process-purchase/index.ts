@@ -57,6 +57,38 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // PayPal-Bestellung serverseitig prüfen – ohne Bestätigung durch PayPal keine Freischaltung
+    if (!transaction_id || !product_id) {
+      throw new Error("transaction_id und product_id sind Pflicht.");
+    }
+    const paypalClientId = Deno.env.get('PAYPAL_LIVE_CLIENT_ID') || Deno.env.get('VITE_PAYPAL_CLIENT_ID');
+    const paypalSecret = Deno.env.get('PAYPAL_LIVE_SECRET') || Deno.env.get('PAYPAL_SECRET');
+    if (!paypalClientId || !paypalSecret) {
+      throw new Error("PayPal-Zugang fehlt (PAYPAL_LIVE_CLIENT_ID / PAYPAL_LIVE_SECRET).");
+    }
+
+    const accessToken = await getPayPalAccessToken(paypalClientId, paypalSecret);
+    const orderDetails = await verifyPayPalOrder(transaction_id, accessToken);
+    if (orderDetails.status !== 'COMPLETED') {
+      throw new Error(`PayPal-Bestellung ist nicht abgeschlossen (Status: ${orderDetails.status}).`);
+    }
+
+    const paidAmount = orderDetails.purchase_units?.[0]?.amount;
+    const paidValue = parseFloat(paidAmount?.value || '0');
+    const { data: produktRow } = await supabaseClient
+      .from('produkte')
+      .select('preis')
+      .eq('id', product_id)
+      .maybeSingle();
+    if (!produktRow) {
+      throw new Error(`Unbekanntes Produkt: ${product_id}`);
+    }
+    if (paidAmount?.currency_code !== 'EUR' || paidValue + 0.001 < Number(produktRow.preis)) {
+      throw new Error(`Bezahlter Betrag ${paidAmount?.value} ${paidAmount?.currency_code} passt nicht zum Produktpreis ${produktRow.preis} EUR.`);
+    }
+    console.log(`Transaktion ${transaction_id} von PayPal bestätigt (${paidValue} EUR).`);
+
     let activeUser: any = null;
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -73,7 +105,8 @@ serve(async (req) => {
       }
     }
 
-    const userEmail = activeUser?.email || guest_email;
+    const verifiedGuestEmail = orderDetails.payer?.email_address || guest_email;
+    const userEmail = activeUser?.email || verifiedGuestEmail;
     if (!userEmail) {
       throw new Error("Weder authentifizierter Nutzer noch Gast-E-Mail übermittelt.");
     }
@@ -82,11 +115,11 @@ serve(async (req) => {
     let magicLinkUrl: string | null = null;
 
     // Wenn Gast-Kauf vorliegt: Magic Link generieren & ggf. User in Supabase Auth anlegen
-    if (!activeUserId && guest_email) {
+    if (!activeUserId && verifiedGuestEmail) {
       try {
         const { data: linkData, error: linkErr } = await supabaseClient.auth.admin.generateLink({
           type: 'magiclink',
-          email: guest_email,
+          email: verifiedGuestEmail,
           options: {
             redirectTo: `https://flow-der-stille.de/danke?order_id=${encodeURIComponent(transaction_id || '')}&product_id=${encodeURIComponent(product_id || '')}&magic=sent`
           }
@@ -102,26 +135,7 @@ serve(async (req) => {
 
     console.log(`Starte Security Check für Order ID: ${transaction_id}, User/Gast: ${userEmail}`);
 
-    // PayPal Verifizierung (optional in test/dev, but verified if live keys exist)
-    const paypalClientId = Deno.env.get('PAYPAL_LIVE_CLIENT_ID') || Deno.env.get('VITE_PAYPAL_CLIENT_ID');
-    const paypalSecret = Deno.env.get('PAYPAL_LIVE_SECRET') || Deno.env.get('PAYPAL_SECRET');
-
-    if (paypalClientId && paypalSecret && transaction_id && !transaction_id.startsWith('MOCK_') && !transaction_id.startsWith('PP_')) {
-      try {
-        const accessToken = await getPayPalAccessToken(paypalClientId, paypalSecret);
-        const orderDetails = await verifyPayPalOrder(transaction_id, accessToken);
-
-        if (orderDetails.status && orderDetails.status !== 'COMPLETED') {
-          console.warn(`PayPal order status is ${orderDetails.status}, continuing anyway for robustness.`);
-        } else {
-          console.log("Transaktion von PayPal offiziell bestätigt.");
-        }
-      } catch (paypalVerifyErr) {
-        console.warn("PayPal server-side check warning:", paypalVerifyErr);
-      }
-    }
-
-    const paypalOrderId = transaction_id || ('PP_' + Date.now());
+    const paypalOrderId = transaction_id;
 
     // Einheitliches kaeufe-Schema für ALLE Kaufwege (PayPal, Google Play, Admin-Freischaltung):
     // user_id (Pflicht), produkt_id, order_id (eindeutig, Präfix zeigt die Quelle), preis, waehrung, email,
@@ -145,9 +159,9 @@ serve(async (req) => {
         .from('kaeufe')
         .upsert({
           user_id: activeUserId,
-          produkt_id: product_id || 'atemarbeit_herzoeffnung',
+          produkt_id: product_id,
           order_id: paypalOrderId,
-          preis: price || 1.99,
+          preis: paidValue,
           waehrung: 'EUR',
           email: userEmail,
           widerruf_verzicht_akzeptiert: true
@@ -195,7 +209,7 @@ serve(async (req) => {
           <p>dein Einmalkauf von <strong>${product_name || 'Flow der Stille Audio'}</strong> war erfolgreich.</p>
           <div style="background: #FFFFFF; padding: 16px; border-radius: 12px; border: 1px solid #E3E1D9; margin: 20px 0;">
             <p style="margin: 4px 0;"><strong>Transaktions-ID:</strong> ${paypalOrderId}</p>
-            <p style="margin: 4px 0;"><strong>Betrag:</strong> ${(price || '1.99').toString().replace('.', ',')} EUR (Einmalkauf • Kein Abo)</p>
+            <p style="margin: 4px 0;"><strong>Betrag:</strong> ${paidValue.toFixed(2).replace('.', ',')} EUR (Einmalkauf • Kein Abo)</p>
             <p style="margin: 4px 0;"><strong>Kauf-E-Mail:</strong> ${userEmail}</p>
           </div>
           ${magicLinkSection}
@@ -243,7 +257,7 @@ serve(async (req) => {
       }
     }
 
-    // Speichern fehlgeschlagen → Fehler melden, damit das Frontend seinen Fallback-Upsert ausführt
+    // Speichern fehlgeschlagen → Fehler melden (Frontend zeigt Hinweis, Admin schaltet manuell frei)
     if (dbError) {
       return new Response(
         JSON.stringify({ success: false, error: `Kauf nicht gespeichert: ${dbError.message}` }),

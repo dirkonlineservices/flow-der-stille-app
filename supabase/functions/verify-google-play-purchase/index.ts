@@ -1,4 +1,4 @@
-// Version: 1.1.1 - Fixed kaeufe column name 'preis' & onConflict 'user_id,produkt_id'
+// Version: 1.2.0 - Nur von Google bestätigte Käufe, Käufer aus dem Login-Token
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { google } from "https://esm.sh/googleapis@126.0.1"
@@ -63,7 +63,7 @@ serve(async (req) => {
   }
 
   try {
-    const { productId, purchaseToken, userId, price = 1.99 } = await req.json()
+    const { productId, purchaseToken, price = 1.99 } = await req.json()
 
     if (!purchaseToken || !productId) {
       throw new Error('Fehlende Parameter: purchaseToken oder productId erforderlich.');
@@ -75,71 +75,68 @@ serve(async (req) => {
     const dbProductId = PLAY_TO_DB_MAP[productId] || productId;
     const playProductId = DB_TO_PLAY_MAP[productId] || productId;
 
+    // Käufer nur aus dem Login-Token bestimmen, nie aus dem Request-Body
+    let userId: string | null = null;
+    const jwt = (req.headers.get('Authorization') || '').replace('Bearer ', '');
+    if (jwt) {
+      const { data: authData } = await supabase.auth.getUser(jwt);
+      userId = authData?.user?.id ?? null;
+    }
+
     // 1. Google API Authentifizierung
     const rawCredentials = Deno.env.get('GOOGLE_SERVICE_ACCOUNT') || Deno.env.get('GOOGLE_PLAY_SERVICE_ACCOUNT') || '{}';
     const googleCredentials = JSON.parse(rawCredentials);
 
-    let orderId = '';
-    let isRefunded = false;
-    const isTestToken = purchaseToken.startsWith('inapp:') || 
-                        purchaseToken.startsWith('MOCK_') || 
-                        purchaseToken.startsWith('GPLAY_') || 
-                        purchaseToken.startsWith('RESTORED_') || 
-                        purchaseToken.includes('test') ||
-                        purchaseToken.includes('TEST');
+    if (!googleCredentials.client_email) {
+      throw new Error('Google-Zugang fehlt (GOOGLE_SERVICE_ACCOUNT).');
+    }
 
-    if (googleCredentials.client_email && !isTestToken) {
+    const auth = new google.auth.GoogleAuth({
+      credentials: googleCredentials,
+      scopes: ['https://www.googleapis.com/auth/androidpublisher'],
+    })
+    const androidpublisher = google.androidpublisher({ version: 'v3', auth })
+
+    // 2. Kauf bei Google validieren – ohne Bestätigung durch Google keine Freischaltung
+    const purchase = await androidpublisher.purchases.products.get({
+      packageName: 'app.flowderstille.de',
+      productId: playProductId,
+      token: purchaseToken,
+    })
+
+    // purchaseState: 0 = Gekauft, 1 = Storniert/Erstattet, 2 = Ausstehend
+    if (purchase.data.purchaseState === 2) {
+      throw new Error('Zahlung bei Google Play noch ausstehend.');
+    }
+    const isRefunded = purchase.data.purchaseState === 1;
+    const isTestToken = purchase.data.purchaseType === 0; // Lizenztester-Kauf
+    const googleOrderId = purchase.data.orderId || `GPA.${purchaseToken.substring(0, 16)}`;
+    // Testkäufe kennzeichnen, damit die Telegram-Meldung sie als 🧪 ausweist
+    const orderId = isTestToken ? `GPA.TEST-${googleOrderId}` : googleOrderId;
+
+    // Transaktion bei Google Play zwingend bestätigen (acknowledge)
+    if (!isRefunded && purchase.data.acknowledgementState === 0) {
       try {
-        const auth = new google.auth.GoogleAuth({
-          credentials: googleCredentials,
-          scopes: ['https://www.googleapis.com/auth/androidpublisher'],
-        })
-        const androidpublisher = google.androidpublisher({ version: 'v3', auth })
-
-        // 2. Kauf bei Google validieren
-        const purchase = await androidpublisher.purchases.products.get({
+        await androidpublisher.purchases.products.acknowledge({
           packageName: 'app.flowderstille.de',
           productId: playProductId,
           token: purchaseToken,
-        })
-
-        orderId = purchase.data.orderId || '';
-
-        // Prüfe purchaseState (0 = Gekauft, 1 = Storniert/Erstattet, 2 = Ausstehend)
-        if (purchase.data.purchaseState === 1) {
-          isRefunded = true;
-        }
-
-        // Transaktion bei Google Play zwingend bestätigen (acknowledge)
-        if (!isRefunded && purchase.data.acknowledgementState === 0) {
-          try {
-            await androidpublisher.purchases.products.acknowledge({
-              packageName: 'app.flowderstille.de',
-              productId: playProductId,
-              token: purchaseToken,
-              requestBody: { developerPayload: userId }
-            });
-          } catch (ackErr) {
-            console.warn("Acknowledge Notice:", ackErr);
-          }
-        }
-      } catch (gErr) {
-        console.warn("Google API Auth Notice:", gErr);
-        const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
-        orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
+          requestBody: { developerPayload: userId ?? 'guest' }
+        });
+      } catch (ackErr) {
+        console.warn("Acknowledge Notice:", ackErr);
       }
-    } else {
-      const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
-      orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
     }
 
     // Wenn der Kauf bei Google erstattet wurde: Entferne ihn aus public.kaeufe!
     if (isRefunded) {
-      await supabase
-        .from('kaeufe')
-        .delete()
-        .eq('user_id', userId)
-        .in('produkt_id', [dbProductId, playProductId, productId]);
+      if (userId) {
+        await supabase
+          .from('kaeufe')
+          .delete()
+          .eq('user_id', userId)
+          .in('produkt_id', [dbProductId, playProductId, productId]);
+      }
 
       return new Response(JSON.stringify({ 
         success: false, 
@@ -151,15 +148,11 @@ serve(async (req) => {
       });
     }
 
-    if (!orderId) {
-      orderId = `GPA.${purchaseToken.substring(0, 16)}`;
-    }
-
     // Ermittle User-ID (auch für Gäste ohne aktiven Account)
     let userEmail: string | undefined;
     const targetUserIds: string[] = [];
 
-    const isGuest = !userId || userId === 'guest' || userId === 'null' || userId === 'undefined';
+    const isGuest = !userId;
 
     if (isGuest) {
       // Automatischer Gast-Account für diese Google Play Bestellung
@@ -198,9 +191,9 @@ serve(async (req) => {
         console.warn("Gast-User Erstellung fehlgeschlagen:", gErr);
       }
     } else {
-      targetUserIds.push(userId);
+      targetUserIds.push(userId!);
       try {
-        const { data: userData } = await supabase.auth.admin.getUserById(userId);
+        const { data: userData } = await supabase.auth.admin.getUserById(userId!);
         userEmail = userData?.user?.email;
 
         if (userEmail) {
@@ -260,7 +253,7 @@ serve(async (req) => {
       .upsert(purchasesToInsert, { onConflict: 'user_id,produkt_id' });
 
     if (dbError1) {
-      console.error("Datenbank Fehler bei kaeufe (DB ID):", dbError1);
+      throw new Error(`Kauf konnte nicht gespeichert werden: ${dbError1.message}`);
     }
 
     // Profil-Status auf is_premium = true setzen für alle verknüpften Accounts
@@ -322,6 +315,7 @@ serve(async (req) => {
     })
 
   } catch (error: any) {
+    console.error('verify-google-play-purchase:', error);
     return new Response(JSON.stringify({ success: false, error: error.message || 'Verifizierungsfehler' }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

@@ -204,7 +204,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   const currentUserId = session?.user?.id || user?.id;
 
                   let edgeFunctionSuccess = false;
-                  let isAlreadyCompleted = false;
 
                   // 3. Supabase Edge Function process-purchase aufrufen (mit guest_email & guest_name)
                   try {
@@ -262,58 +261,25 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     }
                   }
 
-                  // 5. Fallback per Upsert:
-                  // Falls die Edge Function fehlschlägt (!edgeFunctionSuccess), schreibt das Frontend per .upsert() als Fallback in die Datenbank.
-                  if (!edgeFunctionSuccess && currentUserId) {
-                    try {
-                      const { data: existingKauf } = await supabase
-                        .from('kaeufe')
-                        .select('status')
-                        .eq('order_id', orderId)
-                        .maybeSingle();
-
-                      if (existingKauf && existingKauf.status === 'completed') {
-                        isAlreadyCompleted = true;
-                      }
-
-                      const { error: upsertError } = await supabase
-                        .from('kaeufe')
-                        .upsert(
-                          {
-                            user_id: currentUserId,
-                            produkt_id: produkt?.id,
-                            order_id: orderId,
-                            preis: priceValue,
-                            waehrung: 'EUR',
-                            email: user?.email || buyerEmail
-                          },
-                          { onConflict: 'user_id,produkt_id' }
-                        );
-
-                      if (upsertError) {
-                        transactionLogger.logError(
-                          'Database Upsert Failure',
-                          upsertError,
-                          'supabase_db',
-                          { user_id: currentUserId, produkt_id: produkt?.id, order_id: orderId }
-                        );
-                      } else {
-                        transactionLogger.logSuccess(
-                          'Purchase Saved to DB (Fallback Upsert)',
-                          `Kauf erfolgreich per Fallback-Upsert in 'kaeufe' gespeichert für User ${currentUserId}`,
-                          'supabase_db',
-                          { orderId, priceValue }
-                        );
-                      }
-                    } catch (dbFallbackErr) {
-                      console.warn('Fallback DB error:', dbFallbackErr);
-                    }
+                  // 5. Server konnte den Kauf nicht bestätigen/speichern: Kunde informieren, Admin alarmieren.
+                  // Ein direkter Eintrag in kaeufe aus dem Browser ist bewusst nicht mehr erlaubt.
+                  if (!edgeFunctionSuccess) {
+                    await reportCriticalError({
+                      context: `PayPal-Kauf nicht freigeschaltet – bitte manuell prüfen (Order ${orderId}, Produkt ${produkt?.id})`,
+                      error: new Error('process-purchase fehlgeschlagen'),
+                      userEmail: user?.email || buyerEmail
+                    });
+                    setToast({
+                      show: true,
+                      type: 'info',
+                      title: 'Zahlung eingegangen',
+                      productTitle: produkt?.titel,
+                      message: `Deine Zahlung ist bei uns angekommen. Die Freischaltung wird gerade geprüft und erfolgt in Kürze. Bestellnummer: ${orderId}`
+                    });
                   }
 
-                  // DataLayer Purchase Tracking nur ausführen, wenn die Bestellung nicht bereits verarbeitet war
-                  if (isAlreadyCompleted) {
-                    console.log(`[IDEMPOTENCY] Order ${orderId} war bereits 'completed'. DataLayer-Event wird übersprungen.`);
-                  } else if (typeof window !== 'undefined' && (window as any).dataLayer) {
+                  // DataLayer Purchase Tracking
+                  if (typeof window !== 'undefined' && (window as any).dataLayer) {
                     const dl = (window as any).dataLayer;
                     dl.push({ ecommerce: null });
                     dl.push({

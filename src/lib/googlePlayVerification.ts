@@ -5,79 +5,45 @@ import { trackMetaPurchase } from './metaPixel';
 interface VerifyPurchaseParams {
   purchaseToken: string;
   productId: string;
-  userId?: string | null;
   price: number;
 }
 
+// Google-Play-Käufe werden ausschließlich serverseitig geprüft und gespeichert (verify-google-play-purchase).
+// Schlägt die Prüfung fehl, wird ein Fehler geworfen: Die Transaktion bleibt dann unbestätigt
+// und wird beim nächsten App-Start erneut geprüft.
 export const verifyGooglePlayPurchase = async ({
   purchaseToken,
   productId,
-  userId,
   price
 }: VerifyPurchaseParams) => {
   const supabase = getSupabase();
   const playProductId = getPlayStoreProductId(productId);
   const dbProductId = REVERSE_PLAY_STORE_PRODUCT_MAP[productId] || REVERSE_PLAY_STORE_PRODUCT_MAP[playProductId] || productId;
 
-  let verifiedSuccessfully = false;
-  const cleanToken = purchaseToken.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'TEST';
-  let orderId = `GPA.TEST-${dbProductId}-${cleanToken}`;
-
-  // 1. Aufruf der Supabase Edge Function (übernimmt auch Gastkauf-Archivierung in Supabase!)
-  try {
-    const { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
-      body: {
-        purchaseToken,
-        productId: playProductId,
-        userId: userId || 'guest',
-        price: price || 1.99,
-        packageName: 'app.flowderstille.de'
-      }
-    });
-
-    if (!error && data?.success) {
-      verifiedSuccessfully = true;
-      if (data.orderId) orderId = data.orderId;
+  const { data, error } = await supabase.functions.invoke('verify-google-play-purchase', {
+    body: {
+      purchaseToken,
+      productId: playProductId,
+      price: price || 1.99,
+      packageName: 'app.flowderstille.de'
     }
-  } catch (fnErr) {
-    console.warn("Edge Function notice:", fnErr);
+  });
+
+  if (error || !data?.success) {
+    throw new Error(data?.error || error?.message || 'Kauf konnte bei Google Play nicht bestätigt werden.');
   }
 
-  // 2. Direkter lokaler Client-Eintrag nur wenn Nutzer wirklich eingeloggt ist (sonst erledigt das die Edge Function per Service Role)
-  if (userId && userId !== 'guest') {
-    try {
-      const dbKey1 = `${orderId}_${dbProductId}`;
-      await supabase.from('kaeufe').upsert({
-        user_id: userId,
-        produkt_id: dbProductId,
-        preis: price || 1.99,
-        waehrung: 'EUR',
-        order_id: dbKey1
-      }, { onConflict: 'user_id,produkt_id' });
+  // Meta Pixel In-App Purchase Event mit Plattform-Tag
+  trackMetaPurchase({
+    value: price || 1.99,
+    currency: 'EUR',
+    content_ids: [dbProductId],
+    content_name: `Google Play: ${dbProductId}`,
+    content_type: 'app_in_app_purchase',
+    platform: 'app'
+  });
 
-      // Profil-Status anpassen
-      await supabase.from('profiles').update({
-        is_premium: true,
-        updated_at: new Date().toISOString()
-      }).eq('id', userId);
-
-      verifiedSuccessfully = true;
-    } catch (dbErr) {
-      console.error("Direkter kaeufe-Upsert Fehler:", dbErr);
-    }
-  }
-
-    // Meta Pixel In-App Purchase Event mit Plattform-Tag
-    trackMetaPurchase({
-      value: price || 1.99,
-      currency: 'EUR',
-      content_ids: [dbProductId],
-      content_name: `Google Play: ${dbProductId}`,
-      content_type: 'app_in_app_purchase',
-      platform: 'app'
-    });
-
-  return { success: verifiedSuccessfully, orderId };
+  return { success: true, orderId: data.orderId };
 };
 
 export interface GooglePlayPurchase {
@@ -86,11 +52,6 @@ export interface GooglePlayPurchase {
   price: number;
 }
 
-export const handlePurchaseSuccess = async (purchase: GooglePlayPurchase, userId?: string | null) => {
-  return await verifyGooglePlayPurchase({
-    purchaseToken: purchase.purchaseToken,
-    productId: purchase.productId,
-    userId: userId || 'guest',
-    price: purchase.price
-  });
+export const handlePurchaseSuccess = async (purchase: GooglePlayPurchase) => {
+  return await verifyGooglePlayPurchase(purchase);
 };
