@@ -37,7 +37,10 @@
 >    - [ ] **Tag 4 – neue Beiträge**: `/blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit`, `/blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch`
 >    - (Alle URLs mit `https://flow-der-stille.de` davor.)
 > 2. **💶 Käufe seit 28.09.2026 nachtragen**: Bis zum Fix am 17.10. landeten PayPal-Käufe und Google-Play-Gastkäufe nicht in `kaeufe`. In PayPal & Google Play Console echte Zahlungen 28.09.–17.10. prüfen und ggf. über das Admin-Dashboard freischalten.
-> 3. **🍏 iOS-Käufe vor App-Store-Release prüfen**: Apple-Käufe laufen aktuell über `verify-google-play-purchase`, das nur Google-Belege prüft → eigene Apple-Verifizierung nötig.
+> 3. **🍏 Apple-Kaufprüfung (Code fertig 23.10., noch nicht deployt)**: Neue Edge Function `verify-apple-purchase` prüft jede iOS-Transaktion über die App Store Server API (Produktion, bei 404 Sandbox/TestFlight) und speichert sie in `kaeufe` (`order_id` = `APPLE.…` bzw. `APPLE.SANDBOX.…`). Der Käufer wird nur aus dem Login-Token bestimmt. Noch zu tun:
+>    - [ ] App Store Connect → *Benutzer und Zugriff* → *Integrationen* → *In-App-Kauf* → Schlüssel erzeugen (.p8 herunterladen, nur einmal möglich), Key-ID und Issuer-ID notieren.
+>    - [ ] Supabase-Secrets setzen: `APPLE_IAP_KEY_ID`, `APPLE_IAP_ISSUER_ID`, `APPLE_IAP_PRIVATE_KEY` (Inhalt der .p8-Datei).
+>    - [ ] `verify-apple-purchase` und `notify-new-purchase` deployen, danach Testkauf in TestFlight (Sandbox-Konto).
 > 4. **💬 Atem-Chat „Aura“** – seit 17.10. **ausgeblendet** (antwortete live nicht, `/api/chat` braucht den nicht laufenden Express-Server). Zum Reaktivieren: Edge Function mit Gemini-Secret bauen, dann in `public/.htaccess` die 302-Zeile für `atemchat|chat` entfernen, in `src/index.tsx` `/atemchat` wieder auf `<AtemChat />` stellen, Menüpunkt in `Layout.tsx` zurückholen und `/atemchat` in `public/sitemap.xml` eintragen.
 >
 > ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):

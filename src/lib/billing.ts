@@ -205,6 +205,11 @@ export const BillingService = {
           store.when().approved(async (transaction: any) => {
             const txId = transaction?.transactionId || transaction?.id || transaction?.purchaseToken || `tx_${Date.now()}`;
 
+            // iOS: Der App-Beleg und Platzhalter laufender Käufe sind keine echten Käufe
+            if (txId === 'appstore.application' || String(txId).startsWith('virtual.')) {
+              return;
+            }
+
             if (processedTransactionsSet.has(txId)) {
               try {
                 if (typeof transaction.finish === 'function') {

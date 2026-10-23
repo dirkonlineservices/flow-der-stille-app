@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
 import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer, getStoreName, isIOSApp } from '../lib/billing';
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
+import { verifyApplePurchase } from '../lib/appleVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import QuickSocialUnlockBox from './QuickSocialUnlockBox';
@@ -354,14 +355,21 @@ export default function PremiumShopDashboard() {
       // 1. Produkte als Array initialisieren (Batch-Registrierung für Cordova Purchase Store)
       if (BillingService.isNative() && finalProdukte.length > 0) {
         BillingService.registerAllProducts(finalProdukte, async (transaction?: any) => {
-          const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
-          const productId = transaction?.productId || 'fds_hypnose_selbstbewusstsein';
-          
-          const vResult = await handlePurchaseSuccess({
-            purchaseToken,
-            productId: productId,
-            price: 1.99
-          }, user?.id || 'guest');
+          // cordova-plugin-purchase v13: Produkt steht in products[0].id, der Google-Token in purchaseId
+          const productId = transaction?.products?.[0]?.id;
+          if (!productId) {
+            throw new Error('Kauf ohne Produkt-ID erhalten.');
+          }
+          const kaufProdukt = finalProdukte.find((p: any) => getPlayStoreProductId(p) === productId);
+          const price = Number(kaufProdukt?.preis) || 1.99;
+
+          const vResult = isIOSApp()
+            ? await verifyApplePurchase({ transactionId: transaction.transactionId, productId })
+            : await handlePurchaseSuccess({
+                purchaseToken: transaction?.purchaseId || transaction?.transactionId || ('GPLAY_' + Date.now()),
+                productId,
+                price
+              }, user?.id || 'guest');
 
           setShowUnlockBanner(true);
           setTimeout(() => {
@@ -1424,7 +1432,17 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
           setError(`Kauf im ${storeName} gefunden. Schalte Inhalte frei...`);
           
           try {
-            let purchaseToken = (isIOSApp() ? 'APPLE_OWNED_' : 'GPLAY_OWNED_') + Date.now();
+            // iOS: Wiederherstellen liefert die echte Transaktion an den approved-Listener (Prüfung bei Apple)
+            if (isIOSApp()) {
+              await BillingService.restorePurchases();
+              setShowUnlockBanner(true);
+              await onSuccess();
+              setError(null);
+              setTimeout(() => setShowUnlockBanner(false), 2000);
+              return;
+            }
+
+            let purchaseToken = 'GPLAY_OWNED_' + Date.now();
             try {
               const CdvPurchase = (window as any).CdvPurchase;
               if (CdvPurchase && CdvPurchase.store) {
