@@ -132,9 +132,7 @@ export default function MeditationLanding() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title="Geführte Meditationen für innere Ruhe & Nervensystem – Flow der Stille"
-        description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline, gesprochen von Lisa. Jetzt kostenlos reinhören ohne Abo."
-        canonicalUrl="https://flow-der-stille.de/meditation"
-        keywords="Geführte Meditation, Meditation Herzöffnung, Meditation Innere Ruhe, Meditation Nervensystem, Vagusnerv beruhigen, geführte Meditation Deutsch, Stressabbau Meditation, Loslassen lernen, Lisa Meditation, Jacqueline, Meditation ohne Abo, Flow der Stille"
+        description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Jetzt kostenlos reinhören ohne Abo."
       />
 
       <audio
@@ -241,7 +239,7 @@ export default function MeditationLanding() {
                 Meditation zur Herzöffnung (16:45 Min.)
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Nimm dir einen kurzen Moment für dich. Schließe die Augen, atme tief ein und lausche der warmen Stimme von Lisa.
+                Nimm dir einen kurzen Moment für dich. Schließe die Augen, atme tief ein und lausche der warmen Stimme von Lisa Ragusa.
               </p>
             </div>
           </div>
@@ -284,8 +282,8 @@ export default function MeditationLanding() {
               />
 
               <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span>Stimme: <strong>Lisa</strong></span>
-                <span>Text: <strong>Jacqueline</strong></span>
+                <span>Sprecherin: <strong>Lisa Ragusa</strong></span>
+                <span>Autorin: <strong>Jacqueline Schmetzer</strong></span>
               </div>
             </div>
           </div>
@@ -320,13 +318,9 @@ export default function MeditationLanding() {
                       alt={item.title}
                       className="w-full h-full object-cover"
                     />
-                    {item.isFree ? (
-                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-emerald-700 text-white text-[9px] font-bold shadow-xs">
+                    {item.isFree && (
+                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold">
                         GRATIS
-                      </div>
-                    ) : (
-                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold shadow-xs">
-                        {item.price}
                       </div>
                     )}
                   </div>
@@ -385,7 +379,7 @@ export default function MeditationLanding() {
                     </button>
                   ) : (
                     <Link
-                      to={`/ruhe-shop#product-${item.id}`}
+                      to={`/premium#product-${item.id}`}
                       className="px-4 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] border border-[var(--border)] text-xs font-semibold flex items-center gap-1.5 transition-all"
                     >
                       <span>Freischalten ({item.price})</span>
@@ -417,7 +411,7 @@ export default function MeditationLanding() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Link
-              to="/uebungen"
+              to="/exercises"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
@@ -438,7 +432,7 @@ export default function MeditationLanding() {
             </Link>
 
             <Link
-              to="/uebungen/pmr_basis"
+              to="/exercises/pmr_basis"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
@@ -480,7 +474,7 @@ export default function MeditationLanding() {
               </div>
               <h4 className="font-semibold text-sm text-[var(--text-main)]">Menschliche Wärme</h4>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Keine kühlen Algorithmen. Eingesprochen von Lisa mit echter emotionaler Tiefe, die Geborgenheit schenkt.
+                Keine kühlen Algorithmen. Eingesprochen von Lisa Ragusa mit echter emotionaler Tiefe, die Geborgenheit schenkt.
               </p>
             </div>
 

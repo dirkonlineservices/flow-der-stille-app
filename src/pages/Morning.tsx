@@ -11,7 +11,6 @@ export default function Morning() {
         title="Morgenritual & Morgenmeditation – Vagusnerv-Aktivierung" 
         description="Starte gestärkt in den Tag mit deinem persönlichen Morgenritual: Vagusnerv-Aktivierung, sanfte Atemarbeit und geführte Morgenmeditation von Jacqueline Schmetzer." 
         keywords="Morgenritual, Morgenmeditation, Vagusnerv aktivieren, Atemübung Morgen, Achtsamkeit Tagesstart, Stressreduktion, Flow der Stille"
-        canonicalUrl="https://flow-der-stille.de/morgen"
         schemaJson={{
           "@context": "https://schema.org",
           "@type": "Article",
@@ -47,7 +46,7 @@ export default function Morning() {
           title="Sanfte Vagus-Aktivierung"
           desc="Starte nicht mit Hektik. Zwei Minuten bewusste Bauchatmung direkt nach dem Aufstehen signalisieren deinem Gehirn Sicherheit und innere Ruhe."
           icon={<Wind className="w-6 h-6 text-blue-400" />}
-          linkTo="/uebungen"
+          linkTo="/exercises"
           linkText="Zur Atemübung"
           delay={0.1}
         />
@@ -55,7 +54,7 @@ export default function Morning() {
           title="Tages-Intention setzen"
           desc="Nimm dir beim ersten Glas Wasser einen Moment Zeit: Welches Gefühl soll deinen heutigen Tag leiten? Setze deinen Fokus vor der ersten E-Mail."
           icon={<Sparkles className="w-6 h-6 text-amber-500" />}
-          linkTo="/ruhe-shop?filter=Selbsthypnose"
+          linkTo="/premium?filter=Selbsthypnose"
           linkText="Fokus-Audio anhören"
           delay={0.2}
         />
@@ -63,7 +62,7 @@ export default function Morning() {
           title="Geführte Morgen-Meditation"
           desc="Erlebe 5 Minuten geführte Aufmerksamkeit, um Gedanken zu ordnen und mit positiver Energie in den Tag zu starten."
           icon={<Headphones className="w-6 h-6 text-emerald-500" />}
-          linkTo="/ruhe-shop?filter=Meditation"
+          linkTo="/premium?filter=Meditation"
           linkText="Morgen-Meditation starten"
           delay={0.3}
         />

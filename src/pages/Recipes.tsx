@@ -25,7 +25,6 @@ export default function Recipes() {
 
   // Neue Rezepte
   const newRecipes = useMemo(() => allRecipes.filter(r => r.isNew), []);
-  const otherRecipes = useMemo(() => allRecipes.filter(r => !r.isNew), []);
 
   // 2. Weekly Tip for User (using task_progress to align with weekly challenge progress)
   const taskProgress = user?.task_progress || { current_task: 0, completions: {} };
@@ -46,12 +45,7 @@ export default function Recipes() {
 
   return (
     <div className="space-y-12">
-      <SEO 
-        title="Ernährung & Nervensystem: Rezepte für Darm-Hirn-Achse – Flow der Stille" 
-        description="Nervennahrung und gesunde Rezepte: Wie die Darm-Hirn-Achse dein Nervensystem beruhigt. Goldene Milch, Omega-3 und mikrobiomfreundliche Ernährung." 
-        canonicalUrl="https://flow-der-stille.de/rezepte"
-        keywords="Ernährung Nervensystem, Darm-Hirn-Achse, Nervennahrung, Goldene Milch Rezept, Vagusnerv Ernährung, Mikrobiom Stressabbau, Anti-Stress Ernährung, Flow der Stille Rezepte"
-      />
+      <SEO title="Ernährung" description="Ernährung und Balance für ein entspanntes Nervensystem." />
       <header className="mb-8">
         <h1 className="text-4xl font-serif text-[var(--color-accent-primary)] mb-4">Ernährung & Balance</h1>
         <p className="text-[var(--color-text-muted)] max-w-2xl">
@@ -97,7 +91,7 @@ export default function Recipes() {
             <p className="text-sm text-[var(--color-text-muted)] max-w-md mb-6 leading-relaxed">
               Melde dich kostenlos an, um deinen persönlichen wöchentlichen Ernährungsimpuls zu erhalten. Die anderen Funktionen kommen dann erst später.
             </p>
-            <AuthLink to="/registrieren" className="inline-flex items-center justify-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
+            <AuthLink to="/register" className="inline-flex items-center justify-center px-6 py-2.5 bg-[var(--color-accent-primary)] text-white text-sm font-medium rounded-full hover:bg-[var(--color-accent-hover)] transition-colors shadow-sm">
               Kostenlos registrieren
             </AuthLink>
           </div>
@@ -131,11 +125,17 @@ export default function Recipes() {
         </section>
       )}
 
-      {/* Alle Rezepte */}
+      {/* Monatliche Rezept-Picks */}
       <section>
-        <h2 className="text-2xl font-serif text-[var(--color-text-main)] mb-6">Alle Empfehlungen</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {otherRecipes.map((recipe) => (
+        <div className="flex items-center gap-2 mb-6">
+          <div className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-accent-primary)] bg-[var(--color-bg-alt)] px-3 py-1 rounded-full border border-[var(--color-border-main)]">
+            Rotierend
+          </div>
+          <h2 className="text-2xl font-serif text-[var(--color-text-main)]">Empfehlungen des Monats</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {monthlyRecipes.map((recipe) => (
             <RecipeCard 
               key={recipe.id}
               id={recipe.id}
@@ -155,7 +155,7 @@ export default function Recipes() {
 
 function RecipeCard({ id, title, category, ingredients, quantity, description, icon }: { id: string; title: string; category: string; ingredients: string[]; quantity?: string; description: string; icon: React.ReactNode }) {
   return (
-    <Link to={`/rezepte/${id}`}>
+    <Link to={`/recipe/${id}`}>
       <motion.div 
         whileHover={{ scale: 1.02 }}
         className="bg-[var(--color-bg-card)] p-6 rounded-2xl shadow-sm border border-[var(--color-border-main)] h-full"

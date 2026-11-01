@@ -58,7 +58,7 @@ export default function AuthCallback() {
               updated_at: nowIso
             }, { onConflict: 'id' });
 
-            // Haftungsausschluss wird erst beim ersten Anhören per Checkbox-Modal abgefragt
+            localStorage.setItem('flow_disclaimer_accepted', 'true');
             localStorage.setItem('fds_audio_consent_granted', 'true');
           } catch (profileSyncErr) {
             console.warn('Profile sync in callback warning:', profileSyncErr);
@@ -108,7 +108,7 @@ export default function AuthCallback() {
                   updated_at: nowIso
                 }, { onConflict: 'id' });
 
-                // Haftungsausschluss wird erst beim ersten Anhören per Checkbox-Modal abgefragt
+                localStorage.setItem('flow_disclaimer_accepted', 'true');
                 localStorage.setItem('fds_audio_consent_granted', 'true');
               } catch (e) {}
 

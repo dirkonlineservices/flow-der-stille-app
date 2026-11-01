@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift, User, Heart, Sparkles, ChevronDown, Users
+  ShieldCheck, Gift, User
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { AdminTools } from './AdminTools';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
-import NewsletterBanner from './NewsletterBanner';
 import { getSupabase } from '../lib/supabaseClient';
 import { getOfflineHoerproben } from '../lib/offlineProductsService';
 import { AppDownloadBanner } from './AppDownloadBanner';
-import SmartAppBanner from './SmartAppBanner';
 import { NewContentNotification } from './NewContentNotification';
 import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
 import { NamePromptModal } from './NamePromptModal';
@@ -55,20 +54,8 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
-  const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
   const [hasHoerproben, setHasHoerproben] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [openFooterSilos, setOpenFooterSilos] = useState<Record<string, boolean>>({
-    silo1: false,
-    silo2: false,
-    silo3: false,
-    silo4: false,
-  });
-
-  const toggleFooterSilo = (key: string) => {
-    setOpenFooterSilos(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
   const isPremiumOrAppPage = location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
 
@@ -130,14 +117,11 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
-      {/* Smarter App-Banner für mobile Browserbesucher (Google Play Download Push) */}
-      <SmartAppBanner />
-
       {/* Top Right Corner Action Buttons */}
       <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
         {!user ? (
           <Link
-            to="/anmelden"
+            to="/login"
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
             title="Jetzt anmelden oder registrieren"
           >
@@ -146,7 +130,7 @@ export default function Layout() {
           </Link>
         ) : (
           <Link
-            to="/einstellungen"
+            to="/settings"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-semibold shadow-xs transition-all cursor-pointer"
             title="Mein Profil / Einstellungen"
           >
@@ -156,25 +140,14 @@ export default function Layout() {
         )}
 
         {!isNativeApp && (
-          <a
-            href="https://play.google.com/store/apps/details?id=app.flowderstille.de"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => {
-              if (typeof window !== 'undefined' && (window as any).dataLayer) {
-                (window as any).dataLayer.push({
-                  event: 'app_download_click',
-                  source: 'top_nav_button',
-                  destination: 'google_play_store'
-                });
-              }
-            }}
+          <Link
+            to="/app"
             className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-xs cursor-pointer"
-            title="Flow der Stille App direkt im Google Play Store öffnen"
+            title="Flow der Stille Android App Seite öffnen"
           >
             <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="font-medium">App</span>
-          </a>
+            <span className="hidden sm:inline font-medium">App</span>
+          </Link>
         )}
       </div>
 
@@ -182,15 +155,15 @@ export default function Layout() {
         {/* Desktop Sidebar */}
         <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
           <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--bg-alt)] transition-colors shrink-0">
-            <img src="/logo-transparent.png" alt="Logo" width="32" height="32" className="w-8 h-8" decoding="async" />
+            <img src="/logo-transparent.png" alt="Logo" className="w-8 h-8" />
           </Link>
           
           <div className="flex flex-col gap-6 w-full">
             <NavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : t('nav.home')} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
-            <NavLink to="/uebungen" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
-            <NavLink to="/rezepte" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
-            <NavLink to="/wissen" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
-            <NavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+            <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
+            <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
+            <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
+            <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
             <button 
               onClick={() => {
                 handleBottomNavClick('Mehr');
@@ -207,8 +180,8 @@ export default function Layout() {
         {/* Mobile Bottom Bar (unter 768px): App-ähnlich fixiert am unteren Rand */}
         <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
           <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
-          <MobileNavLink to="/uebungen" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
-          <MobileNavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+          <MobileNavLink to="/exercises" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
+          <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
           <button 
             onClick={() => {
               handleBottomNavClick('Mehr');
@@ -223,9 +196,17 @@ export default function Layout() {
 
         {/* Main Content Area: Dynamisch responsiv skalierend zwischen Laptop (max-w-5xl) und großem Desktop-Bildschirm (2xl:max-w-7xl) */}
         <main className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6 transition-all duration-300">
-          <div key={location.pathname} className="animate-in fade-in duration-200">
-            <Outlet />
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -236,324 +217,67 @@ export default function Layout() {
         </div>
       )}
 
-      {/* ─── SEO-OPTIMIERTER LINK-JUICE FOOTER (4 THEMEN-SILOS) ─── */}
-      {/* Auf Mobile: Aufklappbare Akkordeon-Kategorien für beste Übersicht • Auf Desktop: 4 edle Säulen • 100 % SEO Link-Juice dauerhaft im DOM */}
-      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-10 pt-8 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-8 border-t border-[var(--border)] transition-all duration-300">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-8 mb-8 text-left">
-          {/* Silo 1: Kostenlose Angebote & Praxis */}
-          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
-            <button
-              type="button"
-              onClick={() => toggleFooterSilo('silo1')}
-              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
-            >
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-                Kostenlose Praxis
-              </h4>
-              <ChevronDown
-                size={16}
-                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo1 ? 'rotate-180' : ''}`}
-              />
-            </button>
-            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo1 ? 'block' : 'hidden md:block'}`}>
-              <li>
-                <Link to="/meditation" onClick={() => handleMenuClick('Kostenlose Meditation')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Kostenlose Meditation
-                </Link>
-              </li>
-              <li>
-                <Link to="/selbsthypnose" onClick={() => handleMenuClick('Kostenlose Selbsthypnose')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Kostenlose Selbsthypnose
-                </Link>
-              </li>
-              <li>
-                <Link to="/hoerproben" onClick={() => handleMenuClick('Kostenlose Hörproben')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Kostenlose Hörproben
-                </Link>
-              </li>
-              <li>
-                <Link to="/uebungen" onClick={() => handleMenuClick('Atemübungen & Vagusnerv')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Atemübungen &amp; Vagusnerv
-                </Link>
-              </li>
-              {/* Atem-Chat „Aura“ vorübergehend ausgeblendet (braucht neues Backend, siehe GEMINI.md To-dos) */}
-            </ul>
-          </div>
-
-          {/* Silo 2: Hörbücher & Mediathek */}
-          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
-            <button
-              type="button"
-              onClick={() => toggleFooterSilo('silo2')}
-              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
-            >
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-                Hörbücher &amp; Audio
-              </h4>
-              <ChevronDown
-                size={16}
-                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo2 ? 'rotate-180' : ''}`}
-              />
-            </button>
-            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo2 ? 'block' : 'hidden md:block'}`}>
-              <li>
-                <Link to="/hoerbuecher" onClick={() => handleMenuClick('Hörbuch-Übersicht')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Hörbuch-Übersicht
-                </Link>
-              </li>
-              <li>
-                <Link to="/hoerbuch/schmetterling" onClick={() => handleMenuClick('Der Schmetterling')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Der Schmetterling (Teil 1)
-                </Link>
-              </li>
-              <li>
-                <Link to="/hoerbuch/wo-die-seele-den-wind-beruehrt" onClick={() => handleMenuClick('Seele & Wind')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Wo die Seele den Wind berührt (Teil 2)
-                </Link>
-              </li>
-              <li>
-                <Link to="/hoerbuch/mensch_sein" onClick={() => handleMenuClick('Mensch sein')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Mensch sein (Mut zum Echtsein)
-                </Link>
-              </li>
-              <li>
-                <Link to="/ruhe-shop" onClick={() => handleMenuClick('Ruhe-Shop')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Ruhe-Shop (ab 1,99 €)
-                </Link>
-              </li>
-              <li>
-                <Link to="/pakete" onClick={() => handleMenuClick('Modelle & Pakete')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
-                  🌿 Modelle &amp; Pakete (Ohne Abo)
-                </Link>
-              </li>
-              <li>
-                <Link to="/app" onClick={() => handleMenuClick('Android App')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Android App im Play Store
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Silo 3: Wissen & Philosophie */}
-          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
-            <button
-              type="button"
-              onClick={() => toggleFooterSilo('silo3')}
-              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
-            >
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] font-mono">
-                Wissen &amp; Vision
-              </h4>
-              <ChevronDown
-                size={16}
-                className={`text-[var(--accent)] transition-transform duration-200 md:hidden ${openFooterSilos.silo3 ? 'rotate-180' : ''}`}
-              />
-            </button>
-            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo3 ? 'block' : 'hidden md:block'}`}>
-              <li>
-                <Link to="/blog/warum-flow-der-stille-kostenlose-meditation-ohne-abo" onClick={() => handleMenuClick('Unsere Vision: Warum kein Abo?')} className="text-[var(--accent)] hover:underline transition-colors font-medium block py-0.5">
-                  Unsere Vision (Warum kein Abo?)
-                </Link>
-              </li>
-              <li>
-                <Link to="/wissen" onClick={() => handleMenuClick('Nervensystem verstehen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Nervensystem verstehen
-                </Link>
-              </li>
-              <li>
-                <Link to="/rezepte" onClick={() => handleMenuClick('Darm-Hirn-Achse & Ernährung')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Darm-Hirn-Achse &amp; Ernährung
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" onClick={() => handleMenuClick('Blog & Impulse')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Blog &amp; Impulse
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" onClick={() => handleMenuClick('Häufige Fragen (FAQ)')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Häufige Fragen (FAQ)
-                </Link>
-              </li>
-              <li>
-                <Link to="/ueber-uns" onClick={() => handleMenuClick('Über uns & Vision')} className="text-emerald-800 dark:text-emerald-300 hover:underline transition-colors block py-0.5 font-bold">
-                  🌿 Über uns &amp; unsere Vision
-                </Link>
-              </li>
-              <li>
-                <Link to="/community" onClick={() => handleMenuClick('Geschützte Community')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Geschützte Community (0&nbsp;€)
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Silo 4: Transparenz & Rechtliches */}
-          <div className="bg-[var(--bg-card)] md:bg-transparent p-3.5 md:p-0 rounded-2xl md:rounded-none border border-[var(--border)] md:border-none space-y-2 md:space-y-3">
-            <button
-              type="button"
-              onClick={() => toggleFooterSilo('silo4')}
-              className="w-full flex items-center justify-between text-left md:pointer-events-none cursor-pointer"
-            >
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
-                Recht &amp; Kontakt
-              </h4>
-              <ChevronDown
-                size={16}
-                className={`text-[var(--text-muted)] transition-transform duration-200 md:hidden ${openFooterSilos.silo4 ? 'rotate-180' : ''}`}
-              />
-            </button>
-            <ul className={`space-y-2 text-xs pt-1 md:pt-0 ${openFooterSilos.silo4 ? 'block' : 'hidden md:block'}`}>
-              <li>
-                <Link to="/kontakt" onClick={() => handleMenuClick('Kontakt')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Kontakt &amp; Anfragen
-                </Link>
-              </li>
-              <li>
-                <Link to="/impressum" onClick={() => handleMenuClick('Impressum')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Impressum
-                </Link>
-              </li>
-              <li>
-                <Link to="/datenschutz" onClick={() => handleMenuClick('Datenschutz')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Datenschutzerklärung
-                </Link>
-              </li>
-              <li>
-                <Link to="/agb" onClick={() => handleMenuClick('AGB')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  AGB &amp; Widerruf
-                </Link>
-              </li>
-              <li>
-                <Link to="/rechtliches" onClick={() => handleMenuClick('Rechtliches')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Haftungsausschluss
-                </Link>
-              </li>
-              <li>
-                <Link to="/versand" onClick={() => handleMenuClick('Versand & Retouren')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Versand &amp; Retouren
-                </Link>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => setIsNewsletterOpen(true)}
-                  className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5 cursor-pointer text-left font-medium"
-                >
-                  ✉️ Newsletter abonnieren
-                </button>
-              </li>
-              <li>
-                <Link to="/konto-loeschen" onClick={() => handleMenuClick('Konto löschen')} className="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors block py-0.5">
-                  Konto &amp; Daten löschen
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Folge uns auf Facebook & Instagram + Geschützte Community */}
-        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-2xs">
-          <div className="space-y-0.5">
-            <h4 className="text-xs font-bold text-[var(--text-main)] flex items-center justify-center sm:justify-start gap-1.5">
-              <span>Folge uns auf Facebook &amp; Instagram</span>
-            </h4>
-            <p className="text-[11px] text-[var(--text-muted)]">
-              Tägliche Inspirationen, Neuigkeiten &amp; Achtsamkeits-Impulse für deine innere Ruhe.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <a
-              href="https://www.facebook.com/flowderstille"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] dark:text-[#4599ff] border border-[#1877F2]/30 text-xs font-bold transition hover:scale-105"
-              title="Folge unserer Facebook-Seite"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span>Facebook-Seite</span>
-            </a>
-            <a
-              href="https://www.instagram.com/flowderstille"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-500/10 hover:bg-pink-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/30 text-xs font-bold transition hover:scale-105"
-              title="Folge unserem Instagram-Kanal"
-            >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-              <span>Instagram</span>
-            </a>
+      {/* FOOTER */}
+      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
+        {[
+          { to: '/contact', label: 'Kontakt', isButton: true },
+          { to: '/klangproben', label: 'Klangproben' },
+          { to: '/app', label: 'Android App' },
+          { to: '/faq', label: 'FAQ' },
+          { to: '/impressum', label: 'Impressum' },
+          { to: '/datenschutz', label: 'Datenschutz' },
+          { to: '/agb', label: 'AGB' },
+          { to: '/versand', label: 'Versand & Lieferung' },
+          { to: '/rueckgaberichtlinie', label: 'Rückgaberichtlinie' },
+          { to: '/rechtliches', label: 'Rechtliches' },
+          { to: '/online-widerruf', label: 'Online-Widerruf' },
+          { to: '/konto-loeschen', label: 'Konto löschen' }
+        ].map((link) => (
+          link.isButton ? (
             <Link
-              to="/community"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30 text-xs font-bold transition"
-              title="Geschützte Community für registrierte Hörer"
+              key={link.to}
+              to={link.to}
+              onClick={() => handleMenuClick(link.label)}
+              className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
             >
-              <Users size={14} className="text-emerald-700 dark:text-emerald-400" />
-              <span>Geschützte Community</span>
+              {link.label}
             </Link>
-          </div>
-        </div>
-
-        {/* Bottom Bar: Copyright & Herzensprojekt */}
-        <div className="pt-6 border-t border-[var(--border)]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left text-xs text-[var(--text-muted)]">
-          <div className="flex items-center gap-2">
-            <img src="/logo-transparent.png" alt="Flow der Stille Logo" width="20" height="20" className="w-5 h-5 object-contain" decoding="async" />
-            <span>&copy; {new Date().getFullYear()} Flow der Stille • Jacqueline, Lisa und Dirk</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5">
-            <button
-              type="button"
-              onClick={() => setIsNewsletterOpen(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-1.5"
+          ) : (
+            <Link 
+              key={link.to} 
+              to={link.to} 
+              onClick={() => handleMenuClick(link.label)}
+              className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
             >
-              <span>✉️ Newsletter</span>
-            </button>
-            <Link to="/kontakt" className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] font-semibold hover:opacity-90 transition shadow-xs">
-              Kontakt aufnehmen
+              {link.label}
             </Link>
-            <ProductDisclaimerTrigger />
-          </div>
-        </div>
+          )
+        ))}
+        <ProductDisclaimerTrigger />
       </footer>
 
-      {/* 🌟 Newsletter Modal Dialog */}
-      {isNewsletterOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[var(--border)] relative">
-            <button
-              onClick={() => setIsNewsletterOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-alt)] transition cursor-pointer"
-              aria-label="Schließen"
-            >
-              <X size={20} />
-            </button>
-            <div className="pt-2">
-              <NewsletterBanner variant="in-content" />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Slide-Up Menü (Drawer) für Mobil & Desktop "Mehr" */}
-      {isSlideUpOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center">
-          {/* Backdrop */}
-          <div 
-            onClick={() => setIsSlideUpOpen(false)}
-            className="absolute inset-0 bg-black/50 transition-opacity duration-200"
-          />
+      <AnimatePresence>
+        {isSlideUpOpen && (
+          <div className="fixed inset-0 z-[100] flex items-end justify-center">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSlideUpOpen(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+            />
 
-          {/* Slide-Up Content Card */}
-          <div
-            className="relative w-full max-w-xl bg-[var(--bg-card)] border-t border-[var(--border)] rounded-t-3xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto text-[var(--text-main)] flex flex-col gap-6 animate-in slide-in-from-bottom duration-250 ease-out"
-            onClick={e => e.stopPropagation()}
-          >
+            {/* Slide-Up Content Card */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="relative w-full max-w-xl bg-[var(--bg-card)] border-t border-[var(--border)] rounded-t-3xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto text-[var(--text-main)] flex flex-col gap-6"
+              onClick={e => e.stopPropagation()}
+            >
               {/* Drag Indicator Handle */}
               <div className="w-12 h-1.5 bg-[var(--border)] rounded-full mx-auto -mt-2 opacity-60" />
 
@@ -599,7 +323,7 @@ export default function Layout() {
 
                 {/* Ernährung */}
                 <Link
-                  to="/rezepte"
+                  to="/recipes"
                   onClick={() => handleMenuClick('Ernährung')}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
                 >
@@ -614,7 +338,7 @@ export default function Layout() {
 
                 {/* Lernen & Wissen */}
                 <Link
-                  to="/wissen"
+                  to="/learn"
                   onClick={() => handleMenuClick('Lernen & Wissen')}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
                 >
@@ -623,14 +347,14 @@ export default function Layout() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.learn')}</div>
-                    <div className="text-xs text-[var(--text-muted)]">Wissen &amp; Meditation</div>
+                    <div className="text-xs text-[var(--text-muted)]">Wissen & Meditation</div>
                   </div>
                 </Link>
 
                 {/* Klangproben & Hörproben - zur dedizierten Landingpage */}
                 {hasHoerproben && (
                   <Link
-                    to="/hoerproben"
+                    to="/klangproben"
                     onClick={() => handleMenuClick('Klangproben')}
                     className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
                   >
@@ -661,25 +385,7 @@ export default function Layout() {
                   </Link>
                 )}
 
-                {/* Ruhe-Shop */}
-                <Link
-                  to="/ruhe-shop"
-                  onClick={() => handleMenuClick('Ruhe-Shop')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <ShoppingBag size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
-                      <span>Ruhe-Shop</span>
-                      <span className="text-[9px] bg-emerald-700 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Ohne Abo</span>
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)]">Hörbücher &amp; Selbsthypnosen ab 1,99&nbsp;€</div>
-                  </div>
-                </Link>
-
-                {/* Hörbücher-Themenseite */}
+                {/* Hörbücher-Themenseite (Für alle Nutzer freigeschaltet) */}
                 <Link
                   to="/hoerbuecher"
                   onClick={() => handleMenuClick('Hörbücher')}
@@ -694,59 +400,6 @@ export default function Layout() {
                       <span className="text-[9px] bg-[var(--accent)] text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Neu</span>
                     </div>
                     <div className="text-xs text-[var(--text-muted)]">Die Hörbuch-Welt von Flow der Stille</div>
-                  </div>
-                </Link>
-
-                {/* Kostenlose Meditationen */}
-                <Link
-                  to="/meditation"
-                  onClick={() => handleMenuClick('Kostenlose Meditationen')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <Heart size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
-                      <span>Meditationen</span>
-                      <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Gratis</span>
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)]">Kostenlose Meditation &amp; Herzöffnung</div>
-                  </div>
-                </Link>
-
-                {/* Kostenlose Selbsthypnose */}
-                <Link
-                  to="/selbsthypnose"
-                  onClick={() => handleMenuClick('Kostenlose Selbsthypnose')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <Moon size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
-                      <span>Selbsthypnose</span>
-                      <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Gratis</span>
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)]">Kostenlose Selbsthypnose &amp; Schlaf</div>
-                  </div>
-                </Link>
-
-                {/* Blog & Vision */}
-                <Link
-                  to="/blog"
-                  onClick={() => handleMenuClick('Blog & Impulse')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <Sparkles size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
-                      <span>Blog &amp; Vision</span>
-                    </div>
-                    <div className="text-xs text-[var(--text-muted)]">Warum kein Abo? Unsere Mission</div>
                   </div>
                 </Link>
 
@@ -792,7 +445,7 @@ export default function Layout() {
                   </button>
                 ) : (
                   <Link
-                    to="/anmelden"
+                    to="/login"
                     onClick={() => handleMenuClick('Anmelden / Profil')}
                     className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--accent)] text-white transition-all text-left shadow-md group sm:col-span-2 hover:opacity-95"
                   >
@@ -851,34 +504,7 @@ export default function Layout() {
                     className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
                   >
                     <Scale size={16} className="text-[var(--accent)] shrink-0" />
-                    <span>Rechtliches &amp; KI</span>
-                  </Link>
-                </div>
-
-                {/* Dezent untergeordnete Shop-Rechte */}
-                <div className="pt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--text-muted)]">
-                  <Link 
-                    to="/versand" 
-                    onClick={() => handleMenuClick('Versand & Lieferung')}
-                    className="hover:text-[var(--text-main)] hover:underline"
-                  >
-                    Versand
-                  </Link>
-                  <span>•</span>
-                  <Link 
-                    to="/rueckgaberichtlinie" 
-                    onClick={() => handleMenuClick('Rückgaberichtlinie')}
-                    className="hover:text-[var(--text-main)] hover:underline"
-                  >
-                    Rückgaberichtlinie
-                  </Link>
-                  <span>•</span>
-                  <Link 
-                    to="/online-widerruf" 
-                    onClick={() => handleMenuClick('Online-Widerruf')}
-                    className="hover:text-[var(--text-main)] hover:underline"
-                  >
-                    Online-Widerruf
+                    <span>Rechtliches & KI</span>
                   </Link>
                 </div>
 
@@ -890,9 +516,10 @@ export default function Layout() {
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           </div>
         )}
+      </AnimatePresence>
 
       <AdminTools />
       <NewContentNotification />

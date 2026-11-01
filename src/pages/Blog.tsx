@@ -1,35 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { BlogPost, BLOG_POSTS } from '../data/blogPosts';
+import { BlogPost } from '../lib/blog';
 import { BlogCard } from '../components/BlogCard';
 import SEO from '../components/SEO';
 
 export default function Blog() {
-  const [posts, setPosts] = useState<BlogPost[]>(BLOG_POSTS);
-  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/blog')
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         return res.json();
       })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setPosts(data);
         }
+        setLoading(false);
       })
-      .catch(() => {
-        // Fallback: BLOG_POSTS bereits aktiv
+      .catch((err) => {
+        console.error('Failed to fetch blog posts:', err);
+        setLoading(false);
       });
   }, []);
 
   return (
     <main className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] py-12 px-4 sm:px-6 lg:px-8">
       <SEO 
-        title="Blog & Impulse für Achtsamkeit und Nervensystem – Flow der Stille" 
-        description="Inspirationen, Übungen und Impulse für innere Ruhe, Vagusnerv-Aktivierung und Gelassenheit im Alltag von Jacqueline Schmetzer." 
-        canonicalUrl="https://flow-der-stille.de/blog"
-        keywords="Achtsamkeit Blog, Meditation Impulse, Vagusnerv Blog, Nervensystem regulieren, Stress bewältigen, Herzkohärenz, Flow der Stille Blog"
+        title="Blog & Impulse | Flow der Stille" 
+        description="Inspirationen, geführte Meditationen und Wege zu mehr innerer Ruhe." 
       />
       <div className="max-w-5xl mx-auto">
         <header className="mb-16 text-center">

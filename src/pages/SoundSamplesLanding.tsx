@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Headphones, Sparkles, Volume2, ArrowLeft, ArrowRight, 
   CheckCircle2, Clock, ShieldCheck, Heart, Moon, BookOpen, 
-  Wind, HelpCircle, ChevronDown, ChevronUp, Mic, Cpu, Compass, Lock, Play
+  Wind, HelpCircle, ChevronDown, ChevronUp, Mic, Cpu, Compass, Lock
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
@@ -44,9 +44,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: true,
     cover: '/images/products/cover_herzoeffnung.jpg',
     shortDesc: 'Eine behutsame Einladung, emotionale Schutzpanzer abzulegen und Weite, Sanftheit und innere Wärme im Herzraum zuzulassen.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_herzoeffnung_meditation',
+    shopAnchor: '/premium#product-fds_herzoeffnung_meditation',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
@@ -63,9 +63,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_innere_ruhe.jpg',
     shortDesc: 'Schalte das permanente Grundrauschen ab. Finde zurück in dein natürliches Tempo und spüre wieder festen Boden unter den Füßen.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_meditation_innere_ruhe',
+    shopAnchor: '/premium#product-fds_meditation_innere_ruhe',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3'
@@ -81,9 +81,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_inneres_kind.jpg',
     shortDesc: 'Ein geschützter, sicherer Rahmen, um alten Schutzmustern und ungestillten Bedürfnissen mit aufrichtiger Zuwendung zu begegnen.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_meditation_inneres_kind',
+    shopAnchor: '/premium#product-fds_meditation_inneres_kind',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3'
@@ -99,9 +99,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_herzkompass.jpg',
     shortDesc: 'Verbinde dich wieder mit deiner inneren Stimme und schenke deinen Empfindungen Raum, um stimmige Entscheidungen im Alltag zu treffen.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_herzkompass_meditation',
+    shopAnchor: '/premium#product-fds_herzkompass_meditation',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3'
@@ -119,9 +119,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: true,
     cover: '/images/products/cover_schlaf.jpg',
     shortDesc: 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine schwere, wohlige Tiefenentspannung und regenerierenden Schlaf.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Sanfte Schlafwellen & Frequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_selbsthypnose_besserer_tieferer_schlaf',
+    shopAnchor: '/premium#product-fds_selbsthypnose_besserer_tieferer_schlaf',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
@@ -138,9 +138,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_vertrauen.jpg',
     shortDesc: 'Echtes Selbstvertrauen ist nicht laut. Verankere ein unerschütterliches, ruhiges Fundament direkt in deinem Unterbewusstsein.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Stärkende Tiefenklänge (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_hypnose_selbstbewusstsein',
+    shopAnchor: '/premium#product-fds_hypnose_selbstbewusstsein',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3'
@@ -156,9 +156,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_fokus.jpg',
     shortDesc: 'Beende mentale Zerstreuung. Gelange mühelos und ohne anstrengende Willenskraft in deinen klaren, fokussierten Arbeitsmodus.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Konzentrationsfördernde Klangarchitektur (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_hypnose_fokus',
+    shopAnchor: '/premium#product-fds_hypnose_fokus',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3'
@@ -174,9 +174,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_ernaehrung.jpg',
     shortDesc: 'Wohlbefinden ohne Verzicht: Richte deine unbewussten Routinen neu aus, sodass gesunde Entscheidungen sich natürlich anfühlen.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Wohlfühlfrequenzen (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_hypnose_gesunde_ernaehrung',
+    shopAnchor: '/premium#product-fds_hypnose_gesunde_ernaehrung',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3'
@@ -187,37 +187,19 @@ const ALL_SAMPLES: SampleCardData[] = [
     id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
     title: 'Der Tag, an dem der Schmetterling erwachte',
     category: 'hoerbuch',
-    categoryLabel: 'Ganzheitliches Hörbuch (Teil 1)',
+    categoryLabel: 'Ganzheitliches Hörbuch',
     badge: 'Meisterwerk über das Loslassen',
     duration: '58:43 Min.',
     priceLabel: '4,99 €',
     isFree: false,
     cover: '/images/products/cover_schmetterling.jpg',
     shortDesc: 'Eine tröstende Reise über den Wandel des Bewusstseins: Warum der Übergang kein finsterer Abgrund ist, sondern der Flug eines Schmetterlings.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Buch & Skript: Jacqueline Schmetzer',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_schmetterling',
-    landingUrl: '/hoerbuch/schmetterling',
-    landingLabel: 'Zur Hörbuchseite',
+    shopAnchor: '/premium#product-fds_schmetterling',
+    landingUrl: '/hoerbuecher',
+    landingLabel: 'Zur Hörbuch-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3'
-  },
-  {
-    id: 'wo_die_seele_den_wind_beruehrt',
-    title: 'Wo die Seele den Wind berührt',
-    category: 'hoerbuch',
-    categoryLabel: 'Ganzheitliches Hörbuch (Teil 2)',
-    badge: 'Sanfte Trauerbegleitung',
-    duration: '86:06 Min.',
-    priceLabel: '4,99 €',
-    isFree: false,
-    cover: '/images/products/cover_seele_wind.jpg',
-    shortDesc: 'Sanfte Trauerbegleitung für Herz und Seele – Teil 2 der Schmetterling-Reihe. 9 einfühlsame Kapitel und eine geführte Abschluss-Meditation schenken Raum für Trost, Zuversicht und tiefen Frieden.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
-    musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_seele_wind',
-    landingUrl: '/hoerbuch/wo-die-seele-den-wind-beruehrt',
-    landingLabel: 'Zur Hörbuchseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Wo%20die%20Seele%20den%20Wind%20ber%C3%BChrt.mp3'
   },
   {
     id: 'mensch_sein',
@@ -230,11 +212,11 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_mensch_sein.jpg',
     shortDesc: 'Lege die Masken äußerer Erwartungen ab. Lerne, mit deinen eigenen Grenzen und Gefühlen in tiefer Ehrlichkeit und Würde im Einklang zu sein.',
-    voiceInfo: 'Echte menschliche Stimme: Lisa • Text erstellt von Jacqueline',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Buch & Skript: Jacqueline Schmetzer',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/ruhe-shop#product-fds_mensch_sein',
-    landingUrl: '/hoerbuch/mensch_sein',
-    landingLabel: 'Zur Hörbuchseite',
+    shopAnchor: '/premium#product-fds_mensch_sein',
+    landingUrl: '/hoerbuecher',
+    landingLabel: 'Zur Hörbuch-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3'
   },
 
@@ -252,8 +234,8 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Beruhige dein Nervensystem und deinen Vagusnerv in unter zwei Minuten. Ideal bei akutem Stress, innerer Unruhe oder vor wichtigen Terminen.',
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Akustische Frequenz-Ruhezone',
-    shopAnchor: '/ruhe-shop#product-fds_gefuehrte_atemuebung',
-    landingUrl: '/uebungen',
+    shopAnchor: '/premium#product-fds_gefuehrte_atemuebung',
+    landingUrl: '/exercises',
     landingLabel: 'Zu den Atemübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3'
   },
@@ -270,29 +252,10 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Das bewährte Prinzip von bewusstem Anspannen und Loslassen: Löst hartnäckige Muskelverspannungen in Schultern, Nacken und Rücken.',
     voiceInfo: 'Digitale Sprachsynthese für schnellen, barrierefreien Zugriff • Text: Jacqueline Schmetzer',
     musicInfo: 'Sanfte Begleitmelodie',
-    shopAnchor: '/ruhe-shop#product-fds_pmr_basis',
-    landingUrl: '/uebungen',
+    shopAnchor: '/premium#product-fds_pmr_basis',
+    landingUrl: '/exercises',
     landingLabel: 'Zu den Körperübungen',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/Progressive%20Muskelentspannung.mp3'
-  }
-];
-
-const FAQS = [
-  {
-    q: 'Kann ich mir die Hörproben wirklich kostenlos und ohne Registrierung anhören?',
-    a: 'Ja, alle hier aufgeführten Klangproben und Ausschnitte kannst du direkt mit einem Klick abspielen – komplett ohne Registrierung, ohne versteckte Kosten und ohne Abo.'
-  },
-  {
-    q: 'Wer spricht die Meditationen und Selbsthypnosen?',
-    a: 'Unsere Meditationen und Selbsthypnosen werden von Sprecherin Lisa mit echter, warmer menschlicher Stimme eingesprochen. Sämtliche Texte werden von Jacqueline persönlich von Hand verfasst.'
-  },
-  {
-    q: 'Wie kann ich die vollständigen Audios freischalten?',
-    a: 'Nach einer einfachen 1-Klick-Registrierung (z.B. per Google oder Facebook) kannst du kostenfreie Audios sofort in voller Länge hören oder kostenpflichtige Sessions für eine kleine einmalige Gebühr dauerhaft erwerben – ganz ohne Abonnement.'
-  },
-  {
-    q: 'Funktionieren die Audios auch auf dem Smartphone und offline?',
-    a: 'Ja! Du kannst die Audios im mobilen Webbrowser nutzen oder dir unsere kostenlose Flow der Stille Android-App herunterladen, in der du Sessions auch für den Offline-Flugmodus speichern kannst.'
   }
 ];
 
@@ -319,61 +282,74 @@ export default function SoundSamplesLanding() {
     ? ALL_SAMPLES
     : ALL_SAMPLES.filter(s => s.category === selectedCategory);
 
-  // SEO Schema.org Structured Data (GEO & Google Search)
-  const schemaJson = [
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "name": "Kostenlose Meditationen & Selbsthypnosen bei Flow der Stille",
-      "description": "Kostenlose geführte Meditationen, Selbsthypnosen und Hörproben von Jacqueline, eingesprochen von Lisa.",
-      "numberOfItems": ALL_SAMPLES.length,
-      "itemListElement": ALL_SAMPLES.map((item, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": {
-          "@type": "AudioObject",
-          "name": item.title,
-          "description": item.shortDesc,
-          "contentUrl": item.hoerprobeUrl || item.audioPath,
-          "encodingFormat": "audio/mpeg",
-          "duration": item.duration,
-          "author": {
-            "@type": "Person",
-            "name": "Jacqueline Schmetzer"
-          },
-          "performer": {
-            "@type": "Person",
-            "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Flow der Stille",
-            "url": "https://flow-der-stille.de"
+  // SEO Schema.org Structured Data
+  const schemaJson = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Kostenlose Klangproben & Hörproben von Flow der Stille",
+    "description": "Kostenlose Audio-Klangproben für geführte Meditationen, Selbsthypnosen und Hörbücher von Jacqueline Schmetzer, eingesprochen von Lisa Ragusa.",
+    "numberOfItems": ALL_SAMPLES.length,
+    "itemListElement": ALL_SAMPLES.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "AudioObject",
+        "name": item.title,
+        "description": item.shortDesc,
+        "contentUrl": item.hoerprobeUrl || item.audioPath,
+        "encodingFormat": "audio/mpeg",
+        "duration": item.duration,
+        "author": {
+          "@type": "Person",
+          "name": "Jacqueline Schmetzer"
+        },
+        "performer": {
+          "@type": "Person",
+          "name": item.category === 'uebung' ? "Flow der Stille Sprachsynthese" : "Lisa Ragusa"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Flow der Stille",
+          "url": "https://flow-der-stille.de",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "Baden-Württemberg",
+            "addressCountry": "DE"
           }
         }
-      }))
+      }
+    }))
+  };
+
+  const FAQS = [
+    {
+      q: "Kann ich mir wirklich alle Klangproben kostenlos und ohne Registrierung anhören?",
+      a: "Ja, absolut! Alle Klangproben auf dieser Seite kannst du direkt im Browser ohne Account, ohne App-Installation und ohne Bezahlschranke anhören. Klicke einfach auf den Play-Button der jeweiligen Karte."
     },
     {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": FAQS.map(faq => ({
-        "@type": "Question",
-        "name": faq.q,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.a
-        }
-      }))
+      q: "Warum überspringt der Player automatisch die ersten 70 Sekunden?",
+      a: "Vor jedem vollständigen Audio ist gesetzlich ein wichtiger Haftungsausschluss vorgeschaltet (z. B. dass man Selbsthypnosen keinesfalls beim Autofahren oder beim Bedienen schwerer Maschinen hören darf). Damit du in der Klangprobe nicht erst diesen rechtlichen Text abwarten musst, startet der Player direkt bei 1:10 Min. mitten in der beruhigenden Session."
+    },
+    {
+      q: "Wie entstehen die Audios? (Menschliche Stimme vs. KI-Transparenz)",
+      a: "Volle Ehrlichkeit und Transparenz sind uns wichtig: Alle Meditationen, Selbsthypnosen und unsere Hörbücher wurden von Jacqueline Schmetzer mit Herzblut persönlich verfasst und von Lisa Ragusa mit ihrer warmen, echten menschlichen Stimme eingesprochen. Die meditativen Hintergrundmusiken wurden mit KI-Unterstützung komponiert. Die beiden kurzen Schnupper-Übungen (Atemübung und PMR) wurden basierend auf Jacquelines Texten mit digitaler Sprachsynthese generiert, um dir einen sofortigen, kostenfreien Einstieg zu ermöglichen."
+    },
+    {
+      q: "Warum muss ich mich für die kostenlose Vollversion kurz registrieren?",
+      a: "Bei mentalen Entspannungsübungen und Selbsthypnosen gelten in Deutschland und der EU strenge Vorgaben zum Verbraucher- und Gesundheitsschutz. Durch eine kostenlose, unverbindliche Registrierung können wir rechtssicher nachweisen, dass du den Haftungsausschluss zur Kenntnis genommen hast. Deine Daten werden nicht verkauft oder zu Werbezwecken missbraucht – es dient rein der rechtlichen Absicherung."
+    },
+    {
+      q: "Gibt es bei Flow der Stille ein verstecktes Abonnement?",
+      a: "Nein, niemals! Flow der Stille verzichtet ganz bewusst auf Abo-Modelle und laufende Gebühren. Kostenlose Inhalte bleiben dauerhaft kostenfrei. Bezahlte Einzeltitel (wie die Hörbücher für 4,99 € oder Sessions für 1,99 €) kaufst du einmalig und behältst sie für immer in deinem Bereich."
     }
   ];
 
   return (
     <div className="min-h-screen text-[var(--text-main)] transition-colors duration-300">
       <SEO
-        title="Kostenlose Meditation & kostenlose Selbsthypnose – Hörproben | Flow der Stille"
-        description="Entdecke kostenlose Meditationen und geführte Selbsthypnosen zum sofortigen Anhören. Text von Jacqueline, gesprochen von Lisa – ohne Abo, ohne Risiko."
-        keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation kostenlos anhören, Selbsthypnose Hörprobe, Meditation zum Einschlafen, Herzöffnung, innerer Frieden, Lisa, Jacqueline, Flow der Stille Audio"
-        canonicalUrl="https://flow-der-stille.de/hoerproben"
+        title="Kostenlose Klangproben & Hörproben | Meditation, Selbsthypnose & Hörbücher"
+        description="Höre kostenlos & ohne Anmeldung in unsere Meditationen, Selbsthypnosen und Hörbücher rein. Geschrieben von Jacqueline Schmetzer, gesprochen von Lisa Ragusa."
+        keywords="Klangproben Meditation, Hörproben Selbsthypnose, Hörprobe Hörbuch, Meditation kostenlos reinhören, Lisa Ragusa Sprecherin, Jacqueline Schmetzer, Flow der Stille Audio, PMR kostenlos, Entspannungsübung Probe hören"
         image="/images/products/cover_herzoeffnung.jpg"
         schemaJson={schemaJson}
       />
@@ -389,7 +365,7 @@ export default function SoundSamplesLanding() {
         </Link>
 
         <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-          <Link to="/ruhe-shop" className="hover:text-[var(--accent)] transition-colors">Ruhe-Shop</Link>
+          <Link to="/premium" className="hover:text-[var(--accent)] transition-colors">Shop</Link>
           <span>/</span>
           <span className="font-semibold text-[var(--text-main)]">Klangproben</span>
         </div>
@@ -398,9 +374,9 @@ export default function SoundSamplesLanding() {
       {/* ─── HERO SECTION ───────────────────────────────────────────── */}
       <header className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold uppercase tracking-wider mb-4 border border-[var(--accent)]/30 shadow-2xs">
-            <Headphones size={14} />
-            <span>Kostenlose Meditationen &amp; Selbsthypnose Hörproben</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-semibold tracking-wide uppercase border border-[var(--accent)]/30 shadow-xs">
+            <Headphones size={15} />
+            <span>Kostenlose Klangproben • Ohne Anmeldung reinhören</span>
           </div>
 
           <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-[var(--text-main)] leading-[1.18] max-w-3xl mx-auto">
@@ -408,7 +384,7 @@ export default function SoundSamplesLanding() {
           </h1>
 
           <p className="text-sm sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-            Möchtest du eine <strong className="text-[var(--text-main)]">kostenlose Meditation</strong> oder geführte <strong className="text-[var(--text-main)]">kostenlose Selbsthypnose</strong> ausprobieren? 
+            Möchtest du vorab wissen, wie sich unsere Meditationen, Selbsthypnosen und Hörbücher anfühlen? 
             Höre hier völlig unverbindlich in jede Session rein – 100% werbefrei, ohne Abo und sofort im Browser.
           </p>
 
@@ -455,7 +431,7 @@ export default function SoundSamplesLanding() {
                 <span>Menschliche Stimme &amp; Herz</span>
               </div>
               <p className="text-[var(--text-muted)]">
-                Alle Meditationen, Selbsthypnosen und Hörbücher sind zu <strong>100 % von Jacqueline</strong> geschrieben und von <strong>Lisa</strong> mit ihrer warmen, echten menschlichen Stimme eingesprochen.
+                Alle Meditationen, Selbsthypnosen und Hörbücher sind zu <strong>100 % von Jacqueline Schmetzer</strong> geschrieben und von <strong>Lisa Ragusa</strong> mit ihrer warmen, echten menschlichen Stimme eingesprochen.
               </p>
             </div>
 
@@ -606,24 +582,6 @@ export default function SoundSamplesLanding() {
                   />
                 </div>
 
-                {sample.category === 'hoerbuch' && (
-                  <div className="pt-2">
-                    <Link
-                      to={
-                        sample.id === 'wo_die_seele_den_wind_beruehrt' || sample.id === 'fds_seele_wind'
-                          ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
-                          : sample.id === 'mensch_sein' || sample.id === 'fds_mensch_sein'
-                          ? '/hoerbuch/mensch_sein?autoplay=true'
-                          : '/hoerbuch/schmetterling?autoplay=true'
-                      }
-                      className="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
-                    >
-                      <Play size={13} className="fill-white" />
-                      <span>Mit 1 Klick Kapitel 1 kostenlos anhören →</span>
-                    </Link>
-                  </div>
-                )}
-
                 {/* Fußzeile mit Aktionen */}
                 <div className="pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs">
                   {sample.landingUrl && (
@@ -666,23 +624,23 @@ export default function SoundSamplesLanding() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             {user ? (
               <Link
-                to="/ruhe-shop"
+                to="/premium"
                 className="px-6 py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
               >
-                <span>Zum Ruhe-Shop &amp; Mediathek</span>
+                <span>Zum Premium-Bereich &amp; Mediathek</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (
               <>
                 <Link
-                  to="/registrieren"
+                  to="/register"
                   className="px-6 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
                 >
                   <span>Kostenlos &amp; unverbindlich registrieren</span>
                   <ArrowRight size={16} />
                 </Link>
                 <Link
-                  to="/anmelden"
+                  to="/login"
                   className="px-6 py-3 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] font-semibold text-xs sm:text-sm transition-all shadow-xs"
                 >
                   Bereits ein Konto? Anmelden

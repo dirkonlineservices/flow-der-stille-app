@@ -4,7 +4,7 @@ import {
   User, Shield, Lock, FileText, CheckCircle2, 
   AlertCircle, Sparkles, ShoppingBag, Eye, 
   Trash2, Download, LogOut, ArrowRight, Settings as SettingsIcon, Award, Sun, Moon, HardDrive, WifiOff,
-  ShieldCheck, Gift, ChevronDown, ChevronUp, RefreshCw, BarChart3, Users, Headphones, RotateCcw
+  ShieldCheck, Gift, ChevronDown, ChevronUp, RefreshCw, BarChart3, Users, Headphones
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -26,7 +26,6 @@ import {
   getProductCoverImage 
 } from '../lib/offlineProductsService';
 import { APP_VERSION, getClientAppVersion } from '../version';
-import { BillingService, getStoreName } from '../lib/billing';
 
 export default function Settings() {
   const { t } = useLanguage();
@@ -55,38 +54,6 @@ export default function Settings() {
   // Purchased products state
   const [purchases, setPurchases] = useState<any[]>([]);
   const [totalSpent, setTotalSpent] = useState(0);
-  const [isRestoringPurchases, setIsRestoringPurchases] = useState(false);
-  const [restorePurchasesMsg, setRestorePurchasesMsg] = useState<{ text: string; isError?: boolean } | null>(null);
-
-  const handleRestorePurchases = async () => {
-    setIsRestoringPurchases(true);
-    setRestorePurchasesMsg(null);
-    try {
-      const err = await BillingService.restorePurchases();
-      if (err) {
-        setRestorePurchasesMsg({ text: err, isError: true });
-      } else {
-        setRestorePurchasesMsg({ text: `Käufe über ${getStoreName()} werden synchronisiert...` });
-        // Käufe neu laden
-        if (user) {
-          const supabase = getSupabase();
-          const { data: refreshed } = await supabase
-            .from('kaeufe')
-            .select('*, produkt:produkte(*)')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false });
-          if (refreshed) {
-            setPurchases(refreshed);
-          }
-        }
-      }
-    } catch (e: any) {
-      setRestorePurchasesMsg({ text: e?.message || 'Wiederherstellung fehlgeschlagen.', isError: true });
-    } finally {
-      setIsRestoringPurchases(false);
-      setTimeout(() => setRestorePurchasesMsg(null), 7000);
-    }
-  };
 
   // Offline audio storage state
   const [showOfflineModal, setShowOfflineModal] = useState(false);
@@ -463,16 +430,30 @@ export default function Settings() {
 
      setDeleteLoading(true);
      try {
-        // Edge Function „delete-account“: anonymisiert Käufe (Aufbewahrungspflicht), löscht Profil & Supabase-Konto
-        const { data, error: deleteError } = await getSupabase().functions.invoke('delete-account', { method: 'POST' });
-        if (deleteError || !data?.success) {
-           throw new Error('Dein Konto konnte gerade nicht gelöscht werden. Bitte versuche es erneut oder schreib uns über das Kontaktformular.');
+        const supabase = getSupabase();
+        // 1. Delete purchases from Supabase
+        const { error: purchaseError } = await supabase
+           .from('kaeufe')
+           .delete()
+           .eq('user_id', user!.id);
+        
+        if (purchaseError) {
+           throw new Error('Fehler beim Löschen der Käufe.');
+        }
+
+        // 2. Call server API for local SQLite deletion
+        const response = await fetch('/api/user/delete', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+           throw new Error('Fehler beim Löschen des lokalen Profils.');
         }
 
         (window as any).dataLayer = (window as any).dataLayer || [];
         (window as any).dataLayer.push({ event: 'account_deleted', user_id: user.id });
 
-        // Lokale Sitzung beenden (das Konto existiert nicht mehr)
+        // 3. Optional: Sign user out of Supabase
         await logout();
         navigate('/login');
      } catch (err: any) {
@@ -523,7 +504,7 @@ export default function Settings() {
         </div>
       )}
       
-      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." noindex={true} />
+      <SEO title="Einstellungen" description="Verwalte deine persönlichen Angaben, ändere dein Passwort und betrachte deine Einkäufe." />
       <header className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <SettingsIcon className="text-[var(--color-accent-primary)] w-8 h-8" />
@@ -1133,39 +1114,6 @@ export default function Settings() {
                     >
                       <span>In der Mediathek stöbern →</span>
                     </Link>
-                  </div>
-                )}
-
-                {BillingService.isNative() && (
-                  <div className="mt-4 p-4 rounded-2xl bg-[var(--color-bg-alt)] border border-[var(--color-border-main)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="text-xs font-bold text-[var(--color-text-main)] flex items-center gap-1.5">
-                        <RotateCcw size={14} className="text-[var(--color-accent-primary)]" />
-                        <span>In-App-Käufe wiederherstellen ({getStoreName()})</span>
-                      </div>
-                      <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                        Bereits erworbene Inhalte auf diesem Gerät neu abgleichen und freischalten.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRestorePurchases}
-                      disabled={isRestoringPurchases}
-                      className="w-full sm:w-auto px-4 py-2 bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-hover)] text-white text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer disabled:opacity-50"
-                    >
-                      <RotateCcw size={13} className={isRestoringPurchases ? "animate-spin" : ""} />
-                      <span>{isRestoringPurchases ? "Wiederherstellung läuft..." : "Käufe wiederherstellen"}</span>
-                    </button>
-                  </div>
-                )}
-
-                {restorePurchasesMsg && (
-                  <div className={`mt-2 p-3 rounded-xl text-xs text-center border ${
-                    restorePurchasesMsg.isError 
-                      ? 'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-900' 
-                      : 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800'
-                  }`}>
-                    {restorePurchasesMsg.text}
                   </div>
                 )}
               </div>

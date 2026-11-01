@@ -12,12 +12,7 @@ export default function Exercises() {
 
   return (
     <div className="space-y-8">
-      <SEO 
-        title="Atemübungen & Entspannungstechniken für das Nervensystem – Flow der Stille" 
-        description="Geführte Atemübungen wie 4-7-8 Atmung, Box-Breathing und Progressive Muskelentspannung (PMR). Beruhige dein Nervensystem in wenigen Minuten."
-        canonicalUrl="https://flow-der-stille.de/uebungen"
-        keywords="Atemübungen, 4-7-8 Atmung, Box-Atmung, Box-Breathing, PMR Muskelentspannung, Progressive Muskelrelaxation, Atemtechnik Stressabbau, Zwerchfellatmung, Nervensystem beruhigen, Entspannung im Alltag, Flow der Stille"
-      />
+      <SEO title="Übungen" description="Achtsamkeitsübungen und Atemtechniken zur Entspannung." />
       <header className="mb-8">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
           <ArrowLeft size={16} />
@@ -62,7 +57,7 @@ export default function Exercises() {
 function ExerciseCard({ id, title, category, duration, description, image, isAudioExercise }: { id: string; title: string; category: string; duration: string; description: string; image: string; isAudioExercise: boolean }) {
   const { t } = useLanguage();
   return (
-    <Link to={`/uebungen/${id}`} className="block">
+    <Link to={`/exercises/${id}`} className="block">
       <motion.div 
         whileHover={{ y: -2 }}
         className="bg-[var(--color-bg-card)] rounded-2xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row overflow-hidden hover:shadow-md transition-all cursor-pointer group min-h-[220px]"

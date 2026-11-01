@@ -18,22 +18,5 @@ Disallow: /datadeletion
 Disallow: /exercisedetail
 Disallow: /recipedetail
 
-# 🛑 Admin- & Editor-Pfade sperren
-Disallow: /admin
-Disallow: /admin/*
-Disallow: /admin-freischalten
-Disallow: /blog/schreiben
-Disallow: /blog/neu
-Disallow: /blog/new
-
-# 🛑 Interne Entwurfs- & Admin-Vorschauseiten sperren
-Disallow: /vorteile
-Disallow: /angebote
-
-# 🛑 Vorgerenderte Rohdateien (werden intern unter den sauberen Adressen ausgeliefert)
-Disallow: /prerender/
-
 Sitemap: https://flow-der-stille.de/sitemap.xml
 # Google Merchant Center Product Feed: https://flow-der-stille.de/google-shopping-feed.xml
-# AI Agent Discovery: https://flow-der-stille.de/llms.txt
-# Agentmap: https://flow-der-stille.de/.well-known/ai-catalog.json

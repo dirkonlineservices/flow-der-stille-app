@@ -18,8 +18,6 @@ import {
 } from 'lucide-react';
 import { getPlayableAudioUrl } from '../lib/offlineAudioService';
 import { OfflineDownloadButton } from './OfflineDownloadButton';
-import { useAuth } from '../context/AuthContext';
-import QuickSocialUnlockBox from './QuickSocialUnlockBox';
 
 export interface AudiobookChapter {
   id: string;
@@ -41,10 +39,6 @@ interface Props {
   durationSeconds?: number; // z. B. 3523 für 58:43 Min
   chapters?: AudiobookChapter[];
   initialStartTime?: number;
-  isOwned?: boolean;
-  priceDisplay?: string;
-  autoPlay?: boolean;
-  onRequirePurchase?: (chapter?: AudiobookChapter) => void;
 }
 
 const DEFAULT_CHAPTERS: AudiobookChapter[] = [
@@ -90,19 +84,14 @@ export function AudiobookPlayerModal({
   onClose,
   productId,
   title,
-  author = 'Jacqueline',
-  reader = 'Lisa',
+  author = 'Jacqueline Schmetzer',
+  reader = 'Lisa Ragusa',
   coverImage = '/images/products/cover_schmetterling.jpg',
   audioUrl,
   durationSeconds = 3523,
   chapters = DEFAULT_CHAPTERS,
-  initialStartTime,
-  isOwned = false,
-  priceDisplay = '4,99 €',
-  autoPlay = true,
-  onRequirePurchase
+  initialStartTime
 }: Props) {
-  const { user } = useAuth();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const milestonesRef = useRef({ 25: false, 50: false, 75: false, 100: false });
 
@@ -117,13 +106,6 @@ export function AudiobookPlayerModal({
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState<boolean>(false);
 
-  // 🎯 User-Wunsch: Erstes Kapitel bei Hörbüchern komplett freischalten!
-  // Intro + Kapitel 1 sind gratis anhörbar (bis zum Beginn von Kapitel 2).
-  const ch2 = chapters.find(c => c.id === 'ch2') || chapters[2];
-  const maxFreeTime = isOwned 
-    ? (durationSeconds || 3600) 
-    : (ch2 ? ch2.startTime : 729);
-
   // Schutz-Mechanismus für den rechtlichen Hinweis (Disclaimer bis erstes echtes Kapitel z. B. 01:08 oder 01:19 Min.)
   const DISCLAIMER_DURATION = (chapters.length > 1 && chapters[1]?.startTime) ? chapters[1].startTime : 79;
   const DISCLAIMER_KEY = `fds_audiobook_disclaimer_listened_${productId}`;
@@ -134,10 +116,6 @@ export function AudiobookPlayerModal({
       return false;
     }
   });
-  // Ref-Kopie für Event-Listener-Closures: verhindert stale closure auf Mobile (iOS)
-  const isDisclaimerListenedRef = useRef<boolean>(
-    typeof window !== 'undefined' && window.localStorage?.getItem(DISCLAIMER_KEY) === 'true'
-  );
   const [disclaimerNotice, setDisclaimerNotice] = useState<string | null>(null);
 
   const PROGRESS_KEY = `fds_audiobook_progress_${productId}`;
@@ -221,25 +199,10 @@ export function AudiobookPlayerModal({
       }
     }
 
-    let playTimeout: any = null;
-    if (autoPlay) {
-      playTimeout = setTimeout(() => {
-        if (audioRef.current) {
-          const p = audioRef.current.play();
-          if (p !== undefined) {
-            p.then(() => setIsPlaying(true)).catch((e) => {
-              console.warn('Autoplay wait:', e);
-            });
-          }
-        }
-      }, 150);
-    }
-
     return () => {
       isMounted = false;
-      if (playTimeout) clearTimeout(playTimeout);
     };
-  }, [isOpen, productId, audioUrl, initialStartTime, autoPlay]);
+  }, [isOpen, productId, audioUrl, initialStartTime]);
 
   // Automatisches Speichern bei Verlassen der Seite / App-Schließen
   useEffect(() => {
@@ -325,21 +288,7 @@ export function AudiobookPlayerModal({
       // Disclaimer Prüfung: Ab Sekunde 79 (01:19 Min.) gilt der rechtliche Hinweis als gehört
       if (cur >= DISCLAIMER_DURATION && !hasListenedDisclaimer) {
         setHasListenedDisclaimer(true);
-        isDisclaimerListenedRef.current = true; // Ref sync halten für Event-Listener-Closures
         localStorage.setItem(DISCLAIMER_KEY, 'true');
-      }
-
-      // 🎯 Wenn nicht gekauft: Nach Ende von Kapitel 1 stoppen und Kaufhinweis anzeigen
-      if (!isOwned && cur >= maxFreeTime) {
-        audio.pause();
-        audio.currentTime = maxFreeTime;
-        setCurrentTime(maxFreeTime);
-        setIsPlaying(false);
-        setDisclaimerNotice('Kapitel 1 beendet. Schalte jetzt das vollständige Hörbuch frei, um nahtlos weiterzuhören.');
-        if (onRequirePurchase) {
-          onRequirePurchase(ch2);
-        }
-        return;
       }
 
       // GA4 Meilenstein-Tracking (25%, 50%, 75%)
@@ -376,11 +325,10 @@ export function AudiobookPlayerModal({
         setDuration(audio.duration);
       }
       // Falls der Browser currentTime beim Laden auf 0 zurücksetzt, gespeicherte Position garantieren:
-      // Nutzt Ref statt Closure-Wert (isDisclaimerListened wäre stale auf iOS/Mobile!)
       const targetPos = (typeof initialStartTime === 'number' && initialStartTime > 0)
         ? initialStartTime
         : savedPosition;
-      if (targetPos && targetPos > 5 && isDisclaimerListenedRef.current && audio.currentTime < 1) {
+      if (targetPos && targetPos > 5 && isDisclaimerListened && audio.currentTime < 1) {
         audio.currentTime = targetPos;
         setCurrentTime(targetPos);
       }
@@ -452,57 +400,6 @@ export function AudiobookPlayerModal({
     };
   }, [playableUrl, chapters, productId, title]);
 
-  // Polling-Fallback: Fortschrittsbalken & Zeitanzeige verlässlich synchronisieren.
-  // Das timeupdate-Event allein kann bei preload="none" und dynamischem src-Wechsel unzuverlässig sein.
-  // Dieser Interval liest currentTime direkt aus dem Audio-Element und aktualisiert den State.
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const id = setInterval(() => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      const cur = audio.currentTime;
-      setCurrentTime(cur);
-
-      // Aktives Kapitel synchron mitführen
-      for (let i = chapters.length - 1; i >= 0; i--) {
-        if (cur >= chapters[i].startTime) {
-          setActiveChapterId(chapters[i].id);
-          break;
-        }
-      }
-
-      // 🎯 Wenn nicht gekauft: Nach Ende von Kapitel 1 stoppen
-      if (!isOwned && cur >= maxFreeTime) {
-        audio.pause();
-        audio.currentTime = maxFreeTime;
-        setCurrentTime(maxFreeTime);
-        setIsPlaying(false);
-        setDisclaimerNotice('Kapitel 1 beendet. Schalte jetzt das vollständige Hörbuch frei, um nahtlos weiterzuhören.');
-        if (onRequirePurchase) {
-          onRequirePurchase(ch2);
-        }
-        return;
-      }
-
-      // Disclaimer-Grenze prüfen
-      if (cur >= DISCLAIMER_DURATION) {
-        const alreadySet = localStorage.getItem(DISCLAIMER_KEY) === 'true';
-        if (!alreadySet) {
-          setHasListenedDisclaimer(true);
-          localStorage.setItem(DISCLAIMER_KEY, 'true');
-        }
-      }
-
-      // Fortschritt sichern (bei ganzen Vielfachen von 4 Sekunden)
-      if (cur > 5 && Math.floor(cur) % 4 === 0) {
-        saveProgress(cur);
-      }
-    }, 200); // 5× pro Sekunde – flüssig für einen Fortschrittsbalken
-
-    return () => clearInterval(id);
-  }, [isPlaying, chapters]);
-
   // 4. Steuerungsfunktionen
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -546,17 +443,11 @@ export function AudiobookPlayerModal({
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!hasListenedDisclaimer) {
-      setDisclaimerNotice(`Du musst dir zuerst den rechtlichen Hinweis (${formatTime(DISCLAIMER_DURATION)} Min.) einmalig anhören. Danach kannst du frei spulen.`);
+      setDisclaimerNotice('Du musst dir zuerst den rechtlichen Hinweis (1:19 Min.) einmalig anhören. Danach kannst du frei spulen.');
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
     const targetTime = parseFloat(e.target.value);
-    if (!isOwned && targetTime >= maxFreeTime) {
-      setCurrentTime(maxFreeTime);
-      if (audioRef.current) audioRef.current.currentTime = maxFreeTime;
-      if (onRequirePurchase) onRequirePurchase(ch2);
-      return;
-    }
     setCurrentTime(targetTime);
     if (audioRef.current) {
       audioRef.current.currentTime = targetTime;
@@ -570,30 +461,12 @@ export function AudiobookPlayerModal({
       setTimeout(() => setDisclaimerNotice(null), 4500);
       return;
     }
-    const maxBound = !isOwned ? maxFreeTime : duration;
-    const target = audioRef.current.currentTime + seconds;
-    if (!isOwned && target >= maxFreeTime) {
-      audioRef.current.currentTime = maxFreeTime;
-      setCurrentTime(maxFreeTime);
-      if (onRequirePurchase) onRequirePurchase(ch2);
-      return;
-    }
-    const newTime = Math.min(Math.max(0, target), maxBound);
+    const newTime = Math.min(Math.max(0, audioRef.current.currentTime + seconds), duration);
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   const jumpToChapter = (chapter: AudiobookChapter) => {
-    if (!isOwned && chapter.id !== 'intro' && chapter.id !== 'ch1' && chapter.startTime >= maxFreeTime) {
-      if (onRequirePurchase) {
-        onRequirePurchase(chapter);
-      } else {
-        setDisclaimerNotice('Dieses Kapitel ist Teil der Vollversion. Bitte schalte das Hörbuch frei.');
-        setTimeout(() => setDisclaimerNotice(null), 4500);
-      }
-      return;
-    }
-
     if (!hasListenedDisclaimer && chapter.id !== 'intro' && chapter.startTime >= DISCLAIMER_DURATION) {
       setDisclaimerNotice(`Du musst dir zuerst den rechtlichen Hinweis (${formatTime(DISCLAIMER_DURATION)} Min.) einmalig anhören. Danach kannst du in den Kapiteln hüpfen.`);
       setTimeout(() => setDisclaimerNotice(null), 4500);
@@ -701,55 +574,6 @@ export function AudiobookPlayerModal({
           {/* Player Scrollable Content */}
           <div className="p-5 sm:p-7 space-y-6 overflow-y-auto flex-1">
 
-            {/* Kostenloses Kapitel 1 Banner mit 1-Klick-Hinweis & Registrierung für Nicht-Käufer */}
-            {!isOwned && (
-              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 flex flex-col gap-3 text-xs shadow-xs animate-fade-in">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-200/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 flex items-center justify-center shrink-0">
-                      <Sparkles size={16} />
-                    </div>
-                    <div>
-                      <strong className="text-emerald-950 dark:text-emerald-100 font-bold block text-xs sm:text-sm">
-                        Du hörst Kapitel 1 kostenlos ohne Anmeldung
-                      </strong>
-                      <span className="text-[11px] text-emerald-800 dark:text-emerald-300/90 font-medium">
-                        Genieße das gesamte 1. Kapitel gratis. Möchtest du alle weiteren Kapitel hören? Unten mit 1 Klick registrieren und für einmalig {priceDisplay} freischalten.
-                      </span>
-                    </div>
-                  </div>
-                  {onRequirePurchase && (
-                    <button
-                      type="button"
-                      onClick={() => onRequirePurchase(ch2)}
-                      className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs shadow-xs active:scale-95 transition-all whitespace-nowrap self-end sm:self-auto cursor-pointer"
-                    >
-                      Vollversion ({priceDisplay}) →
-                    </button>
-                  )}
-                </div>
-
-                {/* 1-Klick-Registrierung für Gäste */}
-                {!user && (
-                  <div className="pt-2 border-t border-emerald-300/40 dark:border-emerald-700/40">
-                    <QuickSocialUnlockBox
-                      produkt={{
-                        id: productId,
-                        titel: title,
-                        preis: 4.99,
-                        kategorie: 'Hörbuch'
-                      }}
-                      isAudiobook={true}
-                      price={priceDisplay}
-                      title="Gefällt dir Kapitel 1? Gesamtes Hörbuch freischalten"
-                      subtitle={`Kapitel 1 läuft hier komplett kostenlos ohne Anmeldung. Wenn du danach alle weiteren Kapitel dauerhaft hören möchtest: Jetzt mit 1 Klick registrieren und für einmalig ${priceDisplay} (kein Abo) freischalten:`}
-                      compact={true}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Resume Banner */}
             {showResumeBanner && savedPosition && (
               <div className="p-3.5 rounded-2xl bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs animate-fade-in shadow-xs">
@@ -809,28 +633,17 @@ export function AudiobookPlayerModal({
                   {title}
                 </h2>
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Text: <strong className="text-[var(--text-main)]">{author}</strong> • Stimme: <strong className="text-[var(--text-main)]">{reader}</strong>
+                  Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
 
-                {/* Offline-Speicher Button oder Freischalt-Hinweis */}
+                {/* Offline-Speicher Button */}
                 <div className="pt-2">
-                  {isOwned ? (
-                    <OfflineDownloadButton
-                      productId={productId}
-                      audioUrl={audioUrl}
-                      title={title}
-                      variant="button"
-                    />
-                  ) : onRequirePurchase ? (
-                    <button
-                      type="button"
-                      onClick={() => onRequirePurchase(ch2)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-semibold text-[var(--accent)] transition cursor-pointer shadow-2xs"
-                    >
-                      <Lock size={12} />
-                      <span>Vollversion freischalten ({priceDisplay})</span>
-                    </button>
-                  ) : null}
+                  <OfflineDownloadButton
+                    productId={productId}
+                    audioUrl={audioUrl}
+                    title={title}
+                    variant="button"
+                  />
                 </div>
               </div>
             </div>
@@ -984,20 +797,18 @@ export function AudiobookPlayerModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {chapters.map((ch) => {
                   const isActive = activeChapterId === ch.id;
-                  const isLockedByPurchase = !isOwned && ch.id !== 'intro' && ch.id !== 'ch1' && ch.startTime >= maxFreeTime;
-                  const isLockedByDisclaimer = isOwned && !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= DISCLAIMER_DURATION;
-                  const isLocked = isLockedByPurchase || isLockedByDisclaimer;
+                  const isLocked = !hasListenedDisclaimer && ch.id !== 'intro' && ch.startTime >= DISCLAIMER_DURATION;
 
                   return (
                     <button
                       key={ch.id}
                       onClick={() => jumpToChapter(ch)}
-                      className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
                         isActive
-                          ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)] text-[var(--text-main)] shadow-sm'
+                          ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)] text-[var(--text-main)] shadow-sm cursor-pointer'
                           : isLocked
-                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] opacity-85 hover:border-amber-400/50'
-                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40'
+                          ? 'bg-[var(--bg-alt)]/60 border-[var(--border)] text-[var(--text-muted)] opacity-85 cursor-not-allowed hover:border-amber-400/50'
+                          : 'bg-[var(--bg-alt)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent)]/40 cursor-pointer'
                       }`}
                     >
                       <div className="min-w-0 flex-1">
@@ -1012,11 +823,7 @@ export function AudiobookPlayerModal({
                       {isLocked ? (
                         <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono bg-amber-100 dark:bg-amber-900/60 text-stone-950 dark:text-amber-100 border border-amber-300 dark:border-amber-700/60 flex items-center gap-1 shadow-2xs shrink-0">
                           <Lock size={10} className="text-amber-900 dark:text-amber-300" />
-                          <span>{isLockedByPurchase ? 'Vollversion' : 'Gesperrt'}</span>
-                        </span>
-                      ) : !isOwned && (ch.id === 'intro' || ch.id === 'ch1') ? (
-                        <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 shrink-0">
-                          Gratis
+                          <span>Gesperrt</span>
                         </span>
                       ) : (
                         <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono shrink-0 transition-all ${

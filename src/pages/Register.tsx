@@ -205,7 +205,7 @@ export default function Register() {
         status: 'success',
         user_id: data?.user?.id || 'unknown'
       });
-      trackMetaRegistration({ method: 'Email', email: normalizedEmail, firstName, userId: data?.user?.id });
+      trackMetaRegistration({ method: 'Email', email: normalizedEmail, firstName });
 
       setIsSubmitted(true);
     } catch (err) {
@@ -280,106 +280,10 @@ export default function Register() {
     }
   };
 
-  const handleFacebookSignUp = async () => {
-    if (loading) return;
-    setError('');
-    setLoading(true);
-
-    const dataLayer = (window as any).dataLayer || [];
-    dataLayer.push({ event: 'registration_attempt', method: 'facebook_sso' });
-
-    try {
-      const supabase = getSupabase();
-      const isNative = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
-      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/dashboard';
-      sessionStorage.setItem('auth_return_url', returnUrl);
-
-      const redirectTo = isNative
-        ? 'app.flowderstille.de://auth/callback'
-        : `${window.location.origin}/auth/callback`;
-
-      if (isNative) {
-        // NATIV: System-Browser öffnen (verhindert Facebook WebView-Fehler)
-        const { data, error: ssoError } = await supabase.auth.signInWithOAuth({
-          provider: 'facebook',
-          options: {
-            redirectTo: redirectTo,
-            skipBrowserRedirect: true,
-          }
-        });
-
-        if (ssoError) throw ssoError;
-
-        if (data?.url) {
-          await Browser.open({ url: data.url, windowName: '_system' });
-        }
-      } else {
-        // WEB: Standard Browser-Redirect
-        const { error: ssoError } = await supabase.auth.signInWithOAuth({
-          provider: 'facebook',
-          options: { redirectTo: redirectTo }
-        });
-
-        if (ssoError) throw ssoError;
-      }
-    } catch (err: any) {
-      setError(err.message || 'Facebook-Registrierung konnte nicht gestartet werden.');
-      setLoading(false);
-    }
-  };
-
-  const handleAppleSignUp = async () => {
-    if (loading) return;
-    setError('');
-    setLoading(true);
-
-    const dataLayer = (window as any).dataLayer || [];
-    dataLayer.push({ event: 'registration_attempt', method: 'apple_sso' });
-
-    try {
-      const supabase = getSupabase();
-      const isNative = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
-      const returnUrl = location.state?.from || searchParams.get('redirectTo') || sessionStorage.getItem('auth_return_url') || '/dashboard';
-      sessionStorage.setItem('auth_return_url', returnUrl);
-
-      const redirectTo = isNative
-        ? 'app.flowderstille.de://auth/callback'
-        : `${window.location.origin}/auth/callback`;
-
-      if (isNative) {
-        // NATIV: System-Browser öffnen
-        const { data, error: ssoError } = await supabase.auth.signInWithOAuth({
-          provider: 'apple',
-          options: {
-            redirectTo: redirectTo,
-            skipBrowserRedirect: true,
-          }
-        });
-
-        if (ssoError) throw ssoError;
-
-        if (data?.url) {
-          await Browser.open({ url: data.url, windowName: '_system' });
-        }
-      } else {
-        // WEB: Standard Browser-Redirect
-        const { error: ssoError } = await supabase.auth.signInWithOAuth({
-          provider: 'apple',
-          options: { redirectTo: redirectTo }
-        });
-
-        if (ssoError) throw ssoError;
-      }
-    } catch (err: any) {
-      setError(err.message || 'Apple-Registrierung konnte nicht gestartet werden.');
-      setLoading(false);
-    }
-  };
-
   if (isSubmitted) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-        <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." noindex={true} />
+        <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -408,7 +312,7 @@ export default function Register() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 bg-[var(--bg-main)]">
-      <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." noindex={true} />
+      <SEO title="Registrieren" description="Erstelle einen kostenlosen Account bei Flow der Stille." />
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -566,22 +470,8 @@ export default function Register() {
           </span>
         </div>
 
-        {/* Social SSO Buttons */}
+        {/* Google SSO Button mit Hybrid-Datenschutzhinweis */}
         <div className="space-y-2">
-          {/* Apple SSO Button */}
-          <button
-            type="button"
-            onClick={handleAppleSignUp}
-            disabled={loading}
-            className="w-full py-3.5 px-4 flex items-center justify-center gap-3 bg-black hover:bg-neutral-900 text-white border-2 border-black dark:border-neutral-700 rounded-full font-semibold text-sm transition-all shadow-2xs active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.85.94-2.94-.92.04-2.03.62-2.69 1.39-.58.67-1.09 1.76-.95 2.82 1.03.08 2.07-.5 2.7-1.27z"/>
-            </svg>
-            <span>Mit Apple registrieren</span>
-          </button>
-
-          {/* Google SSO Button */}
           <button
             type="button"
             onClick={handleGoogleSignUp}
@@ -597,21 +487,8 @@ export default function Register() {
             <span>Mit Google registrieren</span>
           </button>
 
-          {/* Facebook / Meta SSO Button */}
-          <button
-            type="button"
-            onClick={handleFacebookSignUp}
-            disabled={loading}
-            className="w-full py-3.5 px-4 flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white border-2 border-[#1877F2] rounded-full font-semibold text-sm transition-all shadow-2xs active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-            <span>Mit Facebook registrieren</span>
-          </button>
-
           <p className="text-[11px] text-[var(--text-muted)] text-center leading-relaxed px-2">
-            Mit der Registrierung stimmst du unserer{' '}
+            Mit der Google-Registrierung stimmst du unserer{' '}
             <Link to="/datenschutz" className="underline hover:text-[var(--text-main)]">
               Datenschutzerklärung
             </Link>{' '}
@@ -625,7 +502,7 @@ export default function Register() {
 
         <div className="mt-6 pt-6 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)]">
           Hast du bereits ein Konto?{' '}
-          <Link to="/anmelden" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
+          <Link to="/login" className="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
             Hier einloggen
           </Link>
         </div>

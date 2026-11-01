@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 /* Cormorant Garamond (Serif - Überschriften) */
 @font-face {
   font-family: 'Cormorant Garamond';

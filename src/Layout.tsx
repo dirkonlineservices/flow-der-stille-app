@@ -1,0 +1,572 @@
+import React, { useEffect, useState } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
+  Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
+  Info, Shield, FileText, Scale, Headphones, HelpCircle,
+  ShieldCheck, Gift, User
+} from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { AdminTools } from './AdminTools';
+import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
+import { getSupabase } from '../lib/supabaseClient';
+import { getOfflineHoerproben } from '../lib/offlineProductsService';
+import { AppDownloadBanner } from './AppDownloadBanner';
+import { NewContentNotification } from './NewContentNotification';
+import { PlayStoreUpdateModal } from './PlayStoreUpdateModal';
+import { NamePromptModal } from './NamePromptModal';
+import { AdminWelcomeModal } from './AdminWelcomeModal';
+import { RauhnaechtePreviewModal } from './RauhnaechtePreviewModal';
+import { checkUserIsAdmin } from '../lib/adminSecurity';
+import { APP_VERSION } from '../version';
+import { trackMetaPageView } from '../lib/metaPixel';
+
+// 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
+const pushVirtualPageView = (pathname: string, search: string) => {
+  if (typeof window !== 'undefined') {
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).dataLayer.push({
+      event: 'virtual_page_view',
+      page_path: pathname + search,
+      page_title: document.title || 'Flow der Stille'
+    });
+    trackMetaPageView();
+  }
+};
+
+export function GooglePlayIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none">
+      <path d="M3.609 1.814L13.792 12 3.61 22.186a1.45 1.45 0 01-.61-1.186V3a1.45 1.45 0 01.609-1.186z" fill="#4285F4"/>
+      <path d="M17.062 8.73L13.792 12l3.27 3.27 3.659-2.091c.712-.407.712-1.951 0-2.358l-3.659-2.091z" fill="#FBBC04"/>
+      <path d="M3.609 1.814l10.183 10.186L17.062 8.73 6.136 2.486c-.752-.43-1.748-.288-2.527.328z" fill="#EA4335"/>
+      <path d="M3.609 22.186l2.527.328 10.926-6.244-3.27-3.27L3.609 22.186z" fill="#34A853"/>
+    </svg>
+  );
+}
+
+export default function Layout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [isSlideUpOpen, setIsSlideUpOpen] = useState(false);
+  const [hasHoerproben, setHasHoerproben] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
+  const isPremiumOrAppPage = location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
+
+  // Prüfen ob der Nutzer Admin-Rechte hat
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+    checkUserIsAdmin(user.id, user.email).then(adminStatus => {
+      setIsAdmin(adminStatus);
+    });
+  }, [user]);
+
+  // Dynamisch prüfen ob Hörproben existieren (offline sofort aktiv)
+  useEffect(() => {
+    if (getOfflineHoerproben().length > 0) {
+      setHasHoerproben(true);
+    }
+    Promise.race([
+      getSupabase()
+        .from('produkte')
+        .select('id', { count: 'exact', head: false })
+        .not('hoerprobe_url', 'is', null)
+        .neq('hoerprobe_url', ''),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+    ])
+      .then((res: any) => {
+        if (res?.count && res.count > 0) setHasHoerproben(true);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    pushVirtualPageView(location.pathname, location.search);
+  }, [location]);
+
+  const handleBottomNavClick = (name: string) => {
+    if (typeof window !== 'undefined') {
+      (window as any).dataLayer = (window as any).dataLayer || [];
+      (window as any).dataLayer.push({
+        event: 'navigation_bottom',
+        link_name: name
+      });
+    }
+  };
+
+  const handleMenuClick = (name: string) => {
+    if (typeof window !== 'undefined') {
+      (window as any).dataLayer = (window as any).dataLayer || [];
+      (window as any).dataLayer.push({
+        event: 'navigation_menu',
+        link_name: name
+      });
+    }
+    setIsSlideUpOpen(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
+      
+      {/* Top Right Corner Action Buttons */}
+      <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
+        {!user ? (
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="Jetzt anmelden oder registrieren"
+          >
+            <LogIn size={15} />
+            <span>Anmelden</span>
+          </Link>
+        ) : (
+          <Link
+            to="/settings"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] hover:border-[var(--accent)] text-[var(--text-main)] text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            title="Mein Profil / Einstellungen"
+          >
+            <User size={14} className="text-[var(--accent)]" />
+            <span className="hidden sm:inline">Mein Bereich</span>
+          </Link>
+        )}
+
+        {!isNativeApp && (
+          <Link
+            to="/app"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-xs cursor-pointer"
+            title="Flow der Stille Android App Seite öffnen"
+          >
+            <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="hidden sm:inline font-medium">App</span>
+          </Link>
+        )}
+      </div>
+
+      <div className="w-full">
+        {/* Desktop Sidebar */}
+        <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
+          <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--bg-alt)] transition-colors shrink-0">
+            <img src="/logo-transparent.png" alt="Logo" className="w-8 h-8" />
+          </Link>
+          
+          <div className="flex flex-col gap-6 w-full">
+            <NavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : t('nav.home')} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
+            <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
+            <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
+            <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
+            <NavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
+            <button 
+              onClick={() => {
+                handleBottomNavClick('Mehr');
+                setIsSlideUpOpen(true);
+              }}
+              className="p-2 rounded-xl hover:bg-[var(--bg-alt)] transition-colors text-[var(--text-muted)] flex flex-col items-center gap-1 w-full cursor-pointer"
+            >
+              <Menu size={24} />
+              <span className="text-[10px] font-medium tracking-wide uppercase">Mehr</span>
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Bottom Bar (unter 768px): App-ähnlich fixiert am unteren Rand */}
+        <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
+          <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
+          <MobileNavLink to="/exercises" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
+          <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Premium" onClick={() => handleBottomNavClick('Premium')} />
+          <button 
+            onClick={() => {
+              handleBottomNavClick('Mehr');
+              setIsSlideUpOpen(true);
+            }}
+            className="flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-xl text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+          >
+            <Menu size={22} strokeWidth={2} />
+            <span className="text-[9px] font-semibold tracking-wide uppercase">Mehr</span>
+          </button>
+        </nav>
+
+        {/* Main Content Area: Dynamisch responsiv skalierend zwischen Laptop (max-w-5xl) und großem Desktop-Bildschirm (2xl:max-w-7xl) */}
+        <main className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6 transition-all duration-300">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      {/* Kompakt-Banner für Android App (Nicht auf /premium oder /app Unterseiten) */}
+      {!isNativeApp && !isPremiumOrAppPage && (
+        <div className="px-4 md:px-8">
+          <AppDownloadBanner />
+        </div>
+      )}
+
+      {/* FOOTER */}
+      <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
+        {[
+          { to: '/contact', label: 'Kontakt', isButton: true },
+          { to: '/klangproben', label: 'Klangproben' },
+          { to: '/app', label: 'Android App' },
+          { to: '/faq', label: 'FAQ' },
+          { to: '/impressum', label: 'Impressum' },
+          { to: '/datenschutz', label: 'Datenschutz' },
+          { to: '/agb', label: 'AGB' },
+          { to: '/rechtliches', label: 'Rechtliches' },
+          { to: '/online-widerruf', label: 'Online-Widerruf' },
+          { to: '/konto-loeschen', label: 'Konto löschen' }
+        ].map((link) => (
+          link.isButton ? (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => handleMenuClick(link.label)}
+              className="px-3 py-1 rounded-lg bg-[var(--accent)] text-white text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity whitespace-nowrap shadow-xs"
+            >
+              {link.label}
+            </Link>
+          ) : (
+            <Link 
+              key={link.to} 
+              to={link.to} 
+              onClick={() => handleMenuClick(link.label)}
+              className="text-[11px] uppercase tracking-wider font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"
+            >
+              {link.label}
+            </Link>
+          )
+        ))}
+        <ProductDisclaimerTrigger />
+      </footer>
+
+      {/* Slide-Up Menü (Drawer) für Mobil & Desktop "Mehr" */}
+      <AnimatePresence>
+        {isSlideUpOpen && (
+          <div className="fixed inset-0 z-[100] flex items-end justify-center">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSlideUpOpen(false)}
+              className="absolute inset-0 bg-black/50 backdrop-blur-xs"
+            />
+
+            {/* Slide-Up Content Card */}
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="relative w-full max-w-xl bg-[var(--bg-card)] border-t border-[var(--border)] rounded-t-3xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto text-[var(--text-main)] flex flex-col gap-6"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Drag Indicator Handle */}
+              <div className="w-12 h-1.5 bg-[var(--border)] rounded-full mx-auto -mt-2 opacity-60" />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center font-bold">
+                    <Menu size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-semibold text-[var(--text-main)]">Mehr entdecken</h3>
+                    <p className="text-xs text-[var(--text-muted)]">Alle Bereiche & Einstellungen auf einen Blick</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsSlideUpOpen(false)}
+                  className="p-2.5 rounded-full bg-[var(--bg-alt)] hover:opacity-80 transition-opacity text-[var(--text-main)] cursor-pointer"
+                  aria-label="Schließen"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Main Action Buttons (Groß, abgerundet, Icon links) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Dunkelmodus Toggle */}
+                <button
+                  onClick={() => {
+                    toggleTheme();
+                    handleMenuClick(theme === 'light' ? 'Dunkelmodus aktivieren' : 'Hellmodus aktivieren');
+                  }}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs cursor-pointer group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--bg-alt)] text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)]">
+                      {theme === 'light' ? 'Dunkelmodus' : 'Hellmodus'}
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Design anpassen</div>
+                  </div>
+                </button>
+
+                {/* Ernährung */}
+                <Link
+                  to="/recipes"
+                  onClick={() => handleMenuClick('Ernährung')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--bg-alt)] text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <Utensils size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.nourish')}</div>
+                    <div className="text-xs text-[var(--text-muted)]">Gesunde Rezepte</div>
+                  </div>
+                </Link>
+
+                {/* Lernen & Wissen */}
+                <Link
+                  to="/learn"
+                  onClick={() => handleMenuClick('Lernen & Wissen')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--bg-alt)] text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <BookOpen size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.learn')}</div>
+                    <div className="text-xs text-[var(--text-muted)]">Wissen & Meditation</div>
+                  </div>
+                </Link>
+
+                {/* Klangproben & Hörproben - zur dedizierten Landingpage */}
+                {hasHoerproben && (
+                  <Link
+                    to="/klangproben"
+                    onClick={() => handleMenuClick('Klangproben')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-amber-400 transition-all text-left shadow-xs group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <Headphones size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">Klangproben</div>
+                      <div className="text-xs text-[var(--text-muted)]">Kostenlos reinhören</div>
+                    </div>
+                  </Link>
+                )}
+
+                {/* Einstellungen */}
+                {user && (
+                  <Link
+                    to="/settings"
+                    onClick={() => handleMenuClick('Einstellungen')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[var(--bg-alt)] text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <SettingsIcon size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">{t('nav.settings')}</div>
+                      <div className="text-xs text-[var(--text-muted)]">Konto & Benachrichtigungen</div>
+                    </div>
+                  </Link>
+                )}
+
+                {/* Hörbücher-Themenseite (Für alle Nutzer freigeschaltet) */}
+                <Link
+                  to="/hoerbuecher"
+                  onClick={() => handleMenuClick('Hörbücher')}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all text-left shadow-xs group cursor-pointer"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                    <BookOpen size={22} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--text-main)] flex items-center gap-1.5">
+                      <span>Hörbücher</span>
+                      <span className="text-[9px] bg-[var(--accent)] text-white font-bold px-1.5 py-0.5 rounded-full uppercase">Neu</span>
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)]">Die Hörbuch-Welt von Flow der Stille</div>
+                  </div>
+                </Link>
+
+                {/* Admin-Bereich (NUR für Administratoren mit rolle = 'admin' in profiles sichtbar) */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => handleMenuClick('Admin-Bereich')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700/60 hover:border-emerald-500 transition-all text-left shadow-xs group sm:col-span-2 cursor-pointer"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 shadow-xs">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                        <span>Admin-Bereich</span>
+                        <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Admin</span>
+                      </div>
+                      <div className="text-xs text-emerald-700/80 dark:text-emerald-400/80">Produkte freischalten & Benutzerrechte verwalten</div>
+                    </div>
+                    <div className="text-emerald-600 dark:text-emerald-400 font-semibold text-xs pr-1">
+                      Öffnen →
+                    </div>
+                  </Link>
+                )}
+
+                {/* Anmelden / Profil (Daumenerreichbarkeit optimiert durch prominente Platzierung) */}
+                {user ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      handleMenuClick('Logout');
+                    }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-red-500 transition-all text-left shadow-xs group cursor-pointer sm:col-span-2"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <LogIn size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">Abmelden (Logout)</div>
+                      <div className="text-xs text-[var(--text-muted)]">Aus dem Konto ausloggen</div>
+                    </div>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => handleMenuClick('Anmelden / Profil')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--accent)] text-white transition-all text-left shadow-md group sm:col-span-2 hover:opacity-95"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-white/20 text-white flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <LogIn size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-white">Anmelden & Profil</div>
+                      <div className="text-xs text-white/80">Zugang zu exklusiven Inhalten & Empfehlungen</div>
+                    </div>
+                  </Link>
+                )}
+              </div>
+
+              {/* Sektion "RECHTLICHES & SICHERHEIT" */}
+              <div className="border-t border-[var(--border)] pt-5">
+                <h4 className="text-[11px] font-bold tracking-wider uppercase text-[var(--text-muted)] mb-3">
+                  Rechtliches & Sicherheit
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <Link
+                    to="/impressum"
+                    onClick={() => handleMenuClick('Impressum')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <Info size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>Impressum</span>
+                  </Link>
+                  <Link
+                    to="/datenschutz"
+                    onClick={() => handleMenuClick('Datenschutz')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <Shield size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>Datenschutz</span>
+                  </Link>
+                  <Link
+                    to="/agb"
+                    onClick={() => handleMenuClick('AGB')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <FileText size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>AGB</span>
+                  </Link>
+                  <Link
+                    to="/faq"
+                    onClick={() => handleMenuClick('FAQ')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <HelpCircle size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>Häufige Fragen (FAQ)</span>
+                  </Link>
+                  <Link
+                    to="/rechtliches"
+                    onClick={() => handleMenuClick('Rechtliches & KI')}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] hover:bg-[var(--bg-alt)] transition-colors text-xs font-medium text-[var(--text-main)]"
+                  >
+                    <Scale size={16} className="text-[var(--accent)] shrink-0" />
+                    <span>Rechtliches & KI</span>
+                  </Link>
+                </div>
+
+                {/* App Version Badge */}
+                <div className="pt-2 text-center border-t border-[var(--border)] opacity-70">
+                  <span className="text-[10px] font-mono tracking-wider text-[var(--text-muted)] bg-[var(--bg-alt)] px-3 py-1 rounded-full border border-[var(--border)]">
+                    Flow der Stille v{APP_VERSION}
+                  </span>
+                </div>
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AdminTools />
+      <NewContentNotification />
+      <PlayStoreUpdateModal />
+      <NamePromptModal />
+      <AdminWelcomeModal />
+      <RauhnaechtePreviewModal />
+
+    </div>
+  );
+}
+
+function NavLink({ to, icon, label, onClick }: { to: string; icon: React.ReactNode; label: string; onClick?: () => void }) {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link 
+      to={to} 
+      onClick={onClick}
+      className={`flex flex-col items-center gap-0.5 transition-colors w-full ${
+        isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+      }`}
+    >
+      <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-[var(--accent)]/10' : ''}`}>
+        {React.cloneElement(icon as React.ReactElement<any>, { size: 24, strokeWidth: isActive ? 2.5 : 2 })}
+      </div>
+      <span className="text-[9px] font-semibold tracking-wide uppercase text-center">{label}</span>
+    </Link>
+  );
+}
+
+function MobileNavLink({ to, icon, label, onClick }: { to: string; icon: React.ReactNode; label: string; onClick?: () => void }) {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+
+  return (
+    <Link 
+      to={to} 
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-xl transition-colors ${
+        isActive ? 'text-[var(--accent)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
+      }`}
+    >
+      <div className={`transition-transform ${isActive ? 'scale-110' : ''}`}>
+        {React.cloneElement(icon as React.ReactElement<any>, { size: 22, strokeWidth: isActive ? 2.5 : 2 })}
+      </div>
+      <span className="text-[9px] font-semibold tracking-wide uppercase">{label}</span>
+    </Link>
+  );
+}

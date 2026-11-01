@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, Utensils, Send, Smartphone, Headphones, MessageCircle, Share2, Eye, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
@@ -167,93 +168,13 @@ export default function Home() {
     });
   }, [user]);
 
-  // Schema.org Structured Data für GEO (Generative Engine Optimization) & Google Search
-  const homeSchema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": "https://flow-der-stille.de/#website",
-        "url": "https://flow-der-stille.de",
-        "name": "Flow der Stille",
-        "description": "Kostenlose Meditationen, geführte Selbsthypnosen und ganzheitliche Achtsamkeitsübungen für innere Ruhe und Stressabbau.",
-        "inLanguage": "de-DE",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Flow der Stille",
-          "url": "https://flow-der-stille.de",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://flow-der-stille.de/logo-transparent.png"
-          }
-        }
-      },
-      {
-        "@type": "FAQPage",
-        "@id": "https://flow-der-stille.de/#faq",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Bietet Flow der Stille kostenlose Meditationen an?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ja, bei Flow der Stille kannst du kostenlose geführte Meditationen wie die Meditation zur Herzöffnung und die Meditation für innere Ruhe direkt online im Web-Player oder in der Android App anhören."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Gibt es kostenlose Selbsthypnosen bei Flow der Stille?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Ja, Flow der Stille bietet kostenlose Selbsthypnose-Hörproben und Anwendungen für tiefen Schlaf, Fokus, gesunden Lebensstil und mehr Selbstvertrauen, gesprochen von echten professionellen Sprecherinnen."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Wie kann ich die Flow der Stille App herunterladen?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Die Flow der Stille App steht kostenlos im Google Play Store zum Download bereit. Sie ermöglicht komfortable Hintergrund-Wiedergabe bei ausgeschaltetem Bildschirm für unterwegs."
-            }
-          }
-        ]
-      },
-      {
-        "@type": "ItemList",
-        "@id": "https://flow-der-stille.de/#angebote",
-        "name": "Kostenlose Meditationen & Selbsthypnosen bei Flow der Stille",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Kostenlose Meditation zur Herzöffnung",
-            "url": "https://flow-der-stille.de/hoerproben"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Kostenlose Selbsthypnose für tiefen Schlaf",
-            "url": "https://flow-der-stille.de/hoerproben"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "Geführte Atemübung zur Vagusnerv-Entspannung",
-            "url": "https://flow-der-stille.de/uebungen"
-          }
-        ]
-      }
-    ]
-  };
-
   // Startseite (Öffentliche Landing Page)
   return (
     <>
       <SEO 
-        title="Kostenlose Meditation, Selbsthypnose & Vagusnerv-Entspannung – Flow der Stille" 
-        description="Entdecke kostenlose Meditationen, geführte Selbsthypnosen und Achtsamkeits-Übungen für innere Ruhe und erholsamen Schlaf. Von Jacqueline Schmetzer – wissenschaftlich fundiert, sofort online anhören." 
-        keywords="kostenlose Meditation, kostenlose Selbsthypnose, Meditation zum Einschlafen, Selbsthypnose lernen, Vagusnerv Entspannung, Achtsamkeit, innere Ruhe, Stressreduktion, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Flow der Stille"
-        schemaJson={homeSchema}
+        title="Meditation, Achtsamkeit & Vagusnerv-Entspannung – Flow der Stille" 
+        description="Finde innere Ruhe bei Flow der Stille. Geführte Meditationen, Selbsthypnosen & Achtsamkeits-Übungen zur Stressreduktion und Vagusnerv-Aktivierung." 
+        keywords="Meditation, Achtsamkeit, innere Ruhe, Vagusnerv, Stressreduktion, Selbsthypnose, Atempause, Darm-Hirn-Achse, Jacqueline Schmetzer, Flow der Stille"
       />
 
       {/* Schnell-Leiste für bereits eingeloggte Nutzer */}

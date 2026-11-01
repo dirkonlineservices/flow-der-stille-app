@@ -18,10 +18,10 @@ export function AppDownloadBanner() {
         {/* Linke Seite: Text & Info */}
         <div className="flex-1 text-center sm:text-left min-w-0">
           <div className="flex items-center justify-center sm:justify-start gap-1.5 mb-1.5">
-            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] flex items-center justify-center shrink-0">
+            <span className="w-6 h-6 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors flex items-center justify-center shrink-0">
               <Smartphone size={13} />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] group-hover:text-black dark:group-hover:text-white transition-colors">
               Android App verfügbar
             </span>
           </div>
@@ -33,7 +33,7 @@ export function AppDownloadBanner() {
           </p>
           <Link 
             to="/app" 
-            className="text-xs font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 transition-colors hover:opacity-80"
+            className="text-xs font-semibold text-[var(--accent)] group-hover:text-black dark:group-hover:text-white hover:underline inline-flex items-center gap-1 transition-colors"
           >
             Alle App-Features &amp; Details ansehen →
           </Link>
@@ -50,13 +50,10 @@ export function AppDownloadBanner() {
             title="Flow der Stille im Google Play Store öffnen"
           >
             <img 
-              src="/images/google-play-badge.png" 
+              src="https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png" 
               alt="Jetzt bei Google Play" 
               width="150" 
-              height="58"
               className="h-11 w-auto object-contain"
-              loading="lazy"
-              decoding="async"
             />
           </a>
 

@@ -15,17 +15,17 @@ const faqData: FAQItem[] = [
   {
     category: "Über Flow der Stille",
     question: "Warum haben wir Flow der Stille ins Leben gerufen? (Unsere Vision)",
-    answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline, Lisa und Dirk, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
+    answer: "Flow der Stille ist ein echtes Herzensprojekt von Jacqueline und Dirk Schmetzer, das im August 2026 ganz neu an den Start gegangen ist. Unsere Hauptmotivation war es, Menschen hochwertige und spürbar wirksame Übungen für innere Ruhe, Achtsamkeit und Vagusnerv-Entspannung zugänglich zu machen – ohne lästige Abo-Fallen, ohne störende Unterbrecherwerbung und für einen fairen, schmalen Geldbeutel. Bei uns kaufst du nur genau die Inhalte, die du wirklich haben möchtest, und behältst dauerhaften Zugriff darauf. 100 % werbefrei, ehrlich und mit viel Liebe zum Detail erschaffen."
   },
   {
     category: "Über Flow der Stille",
     question: "Seit wann gibt es Flow der Stille? (Entstehung im März, Go-Live im August 2026)",
-    answer: "Die Idee und das Fundament für Flow der Stille entstanden im März 2026 aus einer tiefen Herzensvision von Jacqueline, Lisa und Dirk. Nach vielen Monaten sorgfältiger, liebevoller Handarbeit für Texte, Audioaufnahmen und App-Entwicklung ging unsere Plattform im August/September 2026 ganz frisch an den Start.\n\nDas bedeutet auch: Unsere geschützte Community für registrierte Hörer ist brandneu und öffnet gerade erst ihre Türen! Wenn du dich kostenlos anmeldest, bist du einer unserer allerersten Pionier-Nutzer der ersten Stunde und hilfst uns, diesen geschützten Raum für Achtsamkeit von Anfang an mitzugestalten. Öffentlich findest du uns zudem auf unserer Facebook-Seite und auf Instagram."
+    answer: "Die Idee und das Fundament für Flow der Stille entstanden im März 2026 aus einer tiefen Herzensvision von Jacqueline, Lisa und Dirk. Nach vielen Monaten sorgfältiger, liebevoller Handarbeit für Texte, Audioaufnahmen und App-Entwicklung ging unsere Plattform im August/September 2026 ganz frisch an den Start.\n\nDas bedeutet auch: Unsere Community-Kanäle auf Telegram und WhatsApp sind brandneu und öffnen gerade erst ihre Türen! Wenn du jetzt beitrittst, bist du einer unserer allerersten Pionier-Nutzer der ersten Stunde. Du hilfst uns, diesen geschützten Raum für Achtsamkeit und Ruhe von Anfang an mitzugestalten – ganz ohne unpersönliche Großgruppen-Dynamik."
   },
   {
     category: "Über Flow der Stille",
     question: "Welche Rolle spielt KI (Künstliche Intelligenz) bei Flow der Stille?",
-    answer: "Transparenz und Ehrlichkeit liegen uns am Herzen: Sämtliche Texte, Meditationen, Selbsthypnosen und Übungen verfasst Jacqueline persönlich von Hand mit fundiertem Fachwissen. Unsere Meditationen, Selbsthypnosen und Hörbücher werden von Lisa mit echter, warmer Menschenstimme eingesprochen. Moderne KI-Technologie nutzen wir transparent als Werkzeug für meditative Hintergrund-Klangwelten, Frequenzen sowie beruhigende visuelle Bildwelten & Designs. Dadurch sparen wir extrem teure Produktions- und Tonstudiokosten ein – und geben diesen Preisvorteil direkt an dich weiter: Du erhältst erstklassige, wirksame Entspannung ab 1,99 € einmalig statt teurer Monats-Abos."
+    answer: "Transparenz und Ehrlichkeit liegen uns am Herzen: Sämtliche Texte, Meditationen, Selbsthypnosen und Übungen verfasst Jacqueline Schmetzer persönlich von Hand mit fundiertem Fachwissen. Unsere Premium-Meditationen und Hörbücher werden von Lisa Ragusa mit echter, warmer Menschenstimme eingesprochen. Moderne KI-Technologie nutzen wir transparent als Werkzeug für meditative Hintergrund-Klangwelten, Frequenzen sowie beruhigende visuelle Bildwelten & Designs. Dadurch sparen wir extrem teure Produktions- und Tonstudiokosten ein – und geben diesen Preisvorteil direkt an dich weiter: Du erhältst erstklassige, wirksame Entspannung ab 1,99 € einmalig statt teurer Monats-Abos."
   },
   {
     category: "Über Flow der Stille",
@@ -240,7 +240,7 @@ export default function FAQ() {
         </p>
         <div>
           <Link
-            to="/kontakt"
+            to="/contact"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold text-sm shadow-sm hover:bg-[var(--color-accent-hover)] transition-all cursor-pointer"
           >
             <span>Kontakt aufnehmen</span>

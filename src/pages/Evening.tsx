@@ -7,12 +7,7 @@ import SEO from '../components/SEO';
 export default function Evening() {
   return (
     <div className="space-y-12">
-      <SEO 
-        title="Abendritual & Einschlafhilfe – Sanft zur Ruhe kommen – Flow der Stille" 
-        description="Bereite Körper und Nervensystem auf tiefen Schlaf vor. Abendroutine, PMR Muskelentspannung und geführte Selbsthypnose zum Einschlafen." 
-        canonicalUrl="https://flow-der-stille.de/abend"
-        keywords="Abendroutine, Einschlafhilfe, Besser schlafen, Abendmeditation, PMR Einschlafen, Gedanken loslassen vor dem Schlafen, Flow der Stille"
-      />
+      <SEO title="Abendliche Entspannung" description="Bereite deinen Körper und Geist sanft auf einen erholsamen Schlaf vor. Abendroutine." />
       <header className="mb-12">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-accent-primary)] hover:gap-2.5 mb-6 transition-all">
           <ArrowLeft size={16} />
@@ -38,7 +33,7 @@ export default function Evening() {
           title="Tief durchatmen"
           desc="Nutze die Atemführung, um dein Nervensystem herunterzufahren. Die 4-7-8 Atemtechnik eignet sich besonders gut, um in den Schlaf zu gleiten."
           icon={<Wind className="w-6 h-6 text-blue-400" />}
-          linkTo="/uebungen"
+          linkTo="/exercises"
           linkText="Zur Atemübung"
           delay={0.2}
         />
@@ -46,7 +41,7 @@ export default function Evening() {
           title="Meditation & Klänge"
           desc="Höre einer sanften Meditation oder beruhigenden Klängen zu, um Gedankenkreisen zu stoppen und den Geist auf Entspannung zu programmieren."
           icon={<Headphones className="w-6 h-6 text-purple-400" />}
-          linkTo="/wissen"
+          linkTo="/learn"
           linkText="Mehr erfahren"
           delay={0.3}
         />

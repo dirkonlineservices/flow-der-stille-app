@@ -132,9 +132,7 @@ export default function HypnosisLanding() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen – Flow der Stille"
-        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline & Lisa. Jetzt kostenlos testen – 100% werbe- & abofrei."
-        canonicalUrl="https://flow-der-stille.de/selbsthypnose"
-        keywords="Selbsthypnose, Selbsthypnose Schlaf, Selbsthypnose Tiefschlaf, Selbstvertrauen stärken, Trance Entspannung, Unterbewusstsein neu ausrichten, Selbsthypnose Einschlafhilfe, Selbsthypnose ohne Abo, Lisa, Jacqueline, Flow der Stille"
+        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen – 100% werbe- & abofrei."
       />
 
       <audio
@@ -241,7 +239,7 @@ export default function HypnosisLanding() {
                 Tiefer und erholsamer Schlaf (12:54 Min.)
               </h2>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Lege dich bequem hin, schließe die Augen und lasse den Tag los. Lisa begleitet dich sanft in eine tiefe, natürliche Regeneration.
+                Lege dich bequem hin, schließe die Augen und lasse den Tag los. Lisa Ragusa begleitet dich sanft in eine tiefe, natürliche Regeneration.
               </p>
             </div>
           </div>
@@ -284,8 +282,8 @@ export default function HypnosisLanding() {
               />
 
               <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                <span>Stimme: <strong>Lisa</strong></span>
-                <span>Text: <strong>Jacqueline</strong></span>
+                <span>Sprecherin: <strong>Lisa Ragusa</strong></span>
+                <span>Autorin: <strong>Jacqueline Schmetzer</strong></span>
               </div>
             </div>
           </div>
@@ -375,13 +373,9 @@ export default function HypnosisLanding() {
                       alt={item.title}
                       className="w-full h-full object-cover"
                     />
-                    {item.isFree ? (
-                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-emerald-700 text-white text-[9px] font-bold shadow-xs">
+                    {item.isFree && (
+                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold">
                         GRATIS
-                      </div>
-                    ) : (
-                      <div className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-[var(--accent)] text-white text-[9px] font-bold shadow-xs">
-                        {item.price}
                       </div>
                     )}
                   </div>
@@ -440,7 +434,7 @@ export default function HypnosisLanding() {
                     </button>
                   ) : (
                     <Link
-                      to={`/ruhe-shop#product-${item.id}`}
+                      to={`/premium#product-${item.id}`}
                       className="px-4 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] border border-[var(--border)] text-xs font-semibold flex items-center gap-1.5 transition-all"
                     >
                       <span>Freischalten ({item.price})</span>
@@ -466,13 +460,13 @@ export default function HypnosisLanding() {
               Kostenfreie Schnupperübungen
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-xl mx-auto">
-              Optimiere deine Trancefähigkeit: Nutze diese kurzen somatischen Übungen, um körperliche Restspannung vor der Selbsthypnose abzustreifen.
+              Optimiere deine Trancefähigkeit: Nutze diese kurzen somatischen Übungen, um körperliche Restspannung vor der Hypnose abzustreifen.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Link
-              to="/uebungen"
+              to="/exercises"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
@@ -493,7 +487,7 @@ export default function HypnosisLanding() {
             </Link>
 
             <Link
-              to="/uebungen/pmr_basis"
+              to="/exercises/pmr_basis"
               className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border)] shadow-xs hover:border-[var(--accent)]/50 transition-all group flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">

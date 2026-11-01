@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { HelpCircle, X, CreditCard, Users, Building2 } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
@@ -7,9 +6,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { transactionLogger } from '../lib/transactionLogger';
 import { reportCriticalError } from '../lib/errorLogger';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
-import { trackMetaPurchase, trackMetaInitiateCheckout } from '../lib/metaPixel';
-import { offlineManager } from '../lib/offlineAudioService';
-import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
+import { trackMetaPurchase } from '../lib/metaPixel';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -26,8 +23,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   onSuccess,
   paypalClientId,
 }) => {
-  const navigate = useNavigate();
-
   if (!produkt || !produkt.id || !produkt.preis) {
     if (typeof window !== 'undefined' && (window as any).dataLayer) {
       (window as any).dataLayer.push({
@@ -83,22 +78,22 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   const clientId = runtimeClientId.trim();
 
   return (
-    <div className="w-full flex flex-col gap-2.5 mt-1.5">
-      <label className={`flex items-start gap-2.5 p-3 rounded-xl cursor-pointer transition-colors border ${acceptedTerms ? 'bg-emerald-500/10 border-emerald-600' : 'bg-[var(--bg-alt)] border-[var(--border)] hover:bg-[var(--bg-main)]'}`}>
+    <div className="w-full flex flex-col gap-4 mt-4 lg:mt-2">
+      <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-colors border ${acceptedTerms ? 'bg-[var(--bg-main)] border-[var(--accent)]' : 'bg-[var(--bg-alt)] border-[var(--border)] hover:bg-[var(--bg-main)]'}`}>
         <input
           type="checkbox"
           checked={acceptedTerms}
           onChange={(e) => setAcceptedTerms(e.target.checked)}
-          className="mt-0.5 w-4 h-4 accent-emerald-700 cursor-pointer shrink-0"
+          className="mt-1 w-5 h-5 accent-[var(--accent)] cursor-pointer shrink-0"
         />
-        <span className="flex-1 text-xs text-[var(--text-muted)] leading-relaxed">
-          Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. <strong className="text-[var(--text-main)] font-semibold">Mir ist bekannt, dass ich dadurch mein Widerrufsrecht verliere.</strong>
+        <span className="flex-1 text-sm text-[var(--text-muted)] leading-relaxed">
+          Ich stimme ausdrücklich zu, dass mit der Ausführung des Vertrags vor Ablauf der Widerrufsfrist begonnen wird. <strong>Mir ist bekannt, dass ich dadurch mein Widerrufsrecht verliere.</strong>
         </span>
       </label>
 
       {!acceptedTerms && (
-        <div className="w-full p-3 text-center rounded-xl bg-[var(--bg-alt)] border border-dashed border-[var(--border)]">
-          <p className="text-xs text-[var(--text-muted)] font-medium">
+        <div className="w-full p-4 text-center rounded-xl bg-[var(--bg-alt)] border border-dashed border-[var(--border)]">
+          <p className="text-sm text-[var(--text-muted)] font-medium">
             Bitte bestätige die Bedingungen, um die Zahlungsmöglichkeiten freizuschalten.
           </p>
         </div>
@@ -130,12 +125,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
               style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
               createOrder={(data, actions) => {
                 const safePrice = parseFloat(produkt?.preis || '0').toFixed(2);
-
-                trackMetaInitiateCheckout({
-                  value: parseFloat(safePrice),
-                  content_name: produkt?.titel || 'Flow der Stille Premium',
-                  content_ids: [produkt?.id || 'unknown']
-                });
 
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({ ecommerce: null });
@@ -171,33 +160,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   const amountVal = details?.purchase_units?.[0]?.amount?.value || parseFloat(produkt?.preis || '0').toFixed(2);
                   const priceValue = parseFloat(amountVal);
                   const orderId = details?.id || 'PP_' + Date.now();
-                  const buyerEmail = details?.payer?.email_address;
-                  const buyerName = details?.payer?.name?.given_name || 'Hörer';
-
-                  // 1. Sofortige lokale Freischaltung auf dem aktuellen Gerät (auch offline im Flugmodus!)
-                  const unlockIds = [produkt?.id];
-                  if (produkt?.id?.includes('mensch')) unlockIds.push('mensch_sein', 'fds_mensch_sein');
-                  if (produkt?.id?.includes('schmetterling')) unlockIds.push('schmetterling', 'fds_schmetterling', 'fds_hoerbuch_schmetterling');
-                  offlineManager.savePurchasedProducts(unlockIds);
-
-                  // 2. Gast-Bestelldaten lokal absichern
-                  try {
-                    const guestOrders = JSON.parse(localStorage.getItem('flow_guest_orders') || '[]');
-                    guestOrders.push({
-                      orderId,
-                      productId: produkt?.id,
-                      productTitle: produkt?.titel,
-                      price: priceValue,
-                      email: buyerEmail,
-                      date: new Date().toISOString()
-                    });
-                    localStorage.setItem('flow_guest_orders', JSON.stringify(guestOrders));
-                    if (buyerEmail) {
-                      localStorage.setItem('flow_guest_email', buyerEmail);
-                    }
-                  } catch (storageErr) {
-                    console.warn('LocalStorage save error:', storageErr);
-                  }
 
                   const supabase = getSupabase();
                   const { data: { session } } = await supabase.auth.getSession();
@@ -206,16 +168,15 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   let edgeFunctionSuccess = false;
                   let isAlreadyCompleted = false;
 
-                  // 3. Supabase Edge Function process-purchase aufrufen (mit guest_email & guest_name)
+                  // 1. Invoke Supabase Edge Function process-purchase (updates DB, profile, and sends Resend confirmation email)
+                  // Die Edge Function ist die primäre Source of Truth für den Datenbankeintrag.
                   try {
                     const fnRes = await supabase.functions.invoke('process-purchase', {
                       body: {
                         transaction_id: orderId,
                         product_id: produkt?.id || 'atemarbeit_herzoeffnung',
                         product_name: produkt?.titel || 'Flow der Stille Premium',
-                        price: priceValue,
-                        guest_email: buyerEmail,
-                        guest_name: buyerName
+                        price: priceValue
                       }
                     });
                     if (fnRes.error) {
@@ -243,29 +204,12 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     );
                   }
 
-                  // 4. Bei Gastkauf: Supabase Magic Link OTP per E-Mail versenden
-                  if (!currentUserId && buyerEmail) {
-                    try {
-                      await supabase.auth.signInWithOtp({
-                        email: buyerEmail,
-                        options: {
-                          emailRedirectTo: `${window.location.origin}/danke?order_id=${encodeURIComponent(orderId)}&product_id=${encodeURIComponent(produkt?.id)}&magic=sent`
-                        }
-                      });
-                      transactionLogger.logSuccess(
-                        'Magic Link Dispatch',
-                        `Magic Link OTP für Gastkauf an ${buyerEmail} übermittelt`,
-                        'auth'
-                      );
-                    } catch (otpErr) {
-                      console.warn('Fallback Magic Link OTP Fehler:', otpErr);
-                    }
-                  }
-
-                  // 5. Fallback per Upsert:
+                  // 2. Fallback per Upsert:
+                  // Wenn die Edge Function den Kauf erfolgreich verarbeitet hat, startet das Frontend KEINEN eigenen DB-Schreibaufruf mehr.
                   // Falls die Edge Function fehlschlägt (!edgeFunctionSuccess), schreibt das Frontend per .upsert() als Fallback in die Datenbank.
-                  if (!edgeFunctionSuccess && currentUserId) {
-                    try {
+                  if (!edgeFunctionSuccess) {
+                    if (currentUserId) {
+                      // Idempotenz-Sperre: Prüfe vorab, ob die Bestellung bereits als 'completed' verarbeitet war
                       const { data: existingKauf } = await supabase
                         .from('kaeufe')
                         .select('status')
@@ -284,8 +228,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                             produkt_id: produkt?.id,
                             order_id: orderId,
                             preis: priceValue,
-                            waehrung: 'EUR',
-                            email: user?.email || buyerEmail
+                            waehrung: 'EUR'
                           },
                           { onConflict: 'user_id,produkt_id' }
                         );
@@ -305,8 +248,13 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                           { orderId, priceValue }
                         );
                       }
-                    } catch (dbFallbackErr) {
-                      console.warn('Fallback DB error:', dbFallbackErr);
+                    } else {
+                      transactionLogger.logWarning(
+                        'No User ID for DB Insert',
+                        'Keine User-ID vorhanden für kaeufe-Eintrag. Bitte in der App anmelden.',
+                        'auth',
+                        { orderId }
+                      );
                     }
                   }
 
@@ -335,19 +283,10 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   }
 
                   setShowUnlockBanner(true);
-                  if (!currentUserId) {
-                    // Gastkauf: Nach kurzer Bestätigung zur Dankeseite leiten (mit Sofort-Hören & Magic Link Hinweis)
-                    setTimeout(() => {
-                      setShowUnlockBanner(false);
-                      onSuccess();
-                      navigate(`/danke?order_id=${encodeURIComponent(orderId)}&product_id=${encodeURIComponent(produkt?.id)}&magic=sent`);
-                    }, 1200);
-                  } else {
-                    setTimeout(() => {
-                      onSuccess();
-                      setShowUnlockBanner(false);
-                    }, 2000);
-                  }
+                  setTimeout(() => {
+                    onSuccess();
+                    setShowUnlockBanner(false);
+                  }, 2000);
 
                 } catch (err) {
                   await reportCriticalError({
@@ -377,12 +316,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                   'Der Bezahlvorgang wurde vom Nutzer abgebrochen.',
                   'paypal'
                 );
-                reportAbandonedCheckout({
-                  produkt,
-                  paymentMethod: 'PayPal',
-                  userEmail: user?.email,
-                  reason: 'Im PayPal-Fenster auf Abbrechen geklickt'
-                });
                 if (typeof window !== 'undefined' && (window as any).dataLayer) {
                   (window as any).dataLayer.push({
                     event: 'checkout_abandoned',
@@ -391,39 +324,6 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                 }
               }}
               onError={async (err) => {
-                const errMsg = (err?.message || String(err || '')).toLowerCase();
-                const isPopupClose = errMsg.includes('popup close') || 
-                                     errMsg.includes('popup closed') || 
-                                     errMsg.includes('window is closed') || 
-                                     errMsg.includes('window was closed') ||
-                                     errMsg.includes('window closed') ||
-                                     errMsg.includes('can not determine type') ||
-                                     errMsg.includes('cannot determine type') ||
-                                     errMsg.includes('closed');
-
-                if (isPopupClose) {
-                  // Normaler Abbruch durch Schließen des Fensters durch den Nutzer - KEIN Systemfehler!
-                  setToast({
-                    show: true,
-                    type: 'cancelled',
-                    title: 'PayPal-Kauf abgebrochen',
-                    productTitle: produkt?.titel,
-                    message: 'Du hast das PayPal-Fenster geschlossen. Es wurde kein Betrag abgebucht.'
-                  });
-                  transactionLogger.logWarning(
-                    'Kauf abgebrochen (Fenster geschlossen)',
-                    'Der Nutzer hat das PayPal-Fenster vor Abschluss geschlossen.',
-                    'paypal'
-                  );
-                  reportAbandonedCheckout({
-                    produkt,
-                    paymentMethod: 'PayPal',
-                    userEmail: user?.email,
-                    reason: 'PayPal-Fenster vor Abschluss geschlossen'
-                  });
-                  return;
-                }
-
                 setToast({
                   show: true,
                   type: 'failed',

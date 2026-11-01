@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BillingService, getStoreName } from '../lib/billing';
+import { BillingService } from '../lib/billing';
 
 // 📊 Typsicherer DataLayer-Helper für sauberes GA4/GTM-Tracking
 const pushToDataLayer = (eventName: string, payload: any = {}) => {
@@ -188,7 +188,7 @@ export const GooglePlayPaywall: React.FC<GooglePlayPaywallProps> = ({
       </button>
       
       <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-        Sichere Abwicklung über dein {getStoreName()} Konto
+        Sichere Abwicklung über dein Google Play Konto
       </div>
     </div>
   );

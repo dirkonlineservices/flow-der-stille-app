@@ -28,25 +28,23 @@ export default function AGB() {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">2. Vertragsgegenstand, Leistungsbeschreibung und Plattformverfügbarkeit</h2>
-          <p>2.1. Der Anbieter stellt über seine Plattform Angebote im Bereich der Entspannung, Achtsamkeit und des mentalen Trainings zum Thema „Innerer Frieden“ bereit. Der Leistungsgegenstand umfasst die Bereitstellung digitaler Inhalte (insb. geführte Meditationen, Selbsthypnosen und Audio-Anwendungen) zur Online-Nutzung per Streaming über die Webseite oder die mobile App sowie zur geschützten Offline-Speicherung im internen Sandbox-Speicher der mobilen App.</p>
+          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">2. Vertragsgegenstand und Leistungsbeschreibung</h2>
+          <p>2.1. Der Anbieter stellt über seine Plattform Angebote im Bereich der Entspannung, Achtsamkeit und des mentalen Trainings zum Thema „Innerer Frieden“ bereit. Der Leistungsgegenstand umfasst ausschließlich die Bereitstellung digitaler Inhalte (insb. geführte Meditationen, Selbsthypnosen und Audio-Anwendungen) zur Online-Nutzung per Streaming über die Webseite oder die mobile App. Ein Download der Audio-Dateien wird ausdrücklich nicht angeboten.</p>
           <p className="mt-2">2.2. Die genaue Leistungsbeschreibung, Verfügbarkeit und technischen Voraussetzungen der jeweiligen Produkte ergeben sich aus den individuellen Produktseiten auf der Plattform.</p>
-          <p className="mt-2">2.3. <strong>Dauerhafter Zugriff („Einmalkauf“) und Verfügbarkeitsvorbehalt:</strong> Soweit Produkte als „Einmalkauf“ oder mit „dauerhaftem Zugriff“ erworben werden, wird dem Kunden das Recht eingeräumt, die entsprechenden Inhalte für die gesamte Lebens- und Betriebsdauer der Plattform www.flow-der-stille.de bzw. der zugehörigen App zu nutzen. Ein Anspruch auf eine zeitlich unendliche Bereithaltung besteht nicht. Sollte der Anbieter aus wirtschaftlichen, technischen, betrieblichen oder unvorhersehbaren Gründen gezwungen sein, den Betrieb der Plattform oder der App ganz oder teilweise dauerhaft einzustellen, wird der Anbieter die Kunden mit einer angemessenen Frist (in der Regel mindestens 30 Tage vorab) durch eine Mitteilung auf der Webseite oder per E-Mail informieren. Soweit technisch zumutbar, wird den Kunden im Falle einer dauerhaften Plattform-Einstellung die Möglichkeit eingeräumt, ihre erworbenen Inhalte für den persönlichen Privatgebrauch herunterzuladen. Weitergehende Ansprüche, insbesondere auf Fortführung des Dienstes, Rückerstattung bereits gezahlter Entgelte oder Schadensersatz wegen der Einstellung des Dienstes, sind ausgeschlossen, soweit dem Anbieter nicht Vorsatz oder grobe Fahrlässigkeit zur Last fällt.</p>
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">3. Vertragsschluss, Registrierung und Gastkauf mit privatem Magic Link</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">3. Vertragsschluss und Registrierung</h2>
           <p>3.1. Die Präsentation der Produkte auf der Plattform stellt kein rechtlich bindendes Angebot, sondern eine unverbindliche Aufforderung zur Abgabe einer Bestellung durch den Kunden dar.</p>
           <p className="mt-2">3.2. Der Kunde kann aus dem Sortiment des Anbieters Produkte auswählen und diese über den Kauf-Button auf der Plattform (Webseite oder App) bestellen. Durch das Anklicken des den Bestellvorgang abschließenden Buttons gibt der Kunde ein bindendes Angebot zum Kauf der entsprechenden digitalen Freischaltung ab.</p>
           <p className="mt-2">3.3. Der Vertrag kommt zustande, wenn der Anbieter das Angebot des Kunden durch die Freischaltung des digitalen Produkts zum Streaming auf der Webseite bzw. in der App oder durch eine ausdrückliche Bestätigungs-E-Mail annimmt.</p>
-          <p className="mt-2">3.4. Für die Nutzung personalisierter Komfort-Funktionen (wie geräteübergreifendes Merken des Hörfortschritts) ist die kostenlose Registrierung eines Kundenkontos erforderlich.</p>
-          <p className="mt-2">3.5. <strong>Gastkauf mit privatem Magic Link:</strong> Bei ausgewählten Einmalkäufen (insb. Hörbücher und Einzelsessions) kann der Kauf als Gast ohne Passwort-Registrierung erfolgen. In diesem Fall erhält der Kunde unmittelbar nach Zahlungseingang per E-Mail einen individualisierten, privaten Zugangslink („Magic Link“), über den die Audio-Inhalte im Web-Player oder in der App aufgerufen werden können. Der Kunde ist verpflichtet, diesen Zugangslink sorgfältig aufzubewahren und vor dem Zugriff Dritter zu schützen. Bei Verlust kann der Kunde über die Plattform unter Angabe seiner Kauf-E-Mail-Adresse eine erneute Zusendung anfordern.</p>
+          <p className="mt-2">3.4. Für die Nutzung der App oder den Zugriff auf freigeschaltete Inhalte ist die Registrierung und die Erstellung eines Kundenkontos erforderlich.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-bold text-[var(--color-text-main)] mb-2">4. Preise und Zahlungsbedingungen</h2>
           <p>4.1. Die auf der Plattform angegebenen Preise sind Endpreise. Aufgrund der Anwendung der Kleinunternehmerregelung gemäß § 19 UStG wird keine Umsatzsteuer ausgewiesen und berechnet.</p>
-          <p className="mt-2">4.2. Dem Kunden stehen die auf der Plattform jeweils angegebenen Zahlungsmethoden zur Verfügung (z. B. PayPal, Google Play &amp; Apple App Store In-App Kauf).</p>
+          <p className="mt-2">4.2. Dem Kunden stehen die auf der Plattform jeweils angegebenen Zahlungsmethoden zur Verfügung (z. B. PayPal, Google Play In-App Kauf).</p>
           <p className="mt-2">4.3. Die Zahlung ist unmittelbar mit Vertragsschluss fällig. Die digitalen Inhalte werden erst nach erfolgreicher Autorisierung der Zahlung freigeschaltet.</p>
         </section>
 
@@ -77,36 +75,6 @@ export default function AGB() {
           <p className="mt-2">8.2. Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit, die unter https://ec.europa.eu/consumers/odr zu finden ist. Der Anbieter ist weder bereit noch verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
           <p className="mt-2">8.3. Sollten einzelne Bestimmungen dieser AGB unwirksam oder undurchführbar sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen davon unberührt.</p>
         </section>
-
-        {/* Ergänzende Kunden- und Verbraucherinformationen */}
-        <div className="pt-6 mt-6 border-t border-[var(--color-border-main)] bg-[var(--color-bg-alt)]/50 p-5 rounded-xl">
-          <h3 className="text-sm font-bold text-[var(--color-text-main)] mb-2">
-            Ergänzende Kunden- und Bestellerinformationen
-          </h3>
-          <p className="text-xs text-[var(--color-text-muted)] mb-4">
-            Detaillierte Einzelheiten zu unseren Lieferkonditionen sowie dein gesetzliches Widerrufsrecht findest du auf folgenden Sonderseiten:
-          </p>
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            <Link 
-              to="/versand" 
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
-            >
-              Versand- &amp; Lieferbedingungen →
-            </Link>
-            <Link 
-              to="/rueckgaberichtlinie" 
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
-            >
-              Rückgabe- &amp; Widerrufsbelehrung →
-            </Link>
-            <Link 
-              to="/online-widerruf" 
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border-main)] font-semibold text-[var(--color-accent-primary)] hover:border-[var(--color-accent-primary)] transition-colors"
-            >
-              Online-Widerrufsformular →
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   );
