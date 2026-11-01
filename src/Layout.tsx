@@ -58,7 +58,7 @@ export default function Layout() {
   const [hasHoerproben, setHasHoerproben] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const isNativeApp = typeof window !== 'undefined' && Boolean((window as any).Capacitor?.isNativePlatform?.());
-  const isPremiumOrAppPage = location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
+  const isPremiumOrAppPage = location.pathname.startsWith('/ruhe-shop') || location.pathname.startsWith('/premium') || location.pathname.startsWith('/app') || location.pathname.startsWith('/android-app') || location.pathname.startsWith('/playstore');
 
   // Prüfen ob der Nutzer Admin-Rechte hat
   useEffect(() => {
@@ -164,7 +164,7 @@ export default function Layout() {
             <NavLink to="/exercises" icon={<Wind />} label={t('nav.breathe')} onClick={() => handleBottomNavClick('Atmen')} />
             <NavLink to="/recipes" icon={<Utensils />} label={t('nav.nourish')} onClick={() => handleBottomNavClick('Ernährung')} />
             <NavLink to="/learn" icon={<BookOpen />} label={t('nav.learn')} onClick={() => handleBottomNavClick('Lernen')} />
-            <NavLink to="/premium" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+            <NavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
             <button 
               onClick={() => {
                 handleBottomNavClick('Mehr');
@@ -182,7 +182,7 @@ export default function Layout() {
         <nav aria-label="Hauptnavigation Mobil" className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--bg-card)]/95 backdrop-blur-md border-t border-[var(--border)] px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex justify-around items-center z-50 shadow-lg">
           <MobileNavLink to={user ? "/dashboard" : "/"} icon={<Home />} label={user ? "Dashboard" : "Start"} onClick={() => handleBottomNavClick(user ? 'Dashboard' : 'Start')} />
           <MobileNavLink to="/exercises" icon={<Wind />} label="Atmen" onClick={() => handleBottomNavClick('Atmen')} />
-          <MobileNavLink to="/premium" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
+          <MobileNavLink to="/ruhe-shop" icon={<ShoppingBag />} label="Ruhe-Shop" onClick={() => handleBottomNavClick('Ruhe-Shop')} />
           <button 
             onClick={() => {
               handleBottomNavClick('Mehr');

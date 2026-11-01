@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -69,7 +69,7 @@ function DisclaimerManager() {
   return <DisclaimerModal isOpen={!accepted} onAccepted={() => setAccepted(true)} />;
 }
 
-// NEU: Der "Türsteher" (Prüft, ob der Nutzer eingeloggt ist)
+// NEU: Der "TÃ¼rsteher" (PrÃ¼ft, ob der Nutzer eingeloggt ist)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   if (!user) {
@@ -118,7 +118,7 @@ export default function App() {
               <CookieBanner />
               <ErrorBoundary>
                 <Routes>
-                  {/* Dein normales Haus mit dem Standard-Menü (Layout) */}
+                  {/* Dein normales Haus mit dem Standard-MenÃ¼ (Layout) */}
                   <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="start" element={<Home />} />
@@ -155,10 +155,10 @@ export default function App() {
                   <Route path="impressum" element={<Impressum />} />
                   <Route path="agb" element={<AGB />} />
                   <Route path="rechtliches" element={<Rechtliches />} />
-                  <Route path="premium" element={<Premium />} />
+                  <Route path="premium" element={<Navigate to="/ruhe-shop" replace />} />
                   <Route path="ruhe-shop" element={<Premium />} />
-                  <Route path="shop" element={<Premium />} />
-                  <Route path="premium-dashboard" element={<PremiumDashboard />} />
+                  <Route path="shop" element={<Navigate to="/ruhe-shop" replace />} />
+                  <Route path="premium-dashboard" element={<Navigate to="/ruhe-shop" replace />} />
                   <Route path="hoerbuch" element={<AudiobookPage />} />
                   <Route path="hoerbuch/:id" element={<AudiobookPage />} />
                   <Route path="hoerbuecher" element={<AudiobooksHub />} />
@@ -190,7 +190,7 @@ export default function App() {
                   <Route path="admin-freischalten" element={<AdminUnlock />} />
                 </Route>
 
-                {/* NEU: Dein vollflächiger Premium-Raum (Ohne Standard-Menü) */}
+                {/* NEU: Dein vollflÃ¤chiger Premium-Raum (Ohne Standard-MenÃ¼) */}
                 <Route 
                   path="/atemchat" 
                   element={<AtemChat />} 

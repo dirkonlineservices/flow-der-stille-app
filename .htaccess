@@ -100,6 +100,10 @@ Options -Indexes
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # 301 Weiterleitung von /premium und /premium-dashboard auf /ruhe-shop
+  RewriteRule ^premium/?$ /ruhe-shop [R=301,L,NE]
+  RewriteRule ^premium-dashboard/?$ /ruhe-shop [R=301,L,NE]
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
