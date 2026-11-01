@@ -12,7 +12,7 @@ export default function Premium() {
   return (
     <div className="pt-20">
       <SEO 
-        title="Premium Mediathek – Hörbücher, Meditationen & Selbsthypnosen"
+        title="Ruhe-Shop & Mediathek – Hörbücher, Meditationen & Selbsthypnosen"
         description="Entdecke exklusive Hörbücher, geführte Meditationen und gezielte Selbsthypnosen einzeln ab 1,99 € ohne monatliches Abonnement. Sofort anhören & downloaden."
         schemaJson={productsSchema}
       />

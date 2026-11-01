@@ -156,6 +156,8 @@ export default function App() {
                   <Route path="agb" element={<AGB />} />
                   <Route path="rechtliches" element={<Rechtliches />} />
                   <Route path="premium" element={<Premium />} />
+                  <Route path="ruhe-shop" element={<Premium />} />
+                  <Route path="shop" element={<Premium />} />
                   <Route path="premium-dashboard" element={<PremiumDashboard />} />
                   <Route path="hoerbuch" element={<AudiobookPage />} />
                   <Route path="hoerbuch/:id" element={<AudiobookPage />} />

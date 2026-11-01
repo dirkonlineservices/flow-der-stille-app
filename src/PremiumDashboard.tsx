@@ -13,6 +13,7 @@ import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { offlineManager } from '../lib/offlineAudioService';
+import { isKnownAdminEmail } from '../lib/adminSecurity';
 import { 
   getOfflineProducts, 
   saveOfflineProducts, 
@@ -41,6 +42,7 @@ export default function PremiumShopDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
+  const [showAllHoerproben, setShowAllHoerproben] = useState(false);
   const [searchParams] = useSearchParams();
   const [productRatings, setProductRatings] = useState<Record<string, { average: number; count: number }>>({});
 
@@ -382,8 +384,8 @@ export default function PremiumShopDashboard() {
     const id = prod?.id?.toLowerCase() || '';
     const title = prod?.titel?.toLowerCase() || '';
     const kat = prod?.kategorie?.toLowerCase() || '';
-    const isAudiobook = id.includes('schmetterling') || id.includes('hoerbuch') || 
-                        title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch') ||
+    const isAudiobook = id.includes('schmetterling') || id.includes('mensch_sein') || id.includes('rauhnaechte') || id.includes('raun') || id.includes('hoerbuch') || 
+                        title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch') || title.includes('rauhn') ||
                         kat.includes('hörbuch') || kat.includes('hoerbuch');
     if (isAudiobook) {
       setTimeout(() => {
@@ -393,12 +395,14 @@ export default function PremiumShopDashboard() {
   };
 
   const getProductCoverImage = (prod: any) => {
-    if (prod.image_url) return prod.image_url;
-    
     const id = prod.id?.toLowerCase() || '';
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
+    if (id.includes('rauhnaechte') || id.includes('raun') || title.includes('rauhn') || title.includes('yggdrasil')) {
+      return '/images/products/cover_rauhnaechte.jpg';
+    }
+    if (prod.image_url && !prod.image_url.includes('schmetterling')) return prod.image_url;
     if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
       return '/images/products/cover_mensch_sein.jpg?v=2';
     }
@@ -460,8 +464,8 @@ export default function PremiumShopDashboard() {
   const purchasedProductsCount = produkte.filter(p => isProductPurchased(p) && parseFloat(p.preis) > 0).length;
 
   const filteredProdukte = produkte.filter(prod => {
-    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden
-    if (prod.is_active === false) {
+    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden (außer für Admins zum Vorab-Testen)
+    if (prod.is_active === false && !isKnownAdminEmail(user?.email)) {
       return false;
     }
 
@@ -506,17 +510,28 @@ export default function PremiumShopDashboard() {
       if (parts.length === 2) {
         const min = parseInt(parts[0], 10);
         const sec = parseInt(parts[1], 10);
+        if (min >= 60) {
+          const h = Math.floor(min / 60);
+          const m = min % 60;
+          return `${h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
+        }
         return `${isNaN(min) ? 0 : min}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
       }
       if (parts.length === 3) {
-        const totalMin = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-        const sec = parseInt(parts[2], 10);
-        return `${isNaN(totalMin) ? 0 : totalMin}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
+        const h = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        return `${isNaN(h) ? 0 : h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
       }
       return str;
     }
     const totalSeconds = parseInt(str.replace(/\D/g, ''), 10);
     if (isNaN(totalSeconds)) return str;
+
+    if (totalSeconds >= 3600) {
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.round((totalSeconds % 3600) / 60);
+      return `${h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
+    }
 
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -566,8 +581,8 @@ export default function PremiumShopDashboard() {
           <ArrowLeft size={14} />
           <span>Zurück</span>
         </Link>
-        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Premium Inhalte</h1>
-        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
+        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Ruhe-Shop</h1>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke wohltuende Hörbücher, geführte Meditationen und Selbsthypnosen – flexibler Einmalkauf, garantiert ohne Abo.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">
@@ -644,6 +659,43 @@ export default function PremiumShopDashboard() {
         )}
       </div>
 
+      {/* Kompakter Bereich für kostenlose Klangproben (oben vor gekauften Produkten) */}
+      {(() => {
+        const hoerproben = produkte.filter(p => !!((p.hoerprobe_url && p.hoerprobe_url.trim()) || (p.audio_path && p.audio_path.trim())));
+        if (hoerproben.length === 0) return null;
+        const visibleHoerproben = showAllHoerproben ? hoerproben : hoerproben.slice(0, 4);
+        return (
+          <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
+            <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--accent)] text-white">
+                  Kostenlos reinschnuppern
+                </span>
+                <h3 className="text-base sm:text-lg font-serif font-semibold text-[var(--text-main)]">
+                  Kostenlose Klangproben ({hoerproben.length})
+                </h3>
+              </div>
+              {hoerproben.length > 4 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllHoerproben(!showAllHoerproben)}
+                  className="text-xs text-[var(--accent)] hover:underline font-semibold cursor-pointer"
+                >
+                  {showAllHoerproben ? 'Weniger anzeigen' : `Alle ${hoerproben.length} Klangproben anzeigen`}
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mb-3">
+              Höre unverbindlich rein – 100 % werbefrei und ohne Anmeldung. Der rechtliche Disclaimer vorab wird automatisch übersprungen.
+            </p>
+            <div className="grid grid-cols-1 gap-2.5">
+              {visibleHoerproben.map((p) => (
+                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} onProductClick={handleJumpToProduct} />
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {user && (
         <div className="w-full bg-[var(--bg-card)] border border-emerald-300/80 dark:border-emerald-800/80 rounded-2xl overflow-hidden mb-8 shadow-xs">
@@ -861,7 +913,7 @@ export default function PremiumShopDashboard() {
                       className="mt-1"
                     />
                     {produkt.dauer && (
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)} Min.</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer).includes('Min') || formatDuration(produkt.dauer).includes('Std') ? formatDuration(produkt.dauer) : `${formatDuration(produkt.dauer)} Min.`}</p>
                     )}
                   </div>
 
@@ -934,7 +986,7 @@ export default function PremiumShopDashboard() {
                 )}
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                    ⏱ {formatDuration(produkt.dauer)} Min.
+                    ⏱ {formatDuration(produkt.dauer).includes('Min') || formatDuration(produkt.dauer).includes('Std') ? formatDuration(produkt.dauer) : `${formatDuration(produkt.dauer)} Min.`}
                   </span>
                 )}
               </div>

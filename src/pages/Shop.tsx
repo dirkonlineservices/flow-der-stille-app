@@ -17,7 +17,7 @@ export default function Shop() {
       <header className="mb-12">
         <h1 className="text-4xl md:text-5xl font-serif text-[var(--color-accent-primary)] mb-4 flex items-center gap-3">
           <ShoppingBag className="w-10 h-10 text-[var(--color-accent-primary)]" />
-          Premium Shop
+          Ruhe-Shop
         </h1>
         <p className="text-[var(--color-text-muted)] text-lg max-w-2xl leading-relaxed">
           Vertiefe deine Praxis mit unseren exklusiven Masterclasses und Premium-Meditationen. Dauerhafter Zugriff nach dem Kauf.

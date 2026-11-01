@@ -627,7 +627,7 @@ export default function SoundSamplesLanding() {
                 to="/premium"
                 className="px-6 py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
               >
-                <span>Zum Premium-Bereich &amp; Mediathek</span>
+                <span>Zum Ruhe-Shop &amp; Mediathek</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (

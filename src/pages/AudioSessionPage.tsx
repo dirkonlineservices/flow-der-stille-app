@@ -200,7 +200,7 @@ export default function AudioSessionPage() {
             className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full shadow-xs transition-all cursor-pointer"
           >
             <ArrowLeft size={15} />
-            <span>Zurück zur Premium Mediathek</span>
+            <span>Zurück zum Ruhe-Shop &amp; Mediathek</span>
           </Link>
 
           <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-alt)] px-3 py-1.5 rounded-full border border-[var(--border)]">

@@ -581,8 +581,8 @@ export default function PremiumShopDashboard() {
           <ArrowLeft size={14} />
           <span>Zurück</span>
         </Link>
-        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Premium Inhalte</h1>
-        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke unsere exklusiven Inhalte für Meditation, Entspannung und Selbsthypnose.</p>
+        <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Ruhe-Shop</h1>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke wohltuende Hörbücher, geführte Meditationen und Selbsthypnosen – flexibler Einmalkauf, garantiert ohne Abo.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">
