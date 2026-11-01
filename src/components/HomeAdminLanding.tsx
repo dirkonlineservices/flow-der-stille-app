@@ -61,7 +61,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
   const [showWisdomProgressModal, setShowWisdomProgressModal] = useState(false);
 
   // Aktiver Tab für die Schnupper-Klangprobe auf der Startseite
-  const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch'>('meditation');
+  const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch' | 'rauhnaechte'>('rauhnaechte');
 
   // Platzhalter-Audio (kann sofort durch die finale Begrüßung ersetzt werden)
   const VOICE_INTRO_URL = "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3";
@@ -306,7 +306,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
           {/* Bedürfnis 4: Berührende Hör-Reise */}
           <Link
-            to="/hoerbuch/hoerbuch_der_tag_an_dem_der_schmetterling_erwachte"
+            to="/hoerbuecher"
             className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] hover:border-[var(--accent)] transition-all shadow-2xs hover:shadow-sm group flex items-start gap-4"
           >
             <div className="w-11 h-11 rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform mt-0.5">
@@ -314,13 +314,13 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                Achtsam eintauchen &amp; lauschen
+                Hörbücher &amp; Seelenreisen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Hörbuch „Der Tag, an dem der Schmetterling erwachte“ (58 Min. mit Kapiteln).
+                Neu: „Yggdrasils Atem – 12 Rauhnächte“ (2h 59m), „Der Schmetterling“ &amp; „Mut zum Echtsein“.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
-                Hörbuch öffnen <ArrowRight size={14} />
+                Zu den Hörbüchern <ArrowRight size={14} />
               </span>
             </div>
           </Link>
@@ -527,6 +527,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           {/* Schnupper-Tabs */}
           <div className="flex flex-wrap items-center gap-2">
             {[
+              { key: 'rauhnaechte', label: '🌲 Neu: Rauhnächte', sub: 'Hörprobe' },
               { key: 'meditation', label: '🧘‍♀️ Meditation: Herzöffnung', sub: 'Gratis' },
               { key: 'selbsthypnose', label: '🌀 Selbsthypnose: Tiefer Schlaf', sub: 'Gratis' },
               { key: 'hoerbuch', label: '🎧 Hörbuch: Schmetterling', sub: 'Auszug' },
@@ -553,6 +554,16 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           {/* Aktiver Klangproben-Player */}
           {(() => {
             const sampleHighlightProducts: Record<string, { produkt: any; badge: string; desc: string }> = {
+              rauhnaechte: {
+                produkt: getOfflineProductById('rauhnaechte') || {
+                  id: 'rauhnaechte',
+                  titel: 'Yggdrasils Atem – 12 Rauhnächte auf der Schwelle',
+                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3',
+                  dauer: 10740
+                },
+                badge: '13 geführte Meditationen • 2 Std. 59 Min. Gesamtlaufzeit',
+                desc: 'Schamanische Seelenreisen durch die Julzeit und die heiligen Rauhnächte mit heimischen Pflanzenhelfern.'
+              },
               meditation: {
                 produkt: getOfflineProductById('meditation_zur_herzoeffnung') || {
                   id: 'meditation_zur_herzoeffnung',

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Headphones, Sparkles, Volume2, ArrowLeft, ArrowRight, 
   CheckCircle2, Clock, ShieldCheck, Heart, Moon, BookOpen, 
@@ -214,10 +214,28 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Lege die Masken äußerer Erwartungen ab. Lerne, mit deinen eigenen Grenzen und Gefühlen in tiefer Ehrlichkeit und Würde im Einklang zu sein.',
     voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Buch & Skript: Jacqueline Schmetzer',
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_mensch_sein',
+    shopAnchor: '/ruhe-shop#product-fds_mensch_sein',
     landingUrl: '/hoerbuecher',
     landingLabel: 'Zur Hörbuch-Themenseite',
     audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3'
+  },
+  {
+    id: 'rauhnaechte',
+    title: 'Yggdrasils Atem – 12 Rauhnächte auf der Schwelle',
+    category: 'hoerbuch',
+    categoryLabel: 'Schamanische Seelenreisen & Hörbuch',
+    badge: '13 Meditationen • 2 Std. 59 Min.',
+    duration: '2 Std. 59 Min.',
+    priceLabel: '9,99 €',
+    isFree: false,
+    cover: '/images/products/cover_rauhnaechte.jpg',
+    shortDesc: 'Schamanische Seelenreisen durch die Julzeit und die heiligen Rauhnächte: 13 geführte Meditationen an den Wurzeln des Weltenbaums Yggdrasil mit Pflanzenhelfern und Fylgja-Krafttieren.',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Dirk Schmetzer',
+    musicInfo: 'Schamanische Klangwelten mit Gong & Räucherwerk (KI-unterstützt)',
+    shopAnchor: '/ruhe-shop#product-rauhnaechte',
+    landingUrl: '/hoerbuch/rauhnaechte',
+    landingLabel: 'Zur Hörbuch-Seite',
+    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3'
   },
 
   // ─── 4. SCHNUPPER- & ENTSPANNUNGSÜBUNGEN ────────────────────────
@@ -261,22 +279,8 @@ const ALL_SAMPLES: SampleCardData[] = [
 
 export default function SoundSamplesLanding() {
   const { user } = useAuth();
-  const [searchParams] = useSearchParams();
-  const paramCat = searchParams.get('category');
-  
-  const [selectedCategory, setSelectedCategory] = useState<string>(() => {
-    if (paramCat && ['meditation', 'selbsthypnose', 'hoerbuch', 'uebung'].includes(paramCat.toLowerCase())) {
-      return paramCat.toLowerCase();
-    }
-    return 'all';
-  });
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (paramCat && ['meditation', 'selbsthypnose', 'hoerbuch', 'uebung', 'all'].includes(paramCat.toLowerCase())) {
-      setSelectedCategory(paramCat.toLowerCase());
-    }
-  }, [paramCat]);
 
   const filteredSamples = selectedCategory === 'all'
     ? ALL_SAMPLES

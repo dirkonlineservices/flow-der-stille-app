@@ -263,8 +263,18 @@ export default function PremiumShopDashboard() {
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Products Timeout')), 3500))
         ]);
         if (!prodRes.error && prodRes.data && prodRes.data.length > 0) {
-          finalProdukte = prodRes.data;
-          saveOfflineProducts(prodRes.data);
+          finalProdukte = prodRes.data.map((p: any) => {
+            if (p.id === 'rauhnaechte' || p.id?.includes('rauhn') || p.titel?.toLowerCase().includes('rauhn')) {
+              return {
+                ...p,
+                is_active: true,
+                dauer: 10740,
+                image_url: '/images/products/cover_rauhnaechte.jpg'
+              };
+            }
+            return p;
+          });
+          saveOfflineProducts(finalProdukte);
           setProdukte(finalProdukte);
         }
       } catch (netErr) {
@@ -464,8 +474,9 @@ export default function PremiumShopDashboard() {
   const purchasedProductsCount = produkte.filter(p => isProductPurchased(p) && parseFloat(p.preis) > 0).length;
 
   const filteredProdukte = produkte.filter(prod => {
-    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden (außer für Admins zum Vorab-Testen)
-    if (prod.is_active === false && !isKnownAdminEmail(user?.email)) {
+    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden (außer für Admins oder Rauhnächte)
+    const isRauhnaechteProd = (prod.id || '').toLowerCase().includes('rauhn') || (prod.titel || '').toLowerCase().includes('rauhn');
+    if (!isRauhnaechteProd && prod.is_active === false && !isKnownAdminEmail(user?.email)) {
       return false;
     }
 
@@ -488,7 +499,10 @@ export default function PremiumShopDashboard() {
     } else if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
     } else if (activeFilter === 'Hörbücher' || activeFilter === 'Hörbuch') {
-        matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || titleLower.includes('schmetterling');
+        matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || 
+                          titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || 
+                          titleLower.includes('schmetterling') || titleLower.includes('rauhn') || 
+                          titleLower.includes('yggdrasil') || pId.includes('rauhn');
     } else if (activeFilter === 'Meditation') {
         matchesCategory = catLower.includes('meditation') || titleLower.includes('meditation') || titleLower.includes('herzöffnung') || titleLower.includes('loslassen');
     } else if (activeFilter === 'Entspannungsübungen') {
