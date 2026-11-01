@@ -722,7 +722,7 @@ export default function RauhnaechtePreviewPage() {
               Über dieses Werk
             </h2>
             <p className="text-xs sm:text-sm text-[var(--accent)] font-medium">
-              Verfasst von Dirk Schmetzer • Mit Hingabe gesprochen von Lisa Ragusa
+              Verfasst von Jacqueline Schmetzer • Mit Hingabe gesprochen von Lisa Ragusa
             </p>
           </div>
 

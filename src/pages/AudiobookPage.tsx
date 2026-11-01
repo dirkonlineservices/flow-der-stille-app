@@ -497,11 +497,11 @@ export default function AudiobookPage() {
     "@context": "https://schema.org",
     "@type": ["Product", "Audiobook", "Book"],
     "name": title,
-    "description": productData?.beschreibung || (isRauhnaechte ? "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte von Dirk Schmetzer." : "Ganzheitliches Hörbuch über innere Verwandlung, Achtsamkeit und Bewusstsein von Jacqueline Schmetzer."),
+    "description": productData?.beschreibung || (isRauhnaechte ? "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte von Jacqueline Schmetzer." : "Ganzheitliches Hörbuch über innere Verwandlung, Achtsamkeit und Bewusstsein von Jacqueline Schmetzer."),
     "image": coverImage.startsWith('http') ? coverImage : `https://flow-der-stille.de${coverImage}`,
     "author": {
       "@type": "Person",
-      "name": isRauhnaechte ? "Dirk Schmetzer" : "Jacqueline Schmetzer"
+      "name": "Jacqueline Schmetzer"
     },
     "readBy": {
       "@type": "Person",
@@ -558,7 +558,7 @@ export default function AudiobookPage() {
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10 selection:bg-[var(--accent)] selection:text-white">
       <SEO
         title={`${title} – Flow der Stille`}
-        description={isRauhnaechte ? "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte von Dirk Schmetzer." : "Ganzheitliches Hörbuch über innere Verwandlung und Achtsamkeit von Jacqueline Schmetzer."}
+        description={isRauhnaechte ? "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte von Jacqueline Schmetzer." : "Ganzheitliches Hörbuch über innere Verwandlung und Achtsamkeit von Jacqueline Schmetzer."}
         image={coverImage}
         schemaJson={audiobookSchema}
       />
@@ -658,7 +658,7 @@ export default function AudiobookPage() {
             </h1>
 
             <p className="text-xs text-[var(--text-muted)] font-medium">
-              Autor: <strong className="text-[var(--text-main)]">{isRauhnaechte ? 'Dirk Schmetzer' : 'Jacqueline Schmetzer'}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">Lisa Ragusa</strong>
+              Autorin: <strong className="text-[var(--text-main)]">Jacqueline Schmetzer</strong> • Sprecherin: <strong className="text-[var(--text-main)]">Lisa Ragusa</strong>
             </p>
 
             <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
@@ -1045,7 +1045,7 @@ export default function AudiobookPage() {
           }}
           productId={productData?.id || productId}
           title={title}
-          author={isRauhnaechte ? 'Dirk Schmetzer' : 'Jacqueline Schmetzer'}
+          author="Jacqueline Schmetzer"
           reader="Lisa Ragusa"
           audioUrl={audioUrl}
           coverImage={coverImage}

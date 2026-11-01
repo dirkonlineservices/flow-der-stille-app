@@ -230,7 +230,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     isFree: false,
     cover: '/images/products/cover_rauhnaechte.jpg',
     shortDesc: 'Schamanische Seelenreisen durch die Julzeit und die heiligen Rauhnächte: 13 geführte Meditationen an den Wurzeln des Weltenbaums Yggdrasil mit Pflanzenhelfern und Fylgja-Krafttieren.',
-    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Dirk Schmetzer',
+    voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text & Idee: Jacqueline Schmetzer',
     musicInfo: 'Schamanische Klangwelten mit Gong & Räucherwerk (KI-unterstützt)',
     shopAnchor: '/ruhe-shop#product-rauhnaechte',
     landingUrl: '/hoerbuch/rauhnaechte',
