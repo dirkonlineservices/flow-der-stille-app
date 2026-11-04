@@ -25,13 +25,18 @@ const STORE_TO_DB_MAP: Record<string, string> = {
   'fds_mensch_sein': 'mensch_sein',
   'fds_schmetterling': 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
   'fds_seele_wind': 'wo_die_seele_den_wind_beruehrt',
+  'fds_rauhnaechte': 'rauhnaechte',
+  'rauhnaechte': 'rauhnaechte',
 
   // Selbsthypnosen & Meditationen
   'fds_selbsthypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
+  'fds_hypnose_selbstbewusstsein': 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
   'fds_herzoeffnung_meditation': 'meditation_zur_herzoeffnung',
   'fds_meditation_loslassen': 'meditation_loslassen',
   'fds_selbsthypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
+  'fds_hypnose_gesunde_ernaehrung': 'selbsthypnose_ernaehrung',
   'fds_selbsthypnose_fokus_absolute_konzentration': 'selbsthypnose_fokus&konzentration',
+  'fds_hypnose_fokus': 'selbsthypnose_fokus&konzentration',
   'fds_herzkompass_meditation': 'meditation_herzkompass',
   'fds_meditation_inneres_kind': 'meditation_inneres_kind',
   'fds_meditation_innere_ruhe': 'meditation_innere_ruhe',
