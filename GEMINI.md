@@ -3,9 +3,9 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 23.10.2026, 17:30 Uhr (Apple-Kaufprüfung, Kauf-Sicherheit: Rollenschutz-SQL live, Edge Functions live, Frontend noch NICHT live)
-> - **Branch**: `kauf-sicherheit` (2 Commits vor `main`) – ⚠️ erst nach erfolgreichem PayPal-Test in `main` mergen & pushen, sonst entfällt der alte PayPal-Notweg. Am anderen Rechner: `git fetch && git checkout kauf-sicherheit`.
-> - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live und verarbeitet („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert. Erstes In-App-Kauf Produkt vorbereitet.
+> - **Letzter Stand**: 04.11.2026, 08:22 Uhr (Release-Vorbereitung Build 1.0 (7) gepusht: Kauf-Sicherheit gemergt, Apple-Verifizierung, Konto löschen & Käufe wiederherstellen im Build, Rauhnächte IAP gemappt)
+> - **Branch**: `main` (up to date mit origin/main)
+> - **Status**: 🚀 Meilenstein erreicht! Build 1.0 (7) ist zu GitHub gepusht. Xcode Cloud baut automatisch für TestFlight.
 >
 > ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
 > 1. **TestFlight Release 1.0 (6) Live**:
