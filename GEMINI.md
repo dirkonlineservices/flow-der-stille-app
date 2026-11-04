@@ -3,8 +3,8 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 17.10.2026, 13:18 Uhr (SEO-Vorrendern live, Konto-Löschen, Kauf-Speicherung PayPal/Google repariert, Telegram-Alerts repariert)
-> - **Branch**: `main`
+> - **Letzter Stand**: 23.10.2026, 17:30 Uhr (Apple-Kaufprüfung, Kauf-Sicherheit: Rollenschutz-SQL live, Edge Functions live, Frontend noch NICHT live)
+> - **Branch**: `kauf-sicherheit` (2 Commits vor `main`) – ⚠️ erst nach erfolgreichem PayPal-Test in `main` mergen & pushen, sonst entfällt der alte PayPal-Notweg. Am anderen Rechner: `git fetch && git checkout kauf-sicherheit`.
 > - **Status**: 🚀 Meilenstein erreicht! TestFlight Build 1.0 (6) ist live und verarbeitet („Im Test • Läuft in 90 Tagen ab“). Xcode Cloud CI/CD baut und deployt vollautomatisch aus GitHub. „Sign in with Apple“ voll integriert. Erstes In-App-Kauf Produkt vorbereitet.
 >
 > ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
@@ -37,9 +37,22 @@
 >    - [ ] **Tag 4 – neue Beiträge**: `/blog/ki-mit-herz-kuenstliche-intelligenz-achtsamkeit`, `/blog/selbsthypnose-wirkung-anwendung-qualitaetsanspruch`
 >    - (Alle URLs mit `https://flow-der-stille.de` davor.)
 > 2. **💶 Käufe seit 28.09.2026 nachtragen**: Bis zum Fix am 17.10. landeten PayPal-Käufe und Google-Play-Gastkäufe nicht in `kaeufe`. In PayPal & Google Play Console echte Zahlungen 28.09.–17.10. prüfen und ggf. über das Admin-Dashboard freischalten.
-> 3. **🍏 iOS-Käufe vor App-Store-Release prüfen**: Apple-Käufe laufen aktuell über `verify-google-play-purchase`, das nur Google-Belege prüft → eigene Apple-Verifizierung nötig.
+> 3. **🍏 Apple-Kaufprüfung (Code fertig 23.10., noch nicht deployt)**: Neue Edge Function `verify-apple-purchase` prüft jede iOS-Transaktion über die App Store Server API (Produktion, bei 404 Sandbox/TestFlight) und speichert sie in `kaeufe` (`order_id` = `APPLE.…` bzw. `APPLE.SANDBOX.…`). Der Käufer wird nur aus dem Login-Token bestimmt. Noch zu tun:
+>    - [ ] App Store Connect → *Benutzer und Zugriff* → *Integrationen* → *In-App-Kauf* → Schlüssel erzeugen (.p8 herunterladen, nur einmal möglich), Key-ID und Issuer-ID notieren.
+>    - [ ] Supabase-Secrets setzen: `APPLE_IAP_KEY_ID`, `APPLE_IAP_ISSUER_ID`, `APPLE_IAP_PRIVATE_KEY` (Inhalt der .p8-Datei).
+>    - [ ] `verify-apple-purchase` und `notify-new-purchase` deployen, danach Testkauf in TestFlight (Sandbox-Konto).
 > 4. **💬 Atem-Chat „Aura“** – seit 17.10. **ausgeblendet** (antwortete live nicht, `/api/chat` braucht den nicht laufenden Express-Server). Zum Reaktivieren: Edge Function mit Gemini-Secret bauen, dann in `public/.htaccess` die 302-Zeile für `atemchat|chat` entfernen, in `src/index.tsx` `/atemchat` wieder auf `<AtemChat />` stellen, Menüpunkt in `Layout.tsx` zurückholen und `/atemchat` in `public/sitemap.xml` eintragen.
 >
+> 5. **🔐 Kauf-Sicherheit (Code fertig 23.10.) – Reihenfolge einhalten!**
+>    - [x] (23.10.) **Sofort:** `supabase/migrations/20261023_profiles_rollenschutz.sql` im Supabase SQL-Editor ausführen (Nutzer konnten sich über `profiles.rolle` selbst zum Admin machen). Die Kontrollabfrage am Ende zeigt alle Admins → nur bekannte Adressen?
+>    - [x] (23.10., Admins geprüft: nur bekannte Adressen; Google-Zugang `GOOGLE_PLAY_SERVICE_ACCOUNT` funktioniert) Prüfen, dass die Secrets `GOOGLE_SERVICE_ACCOUNT` und `PAYPAL_LIVE_CLIENT_ID`/`PAYPAL_LIVE_SECRET` in Supabase gesetzt sind. Ohne sie lehnen die Funktionen jetzt **jeden** Kauf ab (keine Test-/Ersatz-IDs mehr).
+>    - [x] (23.10.) Edge Functions deployen: `process-purchase`, `verify-google-play-purchase`, `verify-apple-purchase`, `notify-new-purchase`.
+>    - [ ] Echter PayPal-Testkauf (oder Logs eines echten Kundenkaufs in *Edge Functions → process-purchase → Logs*: „von PayPal bestätigt“?).
+>    - [ ] Kauf vom 20.10. (`GPA.TEST-selbshypnose…`) in der Play Console prüfen – evtl. falsches Produkt freigeschaltet.
+>    - [ ] Push → Web live; neuen Android-Build (Play Store) und iOS-Build veröffentlichen.
+>    - [ ] **Zuletzt:** `supabase/migrations/20261023_kaeufe_nur_admin_insert.sql` ausführen (nur noch Server & Admins schreiben in `kaeufe`).
+>    - Hinweis: Scheitert die Server-Prüfung bei PayPal, bekommt der Kunde „Zahlung eingegangen, Freischaltung wird geprüft“ und es geht ein Alarm über `send-error-alert` raus → manuell im Admin-Dashboard freischalten.
+
 > ### 🎯 NÄCHSTE SCHRITTE & TO-DO-ROADMAP (ZIEL: LIVE-GANG IM OKTOBER 2026):
 > 1. **📱 Sobald das Apple-Testgerät da ist (kommende Woche)**:
 >    - Apple TestFlight App auf dem iPhone/iPad installieren.

@@ -22,6 +22,8 @@ function kaufQuelle(orderId: string = ''): string {
   if (orderId.startsWith('GESCHENK_')) return '🎁 Admin-Freischaltung (Geschenk)'
   if (orderId.startsWith('GPA.TEST')) return '🧪 Google Play (Testkauf)'
   if (orderId.startsWith('GPA.')) return '🤖 Google Play'
+  if (orderId.startsWith('APPLE.SANDBOX.')) return '🧪 App Store (TestFlight/Sandbox)'
+  if (orderId.startsWith('APPLE.')) return '🍏 App Store'
   if (orderId.startsWith('MOCK_')) return '🧪 Testkauf'
   if (orderId.startsWith('VIP')) return '⭐ VIP-Zugang'
   if (orderId.startsWith('SSO_SYNC')) return '🔄 Konto-Synchronisierung'
