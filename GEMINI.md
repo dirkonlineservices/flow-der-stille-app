@@ -3,9 +3,9 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 04.11.2026, 08:22 Uhr (Release-Vorbereitung Build 1.0 (7) gepusht: Kauf-Sicherheit gemergt, Apple-Verifizierung, Konto löschen & Käufe wiederherstellen im Build, Rauhnächte IAP gemappt)
+> - **Letzter Stand**: 07.11.2026, 20:00 Uhr (Build 24 für App Store Submission im main gepusht, Codebasis & In-App-Käufe 1:1 synchron, bereit für Screenshots & App-Review)
 > - **Branch**: `main` (up to date mit origin/main)
-> - **Status**: 🚀 Meilenstein erreicht! Build 1.0 (7) ist zu GitHub gepusht. Xcode Cloud baut automatisch für TestFlight.
+> - **Status**: 🚀 Meilenstein erreicht! Build 1.0 (24) ist auf GitHub gepusht & in Xcode Cloud gebaut. Alle Store-IDs gemappt, Konto löschen & Käufe wiederherstellen integriert. Nächster Schritt: Screenshots & Einreichung in App Store Connect.
 >
 > ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
 > 1. **TestFlight Release 1.0 (6) Live**:
