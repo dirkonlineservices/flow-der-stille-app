@@ -9,6 +9,7 @@ import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
 import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
 import { BillingService } from '../lib/billing';
+import { hasResolvedCookieConsent } from '../lib/tracking';
 
 const POPUP_STORAGE_KEY = 'fds_adventskalender_popup_seen_2026_v1';
 const WEB_CALENDAR_URL = 'https://flow-der-stille.de/adventskalender';
@@ -263,7 +264,8 @@ export const AdventskalenderHomeSection: React.FC = () => {
 
   const isNativeApp = typeof window !== 'undefined' && BillingService.isNative();
 
-  // Automatisches einmaliges Einblenden als Pop-Up
+  // Automatisches Einblenden als Pop-Up: Frühestens 20 Sekunden nach Cookie-Entscheidung
+  // Dauerhaft unterdrückt, sobald die Adventskalender-Seite einmal besucht wurde.
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -271,14 +273,51 @@ export const AdventskalenderHomeSection: React.FC = () => {
         setIsPopupOpen(true);
         return;
       }
-      const alreadySeen = sessionStorage.getItem(POPUP_STORAGE_KEY);
-      if (!alreadySeen) {
-        const timer = setTimeout(() => {
-          setIsPopupOpen(true);
-          sessionStorage.setItem(POPUP_STORAGE_KEY, 'true');
-        }, 3500);
-        return () => clearTimeout(timer);
+
+      // 1. Hat der Nutzer den Adventskalender bereits besucht? -> Dauerhaft unterdrücken!
+      const hasVisited =
+        localStorage.getItem('hasVisitedAdventskalender') === 'true' ||
+        localStorage.getItem('fds_advent_visited') === 'true';
+      if (hasVisited) {
+        return;
       }
+
+      // 2. In dieser Sitzung bereits gesehen?
+      const alreadySeen = sessionStorage.getItem(POPUP_STORAGE_KEY);
+      if (alreadySeen) {
+        return;
+      }
+
+      // 3. Timer-Start: Frühestens 20 Sekunden nach Bestätigung des Cookiebanners
+      let timer: any = null;
+      const start20sTimer = () => {
+        timer = setTimeout(() => {
+          const visitedNow =
+            localStorage.getItem('hasVisitedAdventskalender') === 'true' ||
+            localStorage.getItem('fds_advent_visited') === 'true';
+          if (!visitedNow) {
+            setIsPopupOpen(true);
+            sessionStorage.setItem(POPUP_STORAGE_KEY, 'true');
+          }
+        }, 20000); // Exakt 20 Sekunden Verweildauer
+      };
+
+      if (hasResolvedCookieConsent()) {
+        start20sTimer();
+      } else {
+        const onConsentResolved = () => {
+          start20sTimer();
+        };
+        window.addEventListener('cookie-consent-resolved', onConsentResolved, { once: true });
+        return () => {
+          window.removeEventListener('cookie-consent-resolved', onConsentResolved);
+          if (timer) clearTimeout(timer);
+        };
+      }
+
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
     } catch {}
   }, []);
 
@@ -314,7 +353,13 @@ export const AdventskalenderHomeSection: React.FC = () => {
               {isNativeApp ? (
                 <button
                   type="button"
-                  onClick={() => window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer')}
+                  onClick={() => {
+                    try {
+                      localStorage.setItem('hasVisitedAdventskalender', 'true');
+                      localStorage.setItem('fds_advent_visited', 'true');
+                    } catch {}
+                    window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer');
+                  }}
                   className="px-5 py-3 rounded-2xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <ExternalLink size={16} />
@@ -324,6 +369,12 @@ export const AdventskalenderHomeSection: React.FC = () => {
               ) : (
                 <Link
                   to="/adventskalender"
+                  onClick={() => {
+                    try {
+                      localStorage.setItem('hasVisitedAdventskalender', 'true');
+                      localStorage.setItem('fds_advent_visited', 'true');
+                    } catch {}
+                  }}
                   className="px-5 py-3 rounded-2xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <Calendar size={16} />

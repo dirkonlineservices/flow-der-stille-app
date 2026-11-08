@@ -9,6 +9,17 @@ export const CONSENT_STORAGE_KEY = 'flow_analytics_consent';
 import { initMetaPixel, trackMetaLead, trackMetaPurchase, captureTrafficSource } from './metaPixel';
 
 /**
+ * Prüft, ob der Nutzer bereits eine Auswahl im Cookie- und Datenschutzbanner
+ * getroffen hat (egal ob alle akzeptiert, nur notwendige oder abgelehnt).
+ */
+export const hasResolvedCookieConsent = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const status = localStorage.getItem(CONSENT_STORAGE_KEY);
+  const cookieStatus = localStorage.getItem('flow_cookie_consent_status');
+  return Boolean(status || cookieStatus);
+};
+
+/**
  * Prüft, ob Analytics/Tracking vom Nutzer explizit zugelassen wurde.
  * Standardmäßig (wenn noch keine Entscheidung getroffen wurde oder abgelehnt wurde) -> FALSE!
  */

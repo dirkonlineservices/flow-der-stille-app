@@ -74,6 +74,14 @@ export const AdventskalenderPage: React.FC = () => {
     }
   });
 
+  // Besucher-Status speichern: Künftiges automatisches Aufpoppen des Advents-Pop-ups dauerhaft unterdrücken
+  useEffect(() => {
+    try {
+      localStorage.setItem('hasVisitedAdventskalender', 'true');
+      localStorage.setItem('fds_advent_visited', 'true');
+    } catch {}
+  }, []);
+
   // Gewinnspiel Formular im Modal
   const [raffleAnswer, setRaffleAnswer] = useState('');
   const [raffleEmail, setRaffleEmail] = useState(user?.email || '');

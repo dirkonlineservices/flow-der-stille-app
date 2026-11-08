@@ -12,6 +12,7 @@ import { Sparkles, X, ArrowRight, Download, Headphones, ShoppingBag } from 'luci
 import { useNavigate } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
 import { BillingService } from '../lib/billing';
+import { hasResolvedCookieConsent } from '../lib/tracking';
 
 const LOCAL_STORAGE_KEY = 'flow_last_seen_product_id';
 const LOCAL_STORAGE_UPDATE_DISMISSED_KEY = 'flow_app_update_dismissed_v4.9.3';
@@ -39,9 +40,27 @@ export function NewContentNotification() {
           // Wenn die Produkt-ID noch nicht als gesehen markiert wurde
           if (newest && newest.id !== lastSeenId) {
             setLatestProduct(newest);
-            // Kleiner Delay für sanftes Aufpoppen nach dem Laden der Seite
-            const timer = setTimeout(() => setIsVisible(true), 1500);
-            return () => clearTimeout(timer);
+
+            // Pop-up blockieren, solange der Cookiebanner nicht bestätigt/geschlossen wurde.
+            // Sobald bestätigt, startet ein sanfter Delay (8 Sekunden), bevor der Hinweis erscheint.
+            const startNotificationTimer = () => {
+              return setTimeout(() => setIsVisible(true), 8000);
+            };
+
+            if (hasResolvedCookieConsent()) {
+              const timer = startNotificationTimer();
+              return () => clearTimeout(timer);
+            } else {
+              let timer: any = null;
+              const handleConsent = () => {
+                timer = startNotificationTimer();
+              };
+              window.addEventListener('cookie-consent-resolved', handleConsent, { once: true });
+              return () => {
+                window.removeEventListener('cookie-consent-resolved', handleConsent);
+                if (timer) clearTimeout(timer);
+              };
+            }
           }
         }
       }, () => {});

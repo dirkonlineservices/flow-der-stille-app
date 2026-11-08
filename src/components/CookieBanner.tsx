@@ -83,6 +83,9 @@ export default function CookieBanner() {
   const handleAppChoice = (choice: 'accepted' | 'rejected') => {
     setAnalyticsConsent(choice);
     setIsVisible(false);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cookie-consent-resolved'));
+    }
   };
 
   // Web Choice -> Sofort schließen (Haftungsausschluss kommt erst beim Audio-Play)
@@ -90,6 +93,9 @@ export default function CookieBanner() {
     localStorage.setItem(COOKIE_STORAGE_KEY, choice);
     setAnalyticsConsent(choice === 'all' ? 'accepted' : 'rejected');
     setIsVisible(false);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cookie-consent-resolved'));
+    }
   };
 
   // Step 2 Disclaimer Confirmation (Fallback)

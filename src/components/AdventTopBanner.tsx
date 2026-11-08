@@ -126,136 +126,125 @@ export const AdventTopBanner: React.FC = () => {
   return (
     <aside
       aria-label="Weihnachtskalender Vorankündigung"
-      className="relative z-30 w-full bg-gradient-to-r from-[#8A9A8A]/15 via-[#F5F5F0] to-[#C8A96E]/15 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
+      className="relative z-30 w-full bg-gradient-to-r from-[#8A9A8A]/20 via-[#F5F5F0] to-[#C8A96E]/20 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
     >
-      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 text-xs sm:text-sm lg:pr-36">
-        {/* Linke Seite: Feines Badge & Begrüßung / Text auf einer Linie */}
-        <div className="flex items-center gap-2.5 text-center md:text-left flex-wrap md:flex-nowrap justify-center md:justify-start">
-          <Link
-            to="/adventskalender"
-            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8A9A8A]/15 hover:bg-[#8A9A8A]/25 border border-[#8A9A8A]/40 text-[#3D3B35] font-semibold text-xs transition-all shrink-0 cursor-pointer shadow-2xs hover:shadow-xs hover:scale-[1.02]"
-            title="Zum kostenfreien Adventskalender"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#C8A96E] shrink-0" />
-            <span className="font-bold tracking-tight text-[#344034]">Adventskalender</span>
-            <span className="text-[#8A9A8A] font-bold">•</span>
-            <span className="text-[#4A563E] font-medium text-[11px]">0&nbsp;€</span>
-          </Link>
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-12 py-3 sm:py-3.5 relative flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5 text-center">
+        {/* Größeres, harmonisches Salbeigrün-Badge mit deutlichem 0 € Hinweis */}
+        <Link
+          to="/adventskalender"
+          onClick={() => {
+            try {
+              localStorage.setItem('hasVisitedAdventskalender', 'true');
+              localStorage.setItem('fds_advent_visited', 'true');
+            } catch {}
+          }}
+          className="group inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white font-medium text-xs sm:text-sm transition-all shadow-xs shrink-0 cursor-pointer hover:scale-[1.02]"
+          title="Zum kostenfreien Adventskalender (0 €)"
+        >
+          <Sparkles className="w-4 h-4 text-[#F5F5F0] shrink-0" />
+          <span className="font-serif font-bold tracking-tight text-white">Adventskalender</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-white/25 text-white font-bold text-xs sm:text-sm tracking-wide">
+            0&nbsp;€
+          </span>
+        </Link>
 
-          {/* Persönliche Ansprache für eingeloggte Nutzer */}
-          {user ? (
-            <span className="text-[#3D3B35] font-medium leading-tight">
-              Hallo <strong className="text-[#3D3B35] font-bold">{userName}</strong>!{' '}
-              {isSubscribed ? (
-                <span className="inline-flex items-center gap-1 text-emerald-800 font-semibold bg-emerald-100/80 px-2 py-0.5 rounded-md text-[11px]">
-                  <CheckCircle2 size={13} className="text-emerald-700" />
-                  Für tägliche Türchen vorgemerkt
-                </span>
-              ) : (
-                <span className="text-[#695C4D]">
-                  24 Tage Innehalten &amp; Hörbuch-Verlosungen starten am 1. Dezember.
-                </span>
-              )}
-            </span>
-          ) : (
-            <span className="text-[#695C4D] font-normal leading-tight">
-              <strong className="text-[#3D3B35] font-semibold">24 Tage Innehalten</strong> – Täglich
-              kostenfreie Meditationen &amp; Hörbuch-Gewinnspiele ab 1. Dez.
-            </span>
-          )}
-        </div>
+        {/* Text-Botschaft / Persönliche Ansprache */}
+        {user ? (
+          <div className="text-xs sm:text-sm text-[#3D3B35] font-medium leading-normal flex items-center gap-1.5 flex-wrap justify-center">
+            <span>Hallo <strong className="font-bold text-[#344034]">{userName}</strong>!</span>
+            {isSubscribed ? (
+              <span className="inline-flex items-center gap-1 text-emerald-800 font-semibold bg-emerald-100/90 px-2.5 py-0.5 rounded-full text-xs shadow-2xs">
+                <CheckCircle2 size={13} className="text-emerald-700" />
+                Für tägliche Türchen vorgemerkt
+              </span>
+            ) : (
+              <span className="text-[#695C4D]">
+                24 Tage Innehalten &amp; Hörbuch-Verlosungen starten am 1. Dezember.
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="text-xs sm:text-sm text-[#3D3B35] font-medium leading-normal">
+            <strong className="font-semibold text-[#344034]">24 Tage Innehalten</strong>
+            <span className="text-[#695C4D]"> – Täglich Meditationen &amp; Hörbuch-Gewinnspiele ab 1. Dez.</span>
+          </div>
+        )}
 
-        {/* Rechte Seite: Interaktions-Buttons / Voranmeldung */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-center">
-          {/* Eingeloggter Nutzer: Wenn noch nicht vorgemerkt, 1-Klick Voranmeldung */}
-          {user && !isSubscribed && (
+        {/* Zentriertes E-Mail-Formular & Absendebutton für Gäste */}
+        {!user && !isSubscribed && (
+          <form onSubmit={handleGuestSubmit} className="inline-flex items-center gap-1.5 shrink-0 flex-wrap justify-center">
+            <input
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              placeholder="Deine E-Mail-Adresse..."
+              required
+              className="px-3.5 py-1.5 rounded-full bg-white border border-[#8A9A8A]/50 text-xs text-[#3D3B35] placeholder:text-[#695C4D]/60 focus:outline-none focus:ring-2 focus:ring-[#8A9A8A] w-44 sm:w-52 shadow-2xs transition-all"
+            />
             <button
-              type="button"
-              onClick={handleQuickOptinForUser}
+              type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A]/50 text-[#4A563E] text-xs font-semibold transition-all shadow-2xs cursor-pointer disabled:opacity-60"
+              className="px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-bold transition-all cursor-pointer shadow-xs shrink-0 disabled:opacity-60 flex items-center gap-1.5 active:scale-95"
             >
               {isSubmitting ? (
-                <Loader2 size={12} className="animate-spin" />
+                <Loader2 size={13} className="animate-spin" />
               ) : (
-                <Bell size={12} className="text-[#8A9A8A]" />
+                <Bell size={13} />
               )}
-              <span>Erinnerung vormerken</span>
+              <span>Erinnern</span>
             </button>
-          )}
+          </form>
+        )}
 
-          {/* Gast: Zeigt entweder Eingabefeld oder den Button "Vormerken" */}
-          {!user && !isSubscribed && (
-            <>
-              {showInputForm ? (
-                <form onSubmit={handleGuestSubmit} className="flex items-center gap-1.5">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="Deine E-Mail..."
-                      required
-                      autoFocus
-                      className="px-2.5 py-1 rounded-full bg-white border border-[#E3E1D9] text-xs text-[#3D3B35] focus:outline-none focus:ring-1 focus:ring-[#8A9A8A] w-40 sm:w-48"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-3 py-1 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-bold transition-colors cursor-pointer shrink-0 disabled:opacity-60"
-                  >
-                    {isSubmitting ? <Loader2 size={12} className="animate-spin" /> : 'Vormerken'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowInputForm(false)}
-                    className="p-1 text-[#695C4D] hover:text-[#3D3B35] cursor-pointer"
-                    aria-label="Abbrechen"
-                  >
-                    <X size={14} />
-                  </button>
-                </form>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowInputForm(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A]/50 text-[#4A563E] text-xs font-semibold transition-all shadow-2xs cursor-pointer"
-                >
-                  <Bell size={12} className="text-[#8A9A8A]" />
-                  <span>Kostenlos vormerken</span>
-                </button>
-              )}
-            </>
-          )}
-
-          {/* Feedback Text falls vorhanden */}
-          {feedbackMsg && (
-            <span className="text-[11px] text-emerald-800 font-semibold px-2 py-0.5 bg-emerald-50 rounded">
-              {feedbackMsg}
-            </span>
-          )}
-
-          {/* Link zum Kalender */}
-          <Link
-            to="/adventskalender"
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/90 hover:bg-white text-[#3D3B35] border border-[#E3E1D9] text-xs font-semibold transition-colors cursor-pointer shrink-0 shadow-2xs"
-          >
-            <span>Kalender ansehen</span>
-            <ArrowRight size={13} className="text-[#8A9A8A]" />
-          </Link>
-
-          {/* Schließen-Button */}
+        {/* 1-Klick Vormerkung für eingeloggten Nutzer */}
+        {user && !isSubscribed && (
           <button
             type="button"
-            onClick={handleDismiss}
-            className="p-1 rounded-full hover:bg-black/5 text-[#695C4D] hover:text-[#3D3B35] transition-colors cursor-pointer"
-            aria-label="Banner ausblenden"
-            title="Diesen Hinweis ausblenden"
+            onClick={handleQuickOptinForUser}
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A] text-[#4A563E] text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer disabled:opacity-60 shrink-0"
           >
-            <X size={15} />
+            {isSubmitting ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : (
+              <Bell size={13} className="text-[#8A9A8A]" />
+            )}
+            <span>Erinnerung vormerken</span>
           </button>
-        </div>
+        )}
+
+        {/* Feedback-Meldung */}
+        {feedbackMsg && (
+          <span className="text-xs text-emerald-800 font-semibold px-2.5 py-1 bg-emerald-100/90 rounded-full shadow-2xs">
+            {feedbackMsg}
+          </span>
+        )}
+
+        {/* Direkter Link zum Kalender */}
+        <Link
+          to="/adventskalender"
+          onClick={() => {
+            try {
+              localStorage.setItem('hasVisitedAdventskalender', 'true');
+              localStorage.setItem('fds_advent_visited', 'true');
+            } catch {}
+          }}
+          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 text-[#3D3B35] border border-[#E3E1D9] text-xs font-semibold transition-all cursor-pointer shadow-2xs hover:shadow-xs shrink-0"
+        >
+          <span>Zum Kalender</span>
+          <ArrowRight size={13} className="text-[#8A9A8A]" />
+        </Link>
+
+        {/* Schließen-Button am rechten Rand */}
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="sm:absolute sm:right-4 sm:top-1/2 sm:-translate-y-1/2 p-1.5 rounded-full hover:bg-black/5 text-[#695C4D] hover:text-[#3D3B35] transition-colors cursor-pointer shrink-0"
+          aria-label="Banner ausblenden"
+          title="Diesen Hinweis ausblenden"
+        >
+          <X size={15} />
+        </button>
       </div>
     </aside>
   );
