@@ -16,6 +16,7 @@ import {
 import { AdventskalenderPopupModal } from '../components/AdventskalenderPromo';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
+import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
 
 const CATEGORY_STYLES: Record<
   AdventCategory,
@@ -65,6 +66,42 @@ const CATEGORY_STYLES: Record<
 export const AdventskalenderPage: React.FC = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('flow_admin_preview') === 'true') {
+      return true;
+    }
+    return isKnownAdminEmail(user?.email);
+  });
+  const [checkingAdmin, setCheckingAdmin] = useState<boolean>(true);
+
+  useEffect(() => {
+    let active = true;
+    if (!user) {
+      const localPreview =
+        typeof window !== 'undefined' && localStorage.getItem('flow_admin_preview') === 'true';
+      setIsAdminUser(localPreview);
+      setCheckingAdmin(false);
+      return;
+    }
+    if (isKnownAdminEmail(user.email)) {
+      setIsAdminUser(true);
+      setCheckingAdmin(false);
+      return;
+    }
+    checkUserIsAdmin(user.id, user.email)
+      .then((res) => {
+        if (active) {
+          setIsAdminUser(res);
+          setCheckingAdmin(false);
+        }
+      })
+      .catch(() => {
+        if (active) setCheckingAdmin(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   // Filter states
   const [selectedPart, setSelectedPart] = useState<'all' | 1 | 2>('all');
@@ -253,13 +290,71 @@ export const AdventskalenderPage: React.FC = () => {
     }
   };
 
+  if (checkingAdmin) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-8 text-stone-600">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span>Prüfe Admin-Berechtigung...</span>
+      </div>
+    );
+  }
+
+  if (!isAdminUser) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+        <SEO
+          title="Interner Bereich | Flow der Stille"
+          description="Interne Vorschau für Administratoren."
+          noindex={true}
+        />
+        <div className="max-w-md w-full rounded-3xl bg-white border border-stone-200 p-8 text-center shadow-sm space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 flex items-center justify-center mx-auto text-xl">
+            🔒
+          </div>
+          <h1 className="font-serif text-2xl font-bold text-stone-900">
+            Interne Admin-Vorschau
+          </h1>
+          <p className="text-sm text-stone-600 leading-relaxed">
+            Der 24-Tage Adventskalender befindet sich aktuell in der internen Vorbereitung
+            und ist nur für eingeloggte Administratoren sichtbar.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+            {!user && (
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition-colors"
+              >
+                Als Admin anmelden
+              </Link>
+            )}
+            <Link
+              to="/"
+              className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-colors"
+            >
+              Zurück zur Startseite
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-stone-800 pb-24">
       <SEO
-        title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
+        title="Der Adventskalender – 24 Tage Innehalten (Admin-Vorschau) | Flow der Stille"
         description="Ein ganzheitlicher Begleiter durch den Dezember: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit & Wintersonnenwende, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Gewinnspiele."
         canonical="https://flow-der-stille.de/adventskalender"
+        noindex={true}
       />
+
+      {/* Admin-Hinweis-Banner */}
+      <div className="bg-emerald-950 text-emerald-100 border-b border-emerald-700/50 px-4 py-2.5 text-center text-xs font-semibold flex items-center justify-center gap-2">
+        <span>🔒 ADMIN-MODUS AKTIV:</span>
+        <span className="font-normal text-emerald-200">
+          Diese Seite, die Startseiten-Sektion und das Pop-Up sind aktuell ausschließlich für eingeloggte Admins sichtbar.
+        </span>
+      </div>
 
       {/* ─── HERO SECTION ─────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#232B22] via-[#2F3A2B] to-[#1A2019] text-[#F5F5F0] pt-12 pb-16 md:py-24 px-4 sm:px-6 border-b border-[#C8A96E]/25">

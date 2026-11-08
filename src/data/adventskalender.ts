@@ -435,3 +435,4 @@ export const ADVENT_DAYS: AdventDay[] = [
     durationOrInfo: 'Ca. 10 Min. • Heiligabend & Schwelle zur 1. Rauhnacht'
   }
 ];
+

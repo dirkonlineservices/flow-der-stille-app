@@ -7,6 +7,7 @@ import {
 import { ADVENT_PILLARS, ADVENT_DAYS } from '../data/adventskalender';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
+import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
 
 const POPUP_STORAGE_KEY = 'fds_adventskalender_popup_seen_2026_v1';
 
@@ -204,10 +205,34 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
 };
 
 export const AdventskalenderHomeSection: React.FC = () => {
+  const { user } = useAuth();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState<boolean>(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('flow_admin_preview') === 'true') {
+      return true;
+    }
+    return isKnownAdminEmail(user?.email);
+  });
 
-  // Automatisches einmaliges Einblenden als Pop-Up (falls noch nicht gesehen)
   useEffect(() => {
+    if (!user) {
+      setIsAdminUser(
+        typeof window !== 'undefined' && localStorage.getItem('flow_admin_preview') === 'true'
+      );
+      return;
+    }
+    if (isKnownAdminEmail(user.email)) {
+      setIsAdminUser(true);
+      return;
+    }
+    checkUserIsAdmin(user.id, user.email).then((res) => {
+      setIsAdminUser(res);
+    });
+  }, [user]);
+
+  // Automatisches einmaliges Einblenden als Pop-Up (nur für Admins)
+  useEffect(() => {
+    if (!isAdminUser) return;
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get('popup') === 'advent') {
@@ -223,7 +248,11 @@ export const AdventskalenderHomeSection: React.FC = () => {
         return () => clearTimeout(timer);
       }
     } catch {}
-  }, []);
+  }, [isAdminUser]);
+
+  if (!isAdminUser) {
+    return null;
+  }
 
   const highlightDays = ADVENT_DAYS.filter((d) => [1, 6, 13, 21, 24].includes(d.day));
 
@@ -241,9 +270,14 @@ export const AdventskalenderHomeSection: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold uppercase tracking-wider">
-                <Sparkles size={13} />
-                <span>Flow der Stille • Winter- &amp; Adventsbegleitung</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold uppercase tracking-wider">
+                  <Sparkles size={13} />
+                  <span>Flow der Stille • Winter- &amp; Adventsbegleitung</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/25 border border-emerald-400/50 text-emerald-200 text-[11px] font-bold uppercase tracking-wider">
+                  <span>🔒 Nur für Admins sichtbar (Vorschau)</span>
+                </div>
               </div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-normal text-white leading-tight">
                 Der Adventskalender – 24 Tage Innehalten
@@ -342,3 +376,4 @@ export const AdventskalenderHomeSection: React.FC = () => {
     </>
   );
 };
+

@@ -227,8 +227,8 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         </div>
       </section>
 
-      {/* ─── 1B. ADVENTSKALENDER (24 TAGE INNEHALTEN + POP-UP) ─────────── */}
-      <AdventskalenderHomeSection />
+      {/* ─── 1B. ADVENTSKALENDER (NUR FÜR ADMINS SICHTBAR) ────────────── */}
+      {isAdmin && <AdventskalenderHomeSection />}
 
       {/* ─── 2. CUSTOMER JOURNEY: BEDÜRFNIS-FINDER (FÜR GESTRESSTE NUTZER) ── */}
       <section className="space-y-4">

@@ -221,7 +221,7 @@ export default function Layout() {
       <footer className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 md:px-8 mt-6 md:mt-8 pt-4 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-6 border-t border-[var(--border)] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 transition-all duration-300">
         {[
           { to: '/contact', label: 'Kontakt', isButton: true },
-          { to: '/adventskalender', label: '🎄 Adventskalender' },
+          ...(isAdmin ? [{ to: '/adventskalender', label: '🔒 🎄 Adventskalender' }] : []),
           { to: '/klangproben', label: 'Klangproben' },
           { to: '/app', label: 'Android App' },
           { to: '/faq', label: 'FAQ' },
@@ -352,20 +352,22 @@ export default function Layout() {
                   </div>
                 </Link>
 
-                {/* Adventskalender – 24 Tage Innehalten */}
-                <Link
-                  to="/adventskalender"
-                  onClick={() => handleMenuClick('Adventskalender')}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[#C8A96E]/50 hover:border-[#C8A96E] transition-all text-left shadow-xs group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#C8A96E]/15 text-[#9E7B3B] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-                    <Gift size={22} />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm text-[var(--text-main)]">Adventskalender</div>
-                    <div className="text-xs text-[var(--text-muted)]">24 Tage Innehalten &amp; Verlosung</div>
-                  </div>
-                </Link>
+                {/* Adventskalender – 24 Tage Innehalten (Nur für Admins sichtbar) */}
+                {isAdmin && (
+                  <Link
+                    to="/adventskalender"
+                    onClick={() => handleMenuClick('Adventskalender')}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--bg-card)] border border-[#C8A96E]/50 hover:border-[#C8A96E] transition-all text-left shadow-xs group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[#C8A96E]/15 text-[#9E7B3B] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                      <Gift size={22} />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--text-main)]">🔒 Adventskalender (Admin)</div>
+                      <div className="text-xs text-[var(--text-muted)]">24 Tage Innehalten &amp; Verlosung</div>
+                    </div>
+                  </Link>
+                )}
 
                 {/* Klangproben & Hörproben - zur dedizierten Landingpage */}
                 {hasHoerproben && (
