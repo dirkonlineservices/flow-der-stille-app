@@ -3,29 +3,27 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 08:54 Uhr (Version 1.0.1 Build 28 zur Apple-Prüfung eingereicht; Bankverbindung, Vertrag für gebührenpflichtige Apps & EU-DSA-Dokumente in App Store Connect hinterlegt)
+> - **Letzter Stand**: 08.11.2026, 09:12 Uhr (🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 mit neuem Marken-AppIcon & Kauf-Sicherheit in Apple-Prüfung; Bankverbindung, Vertrag für gebührenpflichtige Apps, US-Steuerformulare W-8BEN & Foreign Status sowie EU-DSA-Dokumente vollständig genehmigt/hinterlegt)
 > - **Branch**: `main` (up to date mit origin/main)
-> - **Status**: 🚀 Meilenstein erreicht! Version 1.0 ist genehmigt & live im App Store (id6821544372). Version 1.0.1 (Build 28 mit Marken-AppIcon & Sicherheits-Kaufverifizierung) befindet sich in der Apple-Prüfung. Bankdaten & Verträge sind vollständig gepflegt.
+> - **Status**: 🚀 Großer Meilenstein erreicht! 
+>   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
+>   2. **Version 1.0.1 (Build 28)** eingereicht: Neues Marken-AppIcon (warmer Beige-Hintergrund & Salbeigrün-Linien), serverseitige Apple App Store Server API Kaufverifizierung (`verify-apple-purchase`), natives StoreKit „Käufe wiederherstellen“ & DSGVO „Konto löschen“ im Build.
+>   3. **Geschäftliches & Finanzen**: Bankkonto (EUR/USD) aktiv, Vertrag für gebührenpflichtige Apps aktiv, US-Steuerformulare W-8BEN & U.S. Certificate of Foreign Status of Beneficial Owner vollständig übermittelt & aktiv, EU-DSA-Händlernachweis übermittelt.
 >
-> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
-> 1. **TestFlight Release 1.0 (6) Live**:
->    - Build 1.0 (6) erfolgreich in Apple TestFlight veröffentlicht.
->    - Interne Testgruppe „Dirk Test“ mit Dirk Schmetzer angelegt und verknüpft.
->    - Export Compliance gelöst und mit `<key>ITSAppUsesNonExemptEncryption</key><false/>` in `Info.plist` für künftige Builds automatisiert.
-> 2. **Vollautomatisches Xcode Cloud CI/CD**:
->    - Xcode Cloud mit GitHub verbunden.
->    - `ci_scripts/ci_post_clone.sh` optimiert: Node 22+ via Homebrew, `npm install --legacy-peer-deps --ignore-scripts` (keine Server-C++-Kompilierung von better-sqlite3 nötig), automatischer Vite Web-Build und Capacitor iOS Sync.
->    - Workflow auf „Archivieren (TestFlight)“ umgestellt.
-> 3. **"Sign in with Apple" Vollintegration**:
->    - Live verifiziert (HTTP 302 Redirect zu Apple ID Servern).
->    - `App.entitlements` mit `com.apple.developer.applesignin` eingebunden.
-> 4. **App Store Connect Voll-Setup**:
->    - App `Flow der Stille` (`app.flowderstille.de`, Apple ID `6821544372`) eingerichtet.
->    - Altersfreigabe auf 9+ (Wellness/Gesundheit) festgelegt.
->    - Preise auf Kostenlos (0 €) mit In-App-Käufen eingestellt.
->    - App-Datenschutz vollständig veröffentlicht.
-> 5. **In-App-Käufe (Ruhe-Shop)**:
->    - Erstes Produkt `fds_selbsthypnose_selbstbewusstsein` vorbereitet (Typ: Nicht-verbrauchsartikel, 1,99 €).
+> ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 08.11.2026):
+> 1. **Offizieller App Store Launch (Version 1.0)**:
+>    - Von Apple am 06.11.2026 geprüft, genehmigt und weltweit veröffentlicht.
+> 2. **Version 1.0.1 (Build 28) eingereicht**:
+>    - Eigenes maßgeschneidertes 1024x1024 Marken-AppIcon (warmes Beige `#F5F5F0` mit echten Salbeigrün-Vektoren des Flow-Logos).
+>    - Xcode Cloud Workflow für reine iOS-Archivierung optimiert (macOS-Fehlkonfiguration entfernt).
+>    - Build 28 fehlerfrei gebaut und direkt zur Apple-Prüfung übermittelt.
+> 3. **Finanzen, Verträge & Steuern abgeschlossen**:
+>    - Bankkonto hinterlegt und verknüpft.
+>    - Vertrag für gebührenpflichtige Apps gegengezeichnet.
+>    - US-Steuerformulare (Form W-8BEN & Certificate of Foreign Status) mit deutscher Steuer-ID, Claim of Tax Treaty Benefits (0 % US-Quellensteuer) und Titel „Owner“ erfolgreich eingereicht.
+>    - EU-DSA-Compliance-Dokumente hochgeladen.
+> 4. **Codebase- & Datenkonsistenz**:
+>    - Alle 11 In-App-Käufe (inklusive der neuen Rauhnächte `fds_rauhnaechte` ↔ `rauhnaechte`, 9,99 €) sind 1:1 identisch zwischen Supabase-Datenbank, Code (`billing.ts`, `verify-apple-purchase`) und App Store Connect gemappt.
 >
 > ### ✅ OFFENE TO-DOS AUS DER SEO-/BACKEND-SESSION (17.10.2026)
 > 1. **🔎 Google Search Console – ab 18.10. morgens** (max. ~10× „Indexierung beantragen“ pro Tag; je URL: oben einfügen → *Live-URL testen* → *Indexierung beantragen*):
