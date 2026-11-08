@@ -250,7 +250,7 @@ function AudioConsentModal({ isOpen, category, contentTitle, onAccept, onClose }
                 }}
               >
                 <Play size={16} fill="currentColor" stroke="none" />
-                Verstanden &amp; Abspielen
+                Verstanden und Abspielen
               </button>
             </div>
           </motion.div>

@@ -170,9 +170,9 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
         <div className="p-3 sm:p-4 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-2xs">
           <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
           <span className="flex-1">
-            <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
+            <strong>Echte Handarbeit und faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
             Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
-            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs. So ermöglichen wir 
+            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten und Designs. So ermöglichen wir 
             <strong> dauerhaft faire Einzelpreise ab 1,99&nbsp;€ ganz ohne Abo</strong>.
           </span>
         </div>
@@ -183,7 +183,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--accent)] mb-1">
                 <Sparkles size={13} />
-                <span>Kostenlos mitmachen &amp; unser Herzensprojekt unterstützen</span>
+                <span>Kostenlos mitmachen und unser Herzensprojekt unterstützen</span>
               </div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
                 Jetzt registrieren oder einloggen
@@ -255,10 +255,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                Gedanken abschalten &amp; tief schlafen
+                Gedanken abschalten und tief schlafen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Selbsthypnosen für neuronale Tiefenentspannung &amp; ruhigen, erholsamen Schlaf.
+                Selbsthypnosen für neuronale Tiefenentspannung und ruhigen, erholsamen Schlaf.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
                 Zu den Selbsthypnosen <ArrowRight size={14} />
@@ -276,10 +276,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                Akuten Stress &amp; Unruhe abbauen
+                Akuten Stress und Unruhe abbauen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Gezielte Atemübungen &amp; PMR zur schnellen Beruhigung des Vagusnervs.
+                Gezielte Atemübungen und PMR zur schnellen Beruhigung des Vagusnervs.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-2.5 inline-flex items-center gap-1">
                 Kostenlos starten <ArrowRight size={14} />
@@ -297,10 +297,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                Innere Stärke &amp; Loslassen
+                Innere Stärke und Loslassen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Geführte Herz- &amp; Seelen-Meditationen, persönlich von Lisa gesprochen.
+                Geführte Herz- und Seelenmeditationen, persönlich von Lisa gesprochen.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
                 Meditationen entdecken <ArrowRight size={14} />
@@ -318,10 +318,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors leading-snug">
-                Hörbücher &amp; Seelenreisen
+                Hörbücher und Seelenreisen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Neu: „Yggdrasils Atem | 12 Rauhnächte“ (2h 59m), „Der Schmetterling“ &amp; „Mut zum Echtsein“.
+                Neu: „Yggdrasils Atem | 12 Rauhnächte“ (2h 59m), „Der Schmetterling“ und „Mut zum Echtsein“.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
                 Zu den Hörbüchern <ArrowRight size={14} />
@@ -358,7 +358,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 🧘‍♀️ Geführte Meditationen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Herzkompass, Loslassen &amp; Innere Ruhe (Lisa Ragusa)
+                Herzkompass, Loslassen und Innere Ruhe (Lisa Ragusa)
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -394,7 +394,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 🌀 Selbsthypnosen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Tiefer Schlaf, Fokus, Selbstbewusstsein &amp; Ernährung
+                Tiefer Schlaf, Fokus, Selbstbewusstsein und gesunde Ernährung
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -466,7 +466,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 🌿 Schnupper-Übungen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Geführte Atemübung &amp; Progressive Muskelentspannung
+                Geführte Atemübung und Progressive Muskelentspannung
               </p>
             </div>
             <div className="mt-4 pt-3.5 border-t border-[var(--border)]/60 flex flex-wrap items-center justify-between gap-2">
@@ -659,7 +659,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
-                Flugmodus &amp; Display aus für gesunden Schlaf
+                Flugmodus und Display aus für gesunden Schlaf
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
                 Schalte dein Handy nachts in den Flugmodus. Höre deine Schlafmeditation bei komplett gesperrtem, dunklem Display, ganz ohne Strahlung am Bett und ohne unbemerktes nächtliches Weiterlaufen.
@@ -692,7 +692,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Herzensprojekt statt Großkonzern
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Von Jacqueline, Lisa &amp; Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen sowie KI als bewusstes Werkzeug für Klangwelten und visuelle Bildwelten &amp; Designs für dauerhaft faire Preise.
+                Von Jacqueline, Lisa und Dirk mit Leidenschaft geschaffen. Eigene Texte, echte Sprecherstimmen sowie KI als bewusstes Werkzeug für Klangwelten und visuelle Bildwelten und Designs für dauerhaft faire Preise.
               </p>
             </div>
           </div>
@@ -769,7 +769,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 onClick={() => setShowWisdomProgressModal(false)}
                 className="w-full py-3.5 px-6 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>👉 Jetzt kostenlos registrieren &amp; Fortschritt sichern</span>
+                <span>👉 Jetzt kostenlos registrieren und Fortschritt sichern</span>
                 <ArrowRight size={17} />
               </Link>
               <Link

@@ -1162,7 +1162,7 @@ export default function Settings() {
               <div>
                 <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold mb-2 flex items-center gap-2">
                   <Shield size={18} className="text-[var(--color-accent-primary)]" />
-                  <span>Datenschutz &amp; DSGVO</span>
+                  <span>Datenschutz und DSGVO</span>
                 </h4>
                 <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
                   Sämtliche Kommunikation und Datensätze sind nach DSGVO geschützt.
@@ -1192,7 +1192,7 @@ export default function Settings() {
               <div>
                 <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold mb-2 flex items-center gap-2">
                   <User size={18} className="text-[var(--color-accent-primary)]" />
-                  <span>Sitzung &amp; Konto</span>
+                  <span>Sitzung und Konto</span>
                 </h4>
                 <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
                   Beende deine aktuelle Sitzung oder verwalte deinen Kontostatus.

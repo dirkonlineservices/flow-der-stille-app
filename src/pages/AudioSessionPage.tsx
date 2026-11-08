@@ -200,7 +200,7 @@ export default function AudioSessionPage() {
             className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] bg-[var(--bg-card)] border border-[var(--border)] px-4 py-2 rounded-full shadow-xs transition-all cursor-pointer"
           >
             <ArrowLeft size={15} />
-            <span>Zurück zum Ruhe-Shop &amp; Mediathek</span>
+            <span>Zurück zum Ruhe-Shop und zur Mediathek</span>
           </Link>
 
           <span className="text-xs font-mono font-bold text-[var(--accent)] bg-[var(--bg-alt)] px-3 py-1.5 rounded-full border border-[var(--border)]">
@@ -339,7 +339,7 @@ export default function AudioSessionPage() {
                               Option 1: Express-Kauf mit Magic Link ({priceDisplay})
                             </span>
                             <span className="text-[11px] text-[var(--text-muted)] block">
-                              100 % ohne Passwort &amp; ohne Benutzerkonto • Sofortiger Zugang
+                              100 % ohne Passwort und ohne Benutzerkonto | Sofortiger Zugang
                             </span>
                           </div>
                         </div>
@@ -364,7 +364,7 @@ export default function AudioSessionPage() {
                             rel="noopener noreferrer"
                             className="text-[11px] text-amber-900 dark:text-amber-300 hover:underline font-semibold inline-flex items-center gap-1"
                           >
-                            <span>Details &amp; FAQ zum Magic Link ansehen</span>
+                            <span>Details und FAQ zum Magic Link ansehen</span>
                             <ExternalLink size={11} className="shrink-0" />
                           </Link>
                         </div>
@@ -419,7 +419,7 @@ export default function AudioSessionPage() {
           <div className="border-b border-[var(--border)] pb-3">
             <h3 className="font-serif font-semibold text-xl text-[var(--text-main)] flex items-center gap-2">
               <Sparkles size={20} className="text-[var(--accent)]" />
-              <span>Anleitung &amp; Empfehlungen zur Nutzung</span>
+              <span>Anleitung und Empfehlungen zur Nutzung</span>
             </h3>
             <p className="text-xs text-[var(--text-muted)] mt-1">
               So holst du das Optimum an Entspannung und Tiefenwirkung aus dieser Sitzung heraus:
@@ -453,7 +453,7 @@ export default function AudioSessionPage() {
             <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2.5 text-[var(--accent)] font-bold text-xs uppercase tracking-wide">
                 <Wind size={16} />
-                <span>3. Augen sanft schließen &amp; Loslassen</span>
+                <span>3. Augen sanft schließen und loslassen</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Sobald die Augen geschlossen sind, reduziert das Gehirn Reize um über 80 %. Folge einfach der Stimme. Es gibt nichts richtig oder falsch zu machen. Dein Unterbewusstsein nimmt genau das auf, was du jetzt brauchst.
@@ -464,7 +464,7 @@ export default function AudioSessionPage() {
             <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2.5 text-[var(--accent)] font-bold text-xs uppercase tracking-wide">
                 <Smartphone size={16} />
-                <span>4. Flugmodus &amp; Dunkles Display</span>
+                <span>4. Flugmodus und dunkles Display</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Schalte dein Smartphone vor dem Einschlafen in den Flugmodus. In unserer Android-App kannst du das Audio vorab offline speichern und bei gesperrtem, dunklem Display anhören, ganz ohne Strahlung.

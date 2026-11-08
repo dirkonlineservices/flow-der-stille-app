@@ -149,7 +149,7 @@ export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
             <div className="pt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px] text-[#695C4D]">
               <span className="inline-flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8A9A8A]" />
-                100 % werbefrei &amp; DSGVO-konform
+                100 % werbefrei und DSGVO-konform
               </span>
               <span className="inline-flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8A9A8A]" />

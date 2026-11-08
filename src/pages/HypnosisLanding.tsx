@@ -295,7 +295,7 @@ export default function HypnosisLanding() {
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-[var(--accent)]">
-              Aufklärung &amp; Vertrauen
+              Aufklärung und Vertrauen
             </span>
             <h2 className="font-serif font-bold text-2xl sm:text-4xl text-[var(--text-main)]">
               Was Selbsthypnose wirklich ist (und was nicht)

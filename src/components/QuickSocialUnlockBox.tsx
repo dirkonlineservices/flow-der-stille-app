@@ -247,7 +247,7 @@ export default function QuickSocialUnlockBox({
       <div className="mt-3 p-2.5 rounded-xl bg-[var(--bg-alt)]/70 border border-[var(--border)] text-[11px] text-[var(--text-muted)] space-y-1 text-left">
         <div className="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
           <ShieldCheck size={14} className="text-emerald-800 shrink-0" />
-          <span>Haftungsausschluss &amp; Nutzungsbedingungen:</span>
+          <span>Haftungsausschluss und Nutzungsbedingungen:</span>
         </div>
         <p className="leading-relaxed">
           Mit Klick auf Apple, Google oder Facebook bestätigst du, dass du unseren{' '}

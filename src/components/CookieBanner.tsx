@@ -116,7 +116,7 @@ export default function CookieBanner() {
             setIsVisible(true);
           }}
           className="flex items-center gap-2 bg-[var(--bg-card)] text-[var(--text-main)] px-4 py-2.5 rounded-full shadow-lg border border-[var(--border)] hover:border-[var(--accent)] transition-all text-xs font-medium group cursor-pointer"
-          title="Cookie- &amp; Datenschutz-Einstellungen"
+          title="Cookie- und Datenschutz-Einstellungen"
         >
           <Cookie size={16} className="text-[var(--accent)] group-hover:rotate-12 transition-transform" />
           <span>Cookie-Einstellungen</span>
@@ -140,7 +140,7 @@ export default function CookieBanner() {
             <div>
               <div className="flex items-center justify-between mb-4 pt-2">
                 <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
-                  App-Datenschutz &amp; Analyse
+                  App-Datenschutz und Analyse
                 </span>
               </div>
 
@@ -157,7 +157,7 @@ export default function CookieBanner() {
               </div>
 
               <p className="text-xs sm:text-sm leading-relaxed mb-4 text-[var(--text-muted)]">
-                Schön, dass du da bist! Um deine Meditations- und Atemübungen in der App weiter zu optimieren und Abstürze zu beheben, nutzen wir anonyme Analyseverfahren (Firebase Analytics &amp; Crashlytics).
+                Schön, dass du da bist! Um deine Meditations- und Atemübungen in der App weiter zu optimieren und Abstürze zu beheben, nutzen wir anonyme Analyseverfahren (Firebase Analytics und Crashlytics).
                 <br /><br />
                 <span className="text-[var(--text-main)] font-medium">Deine Wahl ist freiwillig:</span> Auch bei Ablehnung bleibt die App uneingeschränkt nutzbar.
               </p>
@@ -170,7 +170,7 @@ export default function CookieBanner() {
                 >
                   <span className="flex items-center gap-2">
                     <Info size={16} className="text-[var(--accent)]" />
-                    <span>Transparenz-Details &amp; Firebase</span>
+                    <span>Transparenz-Details und Firebase</span>
                   </span>
                   {showAccordion ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </button>
@@ -178,7 +178,7 @@ export default function CookieBanner() {
                 {showAccordion && (
                   <div className="p-3.5 border-t border-[var(--border)] text-[11px] space-y-2 text-[var(--text-muted)] leading-relaxed">
                     <p>
-                      <strong className="text-[var(--text-main)] block mb-0.5">1. Konto &amp; Käufe (Supabase):</strong> Notwendig für deine Profilverwaltung und die Freischaltung erworbener Audios.
+                      <strong className="text-[var(--text-main)] block mb-0.5">1. Konto und Käufe (Supabase):</strong> Notwendig für deine Profilverwaltung und die Freischaltung erworbener Audios.
                     </p>
                     <p>
                       <strong className="text-[var(--text-main)] block mb-0.5">2. Absturzberichte (Firebase Crashlytics):</strong> Erfasst technische Fehler zur Behebung von App-Abstürzen.
@@ -197,14 +197,14 @@ export default function CookieBanner() {
                   className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all shadow-md active:scale-95 text-white bg-[var(--accent)] hover:opacity-90 cursor-pointer"
                 >
                   <CheckCircle2 size={18} />
-                  <span>Zustimmen &amp; App starten</span>
+                  <span>Zustimmen und App starten</span>
                 </button>
 
                 <button
                   onClick={() => handleAppChoice('rejected')}
                   className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-medium text-xs transition-all border border-[var(--border)] bg-[var(--bg-main)] text-[var(--text-muted)] hover:bg-[var(--bg-alt)] active:scale-95 cursor-pointer"
                 >
-                  <span>Ablehnen &amp; App starten</span>
+                  <span>Ablehnen und App starten</span>
                 </button>
               </div>
 
@@ -235,9 +235,9 @@ export default function CookieBanner() {
                 </div>
                 <div>
                   <h2 className="text-lg font-serif font-bold leading-tight">
-                    Wichtiger Hinweis &amp; Haftung
+                    Wichtiger Hinweis und Haftung
                   </h2>
-                  <p className="text-xs text-[var(--text-muted)]">Meditation &amp; Selbsthypnose</p>
+                  <p className="text-xs text-[var(--text-muted)]">Meditation und Selbsthypnose</p>
                 </div>
               </div>
 
@@ -279,7 +279,7 @@ export default function CookieBanner() {
                 }`}
               >
                 <CheckCircle2 size={18} />
-                <span>Verstanden &amp; App starten</span>
+                <span>Verstanden und App starten</span>
               </button>
             </div>
           )}
@@ -302,7 +302,7 @@ export default function CookieBanner() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] uppercase tracking-widest text-[var(--accent)] font-bold bg-[var(--bg-main)] px-2.5 py-1 rounded-full border border-[var(--border)]">
-                Cookie- &amp; Datenschutz-Einstellungen
+                Cookie- und Datenschutz-Einstellungen
               </span>
             </div>
 
@@ -319,7 +319,7 @@ export default function CookieBanner() {
             </div>
 
             <p className="text-sm leading-relaxed mb-5 text-[var(--text-muted)]">
-              Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Login &amp; Warenkorb zu sichern und Zugriffe anonymisiert zu analysieren. Weitere Informationen findest du in unserer{' '}
+              Wir verwenden Cookies und vergleichbare Technologien, um unsere Plattform zu betreiben, Login und Warenkorb zu sichern und Zugriffe anonymisiert zu analysieren. Weitere Informationen findest du in unserer{' '}
               <Link to="/datenschutz" className="underline hover:opacity-80 font-medium text-[var(--accent)]">
                 Datenschutzerklärung
               </Link>{' '}
@@ -337,7 +337,7 @@ export default function CookieBanner() {
               >
                 <span className="flex items-center gap-2">
                   <Info size={16} className="text-[var(--accent)]" />
-                  <span>Transparenz-Details: Welche Daten &amp; wofür?</span>
+                  <span>Transparenz-Details: Welche Daten und wofür?</span>
                 </span>
                 {showAccordion ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
@@ -349,7 +349,7 @@ export default function CookieBanner() {
                     Sichern den Login-Status, Benutzereinstellungen, Sitzungssicherheit und den Warenkorb ab.
                   </div>
                   <div>
-                    <strong className="text-[var(--text-main)] block mb-1">2. Analyse &amp; Optimierung (Optional)</strong>
+                    <strong className="text-[var(--text-main)] block mb-1">2. Analyse und Optimierung (Optional)</strong>
                     Helfen uns zu verstehen, wie unsere Meditationsinhalte genutzt werden (Google Analytics, Meta Pixel), um die Plattform DSGVO-konform weiterzuentwickeln.
                   </div>
                 </div>
@@ -414,9 +414,9 @@ export default function CookieBanner() {
               </div>
               <div>
                 <h2 className="text-2xl font-serif font-bold">
-                  Wichtiger Hinweis &amp; Haftung
+                  Wichtiger Hinweis und Haftung
                 </h2>
-                <p className="text-xs text-[var(--text-muted)]">Meditation &amp; Selbsthypnose</p>
+                <p className="text-xs text-[var(--text-muted)]">Meditation und Selbsthypnose</p>
               </div>
             </div>
 
@@ -459,7 +459,7 @@ export default function CookieBanner() {
               }`}
             >
               <CheckCircle2 size={18} />
-              <span>Verstanden &amp; Webseite betreten</span>
+              <span>Verstanden und Webseite betreten</span>
             </button>
           </div>
         )}

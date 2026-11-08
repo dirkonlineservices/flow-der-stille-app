@@ -159,7 +159,7 @@ export const AdventTopBanner: React.FC = () => {
               </span>
             ) : (
               <span className="text-[#695C4D]">
-                24 Tage Innehalten &amp; Hörbuch-Verlosungen starten am 1. Dezember.
+                24 Tage Innehalten und Hörbuch-Verlosungen starten am 1. Dezember.
               </span>
             )}
           </div>

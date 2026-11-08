@@ -124,7 +124,7 @@ export default function AudiobooksHub() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-20 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title="Die Hörbuch-Welt von Flow der Stille | Achtsamkeit, Trost & Innere Ruhe"
+        title="Die Hörbuch-Welt von Flow der Stille | Achtsamkeit, Trost und Innere Ruhe"
         description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten, die dein Nervensystem sanft entspannen."
       />
 
@@ -369,7 +369,7 @@ export default function AudiobooksHub() {
               <div className="bg-[var(--bg-alt)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] text-left space-y-3">
                 <div className="flex items-center justify-between font-semibold text-xs text-[var(--text-main)] pb-2 border-b border-[var(--border)]">
                   <span>Kapitel und Abschnitte</span>
-                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start &amp; Dauer</span>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start und Dauer</span>
                 </div>
 
                 <div className="space-y-3">
@@ -601,22 +601,22 @@ export default function AudiobooksHub() {
               <div className="bg-[var(--bg-alt)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] text-left space-y-3">
                 <div className="flex items-center justify-between font-semibold text-xs text-[var(--text-main)] pb-2 border-b border-[var(--border)]">
                   <span>Kapitel und Abschnitte</span>
-                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start &amp; Dauer</span>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">Start und Dauer</span>
                 </div>
 
                 <div className="space-y-3">
                   {[
                     {
                       num: 'Einleitung',
-                      title: 'Rechtlicher Hinweis & Vorwort',
-                      sub: 'Einstimmung & schamanische Orientierung',
+                      title: 'Rechtlicher Hinweis und Vorwort',
+                      sub: 'Einstimmung und schamanische Orientierung',
                       start: '00:00',
                       dur: '03:46 Min.'
                     },
                     {
                       num: 'Auftakt • Med. 1',
                       title: 'Wintersonnenwende (Julfeuer)',
-                      sub: 'Die Rückkehr des Lichts & Yggdrasils Wurzeln',
+                      sub: 'Die Rückkehr des Lichts und Yggdrasils Wurzeln',
                       start: 'ab 03:46',
                       dur: '16:38 Min.'
                     },
@@ -629,15 +629,15 @@ export default function AudiobooksHub() {
                     },
                     {
                       num: '2.–12. Rauhnacht',
-                      title: 'Die heiligen Nächte & Schamanenreisen',
-                      sub: '11 weitere geführte Seelenreisen, Krafttiere & Räucherwerk',
+                      title: 'Die heiligen Nächte und Schamanenreisen',
+                      sub: '11 weitere geführte Seelenreisen, Krafttiere und Räucherwerk',
                       start: 'ab 37:42',
                       dur: 'bis 02:54:46'
                     },
                     {
                       num: 'Abschluss',
                       title: 'Rückkehr ins neue Jahr',
-                      sub: 'Vollendung des heiligen Kreises & Dank',
+                      sub: 'Vollendung des heiligen Kreises und Dank',
                       start: 'ab 02:54:46',
                       dur: '04:14 Min.'
                     }
@@ -698,7 +698,7 @@ export default function AudiobooksHub() {
                       className="w-full sm:w-auto py-3.5 px-5 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-main)] font-semibold text-xs border border-[var(--border)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <BookOpen size={14} />
-                      <span>Details &amp; Kapitel</span>
+                      <span>Details und Kapitel</span>
                     </Link>
                   </>
                 )}
@@ -806,7 +806,7 @@ export default function AudiobooksHub() {
               <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] mx-auto flex items-center justify-center">
                 <Award size={20} />
               </div>
-              <h4 className="font-semibold text-sm text-[var(--text-main)]">100% Werbe- & Abofrei</h4>
+              <h4 className="font-semibold text-sm text-[var(--text-main)]">100&nbsp;% werbefrei und ohne Abo</h4>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 Keine monatlichen Abo-Gebühren wie bei Großkonzernen. Einmal erwerben und dauerhaft im persönlichen Profil behalten.
               </p>

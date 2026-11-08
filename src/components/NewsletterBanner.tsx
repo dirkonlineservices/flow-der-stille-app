@@ -200,7 +200,7 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
               Achtsamkeits-Impulse per E-Mail
             </h3>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-              Kostenlos &amp; jederzeit mit einem Klick abmeldbar.
+              Kostenfrei und jederzeit mit einem Klick abmeldbar.
             </p>
           </div>
         </div>

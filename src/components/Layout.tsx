@@ -367,7 +367,7 @@ export default function Layout() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-[var(--text-main)]">Adventskalender</div>
-                    <div className="text-xs text-[var(--text-muted)]">24 Tage Innehalten &amp; Verlosung</div>
+                    <div className="text-xs text-[var(--text-muted)]">24 Tage Innehalten und Verlosung</div>
                   </div>
                 </Link>
 

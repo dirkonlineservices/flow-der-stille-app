@@ -136,7 +136,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Geführte Atemübung &amp; PMR:</strong> Sofortige Beruhigung des Nervensystems (nach Haftungsausschluss)</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Geführte Atemübung und PMR:</strong> Sofortige Beruhigung des Nervensystems (nach Haftungsausschluss)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -148,7 +148,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <X size={16} className="text-rose-700 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <span className="text-stone-600 dark:text-stone-400">Volle Selbsthypnosen &amp; Meditationen nicht freigeschaltet</span>
+                  <span className="text-stone-600 dark:text-stone-400">Volle Selbsthypnosen und Meditationen nicht freigeschaltet</span>
                 </li>
               </ul>
             </div>
@@ -233,19 +233,19 @@ export default function PricingPackages() {
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Selbsthypnose &amp; Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Selbsthypnose und Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Persönlicher Ruhebereich:</strong> Tägliche Impulse reflektieren, Streaks (Serie an Tagen) &amp; Reflexions-Historie speichern</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Persönlicher Ruhebereich:</strong> Tägliche Impulse reflektieren, Streaks (Serie an Tagen) und Reflexions-Historie speichern</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Interaktive Praxis:</strong> SOS-Atemübungen, interaktiver Atemraum, Morgen- &amp; Abend-Rituale sowie Ernährungstipps</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Interaktive Praxis:</strong> SOS-Atemübungen, interaktiver Atemraum, Morgen- und Abendrituale sowie Ernährungstipps</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming:</strong> Im Web-Player &amp; in der kostenlosen Android App nahtlos weiterhören</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming:</strong> Im Web-Player und in der kostenlosen Android App nahtlos weiterhören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -272,7 +272,7 @@ export default function PricingPackages() {
               <p className="text-xs text-center text-stone-600 dark:text-stone-400">
                 <span>Über Google, Meta (Facebook) oder E-Mail</span>
                 <span className="block mt-0.5 whitespace-nowrap font-medium text-emerald-800 dark:text-emerald-300">
-                  100&nbsp;% sicher &amp; abofrei
+                  100&nbsp;% sicher und abofrei
                 </span>
               </p>
             </div>
@@ -305,7 +305,7 @@ export default function PricingPackages() {
                   <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
                 </div>
                 <span className="text-xs text-stone-900 dark:text-stone-100 block mt-1 font-bold">
-                  Express-Gastkauf mit PayPal &amp; Karte
+                  Express-Gastkauf mit PayPal und Karte
                 </span>
                 <span className="text-[11px] text-stone-600 dark:text-stone-400 block mt-0.5 font-medium">
                   Keine Registrierung notwendig • In der App auch Google Pay • Sofort hören
@@ -324,7 +324,7 @@ export default function PricingPackages() {
                     <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">58&nbsp;Min.</span>
                   </div>
                   <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-                    Ganze Geschichten über Wandel, Loslassen &amp; echtes Menschsein.
+                    Ganze Geschichten über Wandel, Loslassen und echtes Menschsein.
                   </p>
                 </div>
 
@@ -338,7 +338,7 @@ export default function PricingPackages() {
                     <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">15&nbsp;Min.</span>
                   </div>
                   <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-                    Gesunde Ernährung, Selbstbewusstsein, Fokus &amp; Konzentration.
+                    Gesunde Ernährung, Selbstbewusstsein, Fokus und Konzentration.
                   </p>
                 </div>
 
@@ -352,7 +352,7 @@ export default function PricingPackages() {
                     <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16–20&nbsp;Min.</span>
                   </div>
                   <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-                    Innere Ruhe &amp; Erdung, Inneres Kind, Herzkompass.
+                    Innere Ruhe und Erdung, Inneres Kind, Herzkompass.
                   </p>
                 </div>
               </div>
@@ -361,11 +361,11 @@ export default function PricingPackages() {
               <ul className="space-y-2 text-xs sm:text-sm text-stone-700 dark:text-stone-300 pt-1">
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Privater Magic Link per E-Mail:</strong> Direkt nach Kauf auf jedem Gerät öffnen &amp; hören</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Privater Magic Link per E-Mail:</strong> Direkt nach Kauf auf jedem Gerät öffnen und hören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Web- &amp; App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">Web- und App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
                 </li>
               </ul>
             </div>
@@ -377,7 +377,7 @@ export default function PricingPackages() {
               >
                 <div className="flex items-center justify-center gap-1.5">
                   <Gift size={15} className="shrink-0" />
-                  <span>Zum Ruhe-Shop &amp; Einmalkauf</span>
+                  <span>Zum Ruhe-Shop und Einmalkauf</span>
                 </div>
                 <span className="text-xs font-semibold text-emerald-100 whitespace-nowrap">
                   (ab 1,99&nbsp;€)
@@ -418,19 +418,19 @@ export default function PricingPackages() {
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-stone-700 dark:text-stone-300">
                 <tr>
-                  <td className="p-4 sm:p-5 font-bold text-stone-900 dark:text-stone-100 whitespace-nowrap">Kosten &amp; Gebühren</td>
+                  <td className="p-4 sm:p-5 font-bold text-stone-900 dark:text-stone-100 whitespace-nowrap">Kosten und Gebühren</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-800 dark:text-emerald-300 whitespace-nowrap">0 € dauerhaft</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/5 whitespace-nowrap">0 € (Kein Abo)</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300 whitespace-nowrap">Einmalig 1,99&nbsp;€ bis 4,99&nbsp;€</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Kapitel 1 &amp; Schnupper-Übungen</td>
+                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Kapitel 1 und Schnupper-Übungen</td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-emerald-500/5"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">2 Freigeschaltete Voll-Sessions (Schlaf &amp; Herz)</td>
+                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">2 Freigeschaltete Voll-Sessions (Schlaf und Herz)</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-700 dark:text-rose-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-emerald-500/5 font-bold text-emerald-800 dark:text-emerald-300"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-800 dark:text-emerald-300"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
@@ -448,7 +448,7 @@ export default function PricingPackages() {
                   <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /> Per E-Mail nach Kauf</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming (Web &amp; Android App)</td>
+                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming (Web und Android App)</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-700 dark:text-rose-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-emerald-500/5"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
@@ -563,7 +563,7 @@ export default function PricingPackages() {
       <section className="space-y-6 max-w-3xl mx-auto">
         <div className="text-center space-y-2">
           <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
-            Häufige Fragen zu Preisen, Magic Links &amp; Rechtlichem
+            Häufige Fragen zu Preisen, Magic Links und Rechtlichem
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
             Transparente Antworten für ein gutes, sicheres Gefühl.
@@ -578,7 +578,7 @@ export default function PricingPackages() {
             },
             {
               q: 'Muss ich beim kostenfreien Hörer-Konto eine Kreditkarte angeben?',
-              a: 'Nein, zu keinem Zeitpunkt. Das kostenlose Hörer-Konto dient nur dazu, deinen Hörfortschritt auf all deinen Geräten zu merken und dir die zwei vollwertigen Gratis-Sessions (Schlaf & Herzöffnung) bereitzustellen.'
+              a: 'Nein, zu keinem Zeitpunkt. Das kostenlose Hörer-Konto dient nur dazu, deinen Hörfortschritt auf all deinen Geräten zu merken und dir die zwei vollwertigen Gratis-Sessions (Schlaf und Herzöffnung) bereitzustellen.'
             },
             {
               q: 'Was passiert mit meinem Kauf, wenn ich kein Kundenkonto habe?',
@@ -589,7 +589,7 @@ export default function PricingPackages() {
               a: 'Gemäß unseren AGB (Ziffer 2.3) bedeutet ein Einmalkauf den Zugriff für die gesamte Betriebsdauer der Plattform. Sollte der Dienst wider Erwarten jemals aus wirtschaftlichen oder technischen Gründen eingestellt werden, informieren wir dich mindestens 30 Tage vorab und stellen nach Möglichkeit eine Download-Sicherung zur Verfügung.'
             },
             {
-              q: 'Gilt der Haftungsausschluss auch für Meditation & Selbsthypnose?',
+              q: 'Gilt der Haftungsausschluss auch für Meditation und Selbsthypnose?',
               a: 'Ja. Unsere Meditationen und Selbsthypnosen dienen der tiefen Entspannung und Achtsamkeit. Sie ersetzen keine ärztliche oder psychotherapeutische Behandlung und dürfen nicht beim Autofahren oder Bedienen von Maschinen gehört werden.'
             }
           ].map((item, idx) => (
@@ -620,7 +620,7 @@ export default function PricingPackages() {
             to="/uebungen"
             className="px-5 py-2.5 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 hover:border-emerald-600 transition cursor-pointer"
           >
-            Atemübungen &amp; PMR testen
+            Atemübungen und PMR testen
           </Link>
           <Link
             to="/ruhe-shop"

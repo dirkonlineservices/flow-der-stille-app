@@ -322,7 +322,7 @@ export const AdventskalenderPage: React.FC = () => {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
-              3× Rauhnacht-Hörbuch Verlosung
+              3× Rauhnacht-Hörbuch-Verlosung
             </span>
           </div>
         </div>
@@ -539,7 +539,7 @@ export const AdventskalenderPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
-                  Reines Streaming im Web-Player &amp; in der App
+                  Reines Streaming im Web-Player und in der App
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
@@ -729,7 +729,7 @@ export const AdventskalenderPage: React.FC = () => {
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#3D3B35]">
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-[#695C4D]">
-                  Tagesimpuls &amp; Hintergrund
+                  Tagesimpuls und Hintergrund
                 </h3>
                 <p className="text-sm sm:text-base text-[#3D3B35] leading-relaxed">
                   {activeDay.deepText}
@@ -811,7 +811,7 @@ export const AdventskalenderPage: React.FC = () => {
                 <div className="rounded-2xl bg-[#8A9A8A]/15 border border-[#8A9A8A]/35 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <h4 className="text-sm font-bold text-[#3D3B35]">
-                      Passende Audio-Begleitung im Web-Player &amp; App
+                      Passende Audio-Begleitung im Web-Player und in der App
                     </h4>
                     <p className="text-xs text-[#695C4D] mt-0.5">
                       Entdecke unsere geführten Meditationen und Selbsthypnosen zur tiefen
@@ -897,7 +897,7 @@ export const AdventskalenderPage: React.FC = () => {
                 onClick={handleCloseModal}
                 className="w-full py-3 px-5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs transition-colors cursor-pointer"
               >
-                Verstanden &amp; zurück zum Kalender
+                Verstanden und zurück zum Kalender
               </button>
             </div>
           </div>

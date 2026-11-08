@@ -32,7 +32,7 @@ export const ProductDisclaimerTrigger: React.FC = () => {
         }}
         className="hover:text-[var(--text-main)] transition-colors"
       >
-        Wichtige Hinweise zur Anwendung &amp; Haftungsausschluss
+        Wichtige Hinweise zur Anwendung und Haftungsausschluss
       </button>
 
       {isOpen && (

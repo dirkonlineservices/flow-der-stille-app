@@ -38,10 +38,10 @@ export default function DisclaimerModal({ isOpen, onAccepted }: DisclaimerModalP
           </div>
           <div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-              Wichtiger Hinweis &amp; Haftungsausschluss
+              Wichtiger Hinweis und Haftungsausschluss
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] font-sans">
-              Flow der Stille • Sicherheit &amp; Verantwortung
+              Flow der Stille • Sicherheit und Verantwortung
             </p>
           </div>
         </div>

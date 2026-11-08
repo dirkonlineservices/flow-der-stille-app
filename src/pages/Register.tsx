@@ -445,7 +445,7 @@ export default function Register() {
                   required
                 />
                 <span className="text-xs text-[var(--text-muted)] leading-relaxed select-none group-hover:text-[var(--text-main)] transition-colors">
-                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung elektronisch erhoben und gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert sowie den <Link to="/rechtliches" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Haftungsausschluss für Meditation &amp; Selbsthypnose</Link> zur Kenntnis genommen und stimme der Nutzung auf eigene Verantwortung zu. *
+                  Ich stimme zu, dass meine Angaben und Daten zur Account-Registrierung elektronisch erhoben und gespeichert werden. Ich habe die <Link to="/datenschutz" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Datenschutzerklärung</Link> gelesen und akzeptiert sowie den <Link to="/rechtliches" className="text-[var(--accent)] underline font-medium hover:text-[var(--accent-hover)]">Haftungsausschluss für Meditation und Selbsthypnose</Link> zur Kenntnis genommen und stimme der Nutzung auf eigene Verantwortung zu. *
                 </span>
               </label>
             </div>
@@ -494,7 +494,7 @@ export default function Register() {
             </Link>{' '}
             und dem{' '}
             <Link to="/rechtliches" className="underline hover:text-[var(--text-main)]">
-              Haftungsausschluss für Meditation &amp; Selbsthypnose
+              Haftungsausschluss für Meditation und Selbsthypnose
             </Link>{' '}
             zu.
           </p>

@@ -187,7 +187,7 @@ export function PlayStoreUpdateModal() {
           <div className="mt-4 p-3.5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] text-left text-xs text-[var(--text-main)] space-y-1.5">
             <div className="flex items-center gap-2 font-medium">
               <Sparkles size={14} className="text-[var(--accent)] shrink-0" />
-              <span>Optimierte Funktionen &amp; Verbesserungen</span>
+              <span>Optimierte Funktionen und Verbesserungen</span>
             </div>
             <p className="text-[11px] text-[var(--text-muted)] pl-5">
               Aktualisiere jetzt, um alle Neuerungen auf deinem Gerät nutzen zu können.

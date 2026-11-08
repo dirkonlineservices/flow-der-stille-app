@@ -451,7 +451,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
               </div>
             </div>
             <span className="text-xs font-semibold text-[var(--accent)] underline-offset-2 group-hover:underline shrink-0 flex items-center gap-1">
-              Infos &amp; Hilfe
+              Infos und Hilfe
             </span>
           </button>
         </div>

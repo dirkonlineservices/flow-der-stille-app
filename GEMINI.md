@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 12:02 Uhr (✨ Vollständige Webseiten-Texte nach neuer Schreibstil- & Typografie-Richtlinie überarbeitet: Alle KI-Gedankenstriche `–`/`—` durch Punkt, Komma oder `|` ersetzt, Werbefloskeln entfernt, Satzbau beruhigt und Rhythmus fließend gestaltet; `HomeAdminLanding`, `AboutUs`, `FAQ`, `AudiobooksHub`, `PricingPackages`, `Dashboard`, `Community`, `MeditationLanding`, `HypnosisLanding`, `SoundSamplesLanding`, `RauhnaechtePreviewPage` und `adventskalender.ts` bereinigt; Web-Build fehlerfrei)
+> - **Letzter Stand**: 08.11.2026, 12:25 Uhr (🎯 Typografie-Harmonisierung & SEO-Optimierung abgeschlossen: Alle sichtbaren Kaufmanns-Und '&' und '&amp;' durch das deutsche Wort 'und' ersetzt; Xcode Cloud 'Zweigänderungen' in App Store Connect erfolgreich entfernt, automatische Fehl-Builds gestoppt; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
@@ -134,6 +134,10 @@
 - **Live läuft kein Node-/Express-Server** (Hostinger liefert das statische Frontend aus). Weiterleitungen gehören in die `.htaccess`, nicht in `server.ts`.
 
 ## 8. SCHREIBSTIL- UND TYPOGRAFIE-RICHTLINIE (FLOW DER STILLE)
+- **Kaufmanns-Und (&) durch „und“ ersetzen**:
+  - Niemals das kaufmännische Und-Zeichen (`&` bzw. `&amp;`) in sichtbaren Texten, Überschriften, Badges oder Meta-Feldern verwenden.
+  - Immer das deutsche Wort **„und“** ausschreiben (z. B. `Meditation und Achtsamkeit`, `Selbsthypnose und Tiefenentspannung`, `Wissen und Praxis`).
+  - Dadurch werden wichtige **SEO-Keywords** natürlicher von Suchmaschinen gewertet und der Lesefluss bleibt ruhig und hochwertig.
 - **Verbot von KI-Gedankenstrichen**:
   - Keine langen Striche mitten im Satz: Verwende weder Halbgeviertstriche (`–`) noch Geviertstriche (`—`) als Satzeinschübe.
   - Satzstruktur statt Einschub: Gedanken mit Punkt oder Komma trennen.

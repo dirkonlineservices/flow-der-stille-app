@@ -112,7 +112,7 @@ export default function Community() {
                   <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
                   <span>2 Gratis-Sessions</span>
                 </div>
-                <p className="text-stone-600 dark:text-stone-400">Sofort Schlaf-Selbsthypnose &amp; Herz-Meditation freischalten.</p>
+                <p className="text-stone-600 dark:text-stone-400">Sofort Schlaf-Selbsthypnose und Herz-Meditation freischalten.</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
                 <div className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
@@ -173,7 +173,7 @@ export default function Community() {
                     <div className="flex items-center justify-center sm:justify-start gap-2">
                       <MessageCircle size={20} className="text-emerald-500 shrink-0" />
                       <h4 className="font-bold text-stone-900 dark:text-stone-100 text-base sm:text-lg">
-                        WhatsApp: Tägliche Impulse &amp; Achtsamkeit
+                        WhatsApp: Tägliche Impulse und Achtsamkeit
                       </h4>
                     </div>
                     <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-xl">
@@ -202,7 +202,7 @@ export default function Community() {
               <ul className="space-y-2 text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={15} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong>Respekt &amp; Wertschätzung:</strong> Jeder Mensch bringt seine eigene Lebensgeschichte mit. Wir begegnen einander mit Wohlwollen und ohne Verurteilung.</span>
+                  <span><strong>Respekt und Wertschätzung:</strong> Jeder Mensch bringt seine eigene Lebensgeschichte mit. Wir begegnen einander mit Wohlwollen und ohne Verurteilung.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 size={15} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
@@ -225,7 +225,7 @@ export default function Community() {
                 Öffentliche Kanäle
               </span>
               <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900 dark:text-stone-100">
-                Folge uns auf Facebook &amp; Instagram
+                Folge uns auf Facebook und Instagram
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 max-w-xl leading-relaxed">
                 Auf unseren offiziellen Social-Media-Seiten teilen wir inspirierende Zitate, Neuigkeiten zu Hörbüchern und Selbsthypnosen sowie Einblicke in unsere Vision.

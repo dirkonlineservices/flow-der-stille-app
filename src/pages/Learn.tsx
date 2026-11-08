@@ -13,7 +13,7 @@ export default function Learn() {
     <div className="space-y-10 w-full max-w-4xl lg:max-w-5xl mx-auto">
       <SEO title="Leitfaden – Nervensystem verstehen" description="Verstehe das Nervensystem, Sympathikus, Parasympathikus und den Vagusnerv." />
       <header className="text-center sm:text-left">
-        <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--color-accent-primary)]">Wissen &amp; Praxis</span>
+        <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[var(--color-accent-primary)]">Wissen und Praxis</span>
         <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[var(--color-text-main)] mt-1 mb-3">{t('learn.title')}</h1>
         <p className="text-[var(--color-text-muted)] text-base sm:text-lg max-w-2xl leading-relaxed">
           {t('learn.subtitle')}
@@ -68,7 +68,7 @@ export default function Learn() {
       <div className="bg-[var(--color-bg-card)] p-6 sm:p-8 rounded-3xl shadow-sm border border-[var(--color-border-main)] flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-accent-primary)]">Häufige Fragen</span>
-          <h3 className="text-xl sm:text-2xl font-serif font-semibold text-[var(--color-text-main)] mt-1 mb-2">Fragen zu Meditation, Selbsthypnose &amp; Vagusnerv?</h3>
+          <h3 className="text-xl sm:text-2xl font-serif font-semibold text-[var(--color-text-main)] mt-1 mb-2">Fragen zu Meditation, Selbsthypnose und Vagusnerv?</h3>
           <p className="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed">
             Erfahre die genauen Unterschiede zwischen Meditation, Selbsthypnose und Affirmationen sowie Details zur Aktivierung deines Nervensystems.
           </p>

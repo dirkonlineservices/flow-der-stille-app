@@ -63,13 +63,13 @@ export default function Impressum() {
               <strong>Texte, Skripte & Konzepte (100 % Mensch / Originalwerk):</strong> Sämtliche Meditationsskripte, Selbsthypnose-Texte, Hörbuch-Inhalte und Entspannungsübungen sind zu 100 % von <strong>Jacqueline Schmetzer</strong> selbst konzipiert, verfasst und urheberrechtlich geschützt.
             </li>
             <li>
-              <strong>Sprecherstimme & Audio-Vertonung:</strong> Bei unseren Hauptprodukten (Meditationen, Selbsthypnosen, Hörbüchern) wird die Vertonung von einem <strong>Menschen (menschliche Sprecherstimme)</strong> eingesprochen. Einzelne kostenfreie Anwendungen (z. B. PMR) können digital generiert sein. Der exakte Audio-Hinweis ist transparent direkt beim jeweiligen Produkt aus unserer Datenbank angegeben.
+              <strong>Sprecherstimme und Audio-Vertonung:</strong> Bei unseren Hauptprodukten (Meditationen, Selbsthypnosen, Hörbüchern) wird die Vertonung von einem <strong>Menschen (menschliche Sprecherstimme)</strong> eingesprochen. Einzelne kostenfreie Anwendungen (z. B. PMR) können digital generiert sein. Der exakte Audio-Hinweis ist transparent direkt beim jeweiligen Produkt aus unserer Datenbank angegeben.
             </li>
             <li>
-              <strong>Hintergrundmusik & Klangwelten:</strong> Die entspannenden Hintergrund-Klangwelten und Musiktitel wurden von <strong>Dirk Schmetzer</strong> mittels KI-Unterstützung komponiert und produziert.
+              <strong>Hintergrundmusik und Klangwelten:</strong> Die entspannenden Hintergrund-Klangwelten und Musiktitel wurden von <strong>Dirk Schmetzer</strong> mittels KI-Unterstützung komponiert und produziert.
             </li>
             <li>
-              <strong>Visuelles Cover-Design &amp; Grafiken:</strong> Die Produkt-Coverbilder und Grafiken wurden teils mit Grafikdesign-Software (Canva Pty Ltd) und teils mit Unterstützung digitaler KI-Bildgeneratoren gestaltet.
+              <strong>Visuelles Cover-Design und Grafiken:</strong> Die Produkt-Coverbilder und Grafiken wurden teils mit Grafikdesign-Software (Canva Pty Ltd) und teils mit Unterstützung digitaler KI-Bildgeneratoren gestaltet.
             </li>
           </ul>
         </section>

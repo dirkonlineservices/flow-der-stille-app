@@ -35,7 +35,7 @@ export function AppDownloadBanner() {
             to="/app" 
             className="text-xs font-semibold text-[var(--accent)] group-hover:text-black dark:group-hover:text-white hover:underline inline-flex items-center gap-1 transition-colors"
           >
-            Alle App-Features &amp; Details ansehen →
+            Alle App-Features und Details ansehen →
           </Link>
         </div>
 

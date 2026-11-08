@@ -51,7 +51,7 @@ export default function AboutUs() {
           </div>
 
           <h1 className="font-serif font-bold text-3xl sm:text-5xl text-stone-900 dark:text-stone-100 leading-tight">
-            Wer wir sind &amp; was wir bezwecken wollen
+            Wer wir sind und was wir bezwecken wollen
           </h1>
 
           <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -86,7 +86,7 @@ export default function AboutUs() {
                     Jacqueline
                   </h3>
                   <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block">
-                    Texte, Skripte &amp; Konzeption
+                    Texte, Skripte und Konzeption
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -109,7 +109,7 @@ export default function AboutUs() {
                     Lisa
                   </h3>
                   <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block">
-                    Die Stimme &amp; Stimmführung
+                    Die Stimme und Stimmführung
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -132,7 +132,7 @@ export default function AboutUs() {
                     Dirk
                   </h3>
                   <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 block">
-                    Technik, Klangwelten &amp; Plattform
+                    Technik, Klangwelten und Plattform
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
@@ -163,7 +163,7 @@ export default function AboutUs() {
             <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2 font-bold text-stone-900 dark:text-stone-100">
                 <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
-                <span>1. Kein Abo-Zwang &amp; kein Druck</span>
+                <span>1. Kein Abo-Zwang und kein Druck</span>
               </div>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
                 Monatliche Abos erzeugen unterschwelligen Zwang („Ich bezahle, also muss ich die App nutzen“). Bei uns sind die Grundlagen dauerhaft 100 % kostenfrei. Erweiterte Werke kaufst du einmalig ab 1,99&nbsp;€. Sie gehören dir dauerhaft ohne Folgekosten.
@@ -173,7 +173,7 @@ export default function AboutUs() {
             <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2 font-bold text-stone-900 dark:text-stone-100">
                 <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
-                <span>2. Reine Selbsthypnose &amp; Achtsamkeit</span>
+                <span>2. Reine Selbsthypnose und Achtsamkeit</span>
               </div>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
                 Wir geben keine unlauteren Heilversprechen. Unsere geführten Selbsthypnosen und Meditationen dienen der gesunden Eigenanwendung zur seelischen Entlastung, Schlafverbesserung und Stärkung eigener Ressourcen.
@@ -183,7 +183,7 @@ export default function AboutUs() {
             <div className="p-4 sm:p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2 font-bold text-stone-900 dark:text-stone-100">
                 <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
-                <span>3. Höchste Text- &amp; Stimmqualität</span>
+                <span>3. Höchste Text- und Stimmqualität</span>
               </div>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
                 Keine Massen-Prompt-Generierungen und keine gefühllose Roboter-Sprachsynthese. Jedes Wort stammt von Jacqueline, jeder Ton von Lisa. Wir investieren Wochen in jedes einzelne Werk.

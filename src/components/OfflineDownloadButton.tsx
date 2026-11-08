@@ -223,7 +223,7 @@ export function OfflineDownloadButton({
             className="inline-flex items-center gap-1 text-[11px] text-[var(--accent)] hover:underline font-semibold cursor-pointer"
           >
             <HardDrive size={12} />
-            <span>App-Speicher verwalten &amp; Platz schaffen</span>
+            <span>App-Speicher verwalten und Platz schaffen</span>
           </button>
         </div>
       )}

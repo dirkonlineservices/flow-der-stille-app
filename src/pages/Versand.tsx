@@ -43,10 +43,10 @@ export default function Versand() {
           <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-md bg-[var(--color-accent-primary)] text-white">
             Informationen
           </span>
-          <span className="text-xs text-[var(--color-text-muted)]">Transparenz &amp; Sicherheit</span>
+          <span className="text-xs text-[var(--color-text-muted)]">Transparenz und Sicherheit</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-[var(--color-accent-primary)] mb-3">
-          Versand &amp; digitale Bereitstellung
+          Versand und digitale Bereitstellung
         </h1>
         <p className="text-base sm:text-lg text-[var(--color-text-muted)] leading-relaxed max-w-2xl">
           Hier erfährst du alles Wichtige über die Auslieferung, Bereitstellung und Nutzung unserer Hörbücher, geführten Meditationen und Selbsthypnosen.
@@ -97,7 +97,7 @@ export default function Versand() {
         <section className="space-y-2">
           <h2 className="text-xl font-serif text-[var(--color-text-main)] flex items-center gap-2">
             <CheckCircle2 size={18} className="text-[var(--color-accent-primary)]" />
-            1. Art der Produkte &amp; Lieferform
+            1. Art der Produkte und Lieferform
           </h2>
           <p>
             Bei allen Produkten auf <strong>Flow der Stille</strong> (Hörbücher, geführte Meditationen, mentale Selbsthypnosen, Atemübungen) handelt es sich um <strong>rein digitale Güter</strong> (Audio-Dateien und begleitende Materialien). Es erfolgt <strong>kein physischer Waren- oder Paketversand</strong> per Post oder Kurierdienst.
@@ -107,7 +107,7 @@ export default function Versand() {
         <section className="space-y-2">
           <h2 className="text-xl font-serif text-[var(--color-text-main)] flex items-center gap-2">
             <CheckCircle2 size={18} className="text-[var(--color-accent-primary)]" />
-            2. Versandkosten &amp; Liefergebiet
+            2. Versandkosten und Liefergebiet
           </h2>
           <p>
             Da die Bereitstellung ausschließlich elektronisch über das Internet erfolgt, fallen <strong>weltweit 0,00 € Versandkosten</strong> an. Unsere Plattform richtet sich primär an Kunden im deutschsprachigen Raum (Deutschland, Österreich, Schweiz), ist jedoch von überall mit Internetzugang nutzbar.
@@ -117,10 +117,10 @@ export default function Versand() {
         <section className="space-y-2">
           <h2 className="text-xl font-serif text-[var(--color-text-main)] flex items-center gap-2">
             <CheckCircle2 size={18} className="text-[var(--color-accent-primary)]" />
-            3. Lieferzeiten &amp; Zugriffsbereitstellung
+            3. Lieferzeiten und Zugriffsbereitstellung
           </h2>
           <p>
-            Die Bereitstellung erfolgt <strong>unmittelbar nach Eingang der Zahlung</strong> (in der Regel innerhalb von Sekunden). Nach erfolgreicher Transaktion wird das Audio-Produkt automatisch für dein registriertes Benutzerkonto freigeschaltet. Du kannst es sofort im integrierten Player anhören und bei Bedarf auf dein Endgerät für die Offline-Nutzung herunterladen.
+            Die Bereitstellung erfolgt <strong>unmittelbar nach Eingang der Zahlung</strong> (in der Regel innerhalb von Sekunden). Nach erfolgreicher Transaktion wird das Audio-Produkt automatisch für dein registriertes Benutzerkonto freigeschaltet. Du kannst es sofort im integrierten Player anhören und dauerhaft in deiner persönlichen Mediathek streamen.
           </p>
         </section>
 
@@ -143,7 +143,7 @@ export default function Versand() {
         <section className="space-y-2">
           <h2 className="text-xl font-serif text-[var(--color-text-main)] flex items-center gap-2">
             <ShieldCheck size={18} className="text-[var(--color-accent-primary)]" />
-            5. Widerrufs- &amp; Rückgaberecht bei digitalen Inhalten
+            5. Widerrufs- und Rückgaberecht bei digitalen Inhalten
           </h2>
           <p>
             Informationen zum Erlöschen des Widerrufsrechts bei Beginn der Ausführung digitaler Inhalte gemäß § 356 Abs. 5 BGB findest du in unserer{' '}

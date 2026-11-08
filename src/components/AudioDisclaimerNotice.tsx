@@ -13,7 +13,7 @@ export default function AudioDisclaimerNotice({ className = '', isLoggedIn = fal
       <div className="flex items-center justify-between gap-2">
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--accent)] uppercase tracking-wider">
           <ShieldAlert size={15} />
-          <span>Wichtiger Hinweis &amp; Haftungsausschluss</span>
+          <span>Wichtiger Hinweis und Haftungsausschluss</span>
         </div>
         {!isLoggedIn && (
           <span className="px-2 py-0.5 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-[10px] font-mono font-bold">

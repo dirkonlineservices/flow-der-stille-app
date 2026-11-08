@@ -340,7 +340,7 @@ export default function Login() {
             </Link>{' '}
             und dem{' '}
             <Link to="/rechtliches" className="underline hover:text-[var(--text-main)]">
-              Haftungsausschluss für Meditation &amp; Selbsthypnose
+              Haftungsausschluss für Meditation und Selbsthypnose
             </Link>{' '}
             zu.
           </p>

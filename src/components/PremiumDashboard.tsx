@@ -594,7 +594,7 @@ export default function PremiumShopDashboard() {
           <span>Zurück</span>
         </Link>
         <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Ruhe-Shop</h1>
-        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Hörbücher, Meditationen &amp; Selbsthypnosen einzeln ab 1,99 € – 100 % ohne Abo.</p>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Hörbücher, Meditationen und Selbsthypnosen einzeln ab 1,99&nbsp;€ | 100&nbsp;% ohne Abo.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">
@@ -964,7 +964,7 @@ export default function PremiumShopDashboard() {
                     title="Eigene Hörseite mit 4-Schritte-Anleitung und Player öffnen"
                   >
                     <Headphones size={12} />
-                    <span>Hörseite &amp; Anleitung</span>
+                    <span>Hörseite und Anleitung</span>
                   </Link>
                 </div>
                 {showKIBadge && (
@@ -1049,7 +1049,7 @@ export default function PremiumShopDashboard() {
                           className="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold inline-flex items-center gap-1"
                           title="Lerne Jacqueline, Lisa und Dirk sowie unsere Philosophie kennen"
                         >
-                          <span>Über die Ersteller &amp; Vision →</span>
+                          <span>Über die Ersteller und Vision →</span>
                         </Link>
                       </div>
                       <p className="text-[11px] leading-relaxed text-[var(--text-muted)]">
@@ -1084,7 +1084,7 @@ export default function PremiumShopDashboard() {
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                            <span>Kapitel 1 kostenlos reinhören &amp; Anleitung öffnen →</span>
+                            <span>Kapitel 1 kostenlos reinhören und Anleitung öffnen →</span>
                           </Link>
                         ) : (
                           <Link
@@ -1092,7 +1092,7 @@ export default function PremiumShopDashboard() {
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
                           >
                             <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
-                            <span>Kostenlose Hörprobe &amp; Anleitung öffnen →</span>
+                            <span>Kostenlose Hörprobe und Anleitung öffnen →</span>
                           </Link>
                         )}
                       </div>
@@ -1110,7 +1110,7 @@ export default function PremiumShopDashboard() {
                                   <span>Express-Gastkauf mit Magic Link</span>
                                 </div>
                                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                                  <strong className="text-[var(--text-main)]">Kein Passwort &amp; kein Benutzerkonto nötig:</strong> Du musst nur bezahlen – dein persönlicher Zugangs-Link kommt sofort per E-Mail.
+                                  <strong className="text-[var(--text-main)]">Kein Passwort und kein Benutzerkonto nötig:</strong> Du musst nur bezahlen. Dein persönlicher Zugangslink kommt sofort per E-Mail.
                                 </p>
 
                                 {/* Kaufanleitung in 3 einfachen Schritten */}
@@ -1149,7 +1149,7 @@ export default function PremiumShopDashboard() {
                                     className="text-[11px] text-amber-900 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 font-semibold underline inline-flex items-center gap-1"
                                     title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
                                   >
-                                    <span>Ausführliche Details &amp; FAQ zum Magic Link ansehen</span>
+                                    <span>Ausführliche Details und FAQ zum Magic Link ansehen</span>
                                     <ExternalLink size={11} className="shrink-0" />
                                   </Link>
                                 </div>
@@ -1277,7 +1277,7 @@ export default function PremiumShopDashboard() {
                             title="Eigene Hörseite mit 4-Schritte-Anleitung öffnen"
                           >
                             <Headphones size={13} />
-                            <span>Hörseite &amp; Anleitung öffnen →</span>
+                            <span>Hörseite und Anleitung öffnen →</span>
                           </Link>
                         </div>
                         <AudioPlayerButton 

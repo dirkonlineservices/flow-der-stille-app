@@ -692,7 +692,7 @@ export function AudiobookPlayerModal({
                       Rechtlicher Hinweis erforderlich
                     </strong>
                     <span className="text-xs text-stone-800 dark:text-amber-100 font-medium block leading-relaxed">
-                      Bitte lausche der Einleitung einmalig bis {formatTime(DISCLAIMER_DURATION)} Min. Danach werden alle Kapitel und das freie Vor- &amp; Zurückspulen automatisch für dich freigeschaltet.
+                      Bitte lausche der Einleitung einmalig bis {formatTime(DISCLAIMER_DURATION)} Min. Danach werden alle Kapitel und das freie Vor- und Zurückspulen automatisch für dich freigeschaltet.
                     </span>
                   </div>
                 </div>
@@ -791,7 +791,7 @@ export function AudiobookPlayerModal({
                   <ListMusic size={15} className="text-[var(--accent)]" />
                   <span>Kapitel-Navigation ({chapters.length} Abschnitte)</span>
                 </h4>
-                <span className="text-[11px] text-[var(--text-muted)] font-medium">Klick zum Vor- &amp; Zurückspringen</span>
+                <span className="text-[11px] text-[var(--text-muted)] font-medium">Klick zum Vor- und Zurückspringen</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

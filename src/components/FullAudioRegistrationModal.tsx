@@ -108,7 +108,7 @@ export default function FullAudioRegistrationModal({
           <div className="space-y-2 text-left text-xs text-[var(--text-muted)]">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
-              <span>100% kostenlos &amp; unverbindlich – kein Abo</span>
+              <span>100 % kostenfrei und unverbindlich | Kein Abo</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
@@ -116,7 +116,7 @@ export default function FullAudioRegistrationModal({
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
-              <span>Sofortiger Zugriff auf alle kostenfreien Vollversionen &amp; Schnupperübungen</span>
+              <span>Sofortiger Zugriff auf alle kostenfreien Vollversionen und Schnupperübungen</span>
             </div>
           </div>
 
@@ -127,7 +127,7 @@ export default function FullAudioRegistrationModal({
               className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-[var(--accent)] text-white font-semibold text-sm shadow-md hover:bg-[var(--accent-hover)] transition-all cursor-pointer active:scale-95"
             >
               <UserPlus size={17} />
-              <span>Jetzt kostenlos registrieren &amp; freischalten</span>
+              <span>Jetzt kostenfrei registrieren und freischalten</span>
             </button>
 
             <button
@@ -155,7 +155,7 @@ export default function FullAudioRegistrationModal({
                 className="w-full sm:flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-transparent hover:bg-[var(--bg-alt)] text-[var(--text-muted)] hover:text-[var(--text-main)] font-medium text-xs border border-[var(--border)] transition-all cursor-pointer"
               >
                 <X size={14} />
-                <span>Fenster schließen &amp; weiterlesen</span>
+                <span>Fenster schließen und weiterlesen</span>
               </button>
             </div>
           </div>

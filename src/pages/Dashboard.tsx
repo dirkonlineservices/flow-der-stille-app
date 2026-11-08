@@ -465,7 +465,7 @@ export default function Dashboard() {
               Verbinde dich mit unserer Community
             </h4>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-              Tägliche Inspirationen &amp; Austausch auf deinen Lieblings-Kanälen
+              Tägliche Inspirationen und Austausch auf deinen Lieblings-Kanälen
             </p>
           </div>
 

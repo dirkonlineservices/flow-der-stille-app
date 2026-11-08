@@ -400,7 +400,7 @@ export default function SoundSamplesLanding() {
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
-              <span>100 % Werbefrei &amp; ohne Abo</span>
+              <span>100 % werbefrei und ohne Abo</span>
             </span>
           </div>
         </div>
@@ -415,7 +415,7 @@ export default function SoundSamplesLanding() {
             </div>
             <div>
               <h2 className="font-serif font-bold text-lg sm:text-xl text-[var(--text-main)]">
-                Transparenz &amp; Authentizität: Wie unsere Audios entstehen
+                Transparenz und Authentizität: Wie unsere Audios entstehen
               </h2>
               <p className="text-xs text-[var(--text-muted)]">
                 Echte menschliche Herzensarbeit trifft auf moderne, harmonisierende Klangwelten.
@@ -428,7 +428,7 @@ export default function SoundSamplesLanding() {
             <div className="p-4 rounded-2xl bg-[var(--bg-alt)]/70 border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2 font-semibold text-[var(--text-main)]">
                 <Mic size={16} className="text-rose-500 shrink-0" />
-                <span>Menschliche Stimme &amp; Herz</span>
+                <span>Menschliche Stimme und Herz</span>
               </div>
               <p className="text-[var(--text-muted)]">
                 Alle Meditationen, Selbsthypnosen und Hörbücher sind zu <strong>100 % von Jacqueline Schmetzer</strong> geschrieben und von <strong>Lisa Ragusa</strong> mit ihrer warmen, echten menschlichen Stimme eingesprochen.
@@ -450,7 +450,7 @@ export default function SoundSamplesLanding() {
             <div className="p-4 rounded-2xl bg-[var(--bg-alt)]/70 border border-[var(--border)] space-y-2">
               <div className="flex items-center gap-2 font-semibold text-[var(--text-main)]">
                 <Cpu size={16} className="text-teal-500 shrink-0" />
-                <span>Schnupper- &amp; Sofort-Übungen</span>
+                <span>Schnupper- und Sofort-Übungen</span>
               </div>
               <p className="text-[var(--text-muted)]">
                 Die geführte Atemübung und die PMR basieren auf Jacquelines Texten und nutzen <strong>digitale Sprachsynthese</strong>, um dir einen schnellen, barrierefreien und kostenlosen Soforteinstieg zu schenken.
@@ -624,10 +624,10 @@ export default function SoundSamplesLanding() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             {user ? (
               <Link
-                to="/premium"
+                to="/ruhe-shop"
                 className="px-6 py-3 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
               >
-                <span>Zum Premium-Bereich &amp; Mediathek</span>
+                <span>Zum Ruhe-Shop und zur Mediathek</span>
                 <ArrowRight size={16} />
               </Link>
             ) : (
@@ -636,7 +636,7 @@ export default function SoundSamplesLanding() {
                   to="/register"
                   className="px-6 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2"
                 >
-                  <span>Kostenlos &amp; unverbindlich registrieren</span>
+                  <span>Kostenfrei und unverbindlich registrieren</span>
                   <ArrowRight size={16} />
                 </Link>
                 <Link
@@ -656,7 +656,7 @@ export default function SoundSamplesLanding() {
         <div className="text-center space-y-2 mb-8">
           <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-widest text-[var(--accent)]">
             <HelpCircle size={14} />
-            <span>Transparenz &amp; Klarheit</span>
+            <span>Transparenz und Klarheit</span>
           </div>
           <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[var(--text-main)]">
             Häufige Fragen zu den Klangproben
