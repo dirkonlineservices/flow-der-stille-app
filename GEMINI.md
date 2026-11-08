@@ -3,9 +3,9 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 07.11.2026, 20:00 Uhr (Build 24 für App Store Submission im main gepusht, Codebasis & In-App-Käufe 1:1 synchron, bereit für Screenshots & App-Review)
+> - **Letzter Stand**: 08.11.2026, 07:40 Uhr (Version 1.0.1 Build 26 mit neuem Marken-AppIcon: Beige-Hintergrund & Salbeigrün-Linien nach GitHub gepusht für Xcode Cloud Build)
 > - **Branch**: `main` (up to date mit origin/main)
-> - **Status**: 🚀 Meilenstein erreicht! Build 1.0 (24) ist auf GitHub gepusht & in Xcode Cloud gebaut. Alle Store-IDs gemappt, Konto löschen & Käufe wiederherstellen integriert. Nächster Schritt: Screenshots & Einreichung in App Store Connect.
+> - **Status**: 🚀 Meilenstein erreicht! Version 1.0 ist von Apple für den Vertrieb genehmigt. Version 1.0.1 (Build 26) mit neuem Icon wird jetzt automatisch gebaut.
 >
 > ### 📦 ZULETZT ERFOLGREICH UMGESETZT (STAND: 11.10.2026, 10:40 UHR):
 > 1. **TestFlight Release 1.0 (6) Live**:
