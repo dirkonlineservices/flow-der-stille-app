@@ -138,11 +138,11 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Nikolaus-Gabe: Hörbuch-Verlosung',
     coreImpulse: 'Community-Frage: Welche Qualität wünschst du dir?',
     deepText:
-      'Zum Nikolaustag öffnen wir die erste große Verlosung unseres Adventskalenders! Wir verlosen das ganzheitliche Hörbuch & den Meditationszyklus „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (13 geführte schamanische Seelenreisen, gesprochen von Lisa Ragusa), damit du es rechtzeitig vor dem 21./24. Dezember in deiner Mediathek genießen kannst.',
+      'Zum Nikolaustag öffnen wir die erste große Verlosung unseres Adventskalenders! Wir verlosen das ganzheitliche Hörbuch & den Meditationszyklus „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (13 geführte schamanische Seelenreisen, gesprochen von Lisa Ragusa), damit du es rechtzeitig vor dem 21./24. Dezember in deiner Mediathek genießen kannst. Die Auslosung findet am Tag danach (07. Dezember) statt – jede(r) bis dahin Angemeldete nimmt teil!',
     practiceTitle: 'Deine Gewinnspiel-Frage zum 06. Dezember',
     practiceOrQuestion:
       'Welche innere Qualität (z. B. Urvertrauen, Sanftmut, Klarheit, Mut oder Stille) wünschst du dir für die kommenden Wochen am allermeisten?',
-    durationOrInfo: '1. Verlosung • Gewinn: Hörbuch „Yggdrasils Atem“ (Wert 9,99 €)'
+    durationOrInfo: '1. Verlosung • Auslosung am 07. Dez • Wert 9,99 €'
   },
   {
     day: 7,
@@ -252,11 +252,11 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Halbzeit: 2. Hörbuch-Verlosung',
     coreImpulse: 'Austausch: Welcher Kraftort schenkt dir Zuflucht?',
     deepText:
-      'Zur Halbzeit auf dem Weg zu den heiligen Nächten öffnen wir unsere zweite Verlosung! Gewinne das große Rauhnacht-Hörbuch „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (2 Std. 59 Min. Spielzeit) als treuen Begleiter für deine Schwellenzeit zwischen den Jahren.',
+      'Zur Halbzeit auf dem Weg zu den heiligen Nächten öffnen wir unsere zweite Verlosung! Gewinne das große Rauhnacht-Hörbuch „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (2 Std. 59 Min. Spielzeit) als treuen Begleiter für deine Schwellenzeit zwischen den Jahren. Die Auslosung findet am Folgetag (14. Dezember) statt – alle bis dahin Eingetragenen sind im Lostopf!',
     practiceTitle: 'Deine Gewinnspiel-Frage zum 13. Dezember',
     practiceOrQuestion:
       'Welcher Ort in der Natur (z. B. ein alter Wald, das Meer, ein Bergsee oder eine stille Lichtung) schenkt deiner Seele am schnellsten Zuflucht und tiefen Frieden?',
-    durationOrInfo: '2. Verlosung • Gewinn: Hörbuch „Yggdrasils Atem“ (Wert 9,99 €)'
+    durationOrInfo: '2. Verlosung • Auslosung am 14. Dez • Wert 9,99 €'
   },
   {
     day: 14,
@@ -380,11 +380,11 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Sonnenwende: 3. Hörbuch-Verlosung',
     coreImpulse: 'Frage zur Julnacht: Welcher Same darf für dich keimen?',
     deepText:
-      'Heute ist der 21. Dezember – die heilige Wintersonnenwende (Julnacht) und zugleich der feierliche Auftakt unseres Hörbuchs „Yggdrasils Atem“! Zu diesem besonderen Wendepunkt verlosen wir zum dritten Mal das komplette Rauhnacht-Hörbuch für deinen Start in die geweihten Nächte.',
+      'Heute ist der 21. Dezember – die heilige Wintersonnenwende (Julnacht) und zugleich der feierliche Auftakt unseres Hörbuchs „Yggdrasils Atem“! Zu diesem besonderen Wendepunkt verlosen wir zum dritten Mal das komplette Rauhnacht-Hörbuch. Achtung: Die Teilnahme für dieses Finale läuft direkt am 21. Dezember bis 18:00 Uhr! Jede(r), der sich bis 18:00 Uhr angemeldet hat, nimmt an der Ziehung teil.',
     practiceTitle: 'Deine Gewinnspiel-Frage zur Wintersonnenwende',
     practiceOrQuestion:
       'In der dunkelsten Nacht des Jahres wird das neue Licht geboren: Welcher Herzenswunsch oder „Same“ darf im kommenden Jahr sanft in deinem Leben keimen?',
-    durationOrInfo: '3. Verlosung • Auftakttag der Wintersonnenwende'
+    durationOrInfo: '3. Verlosung • Teilnahmeschluss: 21. Dez, 18:00 Uhr'
   },
   {
     day: 22,

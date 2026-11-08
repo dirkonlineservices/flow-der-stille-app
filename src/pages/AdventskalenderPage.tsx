@@ -216,46 +216,8 @@ export const AdventskalenderPage: React.FC = () => {
     );
   }
 
-  // Schutz: Nur für Admins in der Vorbereitungsphase
-  if (!isAdminUser) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
-        <SEO
-          title="Interner Bereich | Flow der Stille"
-          description="Interne Vorschau für Administratoren."
-          noindex={true}
-        />
-        <div className="max-w-md w-full rounded-3xl bg-white border border-[#E3E1D9] p-8 text-center shadow-sm space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#8A9A8A]/15 text-[#4A563E] flex items-center justify-center mx-auto text-xl">
-            🔒
-          </div>
-          <h1 className="font-serif text-2xl font-bold text-[#3D3B35]">
-            Interne Admin-Vorschau
-          </h1>
-          <p className="text-sm text-[#695C4D] leading-relaxed">
-            Der 24-Tage Adventskalender befindet sich aktuell in der internen Vorbereitung
-            und ist nur für eingeloggte Administratoren sichtbar.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
-            {!user && (
-              <Link
-                to="/login"
-                className="px-5 py-2.5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-bold transition-colors cursor-pointer"
-              >
-                Als Admin anmelden
-              </Link>
-            )}
-            <Link
-              to="/"
-              className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-[#3D3B35] text-xs font-bold transition-colors cursor-pointer"
-            >
-              Zurück zur Startseite
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Schutz vorab: Jetzt für alle User öffentlich scharf geschaltet!
+  // Die zeitbasierte Sperre stellt sicher, dass sich Türchen erst am jeweiligen Tag öffnen.
 
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-24">
@@ -263,30 +225,31 @@ export const AdventskalenderPage: React.FC = () => {
         title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
         description="Traditionelles 24-Türchen-Raster für den Dezember im sanften Salbeigrün: 5 Meditationen, 8× Altes Wissen, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
         canonical="https://flow-der-stille.de/adventskalender"
-        noindex={true}
       />
 
-      {/* Admin-Hinweis-Banner mit Zeittest-Schalter im sanften Salbeigrün-Stil */}
-      <div className="bg-[#8A9A8A]/25 text-[#3D3B35] border-b border-[#8A9A8A]/40 px-4 py-2.5 text-xs font-semibold flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-[#344034]">🔒 ADMIN-MODUS AKTIV:</span>
-          <span className="font-normal text-[#514639]">
-            Nur für eingeloggte Admins sichtbar.
-          </span>
+      {/* Admin-Hinweis-Banner nur für Admins (mit Zeittest-Schalter) */}
+      {isAdminUser && (
+        <div className="bg-[#8A9A8A]/25 text-[#3D3B35] border-b border-[#8A9A8A]/40 px-4 py-2.5 text-xs font-semibold flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-[#344034]">🔒 ADMIN-TESTLEISTE:</span>
+            <span className="font-normal text-[#514639]">
+              Die Seite ist für alle User freigeschaltet (mit Tages-Sperre).
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-[#4A563E]">
+              {adminTimeBypass ? '🔓 Alle 24 Türchen freigeschaltet (Testmodus)' : '⏱️ Echte Zeit-Sperre aktiv'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setAdminTimeBypass(!adminTimeBypass)}
+              className="px-2.5 py-1 rounded-lg bg-[#8A9A8A] hover:bg-[#728372] text-white text-[11px] font-bold transition-colors cursor-pointer"
+            >
+              {adminTimeBypass ? 'Zeit-Sperre aktivieren' : 'Alle Türchen testen'}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#4A563E]">
-            {adminTimeBypass ? '🔓 Alle 24 Türchen freigeschaltet (Testmodus)' : '⏱️ Echte Zeit-Sperre aktiv'}
-          </span>
-          <button
-            type="button"
-            onClick={() => setAdminTimeBypass(!adminTimeBypass)}
-            className="px-2.5 py-1 rounded-lg bg-[#8A9A8A] hover:bg-[#728372] text-white text-[11px] font-bold transition-colors cursor-pointer"
-          >
-            {adminTimeBypass ? 'Zeit-Sperre aktivieren' : 'Alle Türchen testen'}
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* ─── HERO BEREICH: HELL & RUHIG IN SALBEIGRÜN / BEIGE ──────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#8A9A8A]/20 via-[#F5F5F0] to-[#F5F5F0] pt-12 pb-14 md:py-20 px-4 sm:px-6 border-b border-[#E3E1D9]">
@@ -629,12 +592,19 @@ export const AdventskalenderPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Gewinnspiel-Interaktion */}
+              {/* Gewinnspiel-Interaktion & Fristen */}
               {activeDay.category === 'gewinnspiel' && (
                 <div className="rounded-2xl bg-gradient-to-br from-[#C8A96E]/20 via-[#C8A96E]/10 to-white border border-[#C8A96E]/40 p-5 sm:p-6 space-y-4">
-                  <div className="flex items-center gap-2 text-[#6E531D] text-xs font-bold uppercase tracking-wider">
-                    <Gift className="w-4 h-4" />
-                    Direkt an der Rauhnacht-Hörbuch Verlosung teilnehmen
+                  <div>
+                    <div className="flex items-center gap-2 text-[#6E531D] text-xs font-bold uppercase tracking-wider">
+                      <Gift className="w-4 h-4" />
+                      Rauhnacht-Hörbuch Verlosung
+                    </div>
+                    <p className="text-xs text-[#8B6E32] font-semibold mt-1">
+                      {activeDay.day === 21
+                        ? '⏱️ Großes Sonnenwende-Finale: Teilnahmeschluss ist der 21. Dezember um 18:00 Uhr! Jede(r), der sich bis 18 Uhr angemeldet hat, nimmt an der Auslosung teil.'
+                        : `⏱️ Die Auslosung findet jeweils am Tag danach statt (${activeDay.day === 6 ? 'am 07. Dezember' : 'am 14. Dezember'}). Alle bis dahin angemeldeten Teilnehmer sind im Lostopf!`}
+                    </p>
                   </div>
 
                   {raffleSuccess ? (
