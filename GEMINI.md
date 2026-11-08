@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 12:47 Uhr (🎨 Kontrast-Korrektur: Invertierte 'dark:' Textfarben in 'src/pages/AboutUs.tsx' entfernt, Überschriften in sattem Schwarz/Dunkelstein, Adventskalender-Kontrast geschärft; Web-Build fehlerfrei)
+> - **Letzter Stand**: 08.11.2026, 12:50 Uhr (📜 Regelwerk aktualisiert: Neue Richtlinie '9. KONTRAST- UND BARRIEREFREIHEITS-RICHTLINIE (WCAG-AA)' in GEMINI.md & CLAUDE.md verankert; Verbot unpassender 'dark:' Textklassen; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
@@ -111,7 +111,7 @@
 
 ## 5. DESIGN & TYPOGRAFIE
 - **Preise & Währung**: Beträge und Euro-Zeichen müssen immer zusammenhängend formatiert sein (`&nbsp;€` und `whitespace-nowrap`), damit das Euro-Zeichen niemals umbricht.
-- **Hoher Kontrast**: Stets auf WCAG-AA-konformen Kontrast für Text und Buttons achten (keine zu hellen Grautöne auf weiß/hellen Hintergründen).
+- **Hoher Kontrast**: Stets auf WCAG-AA-konformen Kontrast für Text und Buttons achten (keine zu hellen Grautöne auf weiß/hellen Hintergründen). Siehe ausführlich Abschnitt 9.
 - **1-Klick-Registrierung**: Immer beide Social-Login-Anbieter und E-Mail transparent benennen: *„Über Google, Meta (Facebook) oder E-Mail – garantiert 0 € und kein Abo“*.
 
 ## 6. MAGIC LINK EXPRESS-KAUF & KAUFOPTIONEN
@@ -150,3 +150,16 @@
   - Einladung statt Druck: Formulierungen wie „Wenn du magst“, „Du kannst“ oder „Einladung zu“ bevorzugen. Keine Aufforderungen im Befehlston.
   - Keine leeren Phrasen: Begriffe wie „Tauche ein“, „Hektischer Alltag“, „Transformativ“ oder „Reise zu dir selbst“ konsequent vermeiden.
   - Klare deutsche Worte: Zusammengesetzte Wörter nach Möglichkeit zusammenschreiben.
+
+## 9. KONTRAST- UND BARRIEREFREIHEITS-RICHTLINIE (WCAG-AA)
+- **Hoher Kontrast als Kernprinzip**:
+  - Alle Überschriften (H1, H2, H3), Fließtexte, Buttons und Badges müssen gestochen scharfen Kontrast bieten und WCAG-AA-konform sein.
+  - Überschriften werden in sattem Schwarz / Anthrazit (`text-stone-950` bzw. `#0C0A09` / `#1C1917`) formatiert, niemals in verwaschenen Farben.
+  - Fließtexte und Beschreibungen nutzen klares, sattes Dunkelstein (`text-stone-700` bis `text-stone-800`), niemals zu helle Grautöne auf weißem oder beigem Grund.
+- **Strikte Vermeidung der Dark-Mode-Invertierungsfalle (`dark:`-Klassen)**:
+  - Da das Farbkonzept von Flow der Stille auf warmen, hellen Farbtönen beruht (Hintergrund `#F5F5F0`, Kartenhintergrund `#FFFFFF`), dürfen keine unüberlegten Tailwind `dark:`-Textklassen wie `dark:text-white`, `dark:text-stone-100` oder `dark:text-emerald-300` verwendet werden, wenn der Hintergrund der Komponente hell bleibt.
+  - Hintergrund: Betriebssysteme oder Browser im Dark Mode wenden `dark:` automatisch an. Fehlt der entsprechende dunkle Container-Hintergrund, führt dies zu weißer Schrift auf weißem Grund (Text wird komplett unsichtbar).
+  - Regel: `dark:text-...` ist NUR erlaubt, wenn der umgebende Container explizit eine dunkle Hintergrundklasse wie `dark:bg-stone-900` besitzt.
+- **Akzentfarben & Highlights prüfen**:
+  - Auf hellen Karten (z. B. gelblich/beige Bernstein-Boxen wie der Express-Gastkauf) dürfen keine weißen oder hellgelben Texte liegen. Überschriften und Anleitungen dort immer in `text-stone-950 font-bold`.
+  - Helle Salbeitöne (z. B. `#8A9A8A`) dürfen nur als dezente Schmuckelemente oder Hintergründe dienen, niemals für kleine Textzahlen oder Untertitel auf hellem Grund (dafür immer dunkle Grüntöne wie `#344034` / `text-emerald-900` oder `text-stone-800` nutzen).

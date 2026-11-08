@@ -12,6 +12,7 @@
 >   - Enthält serverseitige Kaufprüfung über Apple App Store Server API (`verify-apple-purchase`), natives StoreKit „Käufe wiederherstellen“ und DSGVO „Konto löschen“.
 > - **Xcode Cloud**: Automatische Startbedingung („Zweigänderungen“) in App Store Connect wurde **erfolgreich entfernt**. Pushes auf GitHub (`main`) lösen **keine automatischen Fehl-Builds** mehr aus! Builds werden ausschließlich manuell vom User im Web gestartet.
 > - **Typografie & SEO**: Vollständige Bereinigung aller sichtbaren `&` und `&amp;` durch das ausgeschriebene deutsche Wort **„und“** abgeschlossen. Wichtige SEO-Keywords werden gestärkt.
+> - **Kontrast & Barrierefreiheit**: Richtlinie 9 fest verankert (WCAG-AA-Kontrast, Überschriften in Schwarz/Anthrazit, striktes Verbot fehlerhafter `dark:` Textklassen auf hellen Containern).
 > - **Geschäftliches & Verträge**:
 >   - Bankkonto für Auszahlungen (EUR / USD) aktiv.
 >   - Vertrag für gebührenpflichtige Apps aktiv.
@@ -94,4 +95,17 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
   - Einladung statt Druck: Formulierungen wie „Wenn du magst“, „Du kannst“ oder „Einladung zu“ bevorzugen. Keine Aufforderungen im Befehlston.
   - Keine leeren Phrasen: Begriffe wie „Tauche ein“, „Hektischer Alltag“, „Transformativ“ oder „Reise zu dir selbst“ konsequent vermeiden.
   - Klare deutsche Worte: Zusammengesetzte Wörter nach Möglichkeit zusammenschreiben.
+
+## 9. KONTRAST- UND BARRIEREFREIHEITS-RICHTLINIE (WCAG-AA)
+- **Hoher Kontrast als Kernprinzip**:
+  - Alle Überschriften (H1, H2, H3), Fließtexte, Buttons und Badges müssen gestochen scharfen Kontrast bieten und WCAG-AA-konform sein.
+  - Überschriften werden in sattem Schwarz / Anthrazit (`text-stone-950` bzw. `#0C0A09` / `#1C1917`) formatiert, niemals in verwaschenen Farben.
+  - Fließtexte und Beschreibungen nutzen klares, sattes Dunkelstein (`text-stone-700` bis `text-stone-800`), niemals zu helle Grautöne auf weißem oder beigem Grund.
+- **Strikte Vermeidung der Dark-Mode-Invertierungsfalle (`dark:`-Klassen)**:
+  - Da das Farbkonzept von Flow der Stille auf warmen, hellen Farbtönen beruht (Hintergrund `#F5F5F0`, Kartenhintergrund `#FFFFFF`), dürfen keine unüberlegten Tailwind `dark:`-Textklassen wie `dark:text-white`, `dark:text-stone-100` oder `dark:text-emerald-300` verwendet werden, wenn der Hintergrund der Komponente hell bleibt.
+  - Hintergrund: Betriebssysteme oder Browser im Dark Mode wenden `dark:` automatisch an. Fehlt der entsprechende dunkle Container-Hintergrund, führt dies zu weißer Schrift auf weißem Grund (Text wird komplett unsichtbar).
+  - Regel: `dark:text-...` ist NUR erlaubt, wenn der umgebende Container explizit eine dunkle Hintergrundklasse wie `dark:bg-stone-900` besitzt.
+- **Akzentfarben & Highlights prüfen**:
+  - Auf hellen Karten (z. B. gelblich/beige Bernstein-Boxen wie der Express-Gastkauf) dürfen keine weißen oder hellgelben Texte liegen. Überschriften und Anleitungen dort immer in `text-stone-950 font-bold`.
+  - Helle Salbeitöne (z. B. `#8A9A8A`) dürfen nur als dezente Schmuckelemente oder Hintergründe dienen, niemals für kleine Textzahlen oder Untertitel auf hellem Grund (dafür immer dunkle Grüntöne wie `#344034` / `text-emerald-900` oder `text-stone-800` nutzen).
 
