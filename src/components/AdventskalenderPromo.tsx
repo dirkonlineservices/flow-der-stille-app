@@ -304,7 +304,8 @@ export const AdventskalenderHomeSection: React.FC = () => {
                 Der Adventskalender – 24 Tage Innehalten
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-[#695C4D] max-w-2xl leading-relaxed">
-                Klassisches 24-Türchen-Raster: Tag für Tag öffnet sich ein neuer Impuls zur
+                Vom bewussten Ankommen im Stillstand der Natur über die Wintersonnenwende bis zur
+                Schwelle der heiligen Rauhnächte: Tag für Tag öffnet sich ein neuer Impuls zur
                 Entschleunigung für dein Nervensystem.
               </p>
             </div>

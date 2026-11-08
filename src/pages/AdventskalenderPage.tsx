@@ -223,7 +223,7 @@ export const AdventskalenderPage: React.FC = () => {
     <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-24">
       <SEO
         title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
-        description="Traditionelles 24-Türchen-Raster für den Dezember im sanften Salbeigrün: 5 Meditationen, 8× Altes Wissen, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
+        description="24 Tage Innehalten durch den Dezember: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
         canonical="https://flow-der-stille.de/adventskalender"
       />
 
@@ -289,11 +289,11 @@ export const AdventskalenderPage: React.FC = () => {
           <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#695C4D]">
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
-              Klassisches 24-Türchen-Raster
+              100&nbsp;% kostenfreie Advents-Impulse
             </span>
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
-              Täglich zeitgesteuert entriegelt
+              Täglich ein neuer Impuls zur Entschleunigung
             </span>
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
@@ -308,7 +308,7 @@ export const AdventskalenderPage: React.FC = () => {
         <div className="mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
-              Traditioneller Kalender
+              24 Tage Innehalten
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
               Wähle dein heutiges Türchen
