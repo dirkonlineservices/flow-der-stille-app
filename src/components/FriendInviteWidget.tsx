@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle2, Sparkles, Lock, Heart, Share2, Copy, MessageCircle, ExternalLink, Video, ChevronDown, ChevronUp, Instagram, Pin } from 'lucide-react';
+import { CheckCircle2, Sparkles, Lock, Heart, Share2, Copy, MessageCircle, ExternalLink, Video, ChevronDown, ChevronUp, Instagram, Pin } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -108,11 +108,6 @@ export const FriendInviteWidget: React.FC = () => {
     setTimeout(() => {
       window.open('https://instagram.com', '_blank');
     }, 800);
-  };
-
-  const handleTelegramShare = () => {
-    const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`;
-    window.open(tgUrl, '_blank');
   };
 
   const handleFacebookShare = () => {
@@ -271,7 +266,7 @@ export const FriendInviteWidget: React.FC = () => {
                 <Share2 size={16} />
               </div>
               <span className="font-semibold group-hover:text-[var(--color-accent-primary)] transition-colors">
-                Kanäle zum Teilen wählen (WhatsApp, Instagram, Telegram, Facebook, Pinterest)
+                Kanäle zum Teilen wählen (WhatsApp, Instagram, Facebook, Pinterest)
               </span>
             </div>
             <div className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-primary)] transition-colors">
@@ -286,7 +281,7 @@ export const FriendInviteWidget: React.FC = () => {
                 Wähle deine bevorzugte App:
               </span>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                 {/* 1. Gerät / Mobile App Teilen */}
                 <button
                   onClick={handleNativeShare}
@@ -317,17 +312,7 @@ export const FriendInviteWidget: React.FC = () => {
                   <span className="truncate">Instagram</span>
                 </button>
 
-                {/* 4. Telegram */}
-                <button
-                  onClick={handleTelegramShare}
-                  title="Auf Telegram teilen"
-                  className="py-3 px-3 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border-main)] hover:border-[var(--color-accent-primary)] text-[var(--color-text-main)] font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs group"
-                >
-                  <Send size={16} className="text-[var(--color-accent-primary)] shrink-0 group-hover:scale-110 transition-transform" />
-                  <span className="truncate">Telegram</span>
-                </button>
-
-                {/* 5. Facebook */}
+                {/* 4. Facebook */}
                 <button
                   onClick={handleFacebookShare}
                   title="Auf Facebook teilen"
@@ -337,7 +322,7 @@ export const FriendInviteWidget: React.FC = () => {
                   <span className="truncate">Facebook</span>
                 </button>
 
-                {/* 6. Pinterest */}
+                {/* 5. Pinterest */}
                 <button
                   onClick={handlePinterestShare}
                   title="Auf Pinterest pinnen"
