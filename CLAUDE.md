@@ -60,8 +60,9 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
 ## 6. WORKFLOW-REGELN ZUR DATENSICHERHEIT & BUILDS
 1. **Bei Arbeitsbeginn**: Stets prüfen, ob der lokale Branch `main` mit `git pull origin main` aktuell ist.
 2. **Web-Build**: Für die Hostinger-Webseite ist `npm run build` (`dist/`) in Ordnung, damit die Webseite live sofort funktioniert.
-3. **App-Builds (iOS & Android) – STRIKTE SPERRE**:
+3. **App-Builds (iOS & Android) – REIN MANUELL**:
+   - In Xcode Cloud (App Store Connect) ist die automatische Startbedingung („Zweigänderungen“) deaktiviert.
+   - iOS-Builds (Xcode Cloud / TestFlight) werden **ausschließlich manuell vom User im App Store Connect** („Build starten“) oder lokal in Xcode angestoßen.
    - Führe **NIEMALS automatisch Capacitor-Syncs (`npx cap sync`, `npx cap copy`) oder native App-Builds** für iOS oder Android aus!
-   - Native App-Builds (Xcode Cloud, Android Bundles) werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** angestoßen.
 4. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
 

@@ -124,9 +124,10 @@
 
 ## 7. BUILD-PROZESS: WEB VS. MOBILE APPS (STRIKTE TRENNUNG)
 - **Webseite**: Der Web-Build (`npm run build`) für das statische Web-Deployment auf Hostinger (`dist/`) ist in Ordnung und erwünscht, damit die Webseite live aktuell bleibt.
-- **Mobile Apps (iOS & Android) – NIEMALS AUTOMATISCH**:
+- **Mobile Apps (iOS & Android) – REIN MANUELL**:
+  - In Xcode Cloud (App Store Connect) ist die automatische Startbedingung („Zweigänderungen“) deaktiviert.
+  - Builds für iOS (TestFlight / App Store) werden **ausschließlich manuell vom User in App Store Connect** („Build starten“) oder lokal in Xcode ausgelöst.
   - Führe **NIEMALS automatisch Capacitor-Syncs (`npx cap sync`, `npx cap copy`) oder native App-Builds** für iOS oder Android aus!
-  - Native App-Builds, Xcode-Archivierungen, Xcode-Cloud-Trigger und Android-Releases werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** ausgeführt (z. B. wenn der User schreibt „Synchronisiere die Apps“, „Bereite iOS-Build vor“ oder „Neuer Android-Build“).
   - Web-Änderungen dürfen die native App-Codebasis (`ios/` und `android/`) nicht ungefragt überschreiben oder anstoßen.
 - **Neue Seite für Google** → in `public/sitemap.xml` eintragen.
 - **Neue Top-Level-Route in `src/index.tsx`** → zusätzlich in `public/.htaccess` eintragen.
