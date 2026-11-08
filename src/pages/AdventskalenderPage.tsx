@@ -220,7 +220,7 @@ export const AdventskalenderPage: React.FC = () => {
   // Die zeitbasierte Sperre stellt sicher, dass sich Türchen erst am jeweiligen Tag öffnen.
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-24">
+    <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-4 md:pb-6">
       <SEO
         title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
         description="24 Tage Innehalten durch den Dezember: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
@@ -304,7 +304,7 @@ export const AdventskalenderPage: React.FC = () => {
       </section>
 
       {/* ─── HAUPTBEREICH: 24-TÜRCHEN-RASTER (SALBEIGRÜN & WARMES BEIGE) ───── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-4 sm:pb-6">
         <div className="mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
@@ -414,13 +414,13 @@ export const AdventskalenderPage: React.FC = () => {
         </div>
 
         {/* ─── E-MAIL-ERINNERUNG FÜR TÄGLICHE BENACHRICHTIGUNGEN ─────────────── */}
-        <div className="mt-16">
+        <div className="mt-8 sm:mt-10">
           <AdventEmailReminder />
         </div>
 
         {/* ─── DIE 4 SÄULEN (HINTERGRUND-ÜBERSICHT) ──────────────────────────── */}
-        <div className="mt-16 bg-white rounded-3xl border border-[#E3E1D9] p-6 sm:p-8 shadow-xs">
-          <div className="text-center max-w-2xl mx-auto mb-8">
+        <div className="mt-8 sm:mt-10 bg-white rounded-2xl sm:rounded-3xl border border-[#E3E1D9] p-5 sm:p-6 shadow-xs">
+          <div className="text-center max-w-2xl mx-auto mb-5">
             <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
               Ganzheitliches Konzept
             </span>
@@ -437,7 +437,7 @@ export const AdventskalenderPage: React.FC = () => {
             {ADVENT_PILLARS.map((pillar) => (
               <div
                 key={pillar.title}
-                className="p-5 rounded-2xl bg-[#F5F5F0] border border-[#E3E1D9] flex flex-col justify-between"
+                className="p-4 sm:p-5 rounded-2xl bg-[#F5F5F0] border border-[#E3E1D9] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -459,17 +459,17 @@ export const AdventskalenderPage: React.FC = () => {
         </div>
 
         {/* ─── BRÜCKE ZU DEN RAUHNÄCHTEN (AB 24./25. DEZEMBER) ──────────────── */}
-        <div className="mt-12 rounded-3xl bg-gradient-to-br from-[#8A9A8A]/25 via-[#F5F5F0] to-[#8A9A8A]/20 text-[#3D3B35] p-6 sm:p-10 border border-[#8A9A8A]/40 shadow-xs relative overflow-hidden">
+        <div className="mt-6 sm:mt-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#8A9A8A]/25 via-[#F5F5F0] to-[#8A9A8A]/20 text-[#3D3B35] p-5 sm:p-6 md:p-8 border border-[#8A9A8A]/40 shadow-xs relative overflow-hidden">
           <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#8A9A8A]/20 blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-            <div className="lg:col-span-8 space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-center relative z-10">
+            <div className="lg:col-span-8 space-y-3">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
                 <Moon className="w-3.5 h-3.5" />
                 Die Fortsetzung ab 24. / 25. Dezember
               </div>
 
-              <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[#3D3B35] leading-tight">
+              <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D3B35] leading-tight">
                 Yggdrasils Atem – 12 Rauhnächte auf der Schwelle
               </h3>
 
@@ -482,10 +482,10 @@ export const AdventskalenderPage: React.FC = () => {
                 Wissen, Geschichten und geführten Innenreisen bis zum 6. Januar.
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   to="/hoerbuch/rauhnaechte"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-sm transition-all shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-sm transition-all shadow-md cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   Rauhnacht-Hörbuch entdecken
@@ -493,7 +493,7 @@ export const AdventskalenderPage: React.FC = () => {
 
                 <Link
                   to="/ruhe-shop#product-fds_rauhnaechte"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#3D3B35] font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#3D3B35] font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer shadow-2xs"
                 >
                   🔑 Express-Kauf im Ruhe-Shop (9,99&nbsp;€ • Kein Abo)
                 </Link>
@@ -501,7 +501,7 @@ export const AdventskalenderPage: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4">
-              <div className="rounded-2xl bg-white border border-[#E3E1D9] p-5 space-y-2.5 text-xs text-[#695C4D] shadow-xs">
+              <div className="rounded-2xl bg-white border border-[#E3E1D9] p-4 sm:p-5 space-y-2 text-xs text-[#695C4D] shadow-xs">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-[#3D3B35]">Rauhnacht-Begleitung</span>
                   <span className="px-2 py-0.5 rounded-full bg-[#8A9A8A]/20 text-[#4A563E] font-bold">

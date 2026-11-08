@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 10:15 Uhr (🎄 Adventskalender überarbeitet: Traditionelles 24-Türchen-Raster ohne inhaltliche Vorab-Vorschau, zeitbasierte Tag-für-Tag-Sperre + Admin-Testschalter, Resend E-Mail-Erinnerung `AdventEmailReminder`, Plattformweiche für mobile Apps im Pop-up `AdventskalenderPromo`; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
+> - **Letzter Stand**: 08.11.2026, 10:45 Uhr (🎄 Adventskalender überarbeitet: Traditionelles 24-Türchen-Raster, Resend E-Mail-Erinnerung `AdventEmailReminder`, Rauhnächte-Brücke und vertikale Paddings kompakt zusammengezogen; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
