@@ -298,9 +298,9 @@ export const AdventskalenderPage: React.FC = () => {
             </button>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#3D3B35] leading-tight tracking-tight max-w-4xl mx-auto">
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-950 leading-tight tracking-tight max-w-4xl mx-auto">
             Adventskalender der Stille
-            <span className="text-[#8A9A8A] italic font-normal block text-2xl sm:text-3xl lg:text-4xl mt-2">
+            <span className="text-[#344034] italic font-semibold block text-2xl sm:text-3xl lg:text-4xl mt-2">
               24 Tage Innehalten
             </span>
           </h1>
@@ -410,7 +410,7 @@ export const AdventskalenderPage: React.FC = () => {
                         ? 'text-[#4A563E]'
                         : isUnlocked
                         ? 'text-white'
-                        : 'text-[#8A9A8A]'
+                        : 'text-stone-800'
                     }`}
                   >
                     {dayItem.day}

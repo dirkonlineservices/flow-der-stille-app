@@ -344,10 +344,10 @@ export const AdventskalenderHomeSection: React.FC = () => {
                 <span>Flow der Stille · Winter- und Adventsbegleitung</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#3D3B35] leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-stone-950 leading-tight">
                 Der Adventskalender: 24 Tage Innehalten
               </h2>
-              <p className="text-xs sm:text-sm md:text-base text-[#695C4D] max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-stone-700 max-w-2xl leading-relaxed font-normal">
                 Vom bewussten Ankommen im Stillstand der Natur über die Wintersonnenwende bis zur
                 Schwelle der heiligen Rauhnächte. Tag für Tag öffnet sich ein neuer Impuls zur
                 Entspannung für dein Nervensystem.
