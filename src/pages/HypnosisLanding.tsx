@@ -42,9 +42,9 @@ const HYPNOSES: HypnosisItem[] = [
     title: 'Selbsthypnose: Mehr Selbstbewusstsein & Inneres Vertrauen',
     subtitle: 'Selbstzweifel auflösen & eine ruhige innere Stärke verankern',
     duration: '15:30 Min.',
-    price: '1,99 €',
+    price: '1,99&nbsp;€',
     cover: '/images/products/cover_vertrauen.jpg',
-    description: 'Echtes Selbstvertrauen ist nicht laut – es ist eine unerschütterliche Ruhe in dir selbst. Verankere den Glauben an deine Fähigkeiten tief in deinem Unterbewusstsein.',
+    description: 'Echtes Selbstvertrauen ist nicht laut. Es ist eine unerschütterliche Ruhe in dir selbst. Verankere den Glauben an deine Fähigkeiten tief in deinem Unterbewusstsein.',
     focusTag: 'Innere Stärke & Gelassenheit'
   },
   {
@@ -131,8 +131,8 @@ export default function HypnosisLanding() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen – Flow der Stille"
-        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen – 100% werbe- & abofrei."
+        title="Sanfte Selbsthypnose für Schlaf & Selbstvertrauen | Flow der Stille"
+        description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen: 100 % werbe- und abofrei."
       />
 
       <audio
@@ -175,7 +175,7 @@ export default function HypnosisLanding() {
           </h1>
 
           <p className="text-sm sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-            Erlebe die heilsame Wirkung tiefer Trance-Entspannung. Kein Kontrollverlust, keine Show – sondern ein sicherer Raum, in dem dein Geist alte Muster ablegen darf.
+            Erlebe die heilsame Wirkung tiefer Trance-Entspannung. Kein Kontrollverlust und keine Show, sondern ein sicherer Raum, in dem dein Geist alte Muster loslassen darf.
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
@@ -326,7 +326,7 @@ export default function HypnosisLanding() {
                 Biologisch messbare Ruhe
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Deine Gehirnwellen wechseln vom hektischen Beta- in den entspannten Alpha- und Theta-Zustand. Herzschlag und Atmung harmonisieren sich nachweislich.
+                Deine Gehirnwellen wechseln vom aktiven Beta- in den entspannten Alpha- und Theta-Zustand. Herzschlag und Atmung harmonisieren sich nachweislich.
               </p>
             </div>
 
@@ -338,7 +338,7 @@ export default function HypnosisLanding() {
                 Direkter Zugang zur Ursache
               </h3>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Während der analytische Verstand ruht, nimmt das Unterbewusstsein positive Suggestionen widerstandsfrei auf – für nachhaltige innere Veränderung.
+                Während der analytische Verstand ruht, nimmt das Unterbewusstsein positive Suggestionen widerstandsfrei auf. So entsteht Raum für nachhaltige innere Veränderung.
               </p>
             </div>
           </div>
@@ -543,7 +543,7 @@ export default function HypnosisLanding() {
             {
               id: 5,
               q: 'Warum wird vor den Sessions ein Haftungsausschluss benötigt?',
-              a: 'Selbsthypnose und Mentaltraining berühren sensible Themen der mentalen Gesundheit. In Deutschland gibt es hierfür aus gutem Grund strenge Gesetze: Sie sollen Verbraucher vor Heilversprechen schützen und klarstellen, dass es sich um Entspannung und Selbsterfahrung handelt – nicht um eine Psychotherapie oder ärztliche Heilbehandlung. Der Haftungsausschluss sichert dich und uns rechtlich ab, damit du unsere geführten Sitzungen in voller Eigenverantwortung und Sicherheit genießen kannst.'
+              a: 'Selbsthypnose und Mentaltraining berühren sensible Themen der mentalen Gesundheit. In Deutschland gibt es hierfür aus gutem Grund strenge Gesetze: Sie sollen Verbraucher vor Heilversprechen schützen und klarstellen, dass es sich um Entspannung und Selbsterfahrung handelt, nicht um eine Psychotherapie oder ärztliche Heilbehandlung. Der Haftungsausschluss sichert dich und uns rechtlich ab, damit du unsere geführten Sitzungen in voller Eigenverantwortung und Sicherheit genießen kannst.'
             }
           ].map((item) => (
             <div

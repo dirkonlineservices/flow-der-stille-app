@@ -46,7 +46,7 @@ export default function PricingPackages() {
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-20 px-4 sm:px-6 max-w-6xl mx-auto space-y-12 sm:space-y-16 animate-fade-in">
       <SEO
-        title="Modelle & Einmalkauf – Flow der Stille | 100 % Transparent & Ohne Abo"
+        title="Modelle & Einmalkauf | Flow der Stille | 100 % Transparent & Ohne Abo"
         description="Finde deinen Ruhe-Weg: Vom freien Gast-Zugang über das kostenlose Hörer-Konto mit 2 Gratis-Sessions bis zum fairen Einmalkauf mit privatem Magic Link ab 1,99 €. Kein Abo."
         canonicalUrl="https://flow-der-stille.de/pakete"
         keywords="Flow der Stille Preise, Meditation ohne Abo, Selbsthypnose Einmalkauf, Hörbuch Magic Link, Kostenlose Meditation Schlaf, Entspannung ohne Abo"
@@ -114,7 +114,7 @@ export default function PricingPackages() {
                   Direkt reinhören
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1">
-                  Einfach Kopfhörer aufsetzen und sofort Entspannung spüren – ohne jede Verpflichtung.
+                  Einfach Kopfhörer aufsetzen und sofort Entspannung spüren, ganz ohne jede Verpflichtung.
                 </p>
               </div>
 
@@ -249,7 +249,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google, Meta (Facebook) oder E-Mail – garantiert 0&nbsp;€ und kein Abo</span>
+                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google, Meta (Facebook) oder E-Mail, garantiert 0&nbsp;€ und kein Abo</span>
                 </li>
               </ul>
             </div>
@@ -258,7 +258,7 @@ export default function PricingPackages() {
               {user ? (
                 <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 text-center text-xs font-bold flex items-center justify-center gap-2">
                   <UserCheck size={16} className="text-emerald-700 dark:text-emerald-400" />
-                  <span>Du bist eingeloggt – deine 2 Gratis-Sessions stehen bereit!</span>
+                  <span>Du bist eingeloggt. Deine 2 Gratis-Sessions stehen bereit!</span>
                 </div>
               ) : (
                 <Link
@@ -293,14 +293,14 @@ export default function PricingPackages() {
                   Einmalkauf mit Magic Link
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1">
-                  Volle Werke einzeln erwerben – als Gast oder mit Konto, ganz ohne Passwortzwang.
+                  Volle Werke einzeln erwerben: Als Gast oder mit Konto, ganz ohne Passwortzwang.
                 </p>
               </div>
 
               <div className="py-2.5 border-y border-[var(--border)]">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-2xl sm:text-3xl xl:text-4xl font-bold font-serif text-stone-900 dark:text-stone-100 tracking-tight whitespace-nowrap">
-                    1,99&nbsp;€&nbsp;–&nbsp;4,99&nbsp;€
+                    1,99&nbsp;€ bis 4,99&nbsp;€
                   </span>
                   <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
                 </div>
@@ -421,7 +421,7 @@ export default function PricingPackages() {
                   <td className="p-4 sm:p-5 font-bold text-stone-900 dark:text-stone-100 whitespace-nowrap">Kosten &amp; Gebühren</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-800 dark:text-emerald-300 whitespace-nowrap">0 € dauerhaft</td>
                   <td className="p-4 sm:p-5 text-center font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/5 whitespace-nowrap">0 € (Kein Abo)</td>
-                  <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300 whitespace-nowrap">Einmalig 1,99 € – 4,99 €</td>
+                  <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300 whitespace-nowrap">Einmalig 1,99&nbsp;€ bis 4,99&nbsp;€</td>
                 </tr>
                 <tr>
                   <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Kapitel 1 &amp; Schnupper-Übungen</td>
@@ -613,7 +613,7 @@ export default function PricingPackages() {
           Von Herzen für deinen inneren Frieden
         </h3>
         <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 max-w-xl mx-auto leading-relaxed">
-          Jacqueline, Lisa und Dirk haben Flow der Stille geschaffen, um Menschen in anspruchsvollen Lebensphasen echten Halt zu geben – fair, nahbar und ehrlich.
+          Jacqueline, Lisa und Dirk haben Flow der Stille geschaffen, um Menschen in anspruchsvollen Lebensphasen echten Halt zu geben. Fair, nahbar und ehrlich.
         </p>
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           <Link

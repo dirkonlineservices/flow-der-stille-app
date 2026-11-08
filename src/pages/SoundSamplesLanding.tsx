@@ -203,7 +203,7 @@ const ALL_SAMPLES: SampleCardData[] = [
   },
   {
     id: 'mensch_sein',
-    title: 'Mut zum Echtsein – Was steckt hinter einem echten Menschen',
+    title: 'Mut zum Echtsein | Was steckt hinter einem echten Menschen',
     category: 'hoerbuch',
     categoryLabel: 'Ganzheitliches Hörbuch',
     badge: 'Authentizität & Werte',
@@ -336,7 +336,7 @@ export default function SoundSamplesLanding() {
     },
     {
       q: "Warum muss ich mich für die kostenlose Vollversion kurz registrieren?",
-      a: "Bei mentalen Entspannungsübungen und Selbsthypnosen gelten in Deutschland und der EU strenge Vorgaben zum Verbraucher- und Gesundheitsschutz. Durch eine kostenlose, unverbindliche Registrierung können wir rechtssicher nachweisen, dass du den Haftungsausschluss zur Kenntnis genommen hast. Deine Daten werden nicht verkauft oder zu Werbezwecken missbraucht – es dient rein der rechtlichen Absicherung."
+      a: "Bei mentalen Entspannungsübungen und Selbsthypnosen gelten in Deutschland und der EU strenge Vorgaben zum Verbraucher- und Gesundheitsschutz. Durch eine kostenlose, unverbindliche Registrierung können wir rechtssicher nachweisen, dass du den Haftungsausschluss zur Kenntnis genommen hast. Deine Daten werden nicht verkauft oder zu Werbezwecken missbraucht. Es dient rein der rechtlichen Absicherung."
     },
     {
       q: "Gibt es bei Flow der Stille ein verstecktes Abonnement?",
@@ -385,7 +385,7 @@ export default function SoundSamplesLanding() {
 
           <p className="text-sm sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
             Möchtest du vorab wissen, wie sich unsere Meditationen, Selbsthypnosen und Hörbücher anfühlen? 
-            Höre hier völlig unverbindlich in jede Session rein – 100% werbefrei, ohne Abo und sofort im Browser.
+            Höre hier völlig unverbindlich in jede Session rein: 100 % werbefrei, ohne Abo und sofort im Browser.
           </p>
 
           {/* Schnelle Vorteilsleiste */}

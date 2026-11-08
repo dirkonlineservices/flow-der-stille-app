@@ -29,7 +29,7 @@ const STATIONS: MeditationStation[] = [
     number: 'Auftakt • Meditation 1',
     date: '21. Dezember',
     month: 'Wintersonnenwende (Julzeit)',
-    title: 'Die Wintersonnenwende – Das Julfeuer & Yggdrasils Wurzeln',
+    title: 'Die Wintersonnenwende | Das Julfeuer & Yggdrasils Wurzeln',
     focus: 'Die dunkelste Nacht ehren, das innere Licht entzünden und sich an den Wurzeln des Weltenbaums erden.',
     animal: 'Der weise Uhu (Blick in die Dunkelheit)',
     herb: 'Fichtenharz & Wacholderspitzen',
@@ -39,7 +39,7 @@ const STATIONS: MeditationStation[] = [
     number: '1. Rauhnacht • Meditation 2',
     date: '24./25. Dezember',
     month: 'Januar (Das Fundament)',
-    title: 'Basis & Urvertrauen – Die Wurzeln des neuen Jahres',
+    title: 'Basis & Urvertrauen | Die Wurzeln des neuen Jahres',
     focus: 'Erdung, Verankerung im Körper, Loslassen von Existenzängsten und Festigung des inneren Fundaments.',
     animal: 'Die Schneeeule (Klarheit & Schutz)',
     herb: 'Fichtenharz & Kiefernnadeln',
@@ -49,7 +49,7 @@ const STATIONS: MeditationStation[] = [
     number: '2. Rauhnacht • Meditation 3',
     date: '25./26. Dezember',
     month: 'Februar (Die innere Stimme)',
-    title: 'Stille & Höheres Selbst – Der Flügelschlag der Intuition',
+    title: 'Stille & Höheres Selbst | Der Flügelschlag der Intuition',
     focus: 'Verbindung mit der eigenen inneren Weisheit, Lauschen in die Stille jenseits des Verstandeslärms.',
     animal: 'Der stolze Hirsch (Führung & Würde)',
     herb: 'Wacholderholz & Salbeiblätter',
@@ -59,7 +59,7 @@ const STATIONS: MeditationStation[] = [
     number: '3. Rauhnacht • Meditation 4',
     date: '26./27. Dezember',
     month: 'März (Die Herzöffnung)',
-    title: 'Herzöffnung & Mitgefühl – Die Quelle der Liebe',
+    title: 'Herzöffnung & Mitgefühl | Die Quelle der Liebe',
     focus: 'Alte Kränkungen und Groll sanft erlösen, Selbstliebe und weiche Hingabe ans Leben stärken.',
     animal: 'Der weiße Schwan (Reinheit & Vergebung)',
     herb: 'Wilde Rose, Beifuß & Lavendel',
@@ -69,7 +69,7 @@ const STATIONS: MeditationStation[] = [
     number: '4. Rauhnacht • Meditation 5',
     date: '27./28. Dezember',
     month: 'April (Die Transformation)',
-    title: 'Auflösung des Alten – Das alchemistische Julfeuer',
+    title: 'Auflösung des Alten | Das alchemistische Julfeuer',
     focus: 'Radikales Entrümpeln mentaler und emotionaler Lasten, Wandlung von Begrenzungen in Lebenskraft.',
     animal: 'Die Schlange (Häutung & Regeneration)',
     herb: 'Weißer Salbei & Weihrauch',
@@ -79,7 +79,7 @@ const STATIONS: MeditationStation[] = [
     number: '5. Rauhnacht • Meditation 6',
     date: '28./29. Dezember',
     month: 'Mai (Gemeinschaft & Freundschaft)',
-    title: 'Herzensbande & Treue – Der Kreis der Gefährten',
+    title: 'Herzensbande & Treue | Der Kreis der Gefährten',
     focus: 'Echtes Miteinander, heilsame Beziehungen und die Verbundenheit mit Seelenverwandten stärken.',
     animal: 'Der treue Wolf (Loyalität & Rudelkraft)',
     herb: 'Lindenblüten & Quendel (Wilder Thymian)',
@@ -89,7 +89,7 @@ const STATIONS: MeditationStation[] = [
     number: '6. Rauhnacht • Meditation 7',
     date: '29./30. Dezember',
     month: 'Juni (Ahnenkraft & Bereinigung)',
-    title: 'Der Segen der Ahnen – Die Kraft der Generationen',
+    title: 'Der Segen der Ahnen | Die Kraft der Generationen',
     focus: 'Dank an die Vorfahren, Erlösung vererbter Bürden und Empfang des uralten Familiensegens.',
     animal: 'Der Höhlenbär (Urmut & Erdverbundenheit)',
     herb: 'Myrrhe, Engelwurz & Wacholder',
@@ -99,7 +99,7 @@ const STATIONS: MeditationStation[] = [
     number: '7. Rauhnacht • Meditation 8',
     date: '30./31. Dezember',
     month: 'Juli (Gefühlsreichtum & Lebensfreude)',
-    title: 'Auf der Brücke Bifröst – Das Farbenspiel der Gefühle',
+    title: 'Auf der Brücke Bifröst | Das Farbenspiel der Gefühle',
     focus: 'Freude, Schöpferkraft, Leichtigkeit und die Versöhnung aller inneren Gemütszustände.',
     animal: 'Der goldene Hahn Gullinkambi (Erwachen)',
     herb: 'Johanniskraut & Ringelblume',
@@ -109,7 +109,7 @@ const STATIONS: MeditationStation[] = [
     number: '8. Rauhnacht • Meditation 9',
     date: '31. Dez. / 01. Jan.',
     month: 'August (Urkraft & Neubeginn)',
-    title: 'Thors Hammer – Entschlusskraft & Manifestation',
+    title: 'Thors Hammer | Entschlusskraft & Manifestation',
     focus: 'Die Schwellennacht zum neuen bürgerlichen Jahr. Willenskraft bündeln, klare Grenzen setzen.',
     animal: 'Der gehörnte Bock Tanngrisnir (Ausdauer)',
     herb: 'Meisterwurz & Alantwurzel',
@@ -119,7 +119,7 @@ const STATIONS: MeditationStation[] = [
     number: '9. Rauhnacht • Meditation 10',
     date: '01./02. Januar',
     month: 'September (Zukunft & Schicksalsfäden)',
-    title: 'Skulds Runen – Das Weben der Zukunft',
+    title: 'Skulds Runen | Das Weben der Zukunft',
     focus: 'Blick auf das Schicksal, Erkennen göttlicher Synchronizitäten und bewusste Lebensgestaltung.',
     animal: 'Der Himmelsfalke Vedrfölnir (Weitblick)',
     herb: 'Eichenmistel & Beifußspitzen',
@@ -129,7 +129,7 @@ const STATIONS: MeditationStation[] = [
     number: '10. Rauhnacht • Meditation 11',
     date: '02./03. Januar',
     month: 'Oktober (Geistige Klarheit)',
-    title: 'Odins Speer des Fokus – Konzentration & Weisheit',
+    title: 'Odins Speer des Fokus | Konzentration & Weisheit',
     focus: 'Überwindung von Zerstreuung und Zweifel, scharfe Ausrichtung auf deine wahren Lebensziele.',
     animal: 'Die Raben Hugin (Gedanke) & Munin (Erinnerung)',
     herb: 'Kiefernharz & Rosmarin',
@@ -139,7 +139,7 @@ const STATIONS: MeditationStation[] = [
     number: '11. Rauhnacht • Meditation 12',
     date: '03./04. Januar',
     month: 'November (Loslassen & Wandlung)',
-    title: 'Das Ahnengedenken – Friede mit dem Werden & Vergehen',
+    title: 'Das Ahnengedenken | Friede mit dem Werden & Vergehen',
     focus: 'Tiefer Seelenfrieden mit Vergänglichkeit, Versöhnung mit Verlusten und Vertrauen in den ewigen Kreislauf.',
     animal: 'Die Wölfe Geri & Freki (Unbeirrbarkeit)',
     herb: 'Holunderholz & Weihrauch',
@@ -149,11 +149,11 @@ const STATIONS: MeditationStation[] = [
     number: '12. Rauhnacht • Meditation 13',
     date: '04./05. Januar',
     month: 'Dezember (Vollendung & Segen)',
-    title: 'Frau Holle schüttelt das Tor – Der ewige Segen',
+    title: 'Frau Holle schüttelt das Tor | Der ewige Segen',
     focus: 'Integration aller 12 Nächte, Vollendung des Reifeprozesses und Empfang des Segens für das ganze Jahr.',
     animal: 'Der weiße Hirsch von Yggdrasil (Reines Licht)',
     herb: 'Styrax, Weihrauch & Fichtenharz',
-    description: 'Die krönende 12. Rauhnacht schließt den magischen Kreis. Frau Holle schüttelt ihr Segensbett und lässt weiße Kristalle des Friedens über dein Leben rieseln.'
+    description: 'Die krönende 12. Rauhnacht vollendet den Kreis. Frau Holle schüttelt ihr Segensbett und lässt weiße Kristalle des Friedens über dein Leben rieseln.'
   }
 ];
 
@@ -320,7 +320,7 @@ export default function RauhnaechtePreviewPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-200 pb-20">
       <SEO 
-        title="Yggdrasils Atem – 12 Rauhnächte auf der Schwelle | Flow der Stille"
+        title="Yggdrasils Atem | 12 Rauhnächte auf der Schwelle | Flow der Stille"
         description="13 geführte schamanische Meditationen & Seelenreisen zur Wintersonnenwende und den 12 heiligen Rauhnächten. Jetzt vorab sichern und anhören, wann immer es für dich stimmig ist."
       />
 
@@ -460,7 +460,7 @@ export default function RauhnaechtePreviewPage() {
               <div className="relative w-64 sm:w-80 aspect-square rounded-3xl overflow-hidden shadow-2xl border border-[var(--border)] group">
                 <img
                   src="/images/products/cover_rauhnaechte.jpg"
-                  alt="Yggdrasils Atem – 12 Rauhnächte auf der Schwelle"
+                  alt="Yggdrasils Atem | 12 Rauhnächte auf der Schwelle"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   onError={(e: any) => {
                     e.target.src = '/images/products/cover_mensch_sein.jpg';
@@ -727,7 +727,7 @@ export default function RauhnaechtePreviewPage() {
           </div>
 
           <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-            Die Rauhnächte sind die heiligen zwölf Nächte zwischen Heiligabend und dem Dreikönigstag (Epiphanias). Nach altem nordischem und keltischem Brauchtum stehen in dieser Zeit die Tore zur geistigen Welt weit offen – die Gesetze von Zeit und Raum verflüssigen sich.
+            Die Rauhnächte sind die heiligen zwölf Nächte zwischen Heiligabend und dem Dreikönigstag (Epiphanias). Nach altem nordischem und keltischem Brauchtum stehen in dieser Zeit die Tore zur geistigen Welt weit offen. Die Gesetze von Zeit und Raum verflüssigen sich.
           </p>
 
           <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">

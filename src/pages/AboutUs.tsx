@@ -12,7 +12,7 @@ export default function AboutUs() {
   const aboutSchema = {
     "@context": "https://schema.org",
     "@type": "AboutPage",
-    "name": "Über uns & unsere Vision – Flow der Stille",
+    "name": "Über uns & unsere Vision | Flow der Stille",
     "description": "Lerne die Menschen hinter Flow der Stille kennen: Jacqueline (Texte), Lisa (Stimme) und Dirk (Technik & Klangwelten). Echte Entspannung ohne Abo-Zwang.",
     "url": "https://flow-der-stille.de/ueber-uns"
   };
@@ -20,7 +20,7 @@ export default function AboutUs() {
   return (
     <>
       <SEO 
-        title="Über uns & unsere Vision – Die Menschen hinter Flow der Stille"
+        title="Über uns & unsere Vision | Die Menschen hinter Flow der Stille"
         description="Wer steht hinter Flow der Stille? Lerne Jacqueline (Texte), Lisa (Stimme) und Dirk (Technik) kennen. Unsere Vision für ehrliche, heilsame Selbsthypnosen und Meditationen ohne Abo."
         schemaJson={aboutSchema}
       />
@@ -55,7 +55,7 @@ export default function AboutUs() {
           </h1>
 
           <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed">
-            Flow der Stille ist aus dem tiefen Wunsch entstanden, Menschen in fordernden Lebensphasen einen geschützten, ehrlichen Raum für innere Ruhe zu schenken – ganz ohne Abo-Druck, ohne Werbeunterbrechungen und mit höchstem Qualitätsanspruch.
+            Flow der Stille ist aus dem tiefen Wunsch entstanden, Menschen in fordernden Lebensphasen einen geschützten, ehrlichen Raum für innere Ruhe zu schenken. Ganz ohne Abo-Druck, ohne Werbeunterbrechungen und mit hohem Qualitätsanspruch.
           </p>
         </section>
 
@@ -136,7 +136,7 @@ export default function AboutUs() {
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
-                  Dirk kümmert sich um die technische Entwicklung der Web-Plattform und der Android App, die harmonische klangliche Untermalung sowie die barrierefreie Nutzung – damit du auch im Flugmodus und bei ausgeschaltetem Bildschirm ungestört zur Ruhe kommst.
+                  Dirk kümmert sich um die technische Entwicklung der Web-Plattform und der Android App, die harmonische klangliche Untermalung sowie die barrierefreie Nutzung, damit du auch im Flugmodus und bei ausgeschaltetem Bildschirm ungestört zur Ruhe kommst.
                 </p>
               </div>
               <div className="pt-2 border-t border-[var(--border)] text-[11px] text-stone-600 dark:text-stone-400 italic">
@@ -166,7 +166,7 @@ export default function AboutUs() {
                 <span>1. Kein Abo-Zwang &amp; kein Druck</span>
               </div>
               <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
-                Monatliche Abos erzeugen unterschwelligen Zwang („Ich bezahle, also muss ich die App nutzen“). Bei uns sind die Grundlagen dauerhaft 100 % kostenfrei. Erweiterte Werke kaufst du einmalig ab 1,99 € – sie gehören dir dauerhaft ohne Folgekosten.
+                Monatliche Abos erzeugen unterschwelligen Zwang („Ich bezahle, also muss ich die App nutzen“). Bei uns sind die Grundlagen dauerhaft 100 % kostenfrei. Erweiterte Werke kaufst du einmalig ab 1,99&nbsp;€. Sie gehören dir dauerhaft ohne Folgekosten.
               </p>
             </div>
 

@@ -32,7 +32,7 @@ export default function Community() {
   const communitySchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Geschützte Hörer-Community & Social Media – Flow der Stille",
+    "name": "Geschützte Hörer-Community & Social Media | Flow der Stille",
     "description": "Die geschützte Community von Flow der Stille für registrierte Hörer. Folge uns auf Facebook und Instagram für tägliche Achtsamkeits-Impulse.",
     "url": "https://flow-der-stille.de/community"
   };
@@ -40,7 +40,7 @@ export default function Community() {
   return (
     <>
       <SEO 
-        title="Geschützte Community & Social Media – Flow der Stille"
+        title="Geschützte Community & Social Media | Flow der Stille"
         description="Die geschützte Ruhe-Community für registrierte Hörerinnen und Hörer. Folge uns außerdem auf unserer offiziellen Facebook-Seite und auf Instagram."
         schemaJson={communitySchema}
       />
@@ -134,7 +134,7 @@ export default function Community() {
               </Link>
 
               <p className="text-xs text-stone-600 dark:text-stone-400">
-                Über Google, Meta (Facebook) oder E-Mail – garantiert 0&nbsp;€ und kein Abo
+                Über Google, Meta (Facebook) oder E-Mail, garantiert 0&nbsp;€ und kein Abo
               </p>
 
               <div className="pt-2">

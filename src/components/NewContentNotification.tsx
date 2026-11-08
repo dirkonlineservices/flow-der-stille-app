@@ -126,7 +126,7 @@ export function NewContentNotification() {
           </h4>
           <p className="text-xs text-[var(--color-text-muted)] leading-relaxed font-medium">
             <span className="text-[var(--color-text-main)] font-semibold">„{latestProduct.titel}“</span> ist jetzt im Ruhe-Shop verfügbar
-            {parseFloat(latestProduct.preis) > 0 ? ` (${latestProduct.preis} €)` : ' (Kostenfrei)'}.
+            {parseFloat(latestProduct.preis) > 0 ? ` (${latestProduct.preis}&nbsp;€)` : ' (Kostenfrei)'}.
           </p>
         </div>
 

@@ -131,7 +131,7 @@ export default function MeditationLanding() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title="Geführte Meditationen für innere Ruhe & Nervensystem – Flow der Stille"
+        title="Geführte Meditationen für innere Ruhe & Nervensystem | Flow der Stille"
         description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Jetzt kostenlos reinhören ohne Abo."
       />
 
@@ -513,7 +513,7 @@ export default function MeditationLanding() {
           {[
             {
               id: 1,
-              q: 'Ich kann meine Gedanken nicht abschalten – ist Meditation trotzdem etwas für mich?',
+              q: 'Ich kann meine Gedanken nicht abschalten: Ist Meditation trotzdem etwas für mich?',
               a: 'Absolut! Das Ziel ist nicht, "nichts zu denken", sondern die Gedanken sanft wie Wolken vorbeiziehen zu lassen. Lisas beruhigende Stimme leitet dich behutsam an, sodass dein Körper ganz von selbst in die Entspannung findet.'
             },
             {

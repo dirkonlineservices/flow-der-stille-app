@@ -185,7 +185,7 @@ export default function AudioSessionPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] pt-24 pb-20 px-4 sm:px-6">
       <SEO
-        title={`${title} – Kostenlos anhören & freischalten`}
+        title={`${title} | Kostenlos anhören & freischalten`}
         description={`${description} Gesprochen von Lisa. Jetzt bei Flow der Stille anhören.`}
         canonicalUrl={`https://flow-der-stille.de/audio/${canonicalSlug}`}
         keywords={`${title}, ${category}, kostenlose Selbsthypnose, kostenlose Meditation, geführte Meditation, tiefer Schlaf, Einschlafhilfe, Entspannung, Lisa, Jacqueline, Flow der Stille`}
@@ -456,7 +456,7 @@ export default function AudioSessionPage() {
                 <span>3. Augen sanft schließen &amp; Loslassen</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Sobald die Augen geschlossen sind, reduziert das Gehirn Reize um über 80 %. Folge einfach der Stimme. Es gibt nichts richtig oder falsch zu machen – dein Unterbewusstsein nimmt genau das auf, was du jetzt brauchst.
+                Sobald die Augen geschlossen sind, reduziert das Gehirn Reize um über 80 %. Folge einfach der Stimme. Es gibt nichts richtig oder falsch zu machen. Dein Unterbewusstsein nimmt genau das auf, was du jetzt brauchst.
               </p>
             </div>
 
@@ -467,7 +467,7 @@ export default function AudioSessionPage() {
                 <span>4. Flugmodus &amp; Dunkles Display</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Schalte dein Smartphone vor dem Einschlafen in den Flugmodus. In unserer Android-App kannst du das Audio vorab offline speichern und bei gesperrtem, dunklem Display anhören – ganz ohne Strahlung.
+                Schalte dein Smartphone vor dem Einschlafen in den Flugmodus. In unserer Android-App kannst du das Audio vorab offline speichern und bei gesperrtem, dunklem Display anhören, ganz ohne Strahlung.
               </p>
             </div>
           </div>

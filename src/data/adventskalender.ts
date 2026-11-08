@@ -74,7 +74,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Die Weisheit der Wurzeln',
     coreImpulse: 'Wie Bäume im Frost Kraft bündeln; Rückzug ehren.',
     deepText:
-      'Im Winter wirken die Laubbäume kahl und leblos – doch der Schein trügt. In Wahrheit haben sie ihre Säfte und ihre gesamte Lebenskraft tief in das Wurzelwerk unter der frostigen Erde zurückgezogen. Die Natur lehrt uns: Niemand kann das ganze Jahr über blühen und Früchte tragen. Rückzug ist kein Stillstand, sondern tiefe Regeneration.',
+      'Im Winter wirken die Laubbäume kahl und leblos, doch der Schein trügt. In Wahrheit haben sie ihre Säfte und ihre gesamte Lebenskraft tief in das Wurzelwerk unter der frostigen Erde zurückgezogen. Die Natur lehrt uns: Niemand kann das ganze Jahr über blühen und Früchte tragen. Rückzug ist kein Stillstand, sondern tiefe Regeneration.',
     practiceTitle: 'Reflexion aus dem alten Naturwissen',
     practiceOrQuestion:
       'Wo im Alltag versuchst du gerade noch „grüne Blätter“ aufrechtzuerhalten, obwohl deine Energie sich eigentlich nach Rückzug sehnt? Erlaube dir heute bewusst, einen Termin oder Anspruch innerlich abzusenken.',
@@ -93,7 +93,7 @@ export const ADVENT_DAYS: AdventDay[] = [
       'Die klare Winterluft ist ein wunderbarer Anker für das vegetative Nervensystem. Der Kontrast zwischen der kühlen Luft beim Einatmen und der körperwarmen Luft beim Ausatmen holt deinen Geist augenblicklich aus dem Gedankenkarussell zurück in den Körper.',
     practiceTitle: 'Somatisches Mini-Ritual (2 Minuten)',
     practiceOrQuestion:
-      'Öffne ein Fenster oder tritt kurz ins Freie. Nimm fünf tiefe Atemzüge. Spüre beim Einatmen ganz präzise das kühle Prickeln an den Nasenflügeln – und verfolge beim Ausatmen, wie sich wohlige Wärme in deinem Brustkorb ausbreitet.',
+      'Öffne ein Fenster oder tritt kurz ins Freie. Nimm fünf tiefe Atemzüge. Spüre beim Einatmen ganz präzise das kühle Prickeln an den Nasenflügeln und verfolge beim Ausatmen, wie sich wohlige Wärme in deinem Brustkorb ausbreitet.',
     durationOrInfo: '2 Min. • Atemimpuls & Vagusnerv-Regulation'
   },
   {
@@ -138,7 +138,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Nikolaus-Gabe: Hörbuch-Verlosung',
     coreImpulse: 'Community-Frage: Welche Qualität wünschst du dir?',
     deepText:
-      'Zum Nikolaustag öffnen wir die erste große Verlosung unseres Adventskalenders! Wir verlosen das ganzheitliche Hörbuch & den Meditationszyklus „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (13 geführte schamanische Seelenreisen, gesprochen von Lisa Ragusa), damit du es rechtzeitig vor dem 21./24. Dezember in deiner Mediathek genießen kannst. Die Auslosung findet am Tag danach (07. Dezember) statt – jede(r) bis dahin Angemeldete nimmt teil!',
+      'Zum Nikolaustag öffnen wir die erste große Verlosung unseres Adventskalenders! Wir verlosen das ganzheitliche Hörbuch und den Meditationszyklus „Yggdrasils Atem | 12 Rauhnächte auf der Schwelle“ (13 geführte schamanische Seelenreisen, gesprochen von Lisa Ragusa), damit du es rechtzeitig vor dem 21./24. Dezember in deiner Mediathek genießen kannst. Die Auslosung findet am Tag danach (07. Dezember) statt. Jede(r) bis dahin Angemeldete nimmt teil!',
     practiceTitle: 'Deine Gewinnspiel-Frage zum 06. Dezember',
     practiceOrQuestion:
       'Welche innere Qualität (z. B. Urvertrauen, Sanftmut, Klarheit, Mut oder Stille) wünschst du dir für die kommenden Wochen am allermeisten?',
@@ -186,7 +186,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Sinnesreise: Ein Tee in Stille',
     coreImpulse: 'Wärme, Duft und drei achtsame Schlucke ohne Ablenkung.',
     deepText:
-      'Wie oft trinken wir unseren Tee oder Kaffee nebenbei vor dem Bildschirm oder mit dem Smartphone in der Hand? Wenn wir unsere Sinne – Tastsinn, Geruchssinn und Geschmack – für nur drei Minuten vollständig bündeln, schaltet das Gehirn vom Alarm- in den Gegenwartsmodus.',
+      'Wie oft trinken wir unseren Tee oder Kaffee nebenbei vor dem Bildschirm oder mit dem Smartphone in der Hand? Wenn wir unsere Sinne (Tastsinn, Geruchssinn und Geschmack) für nur drei Minuten vollständig bündeln, schaltet das Gehirn vom Alarm- in den Gegenwartsmodus.',
     practiceTitle: 'Das 3-Schlucke-Ritual',
     practiceOrQuestion:
       'Bereite dir heute eine Tasse warmen Kräutertee zu. Lege das Smartphone in ein anderes Zimmer. Umschließe die warme Tasse mit beiden Händen, nimm den aufsteigenden Duft tief wahr und trinke die ersten drei Schlucke in vollkommener Stille.',
@@ -205,7 +205,7 @@ export const ADVENT_DAYS: AdventDay[] = [
       'In der Naturphilosophie des Nordens gilt die Kälte nicht als Feind, sondern als weise Lehrmeisterin. Kälte formt aus formlosem Wasser kunstvolle, symmetrische Eiskristalle. Sie klärt die Luft, lässt den Nebel sinken und legt die klare Struktur der Landschaft frei.',
     practiceTitle: 'Kristallklare Ausrichtung',
     practiceOrQuestion:
-      'Wenn du heute auf dein Jahr zurückblickst: Was ist wirklich wesentlich für dein Herz – und was war nur schmückendes Beiwerk, das im klaren Winterlicht verblasst?',
+      'Wenn du heute auf dein Jahr zurückblickst: Was ist wirklich wesentlich für dein Herz und was war nur schmückendes Beiwerk, das im klaren Winterlicht verblasst?',
     durationOrInfo: 'Naturphilosophie & geistige Klarheit'
   },
   {
@@ -221,7 +221,7 @@ export const ADVENT_DAYS: AdventDay[] = [
       'Wenn wir viel grübeln, staut sich unsere Aufmerksamkeit im Kopf. Unsere Füße berühren zwar den Boden, doch wir spüren ihn kaum. Eine kurze Gehmeditation leitet überschüssige mentale Spannung direkt über die Fußsohlen nach unten ab.',
     practiceTitle: 'Somatische 50-Schritte-Übung',
     practiceOrQuestion:
-      'Gehe heute – drinnen auf Socken oder draußen beim Spaziergang – genau 50 Schritte in halber Geschwindigkeit. Spüre jedes Abrollen von der Ferse bis zu den Zehenspitzen und nimm wahr, wie verlässlich dich die Erde bei jedem Schritt trägt.',
+      'Gehe heute, drinnen auf Socken oder draußen beim Spaziergang, genau 50 Schritte in halber Geschwindigkeit. Spüre jedes Abrollen von der Ferse bis zu den Zehenspitzen und nimm wahr, wie verlässlich dich die Erde bei jedem Schritt trägt.',
     durationOrInfo: '3 Min. • Somatische Erdung & Körpergefühl'
   },
   {
@@ -234,7 +234,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Luzia: Licht in dunkelster Nacht',
     coreImpulse: 'Das Entzünden einer Kerze, wo Schatten am längsten sind.',
     deepText:
-      'Vor der gregorianischen Kalenderreform fiel die Wintersonnenwende auf den 13. Dezember – das Fest der Lichtträgerin Luzia (von lat. „lux“ = Licht). Zum Abschluss der ersten zwölf Dezembertage erinnert uns dieser Brauch daran, dass das erste kleine Licht immer genau dort geboren wird, wo die Schatten am längsten scheinen.',
+      'Vor der gregorianischen Kalenderreform fiel die Wintersonnenwende auf den 13. Dezember, das Fest der Lichtträgerin Luzia (von lat. „lux“ = Licht). Zum Abschluss der ersten zwölf Dezembertage erinnert uns dieser Brauch daran, dass das erste kleine Licht immer genau dort geboren wird, wo die Schatten am längsten scheinen.',
     practiceTitle: 'Abschluss von Teil 1 des Adventskalenders',
     practiceOrQuestion:
       'Entzünde heute Abend bewusst eine einzelne Kerze im abgedunkelten Raum. Betrachte für eine Minute ruhig die Flamme als Zeichen deiner eigenen inneren Zuversicht.',
@@ -252,7 +252,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Halbzeit: 2. Hörbuch-Verlosung',
     coreImpulse: 'Austausch: Welcher Kraftort schenkt dir Zuflucht?',
     deepText:
-      'Zur Halbzeit auf dem Weg zu den heiligen Nächten öffnen wir unsere zweite Verlosung! Gewinne das große Rauhnacht-Hörbuch „Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“ (2 Std. 59 Min. Spielzeit) als treuen Begleiter für deine Schwellenzeit zwischen den Jahren. Die Auslosung findet am Folgetag (14. Dezember) statt – alle bis dahin Eingetragenen sind im Lostopf!',
+      'Zur Halbzeit auf dem Weg zu den heiligen Nächten öffnen wir unsere zweite Verlosung! Gewinne das große Rauhnacht-Hörbuch „Yggdrasils Atem | 12 Rauhnächte auf der Schwelle“ (2 Std. 59 Min. Spielzeit) als treuen Begleiter für deine Schwellenzeit zwischen den Jahren. Die Auslosung findet am Folgetag (14. Dezember) statt. Alle bis dahin Eingetragenen sind im Lostopf!',
     practiceTitle: 'Deine Gewinnspiel-Frage zum 13. Dezember',
     practiceOrQuestion:
       'Welcher Ort in der Natur (z. B. ein alter Wald, das Meer, ein Bergsee oder eine stille Lichtung) schenkt deiner Seele am schnellsten Zuflucht und tiefen Frieden?',
@@ -268,7 +268,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: '3. Advent: Frieden mit dem Gewordenen',
     coreImpulse: 'Alte Schwere in den Schnee ablegen; Selbstresilienz ehren.',
     deepText:
-      'Am dritten Advent blicken wir mit mildem Herzen auf das zu Ende gehende Jahr. Nicht alles ist so verlaufen, wie wir es geplant hatten – und doch hast du jede Herausforderung bis heute gemeistert. Frieden entsteht, wenn wir aufhören, gegen das Vergangene zu kämpfen.',
+      'Am dritten Advent blicken wir mit mildem Herzen auf das zu Ende gehende Jahr. Nicht alles ist so verlaufen, wie wir es geplant hatten, und doch hast du jede Herausforderung bis heute gemeistert. Frieden entsteht, wenn wir aufhören, gegen das Vergangene zu kämpfen.',
     practiceTitle: 'Geführte Meditation zur Versöhnung (ca. 10 Min.)',
     practiceOrQuestion:
       'Stelle dir vor, du legst einen schweren Rucksack sanft in den weichen, unberührten Neuschnee. Verneige dich innerlich vor deiner eigenen Kraft und Resilienz, die dich durch dieses Jahr getragen hat.',
@@ -300,7 +300,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Yggdrasil im Nebel',
     coreImpulse: 'Der Weltenbaum: Eigene Wirbelsäule als standfester Stamm.',
     deepText:
-      'In der nordischen Überlieferung bildet die immergrüne Weltenesche Yggdrasil die Achse des Kosmos: Ihre Wurzeln reichen tief in die Quellen der Urweisheit, während ihre Krone den Himmel trägt. Im menschlichen Körper entspricht dieser Weltenbaum unserer eigenen Wirbelsäule – aufrecht zwischen Erde und Himmel.',
+      'In der nordischen Überlieferung bildet die immergrüne Weltenesche Yggdrasil die Achse des Kosmos: Ihre Wurzeln reichen tief in die Quellen der Urweisheit, während ihre Krone den Himmel trägt. Im menschlichen Körper entspricht dieser Weltenbaum unserer eigenen Wirbelsäule, aufrecht zwischen Erde und Himmel.',
     practiceTitle: 'Verkörperung des Weltenbaums',
     practiceOrQuestion:
       'Richte dich im Sitzen oder Stehen einmal ganz bewusst Wirbel für Wirbel auf. Spüre dein Becken als starke Wurzel und deinen Scheitel als freie Baumkrone. Du bist der ruhige Stamm inmitten des Winternebels.',
@@ -319,7 +319,7 @@ export const ADVENT_DAYS: AdventDay[] = [
       'Unser Gehörsinn ist selbst im Schlaf ununterbrochen wach. Ständige Benachrichtigungen, Nachrichten und Hintergrundgeräusche halten das Nervensystem in subtiler Habachtstellung. Wahre Stille ist nicht die Abwesenheit von Geräuschen, sondern das Lauschen auf den weiten Raum dahinter.',
     practiceTitle: '10 Minuten Akustik-Fasten',
     practiceOrQuestion:
-      'Schalte heute für genau 10 Minuten alle Bildschirme, Musik und Benachrichtigungen aus. Setze dich ruhig hin und lausche ohne Bewertung auf die feinsten Geräusche im Raum – und auf die Stille zwischen ihnen.',
+      'Schalte heute für genau 10 Minuten alle Bildschirme, Musik und Benachrichtigungen aus. Setze dich ruhig hin und lausche ohne Bewertung auf die feinsten Geräusche im Raum, und auf die Stille zwischen ihnen.',
     durationOrInfo: '10 Min. • Digital-Detox & Tiefenlauschen'
   },
   {
@@ -332,7 +332,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Die Schwellenzeit (Tote Tage)',
     coreImpulse: 'Außerhalb der Zeit stehen; Mond- & Sonnenjahr-Ausgleich.',
     deepText:
-      'Ab dem 18. Dezember beginnt spürbar das Hinübergleiten in die Schwellenzeit. Das alte Mondjahr (354 Tage) und das Sonnenjahr (365 Tage) klaffen um genau elf bis zwölf Nächte auseinander. Unsere Vorfahren nannten diese Tage die Zeit „zwischen den Jahren“ – Tage außerhalb der linearen Uhrzeit, in denen die Schleier zur Intuition besonders durchlässig sind.',
+      'Ab dem 18. Dezember beginnt spürbar das Hinübergleiten in die Schwellenzeit. Das alte Mondjahr (354 Tage) und das Sonnenjahr (365 Tage) klaffen um genau elf bis zwölf Nächte auseinander. Unsere Vorfahren nannten diese Tage die Zeit „zwischen den Jahren“. Es sind Tage außerhalb der linearen Uhrzeit, in denen die Schleier zur Intuition besonders durchlässig sind.',
     practiceTitle: 'Ausstieg aus der linearen Eile',
     practiceOrQuestion:
       'Ab heute weicht der Druck der Uhrzeit. Frage dich heute nicht „Wie viel habe ich geschafft?“, sondern „Wie tief war ich mit mir selbst verbunden?“',
@@ -380,7 +380,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Sonnenwende: 3. Hörbuch-Verlosung',
     coreImpulse: 'Frage zur Julnacht: Welcher Same darf für dich keimen?',
     deepText:
-      'Heute ist der 21. Dezember – die heilige Wintersonnenwende (Julnacht) und zugleich der feierliche Auftakt unseres Hörbuchs „Yggdrasils Atem“! Zu diesem besonderen Wendepunkt verlosen wir zum dritten Mal das komplette Rauhnacht-Hörbuch. Achtung: Die Teilnahme für dieses Finale läuft direkt am 21. Dezember bis 18:00 Uhr! Jede(r), der sich bis 18:00 Uhr angemeldet hat, nimmt an der Ziehung teil.',
+      'Heute ist der 21. Dezember, die heilige Wintersonnenwende (Julnacht) und zugleich der feierliche Auftakt unseres Hörbuchs „Yggdrasils Atem | 12 Rauhnächte auf der Schwelle“! Zu diesem besonderen Wendepunkt verlosen wir zum dritten Mal das komplette Rauhnacht-Hörbuch. Achtung: Die Teilnahme für dieses Finale läuft direkt am 21. Dezember bis 18:00 Uhr! Jede(r), der sich bis 18:00 Uhr angemeldet hat, nimmt an der Ziehung teil.',
     practiceTitle: 'Deine Gewinnspiel-Frage zur Wintersonnenwende',
     practiceOrQuestion:
       'In der dunkelsten Nacht des Jahres wird das neue Licht geboren: Welcher Herzenswunsch oder „Same“ darf im kommenden Jahr sanft in deinem Leben keimen?',
@@ -396,10 +396,10 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Wiedergeburt des Lichts (Jul)',
     coreImpulse: 'Der Wendepunkt im Mutterschoß der dunkelsten Nacht.',
     deepText:
-      'Nach dem kosmischen Tiefpunkt der längsten Nacht kehrt das Sonnenlicht ab heute jeden Tag um ein winziges Stück zurück. Im alten Wissen galt diese Zeit als der ruhige Mutterschoß der Erde: Das neue Licht ist noch zart und schutzbedürftig wie ein Neugeborenes – es verlangt nach Sanftheit, Stille und Achtsamkeit.',
+      'Nach dem kosmischen Tiefpunkt der längsten Nacht kehrt das Sonnenlicht ab heute jeden Tag um ein winziges Stück zurück. Im alten Wissen galt diese Zeit als der ruhige Mutterschoß der Erde: Das neue Licht ist noch zart und schutzbedürftig wie ein Neugeborenes. Es verlangt nach Sanftheit, Stille und Achtsamkeit.',
     practiceTitle: 'Das zarte neue Licht hüten',
     practiceOrQuestion:
-      'Behandle dich und deine Vorsätze heute mit größter Behutsamkeit. Du musst noch nichts im Außen umsetzen – hüte den neuen Funken still in deinem Herzen.',
+      'Behandle dich und deine Vorsätze heute mit größter Behutsamkeit. Du musst noch nichts im Außen umsetzen. Hüte den neuen Funken still in deinem Herzen.',
     durationOrInfo: 'Mysterium der Julzeit & Lichtgeburt'
   },
   {
@@ -428,7 +428,7 @@ export const ADVENT_DAYS: AdventDay[] = [
     title: 'Heilige Nacht: Das Geschenk des Seins',
     coreImpulse: 'Verbundenheit mit allem Leben; Segnung der Rauhnächte.',
     deepText:
-      'Am 24. Dezember schließt sich der Kreis unseres Adventskalenders – und gleichzeitig öffnet sich heute Nacht das Tor zur 1. Rauhnacht (24./25. Dezember). Das größte Geschenk dieser Nacht liegt in der tiefen Erkenntnis deiner Verbundenheit mit dir selbst, deinen Liebsten und dem großen Kreislauf des Lebens.',
+      'Am 24. Dezember schließt sich der Kreis unseres Adventskalenders, und gleichzeitig öffnet sich heute Nacht das Tor zur 1. Rauhnacht (24./25. Dezember). Das größte Geschenk dieser Nacht liegt in der tiefen Erkenntnis deiner Verbundenheit mit dir selbst, deinen Liebsten und dem großen Kreislauf des Lebens.',
     practiceTitle: 'Abschluss-Meditation & Übergang in die 1. Rauhnacht',
     practiceOrQuestion:
       'Atme tief in dein Herz ein und spüre Dankbarkeit für diesen 24-tägigen Weg. Du bist nun innerlich und äußerlich bereit, heute Abend mit der ersten geweihten Rauhnacht („Basis & Urvertrauen“) an den Wurzeln von Yggdrasil zu beginnen.',

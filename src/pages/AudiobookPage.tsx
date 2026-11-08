@@ -80,7 +80,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch1', 
     number: 'Kapitel 1',
-    title: 'Die Fassade bröckelt – Was bedeutet es, echt zu sein?', 
+    title: 'Die Fassade bröckelt | Was bedeutet es, echt zu sein?', 
     subtitle: 'Der Mut, Masken abzulegen und zu sich selbst zu stehen',
     startTime: 69, 
     formattedTime: '01:09',
@@ -89,7 +89,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch2', 
     number: 'Kapitel 2',
-    title: 'Der spirituelle Werkzeugkasten – Bewusstsein mit Humor', 
+    title: 'Der spirituelle Werkzeugkasten | Bewusstsein mit Humor', 
     subtitle: 'Leichtigkeit und Achtsamkeit im Alltag integrieren',
     startTime: 729, 
     formattedTime: '12:09',
@@ -98,7 +98,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch3', 
     number: 'Kapitel 3',
-    title: 'In die Tiefe tauchen – Schatten & alte Muster', 
+    title: 'In die Tiefe tauchen | Schatten & alte Muster', 
     subtitle: 'Alte Glaubenssätze erkennen und liebevoll transformieren',
     startTime: 1250, 
     formattedTime: '20:50',
@@ -107,7 +107,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch4', 
     number: 'Kapitel 4',
-    title: 'Die innere Ausrichtung – Klarheit, Willenskraft & Wege', 
+    title: 'Die innere Ausrichtung | Klarheit, Willenskraft & Wege', 
     subtitle: 'Den inneren Kompass neu justieren und fokussieren',
     startTime: 1776, 
     formattedTime: '29:36',
@@ -116,7 +116,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch5', 
     number: 'Kapitel 5',
-    title: 'Die große Ausrichtung – Sehnsucht & Freiheit', 
+    title: 'Die große Ausrichtung | Sehnsucht & Freiheit', 
     subtitle: 'Den eigenen Herzensweg mutig und frei beschreiten',
     startTime: 2295, 
     formattedTime: '38:15',
@@ -125,7 +125,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'ch6', 
     number: 'Kapitel 6',
-    title: 'Die Heimkehr ins Herz – Kraft bündeln & Wirken', 
+    title: 'Die Heimkehr ins Herz | Kraft bündeln & Wirken', 
     subtitle: 'Ganz bei dir ankommen und aus dem Herzen leben',
     startTime: 2815, 
     formattedTime: '46:55',
@@ -134,7 +134,7 @@ const MENSCH_SEIN_CHAPTERS: FormattedAudiobookChapter[] = [
   { 
     id: 'outro', 
     number: 'Klangreise',
-    title: 'Klassisches Musikstück – Vollständiger Ausklang', 
+    title: 'Klassisches Musikstück | Vollständiger Ausklang', 
     subtitle: 'Hinterlegtes Musikstück zum Nachspüren und Entspannen',
     startTime: 3339, 
     formattedTime: '55:39',
@@ -462,9 +462,9 @@ export default function AudiobookPage() {
       ? MENSCH_SEIN_CHAPTERS 
       : SCHMETTERLING_CHAPTERS;
   const title = productData?.titel || (isRauhnaechte 
-    ? 'Yggdrasils Atem – 12 Rauhnächte auf der Schwelle' 
+    ? 'Yggdrasils Atem | 12 Rauhnächte auf der Schwelle' 
     : isMenschSein 
-      ? 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen' 
+      ? 'Mut zum Echtsein | Was steckt hinter einem echten Menschen' 
       : 'Der Tag, an dem der Schmetterling erwachte');
   const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';
   const priceDisplay = productData?.preis ? `${Number(productData.preis).toFixed(2).replace('.', ',')} €` : (isRauhnaechte ? '9,99 €' : '4,99 €');
@@ -557,7 +557,7 @@ export default function AudiobookPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans py-6 px-4 sm:py-10 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title={`${title} – Flow der Stille`}
+        title={`${title} | Flow der Stille`}
         description={isRauhnaechte ? "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte von Jacqueline Schmetzer." : "Ganzheitliches Hörbuch über innere Verwandlung und Achtsamkeit von Jacqueline Schmetzer."}
         image={coverImage}
         schemaJson={audiobookSchema}

@@ -124,7 +124,7 @@ export default function AudiobooksHub() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-20 selection:bg-[var(--accent)] selection:text-white">
       <SEO
-        title="Die Hörbuch-Welt von Flow der Stille – Achtsamkeit, Trost & Innere Ruhe"
+        title="Die Hörbuch-Welt von Flow der Stille | Achtsamkeit, Trost & Innere Ruhe"
         description="Ganzheitliche Hörbücher von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Beruhigende Geschichten, die dein Nervensystem sanft entspannen."
       />
 
@@ -175,7 +175,7 @@ export default function AudiobooksHub() {
           </h1>
 
           <p className="text-sm sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed">
-            Wenn das Gedankenkarussell nicht stoppt, braucht der Geist keine strenge Disziplin – sondern eine sanfte Geschichte, die das Herz tröstet und Raum für tiefen Frieden schenkt.
+            Wenn das Gedankenkarussell nicht stoppt, braucht der Geist keine strenge Disziplin, sondern eine sanfte Geschichte, die das Herz tröstet und Raum für tiefen Frieden schenkt.
           </p>
 
           {/* Call-to-Action Tasten */}
@@ -320,7 +320,7 @@ export default function AudiobooksHub() {
                 Akustische Harmonie
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Produziert von <strong>Dirk</strong>. Abgestimmt auf eine sanfte Dynamik ohne laute Spitzen oder störende Nebengeräusche – perfekt zum Abschalten am Abend oder für den erholsamen Mittagsschlaf.
+                Produziert von <strong>Dirk</strong>. Abgestimmt auf eine sanfte Dynamik ohne laute Spitzen oder störende Nebengeräusche. Perfekt zum Abschalten am Abend oder für den erholsamen Mittagsschlaf.
               </p>
             </div>
           </div>
@@ -494,7 +494,7 @@ export default function AudiobooksHub() {
               </div>
 
               <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
-                Mut zum Echtsein – Was steckt hinter einem echten Menschen
+                Mut zum Echtsein | Was steckt hinter einem echten Menschen
               </h3>
 
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
@@ -576,7 +576,7 @@ export default function AudiobooksHub() {
             <div className="w-64 h-64 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-[var(--border)] shrink-0 relative group">
               <img
                 src="/images/products/cover_rauhnaechte.jpg"
-                alt="Hörbuch Cover: Yggdrasils Atem – 12 Rauhnächte auf der Schwelle"
+                alt="Hörbuch Cover: Yggdrasils Atem | 12 Rauhnächte auf der Schwelle"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
@@ -590,11 +590,11 @@ export default function AudiobooksHub() {
               </div>
 
               <h3 className="font-serif font-bold text-2xl text-[var(--text-main)] leading-tight">
-                Yggdrasils Atem – 12 Rauhnächte auf der Schwelle
+                Yggdrasils Atem | 12 Rauhnächte auf der Schwelle
               </h3>
 
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Schamanische Seelenreisen durch die Julzeit und die heiligen Rauhnächte: 13 tiefgehende Meditationen – beginnend mit dem kraftvollen Auftakt zur Wintersonnenwende (21. Dezember) und gefolgt von den 12 geweihten Nächten an den Wurzeln des Weltenbaums Yggdrasil. Mit heimischen Pflanzenhelfern, Räucherwerk und den Fylgja-Krafttieren.
+                Schamanische Seelenreisen durch die Julzeit und die heiligen Rauhnächte: 13 tiefgehende Meditationen, beginnend mit dem kraftvollen Auftakt zur Wintersonnenwende (21. Dezember) und gefolgt von den 12 geweihten Nächten an den Wurzeln des Weltenbaums Yggdrasil. Mit heimischen Pflanzenhelfern, Räucherwerk und den Fylgja-Krafttieren.
               </p>
 
               {/* Kapitel-Übersicht: Synchron zu Werk 1 & 2 */}

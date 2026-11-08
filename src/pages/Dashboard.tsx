@@ -148,13 +148,13 @@ export default function Dashboard() {
     // WICHTIG: Die URL wird bewusst NICHT in den Text-String geschrieben,
     // da WhatsApp und Smartphone-Share-Sheets das Feld 'url' automatisch an 'text' anhängen.
     // Wenn die URL auch im text stünde, würde sie sonst doppelt erscheinen!
-    const wisdomText = `✨ Tägliche Weisheit von Flow der Stille:\n${todaysWisdom.text}\n\nFinde deine innere Ruhe – Meditation, Achtsamkeit & Vagusnerv-Entspannung:`;
+    const wisdomText = `✨ Tägliche Weisheit von Flow der Stille:\n${todaysWisdom.text}\n\nFinde deine innere Ruhe | Meditation, Achtsamkeit & Vagusnerv-Entspannung:`;
     const shareUrl = 'https://flow-der-stille.de';
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Tagesimpuls – Flow der Stille',
+          title: 'Tagesimpuls | Flow der Stille',
           text: wisdomText,
           url: shareUrl
         });
@@ -189,7 +189,7 @@ export default function Dashboard() {
   return (
     <>
       <SEO 
-        title="Mein Dashboard – Flow der Stille" 
+        title="Mein Dashboard | Flow der Stille" 
         description="Dein persönlicher Ruhebereich mit täglichen Reflexionen, Ritualen und Wochenübungen." 
       />
       <div className="space-y-8 w-full max-w-4xl lg:max-w-5xl mx-auto">
@@ -318,10 +318,10 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-serif font-bold text-[var(--color-text-main)] group-hover:text-[var(--color-accent-primary)] transition-colors mb-1">
-                    Premium-Mediathek: Einzeln ab 1,99 €
+                    Ruhe-Shop: Einzeln ab 1,99&nbsp;€
                   </h3>
                   <p className="text-[var(--color-text-muted)] text-sm sm:text-base leading-relaxed">
-                    Entdecke Selbsthypnosen, geführte Meditationen und Klangwelten – ohne monatliches Abo, verfügbar in deinem registrierten Konto.
+                    Entdecke Selbsthypnosen, geführte Meditationen und Klangwelten. Ganz ohne monatliches Abo, verfügbar in deinem registrierten Konto.
                   </p>
                 </div>
                 <ArrowRight size={20} className="text-[var(--color-accent-primary)] shrink-0 hidden sm:block group-hover:translate-x-1 transition-transform" />
@@ -343,7 +343,7 @@ export default function Dashboard() {
                   </h3>
                 </div>
                 <p className="text-xs text-[var(--color-text-muted)]">
-                  100 % werbefrei – höre direkt 90 Sekunden ohne rechtlichen Disclaimer rein.
+                  100 % werbefrei. Höre direkt 90 Sekunden ohne rechtlichen Disclaimer rein.
                 </p>
               </div>
               <Link

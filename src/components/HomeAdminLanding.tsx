@@ -166,14 +166,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
         </p>
 
-        {/* Unser Versprechen: Echte Handarbeit – flach und in die Breite gezogen */}
+        {/* Unser Versprechen: Echte Handarbeit | flach und in die Breite gezogen */}
         <div className="p-3 sm:p-4 bg-[var(--bg-main)]/70 border border-[var(--border)] rounded-2xl text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-center sm:text-left flex flex-col sm:flex-row items-center gap-3 max-w-4xl mx-auto shadow-2xs">
           <Sparkles className="w-5 h-5 text-[var(--accent)] shrink-0" />
           <span className="flex-1">
             <strong>Echte Handarbeit &amp; faire Preise:</strong> Alle Meditationen verfasst Jacqueline persönlich mit viel Herzblut. 
             Unsere Premium-Inhalte spricht <strong className="text-[var(--text-main)] font-semibold">Lisa Ragusa mit warmer Menschenstimme</strong> persönlich ein. 
-            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs – für 
-            <strong> dauerhaft faire Einzelpreise ab 1,99 € ganz ohne Abo</strong>.
+            Moderne KI nutzen wir transparent als kreatives Werkzeug für meditative Klangwelten sowie beruhigende Bildwelten &amp; Designs. So ermöglichen wir 
+            <strong> dauerhaft faire Einzelpreise ab 1,99&nbsp;€ ganz ohne Abo</strong>.
           </span>
         </div>
 
@@ -240,7 +240,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             Was brauchst du in diesem Moment?
           </h2>
           <p className="text-sm sm:text-base text-[var(--text-muted)] max-w-lg mx-auto mt-1 leading-relaxed">
-            Wähle dein aktuelles Bedürfnis – wir führen dich direkt zur passenden Unterstützung.
+            Wähle dein aktuelles Bedürfnis, wir führen dich direkt zur passenden Unterstützung.
           </p>
         </div>
 
@@ -321,7 +321,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Hörbücher &amp; Seelenreisen
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Neu: „Yggdrasils Atem – 12 Rauhnächte“ (2h 59m), „Der Schmetterling“ &amp; „Mut zum Echtsein“.
+                Neu: „Yggdrasils Atem | 12 Rauhnächte“ (2h 59m), „Der Schmetterling“ &amp; „Mut zum Echtsein“.
               </p>
               <span className="text-xs sm:text-sm font-semibold text-[var(--accent)] mt-2.5 inline-flex items-center gap-1">
                 Zu den Hörbüchern <ArrowRight size={14} />
@@ -339,7 +339,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               Unsere Mediathek nach Kategorien
             </h2>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5">
-              Alle Inhalte einzeln freischaltbar – 100 % werbefrei und ohne Abonnement.
+              Alle Inhalte einzeln freischaltbar: 100 % werbefrei und ganz ohne Abonnement.
             </p>
           </div>
           <Link 
@@ -506,14 +506,14 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-serif font-bold text-base sm:text-lg text-[var(--text-main)]">
-                    Kostenlose Klangproben – Sofort reinhören
+                    Kostenlose Klangproben | Sofort reinhören
                   </h3>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-2xs">
                     Ohne Anmeldung
                   </span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                  Lerne Lisas warme Stimme unverbindlich kennen – 100 % werbefrei, ohne Abo und direkt im Web abspielbar.
+                  Lerne Lisas warme Stimme unverbindlich kennen. 100 % werbefrei, ohne Abo und direkt im Web abspielbar.
                 </p>
               </div>
             </div>
@@ -561,7 +561,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
               rauhnaechte: {
                 produkt: getOfflineProductById('rauhnaechte') || {
                   id: 'rauhnaechte',
-                  titel: 'Yggdrasils Atem – 12 Rauhnächte auf der Schwelle',
+                  titel: 'Yggdrasils Atem | 12 Rauhnächte auf der Schwelle',
                   audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3',
                   dauer: 10740
                 },
@@ -644,10 +644,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
-                100 % Werbefrei – Kein Aufschrecken
+                100 % Werbefrei | Kein Aufschrecken
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Auf werbefinanzierten Plattformen wie YouTube, Podcasts &amp; Co. wirst du mitten in der Entspannung plötzlich von lauter Werbung herausgerissen – außer du bezahlst ein teures Monats-Abo, nur um die Werbung abzuschalten. Bei uns gibt es niemals Werbung.
+                Auf werbefinanzierten Plattformen wie YouTube oder Podcasts wirst du mitten in der Entspannung plötzlich von lauter Werbung herausgerissen, es sei denn, du bezahlst ein teures Monats-Abo. Bei uns gibt es niemals Werbung.
               </p>
             </div>
           </div>
@@ -662,7 +662,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 Flugmodus &amp; Display aus für gesunden Schlaf
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Schalte dein Handy nachts in den Flugmodus. Höre deine Schlafmeditation bei komplett gesperrtem, dunklem Display – ohne Strahlung am Bett und ohne unbemerktes nächtliches Weiterlaufen.
+                Schalte dein Handy nachts in den Flugmodus. Höre deine Schlafmeditation bei komplett gesperrtem, dunklem Display, ganz ohne Strahlung am Bett und ohne unbemerktes nächtliches Weiterlaufen.
               </p>
             </div>
           </div>
@@ -674,10 +674,10 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)] leading-snug">
-                Einmalig ab 1,99 € statt teurer Monats-Abos
+                Einmalig ab 1,99&nbsp;€ statt teurer Monats-Abos
               </h3>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-1.5 leading-relaxed">
-                Gängige Meditations-Apps zwingen dich in teure Dauer-Abos (oft 60–100 € pro Jahr). Kündigst du, ist der Zugang weg oder es läuft Werbung. Bei uns kannst du auf deine gekauften Inhalte zugreifen, solange du ein registriertes Konto bei uns hast – ohne monatliche Folgekosten oder Abo-Zwang.
+                Gängige Meditations-Apps verlangen oft teure Dauer-Abos (60 bis 100&nbsp;€ pro Jahr). Kündigst du, ist der Zugang weg oder es läuft Werbung. Bei uns kannst du auf deine gekauften Inhalte zugreifen, solange du ein registriertes Konto bei uns hast, ganz ohne monatliche Folgekosten oder Abo-Druck.
               </p>
             </div>
           </div>
@@ -830,7 +830,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           Bereit für deinen persönlichen Ruhepol?
         </h4>
         <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
-          Registriere dich jetzt in 20 Sekunden kostenlos – deine erste Meditation ist sofort für dich freigeschaltet.
+          Registriere dich jetzt in 20 Sekunden kostenlos: Deine erste Meditation ist sofort für dich freigeschaltet.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
           <Link
