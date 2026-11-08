@@ -129,7 +129,7 @@ export const AdventTopBanner: React.FC = () => {
       className="relative z-30 w-full bg-gradient-to-r from-[#8A9A8A]/20 via-[#F5F5F0] to-[#C8A96E]/20 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
     >
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-12 py-3 sm:py-3.5 relative flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-5 text-center">
-        {/* Größeres, harmonisches Salbeigrün-Badge mit deutlichem 0 € Hinweis */}
+        {/* Größeres, harmonisches Salbeigrün-Badge mit deutlichem Kostenfrei-Hinweis */}
         <Link
           to="/adventskalender"
           onClick={() => {
@@ -139,12 +139,12 @@ export const AdventTopBanner: React.FC = () => {
             } catch {}
           }}
           className="group inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white font-medium text-xs sm:text-sm transition-all shadow-xs shrink-0 cursor-pointer hover:scale-[1.02]"
-          title="Zum kostenfreien Adventskalender (0 €)"
+          title="Zum kostenfreien Adventskalender"
         >
           <Sparkles className="w-4 h-4 text-[#F5F5F0] shrink-0" />
           <span className="font-serif font-bold tracking-tight text-white">Adventskalender</span>
           <span className="px-2.5 py-0.5 rounded-full bg-white/25 text-white font-bold text-xs sm:text-sm tracking-wide">
-            0&nbsp;€
+            Kostenfrei
           </span>
         </Link>
 

@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 11:10 Uhr (🛡️ Pop-up-Sequenzierung: Cookiebanner hat absolute Priorität, Pop-ups vor Consent blockiert; Advents-Popup erst nach 20s Verweildauer & dauerhaft unterdrückt bei Kalenderbesuch via `hasVisitedAdventskalender`; Hörbuch-Widget unten rechts nach 8s; 🌟 Top-Banner horizontal zentriert, großzügig mit klarem `0 €`-Badge und integriertem E-Mail-Feld; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
+> - **Letzter Stand**: 08.11.2026, 11:13 Uhr (🌟 Top-Banner Badge auf „Kostenfrei“ umgestellt; Pop-up-Sequenzierung aktiv: Cookiebanner vorrangig, Advents-Popup 20s Delay + Unterdrückung bei Besuch, Hörbuch-Widget 8s Delay; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
