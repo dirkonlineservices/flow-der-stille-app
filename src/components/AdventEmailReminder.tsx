@@ -6,12 +6,10 @@ import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
 
 interface AdventEmailReminderProps {
-  variant?: 'banner' | 'card' | 'inline';
   className?: string;
 }
 
 export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
-  variant = 'card',
   className = ''
 }) => {
   const { user } = useAuth();
@@ -76,41 +74,41 @@ export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
 
   return (
     <div
-      className={`rounded-3xl border border-[#7C8B6F]/30 bg-gradient-to-br from-[#232B22]/90 via-[#2F3A2B]/85 to-[#1D241B]/95 text-stone-100 p-6 sm:p-8 md:p-10 shadow-xl relative overflow-hidden ${className}`}
+      className={`rounded-3xl border border-[#7C8B6F]/40 bg-gradient-to-br from-[#8A9A8A]/20 via-[#F5F5F0] to-[#8A9A8A]/15 text-[#3D3B35] p-6 sm:p-8 md:p-10 shadow-sm relative overflow-hidden ${className}`}
     >
-      {/* Sanfter warmer Lichtschimmer */}
-      <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C8A96E]/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#7C8B6F]/20 rounded-full blur-3xl pointer-events-none" />
+      {/* Sanfter warmer Lichtschimmer im CI */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#8A9A8A]/25 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#C8A96E]/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-2xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#C8A96E]/20 border border-[#C8A96E]/40 text-[#EBD3A2] text-xs font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
           <Bell className="w-3.5 h-3.5" />
           <span>Tägliche Advents-Begleitung</span>
         </div>
 
-        <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+        <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D3B35] leading-tight">
           Tägliche Erinnerung für das neue Türchen erhalten
         </h3>
 
-        <p className="text-xs sm:text-sm md:text-base text-stone-200/90 leading-relaxed max-w-xl mx-auto">
+        <p className="text-xs sm:text-sm md:text-base text-[#695C4D] leading-relaxed max-w-xl mx-auto">
           Lass dich jeden Morgen im Dezember mit einem achtsamen Impuls zur Entschleunigung
           wecken. Erfahre als Erste/r von den Sonntags-Meditationen und nimm an den drei
           Rauhnacht-Hörbuch Verlosungen teil.
         </p>
 
         {status?.type === 'success' ? (
-          <div className="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-400/40 text-emerald-100 text-sm leading-relaxed text-left flex items-start gap-3 mt-6">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="p-5 rounded-2xl bg-white border border-[#8A9A8A] text-[#3D3B35] text-sm leading-relaxed text-left flex items-start gap-3 mt-6 shadow-xs">
+            <CheckCircle2 className="w-5 h-5 text-[#8A9A8A] shrink-0 mt-0.5" />
             <div>
-              <div className="font-bold text-white mb-1">Vielen Dank für dein Vertrauen!</div>
-              <div>{status.message}</div>
+              <div className="font-bold text-[#3D3B35] mb-1">Vielen Dank für dein Vertrauen!</div>
+              <div className="text-[#695C4D]">{status.message}</div>
             </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-3">
             <div className="flex flex-col sm:flex-row gap-2.5 max-w-xl mx-auto">
               <div className="relative flex-1">
-                <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Mail className="w-4 h-4 text-[#8A9A8A] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="email"
                   value={email}
@@ -118,14 +116,14 @@ export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
                   placeholder="Deine E-Mail-Adresse..."
                   required
                   disabled={submitting}
-                  className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-sm text-white placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-[#C8A96E] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-white border border-[#E3E1D9] text-sm text-[#3D3B35] placeholder:text-[#A89F91] focus:outline-none focus:ring-2 focus:ring-[#8A9A8A] focus:border-transparent transition-all shadow-xs"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#C8A96E] hover:bg-[#B89758] disabled:opacity-60 text-stone-950 font-bold text-sm transition-all shadow-md shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#8A9A8A] hover:bg-[#728372] disabled:opacity-60 text-white font-bold text-sm transition-all shadow-md shrink-0 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -142,23 +140,23 @@ export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
             </div>
 
             {status?.type === 'error' && (
-              <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-400/40 text-red-200 text-xs flex items-center justify-center gap-2 max-w-xl mx-auto text-left">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-300" />
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-center gap-2 max-w-xl mx-auto text-left">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
                 <span>{status.message}</span>
               </div>
             )}
 
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px] text-stone-300">
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px] text-[#695C4D]">
               <span className="inline-flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C8A96E]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#8A9A8A]" />
                 100 % werbefrei &amp; DSGVO-konform
               </span>
               <span className="inline-flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C8A96E]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#8A9A8A]" />
                 Double-Opt-In Bestätigung
               </span>
               <span className="inline-flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C8A96E]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#8A9A8A]" />
                 Jederzeit mit einem Klick abmeldbar
               </span>
             </div>

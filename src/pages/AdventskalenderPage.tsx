@@ -3,8 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   Sparkles, Gift, Calendar, BookOpen, Heart,
   CheckCircle2, ArrowRight, Loader2, X, Lock, Unlock,
-  Flame, Moon, Volume2, Clock, ChevronLeft, ChevronRight,
-  Eye, ShieldCheck, Info
+  Moon, Volume2, Clock, ChevronLeft, ChevronRight,
+  Eye, ShieldCheck
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import {
@@ -18,51 +18,6 @@ import { AdventEmailReminder } from '../components/AdventEmailReminder';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
 import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
-
-const CATEGORY_STYLES: Record<
-  AdventCategory,
-  {
-    badgeBg: string;
-    badgeText: string;
-    badgeBorder: string;
-    cardBorder: string;
-    cardAccent: string;
-    iconBg: string;
-  }
-> = {
-  meditation: {
-    badgeBg: 'bg-[#7C8B6F]/15',
-    badgeText: 'text-[#3F4A36]',
-    badgeBorder: 'border-[#7C8B6F]/35',
-    cardBorder: 'border-[#7C8B6F]/30 hover:border-[#7C8B6F]',
-    cardAccent: 'from-[#7C8B6F]/15 to-transparent',
-    iconBg: 'bg-[#7C8B6F] text-white'
-  },
-  gewinnspiel: {
-    badgeBg: 'bg-[#C8A96E]/25',
-    badgeText: 'text-[#6E531D]',
-    badgeBorder: 'border-[#C8A96E]/50',
-    cardBorder: 'border-[#C8A96E]/60 hover:border-[#B38F4D] ring-1 ring-[#C8A96E]/30',
-    cardAccent: 'from-[#C8A96E]/25 via-[#C8A96E]/5 to-transparent',
-    iconBg: 'bg-[#B38F4D] text-white'
-  },
-  altes_wissen: {
-    badgeBg: 'bg-amber-900/10',
-    badgeText: 'text-amber-950',
-    badgeBorder: 'border-amber-900/25',
-    cardBorder: 'border-stone-200/90 hover:border-amber-800/50',
-    cardAccent: 'from-amber-900/10 to-transparent',
-    iconBg: 'bg-amber-900 text-amber-50'
-  },
-  achtsamkeit: {
-    badgeBg: 'bg-emerald-900/10',
-    badgeText: 'text-emerald-950',
-    badgeBorder: 'border-emerald-800/25',
-    cardBorder: 'border-stone-200/90 hover:border-emerald-700/50',
-    cardAccent: 'from-emerald-800/10 to-transparent',
-    iconBg: 'bg-emerald-800 text-emerald-50'
-  }
-};
 
 /**
  * Zeit-Berechnung für den Adventskalender
@@ -198,7 +153,6 @@ export const AdventskalenderPage: React.FC = () => {
     const isUnlocked = (isAdminUser && adminTimeBypass) || isDayUnlockedByDate(day.day);
 
     if (!isUnlocked) {
-      // Freundlicher Hinweis auf das Öffnungsdatum
       setLockedNoticeDay(day);
       return;
     }
@@ -255,8 +209,8 @@ export const AdventskalenderPage: React.FC = () => {
 
   if (checkingAdmin) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-8 text-stone-600">
-        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+      <div className="min-h-[60vh] flex items-center justify-center p-8 text-[#695C4D]">
+        <Loader2 className="w-6 h-6 animate-spin mr-2 text-[#8A9A8A]" />
         <span>Prüfe Berechtigung...</span>
       </div>
     );
@@ -271,14 +225,14 @@ export const AdventskalenderPage: React.FC = () => {
           description="Interne Vorschau für Administratoren."
           noindex={true}
         />
-        <div className="max-w-md w-full rounded-3xl bg-white border border-stone-200 p-8 text-center shadow-sm space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 flex items-center justify-center mx-auto text-xl">
+        <div className="max-w-md w-full rounded-3xl bg-white border border-[#E3E1D9] p-8 text-center shadow-sm space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#8A9A8A]/15 text-[#4A563E] flex items-center justify-center mx-auto text-xl">
             🔒
           </div>
-          <h1 className="font-serif text-2xl font-bold text-stone-900">
+          <h1 className="font-serif text-2xl font-bold text-[#3D3B35]">
             Interne Admin-Vorschau
           </h1>
-          <p className="text-sm text-stone-600 leading-relaxed">
+          <p className="text-sm text-[#695C4D] leading-relaxed">
             Der 24-Tage Adventskalender befindet sich aktuell in der internen Vorbereitung
             und ist nur für eingeloggte Administratoren sichtbar.
           </p>
@@ -286,14 +240,14 @@ export const AdventskalenderPage: React.FC = () => {
             {!user && (
               <Link
                 to="/login"
-                className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-bold transition-colors cursor-pointer"
               >
                 Als Admin anmelden
               </Link>
             )}
             <Link
               to="/"
-              className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-[#3D3B35] text-xs font-bold transition-colors cursor-pointer"
             >
               Zurück zur Startseite
             </Link>
@@ -304,44 +258,44 @@ export const AdventskalenderPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] text-stone-800 pb-24">
+    <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-24">
       <SEO
         title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
-        description="Traditionelles 24-Türchen-Raster für den Dezember: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
+        description="Traditionelles 24-Türchen-Raster für den Dezember im sanften Salbeigrün: 5 Meditationen, 8× Altes Wissen, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
         canonical="https://flow-der-stille.de/adventskalender"
         noindex={true}
       />
 
-      {/* Admin-Hinweis-Banner mit Zeittest-Schalter */}
-      <div className="bg-emerald-950 text-emerald-100 border-b border-emerald-700/50 px-4 py-2.5 text-xs font-semibold flex flex-wrap items-center justify-between gap-3">
+      {/* Admin-Hinweis-Banner mit Zeittest-Schalter im sanften Salbeigrün-Stil */}
+      <div className="bg-[#8A9A8A]/25 text-[#3D3B35] border-b border-[#8A9A8A]/40 px-4 py-2.5 text-xs font-semibold flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span>🔒 ADMIN-MODUS AKTIV:</span>
-          <span className="font-normal text-emerald-200">
+          <span className="font-bold text-[#344034]">🔒 ADMIN-MODUS AKTIV:</span>
+          <span className="font-normal text-[#514639]">
             Nur für eingeloggte Admins sichtbar.
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-emerald-300">
+          <span className="text-[11px] text-[#4A563E]">
             {adminTimeBypass ? '🔓 Alle 24 Türchen freigeschaltet (Testmodus)' : '⏱️ Echte Zeit-Sperre aktiv'}
           </span>
           <button
             type="button"
             onClick={() => setAdminTimeBypass(!adminTimeBypass)}
-            className="px-2.5 py-1 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white text-[11px] font-bold transition-colors cursor-pointer"
+            className="px-2.5 py-1 rounded-lg bg-[#8A9A8A] hover:bg-[#728372] text-white text-[11px] font-bold transition-colors cursor-pointer"
           >
             {adminTimeBypass ? 'Zeit-Sperre aktivieren' : 'Alle Türchen testen'}
           </button>
         </div>
       </div>
 
-      {/* ─── HERO BEREICH ─────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#232B22] via-[#2F3A2B] to-[#1A2019] text-[#F5F5F0] pt-12 pb-16 md:py-20 px-4 sm:px-6 border-b border-[#C8A96E]/25">
-        <div className="absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-[#C8A96E]/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full bg-[#7C8B6F]/20 blur-3xl pointer-events-none" />
+      {/* ─── HERO BEREICH: HELL & RUHIG IN SALBEIGRÜN / BEIGE ──────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#8A9A8A]/20 via-[#F5F5F0] to-[#F5F5F0] pt-12 pb-14 md:py-20 px-4 sm:px-6 border-b border-[#E3E1D9]">
+        <div className="absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-[#8A9A8A]/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full bg-[#C8A96E]/15 blur-3xl pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10 text-center space-y-5">
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#C8A96E]/20 border border-[#C8A96E]/40 text-[#EBD3A2] text-xs font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
               <Sparkles className="w-3.5 h-3.5" />
               FLOW DER STILLE • 24 TAGE INNEHALTEN
             </div>
@@ -349,59 +303,59 @@ export const AdventskalenderPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsPopupOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-stone-200 text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#695C4D] text-xs font-medium transition-colors cursor-pointer shadow-2xs"
             >
-              <Eye className="w-3.5 h-3.5 text-[#EBD3A2]" />
+              <Eye className="w-3.5 h-3.5 text-[#8A9A8A]" />
               Pop-Up-Vorschau öffnen
             </button>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight max-w-4xl mx-auto">
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#3D3B35] leading-tight tracking-tight max-w-4xl mx-auto">
             Der Adventskalender –{' '}
-            <span className="text-[#EBD3A2] italic font-normal block sm:inline">
+            <span className="text-[#8A9A8A] italic font-normal block sm:inline">
               24 Tage Innehalten
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base md:text-lg text-stone-200/90 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-[#695C4D] leading-relaxed max-w-2xl mx-auto">
             Öffne jeden Tag im Dezember ein Türchen der Stille. Hinter jedem Fenster verbirgt
             sich ein achtsamer Impuls, eine wohltuende Meditation oder die Chance auf unser
             neues Rauhnacht-Hörbuch.
           </p>
 
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-stone-300">
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#695C4D]">
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#C8A96E]" />
+              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
               Klassisches 24-Türchen-Raster
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#C8A96E]" />
+              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
               Täglich zeitgesteuert entriegelt
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#C8A96E]" />
+              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
               3× Rauhnacht-Hörbuch Verlosung
             </span>
           </div>
         </div>
       </section>
 
-      {/* ─── HAUPTBEREICH: KLASSISCHES 24-TÜRCHEN-RASTER ───────────────────── */}
+      {/* ─── HAUPTBEREICH: 24-TÜRCHEN-RASTER (SALBEIGRÜN & WARMES BEIGE) ───── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16">
         <div className="mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#5C6B50] block mb-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
               Traditioneller Kalender
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
               Wähle dein heutiges Türchen
             </h2>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-stone-600 bg-white px-4 py-2 rounded-2xl border border-stone-200/90 shadow-2xs">
+          <div className="flex items-center gap-3 text-xs text-[#695C4D] bg-white px-4 py-2 rounded-2xl border border-[#E3E1D9] shadow-2xs">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#7C8B6F]" />
-              Geöffnet: <strong className="text-stone-900">{openedDays.length}</strong> / 24
+              <span className="w-2.5 h-2.5 rounded-full bg-[#8A9A8A]" />
+              Geöffnet: <strong className="text-[#3D3B35]">{openedDays.length}</strong> / 24
             </span>
           </div>
         </div>
@@ -413,7 +367,6 @@ export const AdventskalenderPage: React.FC = () => {
               (isAdminUser && adminTimeBypass) || isDayUnlockedByDate(dayItem.day);
             const isOpened = openedDays.includes(dayItem.day);
             const isSpecialRaffle = [6, 13, 21].includes(dayItem.day);
-            const isSundayOrEve = [1, 7, 14, 20, 24].includes(dayItem.day);
 
             return (
               <button
@@ -422,20 +375,24 @@ export const AdventskalenderPage: React.FC = () => {
                 onClick={() => handleDoorClick(dayItem)}
                 className={`group relative aspect-square rounded-3xl p-4 transition-all duration-300 flex flex-col items-center justify-between overflow-hidden shadow-xs hover:shadow-md cursor-pointer border ${
                   isOpened
-                    ? 'bg-gradient-to-br from-[#EAEAE2] to-[#DFDFD5] border-[#7C8B6F]/50 text-stone-800'
+                    ? 'bg-gradient-to-br from-[#EAEAE2] to-[#DFDFD5] border-[#8A9A8A]/50 text-[#3D3B35]'
                     : isUnlocked
-                    ? 'bg-gradient-to-br from-[#2D382B] to-[#1F261E] border-[#C8A96E]/40 text-[#F5F5F0] hover:-translate-y-1 hover:border-[#C8A96E]'
-                    : 'bg-gradient-to-br from-[#262D24] to-[#1B201A] border-stone-700/50 text-stone-400 hover:border-stone-500'
+                    ? 'bg-gradient-to-br from-[#8A9A8A] via-[#7B8B7B] to-[#6E7F6E] border-[#728372] text-white hover:-translate-y-1 hover:shadow-lg'
+                    : 'bg-white border-[#E3E1D9] text-[#A89F91] hover:border-[#8A9A8A]/60'
                 }`}
               >
-                {/* Sanfter Schimmer für Gewinnspiel- und Sonntags-Türchen */}
+                {/* Dezent goldener Schimmer für die 3 Verlosungstage */}
                 {isSpecialRaffle && !isOpened && (
-                  <div className="absolute inset-0 bg-[#C8A96E]/10 pointer-events-none" />
+                  <div className="absolute inset-0 bg-[#C8A96E]/20 pointer-events-none" />
                 )}
 
                 {/* Obere Reihe: Status-Icon / Schloss */}
                 <div className="w-full flex items-center justify-between text-[11px]">
-                  <span className="font-sans font-medium text-stone-400 group-hover:text-stone-300">
+                  <span
+                    className={`font-sans font-medium ${
+                      isUnlocked && !isOpened ? 'text-white/80' : 'text-[#695C4D]'
+                    }`}
+                  >
                     Dez
                   </span>
 
@@ -444,17 +401,14 @@ export const AdventskalenderPage: React.FC = () => {
                       title="Bereits geöffnet"
                       className="inline-flex items-center gap-1 text-[10px] font-bold text-[#4A563E]"
                     >
-                      <CheckCircle2 size={13} className="text-[#5C6B50]" />
+                      <CheckCircle2 size={13} className="text-[#8A9A8A]" />
                     </span>
                   ) : isUnlocked ? (
-                    <span
-                      title="Bereit zum Öffnen"
-                      className="text-[#EBD3A2] opacity-80 group-hover:opacity-100"
-                    >
+                    <span title="Bereit zum Öffnen" className="text-white/90">
                       <Unlock size={14} />
                     </span>
                   ) : (
-                    <span title="Noch verschlossen" className="text-stone-500">
+                    <span title="Noch verschlossen" className="text-[#A89F91]">
                       <Lock size={13} />
                     </span>
                   )}
@@ -467,26 +421,26 @@ export const AdventskalenderPage: React.FC = () => {
                       isOpened
                         ? 'text-[#4A563E]'
                         : isUnlocked
-                        ? 'text-[#EBD3A2]'
-                        : 'text-stone-300'
+                        ? 'text-white'
+                        : 'text-[#8A9A8A]'
                     }`}
                   >
                     {dayItem.day}
                   </span>
                 </div>
 
-                {/* Untere Reihe: Neutrales Türchen-Label (kein Titel) */}
+                {/* Untere Reihe: Neutrales Türchen-Label */}
                 <div className="w-full text-center">
                   {isOpened ? (
-                    <span className="text-[10px] font-semibold text-stone-600 truncate block">
+                    <span className="text-[10px] font-semibold text-[#695C4D] truncate block">
                       {dayItem.emoji} Geöffnet
                     </span>
                   ) : isUnlocked ? (
-                    <span className="text-[10px] font-bold text-[#EBD3A2] tracking-wider uppercase opacity-90 group-hover:opacity-100 block">
+                    <span className="text-[10px] font-bold text-white tracking-wider uppercase opacity-95 group-hover:opacity-100 block">
                       Öffnen →
                     </span>
                   ) : (
-                    <span className="text-[10px] font-medium text-stone-400 block">
+                    <span className="text-[10px] font-medium text-[#695C4D] block">
                       {dayItem.dateLabel}
                     </span>
                   )}
@@ -502,15 +456,15 @@ export const AdventskalenderPage: React.FC = () => {
         </div>
 
         {/* ─── DIE 4 SÄULEN (HINTERGRUND-ÜBERSICHT) ──────────────────────────── */}
-        <div className="mt-16 bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 shadow-sm">
+        <div className="mt-16 bg-white rounded-3xl border border-[#E3E1D9] p-6 sm:p-8 shadow-xs">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#5C6B50] block mb-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
               Ganzheitliches Konzept
             </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
               Die 4 Säulen des Flow der Stille Adventskalenders
             </h3>
-            <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#695C4D] mt-2 leading-relaxed">
               Jedes Türchen gehört zu einer unserer vier thematischen Säulen, die dich
               Schritt für Schritt durch den Winter begleiten:
             </p>
@@ -520,19 +474,19 @@ export const AdventskalenderPage: React.FC = () => {
             {ADVENT_PILLARS.map((pillar) => (
               <div
                 key={pillar.title}
-                className="p-5 rounded-2xl bg-[#F9F9F6] border border-stone-200/80 flex flex-col justify-between"
+                className="p-5 rounded-2xl bg-[#F5F5F0] border border-[#E3E1D9] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl">{pillar.emoji}</span>
-                    <span className="font-serif text-2xl font-bold text-[#5C6B50]">
+                    <span className="font-serif text-2xl font-bold text-[#8A9A8A]">
                       {pillar.count}
                     </span>
                   </div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-900 mb-1">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#3D3B35] mb-1">
                     {pillar.title}
                   </h4>
-                  <p className="text-xs text-stone-600 leading-relaxed">
+                  <p className="text-xs text-[#695C4D] leading-relaxed">
                     {pillar.description}
                   </p>
                 </div>
@@ -542,23 +496,23 @@ export const AdventskalenderPage: React.FC = () => {
         </div>
 
         {/* ─── BRÜCKE ZU DEN RAUHNÄCHTEN (AB 24./25. DEZEMBER) ──────────────── */}
-        <div className="mt-12 rounded-3xl bg-gradient-to-br from-[#1F261E] via-[#2B3528] to-[#1A2018] text-white p-6 sm:p-10 border border-[#C8A96E]/35 shadow-xl relative overflow-hidden">
-          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#C8A96E]/15 blur-3xl pointer-events-none" />
+        <div className="mt-12 rounded-3xl bg-gradient-to-br from-[#8A9A8A]/25 via-[#F5F5F0] to-[#8A9A8A]/20 text-[#3D3B35] p-6 sm:p-10 border border-[#8A9A8A]/40 shadow-xs relative overflow-hidden">
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#8A9A8A]/20 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
             <div className="lg:col-span-8 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C8A96E]/20 border border-[#C8A96E]/40 text-[#EBD3A2] text-xs font-bold uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
                 <Moon className="w-3.5 h-3.5" />
                 Die Fortsetzung ab 24. / 25. Dezember
               </div>
 
-              <h3 className="font-serif text-2xl sm:text-4xl font-bold text-white leading-tight">
+              <h3 className="font-serif text-2xl sm:text-4xl font-bold text-[#3D3B35] leading-tight">
                 Yggdrasils Atem – 12 Rauhnächte auf der Schwelle
               </h3>
 
-              <p className="text-sm sm:text-base text-stone-200/95 leading-relaxed max-w-2xl">
+              <p className="text-sm sm:text-base text-[#695C4D] leading-relaxed max-w-2xl">
                 Wenn am 24. Dezember das letzte Türchen öffnet, beginnen die{' '}
-                <strong className="text-[#EBD3A2]">
+                <strong className="text-[#3D3B35]">
                   zwölf heiligen Nächte außerhalb der Zeit
                 </strong>
                 . Unser großes Begleit-Hörbuch führt dich Nacht für Nacht mit altem
@@ -568,7 +522,7 @@ export const AdventskalenderPage: React.FC = () => {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
                   to="/hoerbuch/rauhnaechte"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#C8A96E] hover:bg-[#B89758] text-stone-950 font-bold text-sm transition-all shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-sm transition-all shadow-md cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   Rauhnacht-Hörbuch entdecken
@@ -576,7 +530,7 @@ export const AdventskalenderPage: React.FC = () => {
 
                 <Link
                   to="/ruhe-shop#product-fds_rauhnaechte"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#3D3B35] font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer shadow-2xs"
                 >
                   🔑 Express-Kauf im Ruhe-Shop (9,99&nbsp;€ • Kein Abo)
                 </Link>
@@ -584,23 +538,23 @@ export const AdventskalenderPage: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4">
-              <div className="rounded-2xl bg-black/30 border border-white/15 p-5 space-y-2.5 text-xs text-stone-200">
+              <div className="rounded-2xl bg-white border border-[#E3E1D9] p-5 space-y-2.5 text-xs text-[#695C4D] shadow-xs">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-[#EBD3A2]">Rauhnacht-Begleitung</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#C8A96E]/20 text-[#EBD3A2] font-bold">
+                  <span className="font-bold text-[#3D3B35]">Rauhnacht-Begleitung</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#8A9A8A]/20 text-[#4A563E] font-bold">
                     Einmalig 9,99&nbsp;€
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#C8A96E] shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
                   12 ausführliche Kapitel für jede Nacht
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#C8A96E] shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
                   Reines Streaming im Web-Player &amp; in der App
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#C8A96E] shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
                   Einmalkauf ohne Abo – dauerhaft aktiv
                 </div>
               </div>
@@ -609,37 +563,37 @@ export const AdventskalenderPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ─── MODAL 1: GEÖFFNETES TÜRCHEN (INHALT FREIGEGEBEN) ──────────────── */}
+      {/* ─── MODAL 1: GEÖFFNETES TÜRCHEN (SALBEIGRÜNER HEADER) ─────────────── */}
       {activeDay && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-stone-950/75 backdrop-blur-sm animate-fadeIn overflow-y-auto"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-stone-900/60 backdrop-blur-sm animate-fadeIn overflow-y-auto"
           role="dialog"
           aria-modal="true"
           onClick={handleCloseModal}
         >
           <div
-            className="relative w-full max-w-2xl rounded-3xl bg-[#F5F5F0] border border-stone-300 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
+            className="relative w-full max-w-2xl rounded-3xl bg-[#F5F5F0] border border-[#8A9A8A]/40 shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="bg-gradient-to-br from-[#232B22] via-[#2F3A2B] to-[#1D241B] text-white p-6 sm:p-8 relative">
+            {/* Modal Header im warmen Salbeigrün */}
+            <div className="bg-gradient-to-br from-[#8A9A8A] via-[#7B8B7B] to-[#6E7F6E] text-white p-6 sm:p-8 relative">
               <button
                 type="button"
                 onClick={handleCloseModal}
                 aria-label="Türchen schließen"
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-stone-200 transition-colors cursor-pointer"
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
 
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full bg-[#C8A96E] text-stone-950 text-xs font-bold uppercase tracking-wider">
+                <span className="px-3 py-1 rounded-full bg-white text-[#4A563E] text-xs font-bold uppercase tracking-wider shadow-2xs">
                   Türchen {activeDay.day} • {activeDay.dateLabel}
                 </span>
-                <span className="px-3 py-1 rounded-full bg-white/15 text-stone-100 text-xs font-semibold">
+                <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold">
                   {activeDay.emoji} {activeDay.categoryLabel}
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-black/25 text-stone-300 text-[11px] flex items-center gap-1">
+                <span className="px-2.5 py-1 rounded-full bg-black/20 text-white/90 text-[11px] flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {activeDay.durationOrInfo}
                 </span>
@@ -649,49 +603,49 @@ export const AdventskalenderPage: React.FC = () => {
                 {activeDay.title}
               </h2>
 
-              <p className="text-sm text-[#EBD3A2] mt-2 font-medium">
+              <p className="text-sm text-stone-100 mt-2 font-medium">
                 {activeDay.coreImpulse}
               </p>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-stone-800">
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#3D3B35]">
               <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[#695C4D]">
                   Tagesimpuls &amp; Hintergrund
                 </h3>
-                <p className="text-sm sm:text-base text-stone-800 leading-relaxed">
+                <p className="text-sm sm:text-base text-[#3D3B35] leading-relaxed">
                   {activeDay.deepText}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white border border-stone-200/90 p-5 sm:p-6 shadow-sm space-y-2.5">
+              <div className="rounded-2xl bg-white border border-[#E3E1D9] p-5 sm:p-6 shadow-xs space-y-2.5">
                 <div className="flex items-center gap-2 text-[#4A563E] text-xs font-bold uppercase tracking-wider">
-                  <Heart className="w-4 h-4" />
+                  <Heart className="w-4 h-4 text-[#8A9A8A]" />
                   {activeDay.practiceTitle}
                 </div>
-                <p className="text-sm sm:text-base text-stone-800 leading-relaxed font-medium">
+                <p className="text-sm sm:text-base text-[#3D3B35] leading-relaxed font-medium">
                   {activeDay.practiceOrQuestion}
                 </p>
               </div>
 
               {/* Gewinnspiel-Interaktion */}
               {activeDay.category === 'gewinnspiel' && (
-                <div className="rounded-2xl bg-gradient-to-br from-[#C8A96E]/25 via-[#C8A96E]/10 to-white border border-[#C8A96E]/50 p-5 sm:p-6 space-y-4">
+                <div className="rounded-2xl bg-gradient-to-br from-[#C8A96E]/20 via-[#C8A96E]/10 to-white border border-[#C8A96E]/40 p-5 sm:p-6 space-y-4">
                   <div className="flex items-center gap-2 text-[#6E531D] text-xs font-bold uppercase tracking-wider">
                     <Gift className="w-4 h-4" />
                     Direkt an der Rauhnacht-Hörbuch Verlosung teilnehmen
                   </div>
 
                   {raffleSuccess ? (
-                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm font-medium flex items-start gap-2.5">
-                      <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-700 mt-0.5" />
+                    <div className="p-4 rounded-xl bg-white border border-[#8A9A8A] text-[#3D3B35] text-xs sm:text-sm font-medium flex items-start gap-2.5">
+                      <CheckCircle2 className="w-5 h-5 shrink-0 text-[#8A9A8A] mt-0.5" />
                       <span>{raffleSuccess}</span>
                     </div>
                   ) : (
                     <form onSubmit={handleRaffleSubmit} className="space-y-3">
                       <div>
-                        <label className="block text-xs font-bold text-stone-700 mb-1">
+                        <label className="block text-xs font-bold text-[#3D3B35] mb-1">
                           Deine Antwort / Dein Impuls zur heutigen Frage:
                         </label>
                         <textarea
@@ -700,7 +654,7 @@ export const AdventskalenderPage: React.FC = () => {
                           onChange={(e) => setRaffleAnswer(e.target.value)}
                           placeholder="Teile hier kurz deinen Gedanken..."
                           required
-                          className="w-full p-3 rounded-xl bg-white border border-stone-300 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]"
+                          className="w-full p-3 rounded-xl bg-white border border-[#E3E1D9] text-sm text-[#3D3B35] focus:outline-none focus:ring-2 focus:ring-[#8A9A8A]"
                         />
                       </div>
                       <div className="flex flex-col sm:flex-row gap-2.5">
@@ -710,12 +664,12 @@ export const AdventskalenderPage: React.FC = () => {
                           onChange={(e) => setRaffleEmail(e.target.value)}
                           placeholder="Deine E-Mail für die Gewinnbenachrichtigung..."
                           required
-                          className="flex-1 px-3.5 py-3 rounded-xl bg-white border border-stone-300 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]"
+                          className="flex-1 px-3.5 py-3 rounded-xl bg-white border border-[#E3E1D9] text-sm text-[#3D3B35] focus:outline-none focus:ring-2 focus:ring-[#8A9A8A]"
                         />
                         <button
                           type="submit"
                           disabled={raffleSubmitting}
-                          className="px-5 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm transition-colors shrink-0 cursor-pointer"
+                          className="px-5 py-3 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs sm:text-sm transition-colors shrink-0 cursor-pointer shadow-xs"
                         >
                           {raffleSubmitting ? 'Wird gesendet...' : '🎁 Jetzt im Lostopf sichern'}
                         </button>
@@ -727,19 +681,19 @@ export const AdventskalenderPage: React.FC = () => {
 
               {/* Meditation Audio-CTA */}
               {activeDay.category === 'meditation' && (
-                <div className="rounded-2xl bg-[#7C8B6F]/15 border border-[#7C8B6F]/35 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="rounded-2xl bg-[#8A9A8A]/15 border border-[#8A9A8A]/35 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h4 className="text-sm font-bold text-stone-900">
+                    <h4 className="text-sm font-bold text-[#3D3B35]">
                       Passende Audio-Begleitung im Web-Player &amp; App
                     </h4>
-                    <p className="text-xs text-stone-700 mt-0.5">
+                    <p className="text-xs text-[#695C4D] mt-0.5">
                       Entdecke unsere geführten Meditationen und Selbsthypnosen zur tiefen
                       Entspannung.
                     </p>
                   </div>
                   <Link
                     to="/meditation"
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#5C6B50] hover:bg-[#4A563E] text-white text-xs font-bold transition-colors shrink-0"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white text-xs font-bold transition-colors shrink-0 cursor-pointer"
                   >
                     <Volume2 className="w-3.5 h-3.5" />
                     Zu den Meditationen
@@ -748,18 +702,18 @@ export const AdventskalenderPage: React.FC = () => {
               )}
 
               {/* Modal Footer Navigation */}
-              <div className="flex items-center justify-between pt-4 border-t border-stone-200">
+              <div className="flex items-center justify-between pt-4 border-t border-[#E3E1D9]">
                 <button
                   type="button"
                   disabled={activeDay.day <= 1}
                   onClick={() => navigateDay('prev')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 disabled:opacity-40 border border-stone-200 text-xs font-bold text-stone-700 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 disabled:opacity-40 border border-[#E3E1D9] text-xs font-bold text-[#695C4D] transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Tag {activeDay.day - 1}
                 </button>
 
-                <span className="text-xs text-stone-500 font-medium">
+                <span className="text-xs text-[#695C4D] font-medium">
                   Tag {activeDay.day} von 24
                 </span>
 
@@ -767,7 +721,7 @@ export const AdventskalenderPage: React.FC = () => {
                   type="button"
                   disabled={activeDay.day >= 24}
                   onClick={() => navigateDay('next')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 disabled:opacity-40 border border-stone-200 text-xs font-bold text-stone-700 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-stone-100 disabled:opacity-40 border border-[#E3E1D9] text-xs font-bold text-[#695C4D] transition-colors cursor-pointer"
                 >
                   Tag {activeDay.day + 1}
                   <ChevronRight className="w-4 h-4" />
@@ -781,31 +735,31 @@ export const AdventskalenderPage: React.FC = () => {
       {/* ─── MODAL 2: HINWEIS FÜR ZUKÜNFTIGE TÜRCHEN (ZEITGESPERRT) ────────── */}
       {lockedNoticeDay && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fadeIn"
           role="dialog"
           aria-modal="true"
           onClick={handleCloseModal}
         >
           <div
-            className="relative w-full max-w-md rounded-3xl bg-white border border-stone-200 p-6 sm:p-8 text-center shadow-2xl space-y-4"
+            className="relative w-full max-w-md rounded-3xl bg-white border border-[#E3E1D9] p-6 sm:p-8 text-center shadow-2xl space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#7C8B6F]/20 text-[#4A563E] flex items-center justify-center mx-auto">
-              <Lock className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl bg-[#8A9A8A]/20 text-[#4A563E] flex items-center justify-center mx-auto">
+              <Lock className="w-6 h-6 text-[#8A9A8A]" />
             </div>
 
             <div className="space-y-1.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#7C8B6F]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#8A9A8A]">
                 Noch etwas Geduld
               </span>
-              <h3 className="font-serif text-2xl font-bold text-stone-900">
+              <h3 className="font-serif text-2xl font-bold text-[#3D3B35]">
                 Türchen {lockedNoticeDay.day} ist noch verschlossen
               </h3>
             </div>
 
-            <p className="text-sm text-stone-600 leading-relaxed">
+            <p className="text-sm text-[#695C4D] leading-relaxed">
               Dieses Türchen öffnet sich pünktlich am{' '}
-              <strong className="text-stone-900">{lockedNoticeDay.dateLabel}</strong>. Nimm
+              <strong className="text-[#3D3B35]">{lockedNoticeDay.dateLabel}</strong>. Nimm
               dir bis dahin gerne Zeit für die bereits geöffneten Impulse oder lass dich
               jeden Morgen kostenfrei per E-Mail erinnern.
             </p>
@@ -814,7 +768,7 @@ export const AdventskalenderPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCloseModal}
-                className="w-full py-3 px-5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition-colors cursor-pointer"
+                className="w-full py-3 px-5 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs transition-colors cursor-pointer"
               >
                 Verstanden &amp; zurück zum Kalender
               </button>
