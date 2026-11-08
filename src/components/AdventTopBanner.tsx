@@ -236,17 +236,17 @@ export const AdventTopBanner: React.FC = () => {
               localStorage.setItem('fds_advent_visited', 'true');
             } catch {}
           }}
-          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 text-xs font-semibold transition-all cursor-pointer shadow-2xs hover:shadow-xs shrink-0"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 text-xs font-semibold transition-all cursor-pointer shadow-2xs hover:shadow-xs shrink-0"
         >
           <span>Zum Kalender</span>
           <ArrowRight size={13} className="text-emerald-800" />
         </Link>
 
-        {/* Schließen-Button - immer gut erreichbar & links neben den Desktop-Buttons */}
+        {/* Schließen-Button - mobil oben rechts, ab Tablet/Desktop mit sicherem Abstand im Inhaltsfluss */}
         <button
           type="button"
           onClick={handleDismiss}
-          className="absolute top-2.5 right-2 sm:right-3 md:right-56 md:top-1/2 md:-translate-y-1/2 p-1.5 rounded-full hover:bg-black/5 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0"
+          className="absolute top-2.5 right-2 sm:right-3 md:relative md:top-auto md:right-auto md:translate-y-0 md:ml-3 p-1.5 rounded-full hover:bg-black/10 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0"
           aria-label="Banner ausblenden"
           title="Diesen Hinweis ausblenden"
         >
