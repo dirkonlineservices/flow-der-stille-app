@@ -4,7 +4,8 @@ import {
   Sparkles, Gift, Calendar, BookOpen, Heart,
   CheckCircle2, ArrowRight, Loader2, X, Lock, Unlock,
   Moon, Volume2, Clock, ChevronLeft, ChevronRight,
-  Eye, ShieldCheck
+  Eye, ShieldCheck, ChevronDown, ChevronUp, Copy, Check,
+  Share2, MessageCircle, Mail, HelpCircle
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import {
@@ -87,6 +88,22 @@ export const AdventskalenderPage: React.FC = () => {
   const [raffleEmail, setRaffleEmail] = useState(user?.email || '');
   const [raffleSubmitting, setRaffleSubmitting] = useState(false);
   const [raffleSuccess, setRaffleSuccess] = useState<string | null>(null);
+
+  // FAQ Akkordeon State
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Link kopiert State
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText('https://flow-der-stille.de/adventskalender');
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      // Fallback
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -230,8 +247,8 @@ export const AdventskalenderPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-4 md:pb-6">
       <SEO
-        title="Der Adventskalender – 24 Tage Innehalten | Flow der Stille"
-        description="24 Tage Innehalten durch den Dezember: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
+        title="Adventskalender der Stille | 24 Tage Innehalten | Flow der Stille"
+        description="24 Tage Innehalten durch den Dezember. 100 % kostenfrei: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
         canonical="https://flow-der-stille.de/adventskalender"
       />
 
@@ -266,9 +283,9 @@ export const AdventskalenderPage: React.FC = () => {
 
         <div className="max-w-6xl mx-auto relative z-10 text-center space-y-5">
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest shadow-2xs">
               <Sparkles className="w-3.5 h-3.5" />
-              FLOW DER STILLE · 24 TAGE INNEHALTEN
+              Kostenfrei | Dein Geschenk im Advent
             </div>
 
             <button
@@ -282,16 +299,16 @@ export const AdventskalenderPage: React.FC = () => {
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#3D3B35] leading-tight tracking-tight max-w-4xl mx-auto">
-            Der Adventskalender:{' '}
-            <span className="text-[#8A9A8A] italic font-normal block sm:inline">
+            Adventskalender der Stille
+            <span className="text-[#8A9A8A] italic font-normal block text-2xl sm:text-3xl lg:text-4xl mt-2">
               24 Tage Innehalten
             </span>
           </h1>
 
           <p className="text-sm sm:text-base md:text-lg text-[#695C4D] leading-relaxed max-w-2xl mx-auto">
-            Öffne jeden Tag im Dezember ein Türchen der Stille. Hinter jedem Fenster verbirgt
-            sich ein achtsamer Impuls, eine wohltuende Meditation oder die Chance auf unser
-            neues Rauhnacht-Hörbuch.
+            Ein stiller Begleiter durch den Dezember. Hinter jedem Türchen wartet ein achtsamer Impuls,
+            eine wohltuende Meditation oder die Chance auf unser neues Rauhnacht-Hörbuch.
+            Vollständig kostenfrei und in deinem eigenen Rhythmus.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#695C4D]">
@@ -526,9 +543,138 @@ export const AdventskalenderPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#8A9A8A] shrink-0" />
-                  Einmalkauf ohne Abo – dauerhaft aktiv
+                  Einmalkauf ohne Abo | Dauerhaft aktiv
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── C. FAQ-AKKORDEON (HÄUFIGE FRAGEN) ─────────────────────────────── */}
+        <div className="mt-8 sm:mt-10 bg-white rounded-2xl sm:rounded-3xl border border-[#E3E1D9] p-5 sm:p-7 shadow-xs">
+          <div className="text-center max-w-2xl mx-auto mb-6">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
+              Häufige Fragen
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
+              Alles Wissenswerte zum Adventskalender
+            </h3>
+            <p className="text-xs sm:text-sm text-[#695C4D] mt-2 leading-relaxed">
+              Hier findest du Antworten auf alle wichtigen Fragen rund um die 24 Tage Innehalten.
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto divide-y divide-[#E3E1D9]">
+            {[
+              {
+                question: 'Wann öffnen sich die täglichen Türchen?',
+                answer:
+                  'Jedes Türchen öffnet sich automatisch um Mitternacht (00:00 Uhr) des jeweiligen Tages im Dezember. Vorab bleiben die Inhalte geschützt und verborgen, damit jeder Tag ein kleiner geschützter Moment der Überraschung für dich bleibt.'
+              },
+              {
+                question: 'Ist der Adventskalender wirklich komplett kostenfrei?',
+                answer:
+                  'Ja, der gesamte Adventskalender ist zu 100 % kostenfrei. Es gibt kein verstecktes Abonnement und keine Kaufverpflichtung. Du kannst alle 24 Türchen, Meditationen und Übungen uneingeschränkt nutzen.'
+              },
+              {
+                question: 'Kann ich bereits vergangene Türchen nachholen?',
+                answer:
+                  'Selbstverständlich. Einmal geöffnete Türchen bleiben für dich durchgehend bis zum 6. Januar erreichbar. Wenn du an einem Tag keine Zeit findest, kannst du den Impuls ganz in deinem eigenen Rhythmus nachholen.'
+              },
+              {
+                question: 'Wie funktioniert die tägliche E-Mail-Erinnerung?',
+                answer:
+                  'Wenn du dich mit deiner E-Mail-Adresse für die tägliche Erinnerung anmeldest, schicken wir dir jeden Morgen im Advent eine kurze, ruhige Nachricht mit dem direkten Link zum neuen Türchen. Du kannst dich jederzeit mit einem einzigen Klick wieder abmelden.'
+              },
+              {
+                question: 'Wie laufen die drei Hörbuch-Verlosungen ab?',
+                answer:
+                  'An drei besonderen Tagen (6. Dezember zum Nikolaus, 13. Dezember zum Luciafest und 21. Dezember zur Wintersonnenwende) verlosen wir Exemplare unseres neuen Hörbuchs „Yggdrasils Atem | 12 Rauhnächte auf der Schwelle“. Am 6. und 13. Dezember ist die Teilnahme ganztägig bis 23:59 Uhr möglich, die Auslosung erfolgt am Folgetag. Am 21. Dezember (Wintersonnenwende) endet die Teilnahme pünktlich um 18:00 Uhr, Auslosung und Freischaltung erfolgen direkt ab 18:00 Uhr. Gewinnerinnen und Gewinner erhalten eine automatische Benachrichtigung per E-Mail und das Hörbuch wird direkt in ihrem persönlichen Flow der Stille Bereich freigeschaltet.'
+              }
+            ].map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div key={index} className="py-4 first:pt-0 last:pb-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="w-full flex items-center justify-between text-left gap-4 font-medium text-sm sm:text-base text-[#3D3B35] hover:text-[#4A563E] transition-colors cursor-pointer py-1"
+                  >
+                    <span className="font-semibold">{faq.question}</span>
+                    <span className="p-1 rounded-lg bg-[#F5F5F0] text-[#695C4D] shrink-0">
+                      {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="mt-2.5 pr-6 text-xs sm:text-sm text-[#695C4D] leading-relaxed animate-fadeIn">
+                      <p>{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ─── D. TEILEN-FUNKTION (FREUDE TEILEN) ────────────────────────────── */}
+        <div className="mt-6 sm:mt-8 bg-gradient-to-br from-white via-[#F5F5F0] to-white rounded-2xl sm:rounded-3xl border border-[#E3E1D9] p-5 sm:p-7 text-center shadow-xs">
+          <div className="max-w-xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#8A9A8A]/20 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
+              <Share2 className="w-3.5 h-3.5" />
+              Freude teilen
+            </div>
+
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
+              Schenke einem lieben Menschen eine kleine Auszeit
+            </h3>
+
+            <p className="text-xs sm:text-sm text-[#695C4D] leading-relaxed">
+              Wenn dir die täglichen Impulse guttun, lade gerne Familie oder Freunde ein,
+              gemeinsam mit dir durch den Dezember innezuhalten.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-[#3D3B35] transition-colors cursor-pointer shadow-2xs"
+              >
+                {copiedLink ? (
+                  <>
+                    <Check className="w-4 h-4 text-[#8A9A8A]" />
+                    <span className="text-[#4A563E]">Link kopiert!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-[#8A9A8A]" />
+                    <span>Link kopieren</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                  'Einladung zu 24 Tagen Innehalten im Advent. Ein kostenfreier Begleiter mit ruhigen Impulsen, Meditationen und der Verlosung des Rauhnacht-Hörbuchs: https://flow-der-stille.de/adventskalender'
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/30 text-xs sm:text-sm font-semibold text-[#1B6F3E] transition-colors cursor-pointer shadow-2xs"
+              >
+                <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                Per WhatsApp teilen
+              </a>
+
+              <a
+                href={`mailto:?subject=${encodeURIComponent(
+                  'Adventskalender der Stille | 24 Tage Innehalten'
+                )}&body=${encodeURIComponent(
+                  'Hallo,\n\nich habe diesen ruhigen Adventskalender von Flow der Stille entdeckt und dachte, er tut dir vielleicht auch gut.\n\nVom 1. bis zum 24. Dezember öffnet sich täglich ein kostenfreies Türchen mit sanften Impulsen, Meditationen und altem Wissen zur Winterzeit:\nhttps://flow-der-stille.de/adventskalender\n\nHerzliche Grüße'
+                )}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-[#3D3B35] transition-colors cursor-pointer shadow-2xs"
+              >
+                <Mail className="w-4 h-4 text-[#8A9A8A]" />
+                Per E-Mail weiterleiten
+              </a>
             </div>
           </div>
         </div>
@@ -610,8 +756,11 @@ export const AdventskalenderPage: React.FC = () => {
                     </div>
                     <p className="text-xs text-[#8B6E32] font-semibold mt-1">
                       {activeDay.day === 21
-                        ? '⏱️ Großes Sonnenwende-Finale: Teilnahmeschluss ist der 21. Dezember um 18:00 Uhr! Jede(r), der sich bis 18 Uhr angemeldet hat, nimmt an der Auslosung teil.'
-                        : `⏱️ Die Auslosung findet jeweils am Tag danach statt (${activeDay.day === 6 ? 'am 07. Dezember' : 'am 14. Dezember'}). Alle bis dahin angemeldeten Teilnehmer sind im Lostopf!`}
+                        ? 'Großes Sonnenwende-Finale: Teilnahme ganztägig bis 18:00 Uhr möglich. Auslosung und Gewinnausgabe erfolgen direkt ab 18:00 Uhr.'
+                        : `Teilnahme ganztägig bis 23:59 Uhr möglich. Die Auslosung findet am ${activeDay.day === 6 ? '7. Dezember' : '14. Dezember'} statt.`}
+                    </p>
+                    <p className="text-[11px] text-[#695C4D] mt-1 leading-relaxed">
+                      Gewinnerinnen und Gewinner erhalten eine automatische Benachrichtigung per E-Mail und das Hörbuch wird direkt in ihrem persönlichen Bereich freigeschaltet.
                     </p>
                   </div>
 

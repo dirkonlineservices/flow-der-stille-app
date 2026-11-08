@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 11:20 Uhr (🔒 Pop-up vollständig fixiert: kein internes Scrollen/Wackeln, Hintergrund-Scrollsperre aktiv, `draggable=false` & `select-none`; ✍️ Neue Schreibstil- und Typografie-Richtlinie in `GEMINI.md` & `CLAUDE.md` integriert und auf alle Advents-Texte angewendet: keine KI-Gedankenstriche, saubere Punkte & Trenner; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
+> - **Letzter Stand**: 08.11.2026, 11:35 Uhr (🌟 Adventskalender-Landingpage spezifikationskonform aktualisiert: Hero mit „Adventskalender der Stille“ & prominentem Badge „Kostenfrei | Dein Geschenk im Advent“, Gewinnspiel-Fristen für 6., 13. & 21. Dez integriert, aufklappbares 5-Punkte FAQ-Akkordeon & „Freude teilen“-Komponente mit 1-Klick-Kopieren & WhatsApp/E-Mail-Sharing ergänzt; alles streng nach Schreibstil- & Typografie-Richtlinie; Web-Build fehlerfrei; Xcode Cloud Auto-Builds in App Store Connect deaktiviert)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
