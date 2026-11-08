@@ -282,20 +282,11 @@ export const AdventskalenderPage: React.FC = () => {
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full bg-[#C8A96E]/15 blur-3xl pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10 text-center space-y-4 sm:space-y-5">
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 text-xs font-bold uppercase tracking-widest shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-800" />
               <span>Kostenfrei | Dein Geschenk im Advent</span>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setIsPopupOpen(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#695C4D] text-xs font-medium transition-colors cursor-pointer shadow-2xs"
-            >
-              <Eye className="w-3.5 h-3.5 text-[#8A9A8A]" />
-              <span>Pop-Up-Vorschau öffnen</span>
-            </button>
           </div>
 
           <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-950 leading-tight tracking-tight max-w-4xl mx-auto break-words px-2">

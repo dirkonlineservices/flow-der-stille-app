@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Sparkles, Gift, CheckCircle2, ArrowRight, Mail, Loader2, X, Bell
 } from 'lucide-react';
@@ -11,6 +11,7 @@ const BANNER_STORAGE_KEY = 'fds_advent_top_banner_dismissed_2026';
 
 export const AdventTopBanner: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [dismissed, setDismissed] = useState<boolean>(() => {
     try {
       return sessionStorage.getItem(BANNER_STORAGE_KEY) === 'true';
@@ -18,6 +19,9 @@ export const AdventTopBanner: React.FC = () => {
       return false;
     }
   });
+
+  // Auf den Adventskalender-Seiten selbst wird kein Banner benötigt (Dopplung vermeiden)
+  const isAdventPage = ['/adventskalender', '/weihnachtskalender', '/advent'].includes(location.pathname.toLowerCase());
 
   // State für Voranmeldung
   const [emailInput, setEmailInput] = useState('');
@@ -57,7 +61,7 @@ export const AdventTopBanner: React.FC = () => {
     };
   }, [user]);
 
-  if (dismissed) return null;
+  if (dismissed || isAdventPage) return null;
 
   const handleDismiss = () => {
     setDismissed(true);
@@ -128,7 +132,7 @@ export const AdventTopBanner: React.FC = () => {
       aria-label="Weihnachtskalender Vorankündigung"
       className="relative z-20 w-full bg-gradient-to-r from-[#8A9A8A]/20 via-[#F5F5F0] to-[#C8A96E]/20 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
     >
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-12 py-3 sm:py-3.5 relative flex flex-col md:flex-row items-center justify-center gap-2.5 sm:gap-4 md:gap-5 text-center">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 md:pr-56 py-2.5 sm:py-3 relative flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 text-center">
         {/* Größeres, harmonisches Salbeigrün-Badge mit deutlichem Kostenfrei-Hinweis - immer zentriert & frei stehend */}
         <div className="w-full md:w-auto flex justify-center py-0.5 shrink-0">
           <Link
@@ -139,12 +143,13 @@ export const AdventTopBanner: React.FC = () => {
                 localStorage.setItem('fds_advent_visited', 'true');
               } catch {}
             }}
-            className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-medium text-xs sm:text-sm transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
+            className="group inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-medium text-xs sm:text-sm transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
             title="Zum kostenfreien Adventskalender"
           >
             <Sparkles className="w-4 h-4 text-amber-200 shrink-0" />
             <span className="font-serif font-bold tracking-tight text-white">Adventskalender</span>
-            <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-white font-bold text-xs tracking-wide">
+            <span className="text-white/60 text-xs">|</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/20 text-white font-bold text-xs tracking-wide">
               Kostenfrei
             </span>
           </Link>
@@ -237,11 +242,11 @@ export const AdventTopBanner: React.FC = () => {
           <ArrowRight size={13} className="text-emerald-800" />
         </Link>
 
-        {/* Schließen-Button - immer gut erreichbar & ohne Überlagerung */}
+        {/* Schließen-Button - immer gut erreichbar & links neben den Desktop-Buttons */}
         <button
           type="button"
           onClick={handleDismiss}
-          className="absolute top-2.5 right-2 sm:right-3 md:right-4 md:top-1/2 md:-translate-y-1/2 p-1.5 rounded-full hover:bg-black/5 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0"
+          className="absolute top-2.5 right-2 sm:right-3 md:right-56 md:top-1/2 md:-translate-y-1/2 p-1.5 rounded-full hover:bg-black/5 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0"
           aria-label="Banner ausblenden"
           title="Diesen Hinweis ausblenden"
         >

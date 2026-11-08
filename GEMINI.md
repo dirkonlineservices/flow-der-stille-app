@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 13:30 Uhr (🚫 Telegram restlos entfernt: Button, Handler & Referenzen in 'FriendInviteWidget.tsx' gelöscht; Web-Build fehlerfrei und verifiziert)
+> - **Letzter Stand**: 08.11.2026, 14:55 Uhr (🎯 Badge-Harmonisierung & Desktop Header-Fix: Hero-Badge in 'AdventskalenderPage.tsx' von störendem Pop-Up-Button befreit & zentriert; Banner-Dopplung auf /adventskalender eliminiert; Desktop-Banner mit Sicherheitsabstand für feste Action-Buttons abgesichert; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
