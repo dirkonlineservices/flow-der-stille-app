@@ -335,10 +335,10 @@ export default function AudioSessionPage() {
                             <Key size={16} />
                           </div>
                           <div>
-                            <span className="font-bold text-sm text-black dark:text-white block">
+                            <span className="font-bold text-sm text-stone-950 block">
                               Option 1: Express-Kauf mit Magic Link ({priceDisplay})
                             </span>
-                            <span className="text-[11px] text-[var(--text-muted)] block">
+                            <span className="text-[11px] text-stone-700 block">
                               100 % ohne Passwort und ohne Benutzerkonto | Sofortiger Zugang
                             </span>
                           </div>
@@ -362,10 +362,10 @@ export default function AudioSessionPage() {
                             to="/pakete#magic-link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white font-bold underline inline-flex items-center gap-1"
+                            className="text-[11px] text-stone-950 hover:text-black font-bold underline inline-flex items-center gap-1"
                           >
                             <span>Details und FAQ zum Magic Link ansehen</span>
-                            <ExternalLink size={11} className="shrink-0" />
+                            <ExternalLink size={11} className="shrink-0 text-stone-950" />
                           </Link>
                         </div>
                       </div>
@@ -392,9 +392,9 @@ export default function AudioSessionPage() {
               {user && !isFreeProduct && !isOwned && (
                 <div className="pt-2 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 font-bold text-sm text-black dark:text-white">
-                      <Key size={15} className="text-amber-800 dark:text-amber-400 shrink-0" />
-                      <span>Express-Kauf mit Magic Link ({priceDisplay})</span>
+                    <div className="flex items-center gap-1.5 font-bold text-sm text-stone-950">
+                      <Key size={15} className="text-amber-800 shrink-0" />
+                      <span className="text-stone-950 font-bold">Express-Kauf mit Magic Link ({priceDisplay})</span>
                     </div>
                     <span className="text-xs text-[var(--text-muted)] block leading-relaxed">
                       Sofortige Freischaltung in deiner Mediathek + Magic Link per E-Mail für jedes weitere Gerät. Einmalig {priceDisplay} • 100 % ohne Abo.
