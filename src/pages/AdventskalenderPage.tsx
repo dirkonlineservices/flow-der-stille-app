@@ -245,7 +245,7 @@ export const AdventskalenderPage: React.FC = () => {
   // Die zeitbasierte Sperre stellt sicher, dass sich Türchen erst am jeweiligen Tag öffnen.
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] text-[#3D3B35] pb-4 md:pb-6">
+    <div className="min-h-screen max-w-[100vw] overflow-x-hidden bg-[#F5F5F0] text-[#3D3B35] pb-4 md:pb-6">
       <SEO
         title="Adventskalender der Stille | 24 Tage Innehalten | Flow der Stille"
         description="24 Tage Innehalten durch den Dezember. 100 % kostenfrei: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
@@ -277,15 +277,15 @@ export const AdventskalenderPage: React.FC = () => {
       )}
 
       {/* ─── HERO BEREICH: HELL & RUHIG IN SALBEIGRÜN / BEIGE ──────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#8A9A8A]/20 via-[#F5F5F0] to-[#F5F5F0] pt-12 pb-14 md:py-20 px-4 sm:px-6 border-b border-[#E3E1D9]">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#8A9A8A]/20 via-[#F5F5F0] to-[#F5F5F0] pt-10 sm:pt-14 pb-12 sm:pb-16 md:py-20 px-3.5 sm:px-6 border-b border-[#E3E1D9]">
         <div className="absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-[#8A9A8A]/20 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full bg-[#C8A96E]/15 blur-3xl pointer-events-none" />
 
-        <div className="max-w-6xl mx-auto relative z-10 text-center space-y-5">
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest shadow-2xs">
+        <div className="max-w-6xl mx-auto relative z-10 text-center space-y-4 sm:space-y-5">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest shadow-2xs">
               <Sparkles className="w-3.5 h-3.5" />
-              Kostenfrei | Dein Geschenk im Advent
+              <span>Kostenfrei | Dein Geschenk im Advent</span>
             </div>
 
             <button
@@ -294,18 +294,18 @@ export const AdventskalenderPage: React.FC = () => {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#695C4D] text-xs font-medium transition-colors cursor-pointer shadow-2xs"
             >
               <Eye className="w-3.5 h-3.5 text-[#8A9A8A]" />
-              Pop-Up-Vorschau öffnen
+              <span>Pop-Up-Vorschau öffnen</span>
             </button>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-950 leading-tight tracking-tight max-w-4xl mx-auto">
+          <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-950 leading-tight tracking-tight max-w-4xl mx-auto break-words px-2">
             Adventskalender der Stille
-            <span className="text-[#344034] italic font-semibold block text-2xl sm:text-3xl lg:text-4xl mt-2">
+            <span className="text-[#344034] italic font-semibold block text-xl sm:text-3xl lg:text-4xl mt-2">
               24 Tage Innehalten
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base md:text-lg text-[#695C4D] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xs sm:text-base md:text-lg text-stone-700 leading-relaxed max-w-2xl mx-auto px-2 font-normal">
             Ein stiller Begleiter durch den Dezember. Hinter jedem Türchen wartet ein achtsamer Impuls,
             eine wohltuende Meditation oder die Chance auf unser neues Rauhnacht-Hörbuch.
             Vollständig kostenfrei und in deinem eigenen Rhythmus.
@@ -329,13 +329,13 @@ export const AdventskalenderPage: React.FC = () => {
       </section>
 
       {/* ─── HAUPTBEREICH: 24-TÜRCHEN-RASTER (SALBEIGRÜN & WARMES BEIGE) ───── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-4 sm:pb-6">
-        <div className="mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+      <section className="max-w-6xl mx-auto px-3.5 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6">
+        <div className="mb-6 sm:mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#8A9A8A] block mb-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 block mb-1">
               24 Tage Innehalten
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#3D3B35]">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-950">
               Wähle dein heutiges Türchen
             </h2>
           </div>
@@ -343,13 +343,13 @@ export const AdventskalenderPage: React.FC = () => {
           <div className="flex items-center gap-3 text-xs text-[#695C4D] bg-white px-4 py-2 rounded-2xl border border-[#E3E1D9] shadow-2xs">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[#8A9A8A]" />
-              Geöffnet: <strong className="text-[#3D3B35]">{openedDays.length}</strong> / 24
+              Geöffnet: <strong className="text-stone-950">{openedDays.length}</strong> / 24
             </span>
           </div>
         </div>
 
-        {/* 24-TÜRCHEN-GRID */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 sm:gap-4 md:gap-5">
+        {/* 24-TÜRCHEN-GRID (Mobil 2 Spalten mit optimaler Touch-Größe) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 sm:gap-4 md:gap-5">
           {ADVENT_DAYS.map((dayItem) => {
             const isUnlocked =
               (isAdminUser && adminTimeBypass) || isDayUnlockedByDate(dayItem.day);
@@ -361,12 +361,12 @@ export const AdventskalenderPage: React.FC = () => {
                 key={dayItem.day}
                 type="button"
                 onClick={() => handleDoorClick(dayItem)}
-                className={`group relative aspect-square rounded-3xl p-4 transition-all duration-300 flex flex-col items-center justify-between overflow-hidden shadow-xs hover:shadow-md cursor-pointer border ${
+                className={`group relative aspect-square rounded-2xl sm:rounded-3xl p-2.5 sm:p-4 transition-all duration-300 flex flex-col items-center justify-between overflow-hidden shadow-xs hover:shadow-md cursor-pointer border ${
                   isOpened
-                    ? 'bg-gradient-to-br from-[#EAEAE2] to-[#DFDFD5] border-[#8A9A8A]/50 text-[#3D3B35]'
+                    ? 'bg-gradient-to-br from-[#EAEAE2] to-[#DFDFD5] border-[#8A9A8A]/50 text-stone-900'
                     : isUnlocked
                     ? 'bg-gradient-to-br from-[#8A9A8A] via-[#7B8B7B] to-[#6E7F6E] border-[#728372] text-white hover:-translate-y-1 hover:shadow-lg'
-                    : 'bg-white border-[#E3E1D9] text-[#A89F91] hover:border-[#8A9A8A]/60'
+                    : 'bg-white border-[#E3E1D9] text-stone-700 hover:border-[#8A9A8A]/60'
                 }`}
               >
                 {/* Dezent goldener Schimmer für die 3 Verlosungstage */}
@@ -507,20 +507,20 @@ export const AdventskalenderPage: React.FC = () => {
                 Wissen, Geschichten und geführten Innenreisen bis zum 6. Januar.
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 pt-1">
+              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 pt-1">
                 <Link
                   to="/hoerbuch/rauhnaechte"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-sm transition-all shadow-md cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm transition-all shadow-md cursor-pointer text-center"
                 >
-                  <BookOpen className="w-4 h-4" />
-                  Rauhnacht-Hörbuch entdecken
+                  <BookOpen className="w-4 h-4 shrink-0" />
+                  <span>Rauhnacht-Hörbuch entdecken</span>
                 </Link>
 
                 <Link
                   to="/ruhe-shop#product-fds_rauhnaechte"
-                  className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#3D3B35] font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer shadow-2xs"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-stone-950 font-semibold text-sm transition-colors cursor-pointer shadow-2xs text-center"
                 >
-                  🔑 Express-Kauf im Ruhe-Shop (9,99&nbsp;€ • Kein Abo)
+                  <span>🔑 Express-Kauf im Ruhe-Shop (<span className="whitespace-nowrap font-bold">9,99&nbsp;€</span> • Kein Abo)</span>
                 </Link>
               </div>
             </div>
@@ -633,20 +633,20 @@ export const AdventskalenderPage: React.FC = () => {
               gemeinsam mit dir durch den Dezember innezuhalten.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-[#3D3B35] transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-stone-900 transition-colors cursor-pointer shadow-2xs text-center"
               >
                 {copiedLink ? (
                   <>
-                    <Check className="w-4 h-4 text-[#8A9A8A]" />
-                    <span className="text-[#4A563E]">Link kopiert!</span>
+                    <Check className="w-4 h-4 text-emerald-700" />
+                    <span className="text-emerald-800 font-bold">Link kopiert!</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 text-[#8A9A8A]" />
+                    <Copy className="w-4 h-4 text-emerald-800" />
                     <span>Link kopieren</span>
                   </>
                 )}
@@ -658,10 +658,10 @@ export const AdventskalenderPage: React.FC = () => {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/30 text-xs sm:text-sm font-semibold text-[#1B6F3E] transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 border border-[#25D366]/30 text-xs sm:text-sm font-semibold text-[#1B6F3E] transition-colors cursor-pointer shadow-2xs text-center"
               >
                 <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                Per WhatsApp teilen
+                <span>Per WhatsApp teilen</span>
               </a>
 
               <a
@@ -670,10 +670,10 @@ export const AdventskalenderPage: React.FC = () => {
                 )}&body=${encodeURIComponent(
                   'Hallo,\n\nich habe diesen ruhigen Adventskalender von Flow der Stille entdeckt und dachte, er tut dir vielleicht auch gut.\n\nVom 1. bis zum 24. Dezember öffnet sich täglich ein kostenfreies Türchen mit sanften Impulsen, Meditationen und altem Wissen zur Winterzeit:\nhttps://flow-der-stille.de/adventskalender\n\nHerzliche Grüße'
                 )}`}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-[#3D3B35] transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-xs sm:text-sm font-semibold text-stone-900 transition-colors cursor-pointer shadow-2xs text-center"
               >
-                <Mail className="w-4 h-4 text-[#8A9A8A]" />
-                Per E-Mail weiterleiten
+                <Mail className="w-4 h-4 text-emerald-800" />
+                <span>Per E-Mail teilen</span>
               </a>
             </div>
           </div>

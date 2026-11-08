@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 12:54 Uhr (🎯 Pop-up & Währungs-Fix: Literal '&nbsp;' in 'NewContentNotification.tsx' behoben, Euro-Preise sauber formatiert (9,99 €), Titel-Großschreibung & Kontraste in allen Modalen/Pop-ups geschärft; Web-Build fehlerfrei)
+> - **Letzter Stand**: 08.11.2026, 13:25 Uhr (📱 Mobile Responsiveness, Header-Kollisions-Fix, Kontrast-Harmonisierung & Pop-up/Währungs-Fix: Mobile Top-Bar, Badge freistehend ohne Überdeckung, horizontales Scrollen behoben; alle inversen dark:-Textklassen auf hellen Containern in AboutUs, PricingPackages, Community & Dashboard restlos beseitigt; Pop-up Euro-Formatierung & Großschreibung verifiziert; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).

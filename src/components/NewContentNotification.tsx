@@ -137,7 +137,7 @@ export function NewContentNotification() {
           <p className="text-xs text-stone-700 leading-relaxed font-normal">
             <span className="text-stone-950 font-bold">„{cleanTitel(latestProduct.titel)}“</span> ist jetzt im Ruhe-Shop verfügbar
             {parseFloat(latestProduct.preis) > 0 ? (
-              <span className="whitespace-nowrap font-semibold text-stone-950"> ({formatPrice(latestProduct.preis)}&nbsp;€)</span>
+              <span className="whitespace-nowrap font-semibold text-stone-950">{` (${formatPrice(latestProduct.preis)}\u00A0€)`}</span>
             ) : (
               ' (Kostenfrei)'
             )}.

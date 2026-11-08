@@ -54,16 +54,16 @@ export default function PricingPackages() {
 
       {/* 1. HERO HEADER: Plakativ & klar */}
       <section className="text-center space-y-4 max-w-3xl mx-auto pt-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
-          <Sparkles size={14} />
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-950 text-xs font-bold uppercase tracking-wider border border-emerald-300">
+          <Sparkles size={14} className="text-emerald-700" />
           <span>Faire Modelle • Garantiert ohne Abonnement</span>
         </div>
 
-        <h1 className="font-serif font-bold text-3xl sm:text-5xl text-stone-900 dark:text-stone-100 leading-tight">
+        <h1 className="font-serif font-bold text-3xl sm:text-5xl text-stone-950 leading-tight">
           Finde deinen Weg zur inneren Ruhe.
         </h1>
 
-        <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 leading-relaxed">
+        <p className="text-sm sm:text-base text-stone-700 leading-relaxed font-normal">
           Keine Abo-Fallen, keine automatischen Verlängerungen. Wähle einfach den Zugang, der heute zu dir passt: 
           Völlig frei ohne Anmeldung reinhören, mit dem kostenfreien Hörer-Konto zwei Voll-Sessions sichern oder Einzelwerke per Express-Gastkauf für immer freischalten.
         </p>
@@ -75,8 +75,8 @@ export default function PricingPackages() {
               onClick={() => setActiveTab('cards')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'cards'
-                  ? 'bg-[var(--bg-card)] text-stone-900 dark:text-stone-100 shadow-xs'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                  ? 'bg-[var(--bg-card)] text-stone-950 shadow-xs'
+                  : 'text-stone-600 hover:text-stone-950'
               }`}
             >
               Die 3 Zugänge im Überblick
@@ -85,8 +85,8 @@ export default function PricingPackages() {
               onClick={() => setActiveTab('matrix')}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'matrix'
-                  ? 'bg-[var(--bg-card)] text-stone-900 dark:text-stone-100 shadow-xs'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
+                  ? 'bg-[var(--bg-card)] text-stone-950 shadow-xs'
+                  : 'text-stone-600 hover:text-stone-950'
               }`}
             >
               Detail-Tabelle
@@ -103,52 +103,52 @@ export default function PricingPackages() {
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-emerald-500/40 transition-all">
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-1.5 text-center">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-950 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 whitespace-nowrap">
                   Freier Gast-Zugang
                 </span>
-                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">Ohne Registrierung</span>
+                <span className="text-xs text-stone-600 font-semibold whitespace-nowrap">Ohne Registrierung</span>
               </div>
 
               <div>
-                <h3 className="font-serif font-bold text-2xl text-stone-900 dark:text-stone-100">
+                <h3 className="font-serif font-bold text-2xl text-stone-950">
                   Direkt reinhören
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1">
+                <p className="text-xs sm:text-sm text-stone-700 mt-1 font-normal">
                   Einfach Kopfhörer aufsetzen und sofort Entspannung spüren, ganz ohne jede Verpflichtung.
                 </p>
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-stone-900 dark:text-stone-100 tracking-tight whitespace-nowrap">0 €</span>
-                  <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">dauerhaft kostenfrei</span>
+                  <span className="text-3xl sm:text-4xl font-bold font-serif text-stone-950 tracking-tight whitespace-nowrap">0 €</span>
+                  <span className="text-xs text-stone-600 font-semibold whitespace-nowrap">dauerhaft kostenfrei</span>
                 </div>
-                <span className="text-xs text-emerald-800 dark:text-emerald-300 block mt-0.5 font-bold">
+                <span className="text-xs text-emerald-900 block mt-0.5 font-bold">
                   Keine E-Mail • Keine Zahlungsdaten
                 </span>
               </div>
 
               {/* Feature List */}
-              <ul className="space-y-3 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+              <ul className="space-y-3 text-xs sm:text-sm text-stone-700">
                 <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Kapitel 1 beider Hörbücher:</strong> Über 28 Minuten gratis in voller Länge hören</span>
+                  <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Kapitel 1 beider Hörbücher:</strong> Über 28 Minuten gratis in voller Länge hören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Geführte Atemübung und PMR:</strong> Sofortige Beruhigung des Nervensystems (nach Haftungsausschluss)</span>
+                  <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Geführte Atemübung und PMR:</strong> Sofortige Beruhigung des Nervensystems (nach Haftungsausschluss)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">100 % werbefrei</strong> im Web-Player</span>
+                  <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">100 % werbefrei</strong> im Web-Player</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <X size={16} className="text-rose-700 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <span className="text-stone-600 dark:text-stone-400">Kein geräteübergreifendes Merken des Hörfortschritts</span>
+                  <X size={16} className="text-rose-700 shrink-0 mt-0.5" />
+                  <span className="text-stone-600">Kein geräteübergreifendes Merken des Hörfortschritts</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <X size={16} className="text-rose-700 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <span className="text-stone-600 dark:text-stone-400">Volle Selbsthypnosen und Meditationen nicht freigeschaltet</span>
+                  <X size={16} className="text-rose-700 shrink-0 mt-0.5" />
+                  <span className="text-stone-600">Volle Selbsthypnosen und Meditationen nicht freigeschaltet</span>
                 </li>
               </ul>
             </div>
@@ -156,19 +156,19 @@ export default function PricingPackages() {
             <div className="pt-4 space-y-2">
               <Link
                 to="/hoerbuecher"
-                className="w-full py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-stone-900 dark:text-stone-100 font-bold text-xs sm:text-sm border border-[var(--border)] transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                className="w-full py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-stone-950 font-bold text-xs sm:text-sm border border-[var(--border)] transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
               >
-                <Play size={15} className="fill-current text-emerald-700 dark:text-emerald-400" />
+                <Play size={15} className="fill-current text-emerald-700" />
                 <span>Jetzt gratis reinhören</span>
               </Link>
-              <p className="text-xs text-center text-stone-600 dark:text-stone-400">
+              <p className="text-xs text-center text-stone-600">
                 Sofort abspielbar ohne Anmeldung.
               </p>
             </div>
           </div>
 
           {/* PAKET 2: KOSTENLOSES HÖRER-KONTO (0 €) -> MIT DEN 2 ECHTEN DATENBANK-PRODUKTEN */}
-          <div className="bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-alt)]/60 rounded-3xl p-6 sm:p-8 border-2 border-emerald-600 dark:border-emerald-500 shadow-2xl flex flex-col justify-between space-y-6 relative transform lg:-translate-y-2">
+          <div className="bg-gradient-to-b from-[var(--bg-card)] to-[var(--bg-alt)]/60 rounded-3xl p-6 sm:p-8 border-2 border-emerald-600 shadow-2xl flex flex-col justify-between space-y-6 relative transform lg:-translate-y-2">
             {/* Top Ribbon */}
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-md flex items-center gap-1.5 whitespace-nowrap">
               <Sparkles size={12} />
@@ -177,87 +177,87 @@ export default function PricingPackages() {
 
             <div className="space-y-4 pt-1">
               <div className="flex flex-col items-center justify-center gap-1.5 text-center">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 whitespace-nowrap">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-emerald-950 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 whitespace-nowrap">
                   Hörer-Konto
                 </span>
-                <span className="text-xs text-emerald-800 dark:text-emerald-300 font-bold whitespace-nowrap">1-Klick-Aktivierung</span>
+                <span className="text-xs text-emerald-900 font-bold whitespace-nowrap">1-Klick-Aktivierung</span>
               </div>
 
               <div>
-                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
+                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-stone-950">
                   Dein Ruhe-Bereich
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1">
+                <p className="text-xs sm:text-sm text-stone-700 mt-1 font-normal">
                   Mit 1 Klick registrieren und sofort 2 vollständige Sessions dauerhaft freischalten.
                 </p>
               </div>
 
               <div className="py-2 border-y border-[var(--border)]">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="text-3xl sm:text-4xl font-bold font-serif text-stone-900 dark:text-stone-100 tracking-tight whitespace-nowrap">0 €</span>
-                  <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">dauerhaft kostenfrei</span>
+                  <span className="text-3xl sm:text-4xl font-bold font-serif text-stone-950 tracking-tight whitespace-nowrap">0 €</span>
+                  <span className="text-xs text-stone-600 font-semibold whitespace-nowrap">dauerhaft kostenfrei</span>
                 </div>
-                <span className="text-xs text-emerald-800 dark:text-emerald-300 block mt-0.5 font-bold">
+                <span className="text-xs text-emerald-900 block mt-0.5 font-bold">
                   Garantiert kein Abo • Keine Zahlungsdaten
                 </span>
               </div>
 
               {/* 2 Freigeschaltete Datenbank-Sessions */}
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3.5 space-y-2 text-xs">
-                <span className="font-bold text-stone-900 dark:text-stone-100 block text-xs uppercase tracking-wider">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 space-y-2 text-xs">
+                <span className="font-bold text-stone-950 block text-xs uppercase tracking-wider">
                   🎁 Gratis nach 1-Klick-Registrierung freigeschaltet:
                 </span>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Moon size={14} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
-                      <span className="text-stone-900 dark:text-stone-100 font-bold truncate">
+                      <Moon size={14} className="text-emerald-700 shrink-0" />
+                      <span className="text-stone-950 font-bold truncate">
                         Selbsthypnose: Tiefer Schlaf
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">12:54&nbsp;Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">12:54&nbsp;Min.</span>
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
-                      <span className="text-stone-900 dark:text-stone-100 font-bold truncate">
+                      <Heart size={14} className="text-rose-600 shrink-0" />
+                      <span className="text-stone-950 font-bold truncate">
                         Meditation: Herzöffnung
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16:45&nbsp;Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16:45&nbsp;Min.</span>
                   </div>
                 </div>
               </div>
 
               {/* Feature List */}
-              <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+              <ul className="space-y-2.5 text-xs sm:text-sm text-stone-700">
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Selbsthypnose und Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
+                  <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">2 Voll-Sessions dauerhaft gratis:</strong> Schlaf-Selbsthypnose und Herz-Meditation in voller Länge streamen (Wert: 3,98&nbsp;€)</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Persönlicher Ruhebereich:</strong> Tägliche Impulse reflektieren, Streaks (Serie an Tagen) und Reflexions-Historie speichern</span>
+                  <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Persönlicher Ruhebereich:</strong> Tägliche Impulse reflektieren, Streaks (Serie an Tagen) und Reflexions-Historie speichern</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Interaktive Praxis:</strong> SOS-Atemübungen, interaktiver Atemraum, Morgen- und Abendrituale sowie Ernährungstipps</span>
+                  <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Interaktive Praxis:</strong> SOS-Atemübungen, interaktiver Atemraum, Morgen- und Abendrituale sowie Ernährungstipps</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming:</strong> Im Web-Player und in der kostenlosen Android App nahtlos weiterhören</span>
+                  <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Geräteübergreifendes Streaming:</strong> Im Web-Player und in der kostenlosen Android App nahtlos weiterhören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">1-Klick-Anmeldung:</strong> Über Google, Meta (Facebook) oder E-Mail, garantiert 0&nbsp;€ und kein Abo</span>
+                  <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">1-Klick-Anmeldung:</strong> Über Google, Meta (Facebook) oder E-Mail, garantiert 0&nbsp;€ und kein Abo</span>
                 </li>
               </ul>
             </div>
 
             <div className="pt-4 space-y-2">
               {user ? (
-                <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-200 text-center text-xs font-bold flex items-center justify-center gap-2">
-                  <UserCheck size={16} className="text-emerald-700 dark:text-emerald-400" />
+                <div className="p-3.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-950 text-center text-xs font-bold flex items-center justify-center gap-2">
+                  <UserCheck size={16} className="text-emerald-700" />
                   <span>Du bist eingeloggt. Deine 2 Gratis-Sessions stehen bereit!</span>
                 </div>
               ) : (
@@ -269,9 +269,9 @@ export default function PricingPackages() {
                   <span>Mit 1 Klick kostenlos aktivieren</span>
                 </Link>
               )}
-              <p className="text-xs text-center text-stone-600 dark:text-stone-400">
+              <p className="text-xs text-center text-stone-600">
                 <span>Über Google, Meta (Facebook) oder E-Mail</span>
-                <span className="block mt-0.5 whitespace-nowrap font-medium text-emerald-800 dark:text-emerald-300">
+                <span className="block mt-0.5 whitespace-nowrap font-medium text-emerald-900">
                   100&nbsp;% sicher und abofrei
                 </span>
               </p>
@@ -282,32 +282,32 @@ export default function PricingPackages() {
           <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-md flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition-all">
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-1.5 text-center">
-                <span className="text-xs font-mono uppercase tracking-wider font-bold text-stone-900 dark:text-stone-100 bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full border border-stone-300 dark:border-stone-700 whitespace-nowrap">
+                <span className="text-xs font-mono uppercase tracking-wider font-bold text-stone-950 bg-stone-100 px-3 py-1 rounded-full border border-stone-300 whitespace-nowrap">
                   Ruhe-Shop Einmalkauf
                 </span>
-                <span className="text-xs text-stone-600 dark:text-stone-400 font-semibold whitespace-nowrap">Für immer dein • Kein Abo</span>
+                <span className="text-xs text-stone-600 font-semibold whitespace-nowrap">Für immer dein • Kein Abo</span>
               </div>
 
               <div>
-                <h3 className="font-serif font-bold text-2xl text-stone-900 dark:text-stone-100">
+                <h3 className="font-serif font-bold text-2xl text-stone-950">
                   Einmalkauf mit Magic Link
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mt-1">
+                <p className="text-xs sm:text-sm text-stone-700 mt-1 font-normal">
                   Volle Werke einzeln erwerben: Als Gast oder mit Konto, ganz ohne Passwortzwang.
                 </p>
               </div>
 
               <div className="py-2.5 border-y border-[var(--border)]">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="text-2xl sm:text-3xl xl:text-4xl font-bold font-serif text-stone-900 dark:text-stone-100 tracking-tight whitespace-nowrap">
+                  <span className="text-2xl sm:text-3xl xl:text-4xl font-bold font-serif text-stone-950 tracking-tight whitespace-nowrap">
                     1,99&nbsp;€ bis 4,99&nbsp;€
                   </span>
-                  <span className="text-xs text-stone-700 dark:text-stone-300 font-bold whitespace-nowrap">einmalig</span>
+                  <span className="text-xs text-stone-700 font-bold whitespace-nowrap">einmalig</span>
                 </div>
-                <span className="text-xs text-stone-900 dark:text-stone-100 block mt-1 font-bold">
+                <span className="text-xs text-stone-950 block mt-1 font-bold">
                   Express-Gastkauf mit PayPal und Karte
                 </span>
-                <span className="text-[11px] text-stone-600 dark:text-stone-400 block mt-0.5 font-medium">
+                <span className="text-[11px] text-stone-600 block mt-0.5 font-medium">
                   Keine Registrierung notwendig • In der App auch Google Pay • Sofort hören
                 </span>
               </div>
@@ -315,57 +315,57 @@ export default function PricingPackages() {
               {/* 3 Plakative Kategorien ohne hässliche Zeilenumbrüche */}
               <div className="space-y-2 text-xs">
                 <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
-                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-950">
                     <span className="flex items-center gap-1.5 min-w-0">
-                      <BookOpen size={14} className="text-amber-700 dark:text-amber-300 shrink-0" />
+                      <BookOpen size={14} className="text-amber-800 shrink-0" />
                       <span className="truncate">Hörbücher</span>
-                      <span className="text-[11px] font-mono text-amber-800 dark:text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">4,99&nbsp;€</span>
+                      <span className="text-[11px] font-mono text-amber-950 bg-amber-100 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">4,99&nbsp;€</span>
                     </span>
-                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">58&nbsp;Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">58&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                  <p className="text-xs text-stone-600 leading-relaxed font-normal">
                     Ganze Geschichten über Wandel, Loslassen und echtes Menschsein.
                   </p>
                 </div>
 
                 <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
-                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-950">
                     <span className="flex items-center gap-1.5 min-w-0">
-                      <Moon size={14} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
+                      <Moon size={14} className="text-indigo-800 shrink-0" />
                       <span className="truncate">Gezielte Selbsthypnosen</span>
-                      <span className="text-[11px] font-mono text-indigo-800 dark:text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
+                      <span className="text-[11px] font-mono text-indigo-950 bg-indigo-100 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
                     </span>
-                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">15&nbsp;Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">15&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                  <p className="text-xs text-stone-600 leading-relaxed font-normal">
                     Gesunde Ernährung, Selbstbewusstsein, Fokus und Konzentration.
                   </p>
                 </div>
 
                 <div className="p-3 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] space-y-1">
-                  <div className="flex items-center justify-between gap-2 font-bold text-stone-900 dark:text-stone-100">
+                  <div className="flex items-center justify-between gap-2 font-bold text-stone-950">
                     <span className="flex items-center gap-1.5 min-w-0">
-                      <Heart size={14} className="text-rose-600 dark:text-rose-400 shrink-0" />
+                      <Heart size={14} className="text-rose-700 shrink-0" />
                       <span className="truncate">Geführte Meditationen</span>
-                      <span className="text-[11px] font-mono text-rose-800 dark:text-rose-300 bg-rose-500/15 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
+                      <span className="text-[11px] font-mono text-rose-950 bg-rose-100 px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0">1,99&nbsp;€</span>
                     </span>
-                    <span className="text-[11px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16–20&nbsp;Min.</span>
+                    <span className="text-[11px] font-mono text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-full font-bold shrink-0 whitespace-nowrap">16–20&nbsp;Min.</span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                  <p className="text-xs text-stone-600 leading-relaxed font-normal">
                     Innere Ruhe und Erdung, Inneres Kind, Herzkompass.
                   </p>
                 </div>
               </div>
 
               {/* Feature List */}
-              <ul className="space-y-2 text-xs sm:text-sm text-stone-700 dark:text-stone-300 pt-1">
+              <ul className="space-y-2 text-xs sm:text-sm text-stone-700 pt-1">
                 <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Privater Magic Link per E-Mail:</strong> Direkt nach Kauf auf jedem Gerät öffnen und hören</span>
+                  <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Privater Magic Link per E-Mail:</strong> Direkt nach Kauf auf jedem Gerät öffnen und hören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Check size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-900 dark:text-stone-100">Web- und App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
+                  <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                  <span><strong className="text-stone-950">Web- und App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
                 </li>
               </ul>
             </div>
@@ -462,13 +462,13 @@ export default function PricingPackages() {
       {/* 4. MAGIC LINK FALLBACK & SICHERHEITS-BEREICH */}
       <section id="magic-link" className="bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-alt)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl space-y-6">
         <div className="max-w-2xl mx-auto text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-2 border border-amber-500/30">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-950 flex items-center justify-center mx-auto mb-2 border border-amber-300">
             <Key size={24} />
           </div>
-          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
+          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-950">
             So funktioniert der private Magic Link
           </h2>
-          <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-normal">
             Wenn du ein Hörbuch oder eine Einzelsession per Gastkauf erwirbst, musst du dir kein Passwort ausdenken. 
             Direkt nach der Zahlung per PayPal (oder in der App per Google Pay) erhältst du deinen privaten Link.
           </p>
@@ -476,31 +476,31 @@ export default function PricingPackages() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto text-xs sm:text-sm">
           <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
-            <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold inline-flex items-center justify-center">1</span>
-            <h4 className="font-bold text-stone-900 dark:text-stone-100">Sofort hören</h4>
-            <p className="text-stone-600 dark:text-stone-400">Nach dem Bezahlen öffnet sich der Player direkt im Browser oder in der App.</p>
+            <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-950 font-bold inline-flex items-center justify-center border border-emerald-300">1</span>
+            <h4 className="font-bold text-stone-950">Sofort hören</h4>
+            <p className="text-stone-600 font-normal">Nach dem Bezahlen öffnet sich der Player direkt im Browser oder in der App.</p>
           </div>
           <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
-            <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold inline-flex items-center justify-center">2</span>
-            <h4 className="font-bold text-stone-900 dark:text-stone-100">Dauerhafter Link per Mail</h4>
-            <p className="text-stone-600 dark:text-stone-400">Dein persönlicher Zugangslink liegt in deinem Postfach für jedes deiner Geräte.</p>
+            <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-950 font-bold inline-flex items-center justify-center border border-emerald-300">2</span>
+            <h4 className="font-bold text-stone-950">Dauerhafter Link per Mail</h4>
+            <p className="text-stone-600 font-normal">Dein persönlicher Zugangslink liegt in deinem Postfach für jedes deiner Geräte.</p>
           </div>
           <div className="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] space-y-1.5 text-center">
-            <span className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-bold inline-flex items-center justify-center">3</span>
-            <h4 className="font-bold text-stone-900 dark:text-stone-100">Lokal gespeichert</h4>
-            <p className="text-stone-600 dark:text-stone-400">Dein Browser merkt sich den Kauf sicher im internen Speicher.</p>
+            <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-950 font-bold inline-flex items-center justify-center border border-emerald-300">3</span>
+            <h4 className="font-bold text-stone-950">Lokal gespeichert</h4>
+            <p className="text-stone-600 font-normal">Dein Browser merkt sich den Kauf sicher im internen Speicher.</p>
           </div>
         </div>
 
         {/* Fallback Box: Link erneut zusenden */}
         <div className="max-w-md mx-auto p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] shadow-sm space-y-3">
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100">
-            <Mail size={16} className="text-emerald-700 dark:text-emerald-400" />
+          <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-stone-950">
+            <Mail size={16} className="text-emerald-700" />
             <span>Magic Link verlegt? Kein Problem:</span>
           </div>
 
           {recoverySent ? (
-            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-900 dark:text-emerald-100 text-xs font-semibold flex items-center gap-2">
+            <div className="p-3.5 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-semibold flex items-center gap-2">
               <CheckCircle2 size={16} className="text-emerald-700 shrink-0" />
               <span>Prüfe dein Postfach ({recoveryEmail}). Falls ein Kauf vorliegt, wurde dein Link erneut versendet!</span>
             </div>
@@ -512,7 +512,7 @@ export default function PricingPackages() {
                 value={recoveryEmail}
                 onChange={(e) => setRecoveryEmail(e.target.value)}
                 placeholder="Deine Kauf-E-Mail eingeben..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] text-xs sm:text-sm text-stone-900 dark:text-stone-100 focus:outline-hidden focus:border-emerald-700"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] text-xs sm:text-sm text-stone-950 focus:outline-hidden focus:border-emerald-700"
               />
               <button
                 type="submit"
@@ -529,7 +529,7 @@ export default function PricingPackages() {
                 )}
               </button>
               {recoveryError && (
-                <span className="text-xs text-rose-700 dark:text-rose-300 block">{recoveryError}</span>
+                <span className="text-xs text-rose-700 block">{recoveryError}</span>
               )}
             </form>
           )}
@@ -540,10 +540,10 @@ export default function PricingPackages() {
       {!user && (
         <section className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-10 border border-[var(--border)] shadow-xl text-center space-y-6">
           <div className="max-w-xl mx-auto space-y-2">
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
+            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-950">
               Jetzt in 1 Klick dein kostenfreies Ruhe-Konto anlegen
             </h2>
-            <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+            <p className="text-xs sm:text-sm text-stone-700 font-normal">
               Schalte sofort die 2 Voll-Sessions für Schlaf und Herzöffnung frei und speichere deinen Hörfortschritt geräteübergreifend:
             </p>
           </div>
@@ -562,10 +562,10 @@ export default function PricingPackages() {
       {/* 6. RECHTLICH ABGESICHERTE FAQ */}
       <section className="space-y-6 max-w-3xl mx-auto">
         <div className="text-center space-y-2">
-          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
+          <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-950">
             Häufige Fragen zu Preisen, Magic Links und Rechtlichem
           </h2>
-          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
+          <p className="text-xs sm:text-sm text-stone-600 font-normal">
             Transparente Antworten für ein gutes, sicheres Gefühl.
           </p>
         </div>
@@ -594,11 +594,11 @@ export default function PricingPackages() {
             }
           ].map((item, idx) => (
             <div key={idx} className="bg-[var(--bg-card)] rounded-2xl p-4 sm:p-5 border border-[var(--border)] shadow-xs space-y-1.5">
-              <h4 className="font-bold text-xs sm:text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                <HelpCircle size={15} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <h4 className="font-bold text-xs sm:text-sm text-stone-950 flex items-center gap-2">
+                <HelpCircle size={15} className="text-emerald-700 shrink-0" />
                 <span>{item.q}</span>
               </h4>
-              <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 pl-6 leading-relaxed">
+              <p className="text-xs sm:text-sm text-stone-700 pl-6 leading-relaxed font-normal">
                 {item.a}
               </p>
             </div>
@@ -608,17 +608,17 @@ export default function PricingPackages() {
 
       {/* 7. ABSCHLUSS-BANNER */}
       <section className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] text-center space-y-4 shadow-md">
-        <Heart size={28} className="text-rose-600 dark:text-rose-400 mx-auto" />
-        <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-900 dark:text-stone-100">
+        <Heart size={28} className="text-rose-600 mx-auto" />
+        <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-950">
           Von Herzen für deinen inneren Frieden
         </h3>
-        <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 max-w-xl mx-auto leading-relaxed">
+        <p className="text-xs sm:text-sm text-stone-700 max-w-xl mx-auto leading-relaxed font-normal">
           Jacqueline, Lisa und Dirk haben Flow der Stille geschaffen, um Menschen in anspruchsvollen Lebensphasen echten Halt zu geben. Fair, nahbar und ehrlich.
         </p>
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/uebungen"
-            className="px-5 py-2.5 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-100 hover:border-emerald-600 transition cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-[var(--bg-alt)] border border-[var(--border)] text-xs sm:text-sm font-bold text-stone-950 hover:border-emerald-600 transition cursor-pointer"
           >
             Atemübungen und PMR testen
           </Link>

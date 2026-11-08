@@ -343,7 +343,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             </p>
           </div>
           <Link 
-            to="/premium" 
+            to="/ruhe-shop" 
             className="text-xs sm:text-sm font-semibold text-[var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
           >
             Gesamter Shop →

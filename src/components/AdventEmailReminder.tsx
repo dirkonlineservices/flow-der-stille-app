@@ -74,23 +74,23 @@ export const AdventEmailReminder: React.FC<AdventEmailReminderProps> = ({
 
   return (
     <div
-      className={`rounded-3xl border border-[#7C8B6F]/40 bg-gradient-to-br from-[#8A9A8A]/20 via-[#F5F5F0] to-[#8A9A8A]/15 text-[#3D3B35] p-6 sm:p-8 md:p-10 shadow-sm relative overflow-hidden ${className}`}
+      className={`rounded-2xl sm:rounded-3xl border border-[#7C8B6F]/40 bg-gradient-to-br from-[#8A9A8A]/20 via-[#F5F5F0] to-[#8A9A8A]/15 text-[#3D3B35] p-4 sm:p-6 md:p-8 shadow-sm relative overflow-hidden ${className}`}
     >
       {/* Sanfter warmer Lichtschimmer im CI */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#8A9A8A]/25 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#C8A96E]/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-2xl mx-auto text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-bold uppercase tracking-widest">
           <Bell className="w-3.5 h-3.5" />
           <span>Tägliche Advents-Begleitung</span>
         </div>
 
-        <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D3B35] leading-tight">
+        <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-stone-950 leading-tight">
           Tägliche Erinnerung für das neue Türchen erhalten
         </h3>
 
-        <p className="text-xs sm:text-sm md:text-base text-[#695C4D] leading-relaxed max-w-xl mx-auto">
+        <p className="text-xs sm:text-sm md:text-base text-stone-700 leading-relaxed max-w-xl mx-auto font-normal">
           Lass dich jeden Morgen im Dezember mit einem achtsamen Impuls zur Entschleunigung
           wecken. Erfahre als Erste/r von den Sonntags-Meditationen und nimm an den drei
           Rauhnacht-Hörbuch Verlosungen teil.

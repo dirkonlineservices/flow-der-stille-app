@@ -330,16 +330,16 @@ export const AdventskalenderHomeSection: React.FC = () => {
     <>
       <section
         id="adventskalender-teaser"
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#8A9A8A]/20 via-[#F5F5F0] to-[#8A9A8A]/15 text-[#3D3B35] p-5 sm:p-7 md:p-8 border border-[#8A9A8A]/40 shadow-sm"
+        className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#8A9A8A]/20 via-[#F5F5F0] to-[#8A9A8A]/15 text-[#3D3B35] p-4 sm:p-6 md:p-8 border border-[#8A9A8A]/40 shadow-sm"
       >
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-[#8A9A8A]/25 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-[#C8A96E]/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 space-y-6">
+        <div className="relative z-10 space-y-5 sm:space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E3E1D9] pb-5">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-950 text-xs font-bold uppercase tracking-wider">
                 <Sparkles size={13} />
                 <span>Flow der Stille · Winter- und Adventsbegleitung</span>
               </div>
@@ -354,7 +354,7 @@ export const AdventskalenderHomeSection: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
               {isNativeApp ? (
                 <button
                   type="button"
@@ -365,7 +365,7 @@ export const AdventskalenderHomeSection: React.FC = () => {
                     } catch {}
                     window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer');
                   }}
-                  className="px-5 py-3 rounded-2xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-center"
                 >
                   <ExternalLink size={16} />
                   <span>Im Browser öffnen</span>
@@ -380,7 +380,7 @@ export const AdventskalenderHomeSection: React.FC = () => {
                       localStorage.setItem('fds_advent_visited', 'true');
                     } catch {}
                   }}
-                  className="px-5 py-3 rounded-2xl bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-center"
                 >
                   <Calendar size={16} />
                   <span>Zum 24-Türchen-Kalender</span>
@@ -390,9 +390,9 @@ export const AdventskalenderHomeSection: React.FC = () => {
 
               <button
                 onClick={() => setIsPopupOpen(true)}
-                className="px-4 py-2.5 rounded-2xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-[#695C4D] font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-white hover:bg-stone-50 border border-[#E3E1D9] text-stone-900 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs text-center"
               >
-                <Gift size={14} className="text-[#8A9A8A]" />
+                <Gift size={14} className="text-emerald-800" />
                 <span>Schnellvorschau (Pop-Up)</span>
               </button>
             </div>

@@ -116,14 +116,14 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
+    <div className="min-h-screen max-w-[100vw] overflow-x-hidden w-full bg-[var(--bg-main)] text-[var(--text-main)] font-sans pb-24 md:pb-0 md:pl-24 transition-colors duration-300 flex flex-col justify-between">
       
-      {/* Top Right Corner Action Buttons */}
-      <div className="fixed top-3.5 sm:top-4 right-3 sm:right-8 z-40 flex items-center gap-2">
+      {/* Desktop Top Right Corner Action Buttons (nur ab 768px Desktop, schweben frei im Viewport) */}
+      <div className="hidden md:flex fixed top-4 right-8 z-40 items-center gap-2">
         {!user ? (
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg active:scale-95 transition-all cursor-pointer"
             title="Jetzt anmelden oder registrieren"
           >
             <LogIn size={15} />
@@ -136,7 +136,7 @@ export default function Layout() {
             title="Mein Profil / Einstellungen"
           >
             <User size={14} className="text-[var(--accent)]" />
-            <span className="hidden sm:inline">Mein Bereich</span>
+            <span>Mein Bereich</span>
           </Link>
         )}
 
@@ -147,10 +147,51 @@ export default function Layout() {
             title="Flow der Stille Android App Seite öffnen"
           >
             <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-            <span className="hidden sm:inline font-medium">App</span>
+            <span className="font-medium">App</span>
           </Link>
         )}
       </div>
+
+      {/* Mobile Top Header (unter 768px): Saubere obere Leiste, kein Überdecken des Advent-Banners! */}
+      <header className="md:hidden w-full bg-[var(--bg-card)]/95 backdrop-blur-md border-b border-[var(--border)] px-3.5 py-2.5 flex items-center justify-between z-30 relative shrink-0">
+        <Link to="/" className="flex items-center gap-2 shrink-0" title="Startseite">
+          <img src="/logo-transparent.png" alt="Flow der Stille" className="w-7 h-7 shrink-0" />
+          <span className="font-serif font-bold text-base tracking-tight text-stone-950">Flow der Stille</span>
+        </Link>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {!user ? (
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+              title="Anmelden"
+            >
+              <LogIn size={13} />
+              <span>Anmelden</span>
+            </Link>
+          ) : (
+            <Link
+              to="/settings"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-stone-100 border border-stone-300 text-stone-900 text-xs font-semibold cursor-pointer"
+              title="Mein Bereich"
+            >
+              <User size={13} className="text-emerald-800" />
+              <span className="text-[11px]">Bereich</span>
+            </Link>
+          )}
+
+          {!isNativeApp && (
+            <Link
+              to="/app"
+              className="inline-flex items-center justify-center p-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 hover:text-stone-950 transition-colors cursor-pointer"
+              title="Android App"
+              aria-label="Android App herunterladen"
+            >
+              <GooglePlayIcon className="w-3.5 h-3.5" />
+            </Link>
+          )}
+        </div>
+      </header>
 
       <div className="w-full">
         {/* Oben angehefteter Weihnachtskalender-Badge mit personalisierter Voranmeldung */}
@@ -199,7 +240,7 @@ export default function Layout() {
         </nav>
 
         {/* Main Content Area: Dynamisch responsiv skalierend zwischen Laptop (max-w-5xl) und großem Desktop-Bildschirm (2xl:max-w-7xl) */}
-        <main className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 py-4 md:px-8 md:py-8 pt-4 md:pt-6 transition-all duration-300">
+        <main className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-3.5 sm:px-6 md:px-8 py-4 md:py-8 pt-3 sm:pt-4 md:pt-6 overflow-x-hidden md:overflow-x-visible transition-all duration-300">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -232,7 +273,7 @@ export default function Layout() {
           { to: '/impressum', label: 'Impressum' },
           { to: '/datenschutz', label: 'Datenschutz' },
           { to: '/agb', label: 'AGB' },
-          { to: '/versand', label: 'Versand & Lieferung' },
+          { to: '/versand', label: 'Versand und Lieferung' },
           { to: '/rueckgaberichtlinie', label: 'Rückgaberichtlinie' },
           { to: '/rechtliches', label: 'Rechtliches' },
           { to: '/online-widerruf', label: 'Online-Widerruf' },

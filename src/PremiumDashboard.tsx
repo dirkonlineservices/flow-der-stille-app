@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { trackMetaInitiateCheckout } from '../lib/metaPixel';
 import { getSupabase } from '../lib/supabaseClient';
-import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, CreditCard, Loader2, Lock, Sparkles, CheckCircle2, Mail, ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Headphones, Play, Key, ExternalLink, RotateCcw } from 'lucide-react';
 import { AudioPlayerButton } from './AudioPlayerButton';
 import { PayPalCheckoutButton } from './PayPalCheckoutButton';
 import { ProductDisclaimerTrigger } from './ProductDisclaimerTrigger';
 import { useAuth } from '../context/AuthContext';
 import UnlockBanner from './UnlockBanner';
-import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer } from '../lib/billing';
+import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, pushToDataLayer, getStoreName, isIOSApp } from '../lib/billing';
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
+import { verifyApplePurchase } from '../lib/appleVerification';
 import { transactionLogger } from '../lib/transactionLogger';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
+import QuickSocialUnlockBox from './QuickSocialUnlockBox';
+import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { offlineManager } from '../lib/offlineAudioService';
-import { isKnownAdminEmail } from '../lib/adminSecurity';
 import { 
   getOfflineProducts, 
   saveOfflineProducts, 
@@ -42,7 +45,6 @@ export default function PremiumShopDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('Alle');
   const [sortBy, setSortBy] = useState('Standard');
-  const [showAllHoerproben, setShowAllHoerproben] = useState(false);
   const [searchParams] = useSearchParams();
   const [productRatings, setProductRatings] = useState<Record<string, { average: number; count: number }>>({});
 
@@ -263,18 +265,8 @@ export default function PremiumShopDashboard() {
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Products Timeout')), 3500))
         ]);
         if (!prodRes.error && prodRes.data && prodRes.data.length > 0) {
-          finalProdukte = prodRes.data.map((p: any) => {
-            if (p.id === 'rauhnaechte' || p.id?.includes('rauhn') || p.titel?.toLowerCase().includes('rauhn')) {
-              return {
-                ...p,
-                is_active: true,
-                dauer: 10740,
-                image_url: '/images/products/cover_rauhnaechte.jpg'
-              };
-            }
-            return p;
-          });
-          saveOfflineProducts(finalProdukte);
+          finalProdukte = prodRes.data;
+          saveOfflineProducts(prodRes.data);
           setProdukte(finalProdukte);
         }
       } catch (netErr) {
@@ -363,14 +355,21 @@ export default function PremiumShopDashboard() {
       // 1. Produkte als Array initialisieren (Batch-Registrierung für Cordova Purchase Store)
       if (BillingService.isNative() && finalProdukte.length > 0) {
         BillingService.registerAllProducts(finalProdukte, async (transaction?: any) => {
-          const purchaseToken = transaction?.purchaseToken || transaction?.id || ('GPLAY_' + Date.now());
-          const productId = transaction?.productId || 'fds_hypnose_selbstbewusstsein';
-          
-          const vResult = await handlePurchaseSuccess({
-            purchaseToken,
-            productId: productId,
-            price: 1.99
-          }, user.id);
+          // cordova-plugin-purchase v13: Produkt steht in products[0].id, der Google-Token in purchaseId
+          const productId = transaction?.products?.[0]?.id;
+          if (!productId) {
+            throw new Error('Kauf ohne Produkt-ID erhalten.');
+          }
+          const kaufProdukt = finalProdukte.find((p: any) => getPlayStoreProductId(p) === productId);
+          const price = Number(kaufProdukt?.preis) || 1.99;
+
+          const vResult = isIOSApp()
+            ? await verifyApplePurchase({ transactionId: transaction.transactionId, productId })
+            : await handlePurchaseSuccess({
+                purchaseToken: transaction?.purchaseId || transaction?.transactionId,
+                productId,
+                price
+              });
 
           setShowUnlockBanner(true);
           setTimeout(() => {
@@ -394,8 +393,8 @@ export default function PremiumShopDashboard() {
     const id = prod?.id?.toLowerCase() || '';
     const title = prod?.titel?.toLowerCase() || '';
     const kat = prod?.kategorie?.toLowerCase() || '';
-    const isAudiobook = id.includes('schmetterling') || id.includes('mensch_sein') || id.includes('rauhnaechte') || id.includes('raun') || id.includes('hoerbuch') || 
-                        title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch') || title.includes('rauhn') ||
+    const isAudiobook = id.includes('schmetterling') || id.includes('hoerbuch') || 
+                        title.includes('schmetterling') || title.includes('hörbuch') || title.includes('hoerbuch') ||
                         kat.includes('hörbuch') || kat.includes('hoerbuch');
     if (isAudiobook) {
       setTimeout(() => {
@@ -405,14 +404,15 @@ export default function PremiumShopDashboard() {
   };
 
   const getProductCoverImage = (prod: any) => {
+    if (prod.image_url) return prod.image_url;
+    
     const id = prod.id?.toLowerCase() || '';
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
-    if (id.includes('rauhnaechte') || id.includes('raun') || title.includes('rauhn') || title.includes('yggdrasil')) {
-      return '/images/products/cover_rauhnaechte.jpg';
+    if (id.includes('seele') || id.includes('wind') || title.includes('seele') || title.includes('wind')) {
+      return '/images/products/cover_seele_wind.jpg';
     }
-    if (prod.image_url && !prod.image_url.includes('schmetterling')) return prod.image_url;
     if (id.includes('mensch_sein') || id.includes('echtsein') || title.includes('echtsein') || title.includes('echten menschen')) {
       return '/images/products/cover_mensch_sein.jpg?v=2';
     }
@@ -474,9 +474,8 @@ export default function PremiumShopDashboard() {
   const purchasedProductsCount = produkte.filter(p => isProductPurchased(p) && parseFloat(p.preis) > 0).length;
 
   const filteredProdukte = produkte.filter(prod => {
-    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden (außer für Admins oder Rauhnächte)
-    const isRauhnaechteProd = (prod.id || '').toLowerCase().includes('rauhn') || (prod.titel || '').toLowerCase().includes('rauhn');
-    if (!isRauhnaechteProd && prod.is_active === false && !isKnownAdminEmail(user?.email)) {
+    // 1. Inaktive Produkte laut Supabase (is_active = false) automatisch ausblenden
+    if (prod.is_active === false) {
       return false;
     }
 
@@ -499,10 +498,7 @@ export default function PremiumShopDashboard() {
     } else if (activeFilter === 'Kostenfrei') {
         matchesCategory = parseFloat(prod.preis) === 0;
     } else if (activeFilter === 'Hörbücher' || activeFilter === 'Hörbuch') {
-        matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || 
-                          titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || 
-                          titleLower.includes('schmetterling') || titleLower.includes('rauhn') || 
-                          titleLower.includes('yggdrasil') || pId.includes('rauhn');
+        matchesCategory = catLower.includes('hörbuch') || catLower.includes('hoerbuch') || titleLower.includes('hörbuch') || titleLower.includes('hoerbuch') || titleLower.includes('schmetterling');
     } else if (activeFilter === 'Meditation') {
         matchesCategory = catLower.includes('meditation') || titleLower.includes('meditation') || titleLower.includes('herzöffnung') || titleLower.includes('loslassen');
     } else if (activeFilter === 'Entspannungsübungen') {
@@ -524,28 +520,17 @@ export default function PremiumShopDashboard() {
       if (parts.length === 2) {
         const min = parseInt(parts[0], 10);
         const sec = parseInt(parts[1], 10);
-        if (min >= 60) {
-          const h = Math.floor(min / 60);
-          const m = min % 60;
-          return `${h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
-        }
         return `${isNaN(min) ? 0 : min}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
       }
       if (parts.length === 3) {
-        const h = parseInt(parts[0], 10);
-        const m = parseInt(parts[1], 10);
-        return `${isNaN(h) ? 0 : h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
+        const totalMin = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        const sec = parseInt(parts[2], 10);
+        return `${isNaN(totalMin) ? 0 : totalMin}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
       }
       return str;
     }
     const totalSeconds = parseInt(str.replace(/\D/g, ''), 10);
     if (isNaN(totalSeconds)) return str;
-
-    if (totalSeconds >= 3600) {
-      const h = Math.floor(totalSeconds / 3600);
-      const m = Math.round((totalSeconds % 3600) / 60);
-      return `${h} Std. ${m > 0 ? `${m} Min.` : ''}`.trim();
-    }
 
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -580,6 +565,19 @@ export default function PremiumShopDashboard() {
       } else if (sortBy === 'Preis: Absteigend') {
           return parseFloat(b.preis) - parseFloat(a.preis);
       }
+      // Standard-Hierarchie: Hörbücher chronologisch ganz oben untereinander
+      const getPriority = (id: string = '', kat: string = '') => {
+        if (id.includes('schmetterling')) return 1;
+        if (id.includes('seele') || id.includes('wind') || id.includes('trauer')) return 2;
+        if (id.includes('mensch') || id.includes('echt')) return 3;
+        if (kat.toLowerCase().includes('hörbuch') || kat.toLowerCase().includes('hoerbuch')) return 4;
+        return 10;
+      };
+      const prioA = getPriority(a.id, a.kategorie);
+      const prioB = getPriority(b.id, b.kategorie);
+      if (prioA !== prioB) {
+        return prioA - prioB;
+      }
       return 0;
   });
 
@@ -596,7 +594,7 @@ export default function PremiumShopDashboard() {
           <span>Zurück</span>
         </Link>
         <h1 className="text-3xl lg:text-4xl font-serif text-[var(--text-main)]">Ruhe-Shop</h1>
-        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Entdecke wohltuende Hörbücher, geführte Meditationen und Selbsthypnosen – flexibler Einmalkauf, garantiert ohne Abo.</p>
+        <p className="text-[var(--text-muted)] mt-1.5 text-sm italic">Hörbücher, Meditationen und Selbsthypnosen einzeln ab 1,99&nbsp;€ | 100&nbsp;% ohne Abo.</p>
       </header>
 
       <div className="mb-8 flex flex-col gap-4">
@@ -604,7 +602,7 @@ export default function PremiumShopDashboard() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
           <input 
             type="text"
-            placeholder="Suche nach Inhalten..."
+            placeholder="Suche im Ruhe-Shop (z. B. Schlaf, Herzöffnung, Loslassen)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all shadow-sm"
@@ -673,43 +671,6 @@ export default function PremiumShopDashboard() {
         )}
       </div>
 
-      {/* Kompakter Bereich für kostenlose Klangproben (oben vor gekauften Produkten) */}
-      {(() => {
-        const hoerproben = produkte.filter(p => !!((p.hoerprobe_url && p.hoerprobe_url.trim()) || (p.audio_path && p.audio_path.trim())));
-        if (hoerproben.length === 0) return null;
-        const visibleHoerproben = showAllHoerproben ? hoerproben : hoerproben.slice(0, 4);
-        return (
-          <div className="w-full bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 mb-8 shadow-sm">
-            <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-[var(--accent)] text-white">
-                  Kostenlos reinschnuppern
-                </span>
-                <h3 className="text-base sm:text-lg font-serif font-semibold text-[var(--text-main)]">
-                  Kostenlose Klangproben ({hoerproben.length})
-                </h3>
-              </div>
-              {hoerproben.length > 4 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllHoerproben(!showAllHoerproben)}
-                  className="text-xs text-[var(--accent)] hover:underline font-semibold cursor-pointer"
-                >
-                  {showAllHoerproben ? 'Weniger anzeigen' : `Alle ${hoerproben.length} Klangproben anzeigen`}
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-[var(--text-muted)] mb-3">
-              Höre unverbindlich rein – 100 % werbefrei und ohne Anmeldung. Der rechtliche Disclaimer vorab wird automatisch übersprungen.
-            </p>
-            <div className="grid grid-cols-1 gap-2.5">
-              {visibleHoerproben.map((p) => (
-                <HoerprobenPlayer key={p.id} produkt={p} variant="compact" showProductLink={true} onProductClick={handleJumpToProduct} />
-              ))}
-            </div>
-          </div>
-        );
-      })()}
 
       {user && (
         <div className="w-full bg-[var(--bg-card)] border border-emerald-300/80 dark:border-emerald-800/80 rounded-2xl overflow-hidden mb-8 shadow-xs">
@@ -927,7 +888,7 @@ export default function PremiumShopDashboard() {
                       className="mt-1"
                     />
                     {produkt.dauer && (
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer).includes('Min') || formatDuration(produkt.dauer).includes('Std') ? formatDuration(produkt.dauer) : `${formatDuration(produkt.dauer)} Min.`}</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)} Min.</p>
                     )}
                   </div>
 
@@ -977,6 +938,16 @@ export default function PremiumShopDashboard() {
                   <span className={`px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg uppercase shadow-md ${getCategoryBadgeStyle(produkt.kategorie)}`}>
                     {produkt.kategorie || 'Kategorie'}
                   </span>
+                  {(produkt.id?.includes('seele') || produkt.id?.includes('wind') || produkt.titel?.toLowerCase().includes('seele')) && (
+                    <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-amber-600 text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
+                      Teil 2 der Reihe
+                    </span>
+                  )}
+                  {(produkt.id?.includes('schmetterling') || produkt.titel?.toLowerCase().includes('schmetterling')) && (
+                    <span className="px-2.5 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-stone-800 text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
+                      Teil 1 der Reihe
+                    </span>
+                  )}
                   {produkt.hoerprobe_url && (
                     <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-[var(--accent)] text-white uppercase shadow-md flex items-center gap-1 border border-white/20">
                       🎧 Hörprobe verfügbar
@@ -987,6 +958,14 @@ export default function PremiumShopDashboard() {
                       ✓ Freigeschaltet
                     </span>
                   )}
+                  <Link
+                    to={produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') ? `/hoerbuch/${produkt.id}` : `/audio/${produkt.id}`}
+                    className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-md text-white uppercase shadow-md flex items-center gap-1 border border-white/20 transition cursor-pointer"
+                    title="Eigene Hörseite mit 4-Schritte-Anleitung und Player öffnen"
+                  >
+                    <Headphones size={12} />
+                    <span>Hörseite und Anleitung</span>
+                  </Link>
                 </div>
                 {showKIBadge && (
                   <a 
@@ -1000,13 +979,13 @@ export default function PremiumShopDashboard() {
                 )}
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                    ⏱ {formatDuration(produkt.dauer).includes('Min') || formatDuration(produkt.dauer).includes('Std') ? formatDuration(produkt.dauer) : `${formatDuration(produkt.dauer)} Min.`}
+                    ⏱ {formatDuration(produkt.dauer)} Min.
                   </span>
                 )}
               </div>
 
-              {/* Produktdetails: 2-Spalten für eingeloggtes Kaufen, 1-Spalte Vollbreite für Gäste */}
-              <div className={`flex flex-col ${!hatZugriff && user ? 'lg:flex-row' : ''} items-stretch gap-6 lg:gap-10`}>
+              {/* Produktdetails: 2-Spalten für eingeloggte Nutzer und für Gastkäufe, 1-Spalte bei freigeschalteten Werken */}
+              <div className={`flex flex-col ${!hatZugriff && (user || !istKostenlos) ? 'lg:flex-row' : ''} items-start gap-6 lg:gap-8`}>
                 
                 <div className="flex-1 flex flex-col w-full">
                     <h3 className="text-2xl lg:text-3xl font-semibold text-[var(--text-main)] mb-1 leading-tight">{produkt.titel}</h3>
@@ -1017,118 +996,254 @@ export default function PremiumShopDashboard() {
                       average={productRatings[produkt.id]?.average}
                       count={productRatings[produkt.id]?.count}
                       variant="summary"
-                      className="mb-3"
+                      className="mb-2.5"
                     />
                     {!hatZugriff && !istKostenlos && (
-                        <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-4">
-                            {produkt.preis} €
+                        <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-3 flex items-baseline gap-2">
+                            <span className="whitespace-nowrap font-serif text-2xl sm:text-3xl font-bold">{typeof produkt.preis === 'number' ? produkt.preis.toFixed(2).replace('.', ',') : String(produkt.preis).replace('.', ',')}&nbsp;€</span>{' '}
+                            <span className="text-xs font-semibold text-[var(--text-muted)] font-sans">einmalig • kein Abo</span>
+                        </div>
+                    )}
+                    {!hatZugriff && istKostenlos && (
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <span className="text-xl sm:text-2xl font-bold font-serif text-emerald-800">
+                            100 % Kostenfrei
+                          </span>
+                          <span className="text-xs font-mono line-through text-[var(--text-muted)]">
+                            1,99&nbsp;€
+                          </span>
+                          <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full border border-emerald-300/70 whitespace-nowrap">
+                            Gratis mit Hörer-Konto (Wert: 1,99&nbsp;€)
+                          </span>
                         </div>
                     )}
                     
-                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">{produkt.beschreibung}</p>
+                    <p className="text-[var(--text-muted)] text-sm lg:text-base leading-relaxed whitespace-pre-line">
+                      {(produkt.beschreibung || '')
+                        .replace(/\\n/g, '\n')
+                        .replace(/\n*Text erstellt von Jacqueline.*$/is, '')
+                        .trim()}
+                    </p>
 
-                    {produkt.audio_hinweis && (
-                      <div className="mt-4 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] flex items-start gap-3 shadow-2xs">
-                        <Sparkles className="w-4 h-4 text-[var(--accent)] shrink-0 mt-0.5" />
-                        <div className="leading-relaxed">
-                          <span className="font-semibold text-[var(--text-main)] block mb-0.5">
-                            {istKostenlos ? '🌿 Kostenfreie Anwendung (nach Registrierung sofort freigeschaltet)' : '🌿 Persönlich eingesprochen & eigene Texte'}
-                          </span>
-                          <span className="whitespace-pre-line leading-relaxed">
-                            {istKostenlos 
-                              ? (produkt.audio_hinweis.includes('Vollständig') 
-                                  ? 'Selbst verfasster Übungstext, vertont zur sanften Beruhigung des Nervensystems. Nach kostenloser Registrierung sofort für dich freigeschaltet.'
-                                  : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, ''))
-                              : produkt.audio_hinweis.replace(/^Audio-Hinweis:\s*/i, '')}
-                          </span>
-                        </div>
+                    {/* 1-Minuten Hörprobe direkt auf der Produktkarte */}
+                    {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
+                      <div className="mt-3.5">
+                        <HoerprobenPlayer 
+                          produkt={produkt} 
+                          variant="compact" 
+                          enableFloatingPlayer={false} 
+                          maxPreviewSeconds={60} 
+                        />
                       </div>
                     )}
 
-                    {/* Kostenlose Klangprobe – für jedes Produkt mit Audio verfügbar, überspringt Disclaimer */}
+                    {/* Urheber-Hinweis: Text von Jacqueline • Stimme von Lisa + Link zu Über uns */}
+                    <div className="mt-3.5 p-3.5 bg-[var(--bg-alt)] border border-[var(--border)] rounded-2xl text-xs text-[var(--text-muted)] space-y-1.5 shadow-2xs">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-1.5 font-bold text-[var(--text-main)]">
+                          <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <span>Text erstellt von Jacqueline • Stimme: Lisa</span>
+                        </div>
+                        <Link 
+                          to="/ueber-uns" 
+                          className="text-emerald-800 dark:text-emerald-300 hover:underline font-semibold inline-flex items-center gap-1"
+                          title="Lerne Jacqueline, Lisa und Dirk sowie unsere Philosophie kennen"
+                        >
+                          <span>Über die Ersteller und Vision →</span>
+                        </Link>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-[var(--text-muted)]">
+                        {istKostenlos
+                          ? 'Vollständig selbst verfasster Entspannungstext, von Lisa mit echter menschlicher Herzenswärme eingesprochen. Nach 1-Klick-Registrierung dauerhaft freigeschaltet.'
+                          : (produkt.audio_hinweis
+                              ? ((produkt.id?.includes('seele') || produkt.id?.includes('wind'))
+                                  ? 'Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.'
+                                  : produkt.audio_hinweis
+                                      .replace(/^Audio-Hinweis:\s*/i, '')
+                                      .replace(/Lisa Ragusa/g, 'Lisa')
+                                      .replace(/von uns selbst geschrieben/i, 'Text erstellt von Jacqueline')
+                                      .replace(/Text erstellt von Jacqueline\s*[•,]\s*Stimme:\s*Lisa\s*[,•]?\s*/gi, '')
+                                      .replace(/Text erstellt von Jacqueline\s*[•,]\s*/gi, '')
+                                      .trim())
+                              : 'Herzenswerk: Mit warmer Stimme von Lisa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.')}
+                      </p>
+                    </div>
+
+                    {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
                     {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
-                      <div className="mt-5 md:mt-7">
-                        <HoerprobenPlayer produkt={produkt} variant="compact" />
+                      <div className="mt-3.5 pt-1">
+                        {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('seele') || produkt.titel?.toLowerCase().includes('wind') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
+                          <Link
+                            to={
+                              produkt.id?.includes('seele') || produkt.id?.includes('wind')
+                                ? '/hoerbuch/wo-die-seele-den-wind-beruehrt?autoplay=true'
+                                : produkt.id?.includes('mensch') || produkt.id?.includes('echt')
+                                ? '/hoerbuch/mensch_sein?autoplay=true'
+                                : '/hoerbuch/schmetterling?autoplay=true'
+                            }
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
+                          >
+                            <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
+                            <span>Kapitel 1 kostenlos reinhören und Anleitung öffnen →</span>
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/audio/${produkt.id}?autoplay=true`}
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 group text-center cursor-pointer"
+                          >
+                            <Play size={16} className="fill-white group-hover:scale-110 transition-transform shrink-0" />
+                            <span>Kostenlose Hörprobe und Anleitung öffnen →</span>
+                          </Link>
+                        )}
                       </div>
                     )}
                 </div>
 
-                {/* Checkout-Button Spalte – nur wenn eingeloggt und noch kein Zugriff */}
-                {!hatZugriff && user && (
-                    <div className="lg:w-[45%] xl:w-[40%] pt-6 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)]">
-                        <div className="h-full w-full flex flex-col justify-center items-center lg:pl-8">
-                            <div className="w-full max-w-md lg:max-w-[340px] flex flex-col gap-3">
-                                {isNativeApp ? (
-                                    <GooglePlayCheckoutButton 
-                                      produkt={produkt}
-                                      user={user}
-                                      setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={() => handleProductPurchaseSuccess(produkt)}
-                                    />
-                                ) : (
-                                    <PayPalCheckoutButton 
-                                      produkt={produkt} 
-                                      user={user} 
-                                      setShowUnlockBanner={setShowUnlockBanner}
-                                      onSuccess={() => handleProductPurchaseSuccess(produkt)} 
-                                      paypalClientId={PAYPAL_CLIENT_ID}
-                                    />
-                                )}
-                            </div>
+                {/* Checkout-Button Spalte – für eingeloggte Nutzer ODER Gastkauf bei kostenpflichtigen Produkten */}
+                {!hatZugriff && (user || !istKostenlos) && (
+                    <div className="lg:w-[380px] xl:w-[420px] shrink-0 pt-5 mt-2 lg:pt-0 lg:mt-0 border-t lg:border-t-0 lg:border-l border-[var(--border)] lg:pl-6 xl:lg:pl-8 flex flex-col gap-3">
+                        <div className="w-full flex flex-col gap-3">
+                            {!user && !isNativeApp && (
+                              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2.5 shadow-2xs">
+                                <div className="flex items-center gap-1.5 font-bold text-stone-950">
+                                  <Key size={15} className="text-amber-800 shrink-0" />
+                                  <span className="text-stone-950 font-bold">Express-Gastkauf mit Magic Link</span>
+                                </div>
+                                <p className="text-xs text-stone-700 leading-relaxed">
+                                  <strong className="text-stone-950">Kein Passwort und kein Benutzerkonto nötig:</strong> Du musst nur bezahlen. Dein persönlicher Zugangslink kommt sofort per E-Mail.
+                                </p>
+
+                                {/* Kaufanleitung in 3 einfachen Schritten */}
+                                <div className="pt-2 border-t border-amber-500/20 space-y-2 text-[11px] text-stone-800">
+                                  <span className="font-bold text-stone-950 block text-xs">Kaufanleitung in 3 Schritten:</span>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-950 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+                                    <span className="text-stone-800 font-medium">Unten das Häkchen für den sofortigen Beginn setzen.</span>
+                                  </div>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-950 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+                                    <span className="text-stone-800 font-medium">Auf den gelben PayPal-Button (oder Karte / SEPA) tippen und sicher bezahlen.</span>
+                                  </div>
+                                  <div className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-950 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+                                    <span className="text-stone-800 font-medium">Fertig! Du kannst sofort im Web-Player hören. Dein privater Magic Link wird zusätzlich per E-Mail gesendet.</span>
+                                  </div>
+
+                                  {/* Direkt vor Ort integrierte Magic-Link Erklärung */}
+                                  <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[11px] space-y-1">
+                                    <div className="flex items-center gap-1.5 font-bold text-stone-950">
+                                      <Sparkles size={12} className="text-amber-800 shrink-0" />
+                                      <span className="text-stone-950 font-bold">Wie funktioniert der Magic Link?</span>
+                                    </div>
+                                    <p className="text-stone-700 leading-relaxed font-normal">
+                                      Ganz ohne Passwort: Nach dem Kauf klickst du einfach auf den Link in deiner E-Mail und deine Session öffnet sich sofort auf Smartphone, Tablet oder PC. Zudem speichert dein aktueller Browser den Zugang automatisch.
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="pt-1 flex items-center justify-end">
+                                  <Link
+                                    to="/pakete#magic-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] text-stone-950 hover:text-black font-bold underline inline-flex items-center gap-1"
+                                    title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
+                                  >
+                                    <span>Ausführliche Details und FAQ zum Magic Link ansehen</span>
+                                    <ExternalLink size={11} className="shrink-0 text-stone-950" />
+                                  </Link>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Für eingeloggte Nutzer: Kompakte Notiz "Express-Kauf mit Magic Link" direkt über der Zustimmung */}
+                            {user && !isNativeApp && (
+                              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2 shadow-2xs">
+                                <div className="flex items-center justify-between gap-1.5 font-bold text-stone-950">
+                                  <div className="flex items-center gap-1.5">
+                                    <Key size={14} className="text-amber-800 shrink-0" />
+                                    <span className="text-stone-950 font-bold">Express-Kauf mit Magic Link</span>
+                                  </div>
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-stone-950 border border-amber-600/30">
+                                    Eingeloggt
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-stone-700 leading-relaxed">
+                                  {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('seele') || produkt.titel?.toLowerCase().includes('wind') || produkt.id?.includes('mensch')
+                                    ? 'Sofort nach dem Kauf wird das Hörbuch in deiner Mediathek freigeschaltet. Zusätzlich erhältst du deinen persönlichen Magic Link per E-Mail, um auch auf Smartphone, Tablet oder PC jederzeit mit 1 Klick ohne Passwort weiterzuhören.'
+                                    : 'Sofort nach dem Kauf wird diese Anwendung in deiner Mediathek freigeschaltet. Zusätzlich erhältst du deinen persönlichen Magic Link per E-Mail, um auf jedem weiteren Gerät mit 1 Klick weiterzuhören.'}
+                                </p>
+                                <div className="pt-0.5 flex items-center justify-end">
+                                  <Link
+                                    to="/pakete#magic-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] text-stone-950 hover:text-black font-bold underline inline-flex items-center gap-1"
+                                    title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
+                                  >
+                                    <span>Details zum Magic Link</span>
+                                    <ExternalLink size={11} className="shrink-0 text-stone-950" />
+                                  </Link>
+                                </div>
+                              </div>
+                            )}
+
+                            {isNativeApp ? (
+                                <GooglePlayCheckoutButton 
+                                  produkt={produkt}
+                                  user={user}
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={() => handleProductPurchaseSuccess(produkt)}
+                                />
+                            ) : (
+                                <PayPalCheckoutButton 
+                                  produkt={produkt} 
+                                  user={user} 
+                                  setShowUnlockBanner={setShowUnlockBanner}
+                                  onSuccess={() => handleProductPurchaseSuccess(produkt)} 
+                                  paypalClientId={PAYPAL_CLIENT_ID}
+                                />
+                            )}
                         </div>
                     </div>
                 )}
               </div>
 
-              {!hatZugriff && !user && (
-                <div className="mt-6 md:mt-8 bg-[var(--bg-card)] border border-[var(--color-accent-primary)]/40 rounded-2xl p-5 sm:p-6 text-[var(--text-main)] shadow-sm">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="p-3 bg-[var(--accent)]/15 rounded-xl text-[var(--accent)] shrink-0">
-                        <Lock size={22} />
-                      </div>
-                      <div>
-                        <h4 className="font-serif font-bold text-base text-[var(--text-main)] mb-1">
-                          {istKostenlos ? "Kostenloses Audio nach Registrierung anhören" : "Produkt freischalten"}
-                        </h4>
-                        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                          {istKostenlos 
-                            ? "Dieses kostenlose Audio steht nach einer kostenlosen und unverbindlichen Registrierung sofort für dich bereit."
-                            : `Melde dich an oder registriere dich kostenlos, um dieses Produkt zum Preis von ${produkt.preis} € freizuschalten.`
-                          }
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
-                      <Link 
-                        to={`/register?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
-                        className="px-4 py-2 bg-[var(--accent)] text-white text-xs sm:text-sm font-semibold rounded-xl hover:opacity-90 transition shadow-sm"
-                      >
-                        Jetzt kostenlos registrieren
-                      </Link>
-                      <Link 
-                        to={`/login?redirectTo=${encodeURIComponent('/premium-dashboard#product-' + produkt.id)}`}
-                        className="px-4 py-2 bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] text-xs sm:text-sm font-semibold rounded-xl border border-[var(--border)] transition shadow-sm"
-                      >
-                        Anmelden
-                      </Link>
-                    </div>
+              {!hatZugriff && !user && istKostenlos && (
+                <div className="mt-6 md:mt-8 p-4 sm:p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
+                  <div className="flex items-center gap-2 mb-2 font-bold text-emerald-950 dark:text-emerald-200 text-sm">
+                    <Sparkles size={16} className="text-emerald-700 dark:text-emerald-400 shrink-0" />
+                    <span>Diese Anwendung ist 100 % kostenfrei nach Registrierung</span>
                   </div>
+                  <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 mb-3 leading-relaxed">
+                    Registriere dich kostenlos mit 1 Klick über Google oder E-Mail, um die vollständige Session sofort und dauerhaft freizuschalten (keine Zahlungsdaten, kein Abo):
+                  </p>
+                  <QuickSocialUnlockBox
+                    produkt={produkt}
+                    returnPath={`/premium-dashboard#product-${produkt.id}`}
+                    compact={true}
+                  />
                 </div>
               )}
 
               {/* Für freigeschaltete Produkte: Audio Player Button (auch im Flugmodus sofort verfügbar) */}
               {hatZugriff && (
-                <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col gap-4">
-                    {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch')) ? (
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Link
-                          to={`/hoerbuch/${produkt.id}`}
-                          className="flex-1 py-3 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <Sparkles size={16} />
-                          <span>Hörbuch-Player öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'})</span>
-                        </Link>
+                <div className="mt-6 pt-5 border-t border-[var(--border)] flex flex-col gap-3">
+                    {(produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch')) ? (
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)]">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+                            <span>Hörbuch Web-Player:</span>
+                          </div>
+                          <Link
+                            to={`/hoerbuch/${produkt.id}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs active:scale-95 cursor-pointer"
+                          >
+                            <Sparkles size={13} />
+                            <span>Hörbuch-Player mit Kapiteln öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'}) →</span>
+                          </Link>
+                        </div>
                         <AudioPlayerButton 
                           produkt={produkt}  
                           getUrl={async (p: any) => {
@@ -1150,25 +1265,41 @@ export default function PremiumShopDashboard() {
                         />
                       </div>
                     ) : (
-                      <AudioPlayerButton 
-                        produkt={produkt}  
-                        getUrl={async (p: any) => {
-                          if (p.audio_path && p.audio_path.startsWith('http')) {
-                            return p.audio_path;
-                          }
-                          const off = getOfflineProductById(p.id);
-                          if (off?.audio_path && off.audio_path.startsWith('http')) {
-                            return off.audio_path;
-                          }
-                          try {
-                            const supabase = getSupabase();
-                            const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                            return data?.publicUrl || '';
-                          } catch {
-                            return '';
-                          }
-                        }} 
-                      />
+                      <div className="space-y-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                          <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-main)]">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse shrink-0" />
+                            <span>Web-Player bereit:</span>
+                          </div>
+                          <Link
+                            to={`/audio/${produkt.id}`}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs active:scale-95 cursor-pointer"
+                            title="Eigene Hörseite mit 4-Schritte-Anleitung öffnen"
+                          >
+                            <Headphones size={13} />
+                            <span>Hörseite und Anleitung öffnen →</span>
+                          </Link>
+                        </div>
+                        <AudioPlayerButton 
+                          produkt={produkt}  
+                          getUrl={async (p: any) => {
+                            if (p.audio_path && p.audio_path.startsWith('http')) {
+                              return p.audio_path;
+                            }
+                            const off = getOfflineProductById(p.id);
+                            if (off?.audio_path && off.audio_path.startsWith('http')) {
+                              return off.audio_path;
+                            }
+                            try {
+                              const supabase = getSupabase();
+                              const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
+                              return data?.publicUrl || '';
+                            } catch {
+                              return '';
+                            }
+                          }} 
+                        />
+                      </div>
                     )}
 
                     {/* Interaktive Sternebewertung für freigeschaltete Hörer */}
@@ -1195,8 +1326,19 @@ export default function PremiumShopDashboard() {
               )}
 
               {!hatZugriff && (
-                <div className="mt-4 pt-4 border-t border-[var(--border)] flex justify-end">
-                  <ProductDisclaimerTrigger />
+                <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  {!user && (
+                    <Link
+                      to={`/registrieren?redirectTo=${encodeURIComponent(location.pathname + `#product-${produkt.id}`)}`}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-bold transition shadow-2xs active:scale-95 cursor-pointer text-center"
+                    >
+                      <Sparkles size={14} className="text-emerald-800 shrink-0" />
+                      <span>Lieber erst kostenlos testen? 1-Klick Hörer-Konto (0&nbsp;€) anlegen →</span>
+                    </Link>
+                  )}
+                  <div className="sm:ml-auto">
+                    <ProductDisclaimerTrigger />
+                  </div>
                 </div>
               )}
               </div>{/* Ende: innerer p-5/p-7 Container */}
@@ -1209,8 +1351,11 @@ export default function PremiumShopDashboard() {
 }
 
 function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSuccess }: { produkt: any, user: any, setShowUnlockBanner: any, onSuccess: any }) {
+  const storeName = getStoreName();
   const [storeReady, setStoreReady] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreFeedback, setRestoreFeedback] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<PurchaseToastData>({
@@ -1239,6 +1384,25 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     };
   }, [produkt.id]);
 
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    setRestoreFeedback(null);
+    try {
+      const err = await BillingService.restorePurchases();
+      if (err) {
+        setRestoreFeedback(err);
+      } else {
+        setRestoreFeedback(`Käufe über ${storeName} werden synchronisiert...`);
+        await onSuccess();
+      }
+    } catch (e: any) {
+      setRestoreFeedback(e?.message || 'Wiederherstellung fehlgeschlagen.');
+    } finally {
+      setIsRestoring(false);
+      setTimeout(() => setRestoreFeedback(null), 6000);
+    }
+  };
+
   const handlePurchase = async () => {
     if (!acceptedTerms) {
       setError("Bitte stimme vor dem Kauf dem Widerrufsverzicht zu.");
@@ -1246,6 +1410,12 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
     }
     setError(null);
     setIsProcessing(true);
+
+    trackMetaInitiateCheckout({
+      value: parseFloat(produkt?.preis) || 1.99,
+      content_name: produkt?.titel,
+      content_ids: [produkt?.id]
+    });
 
     try {
       await BillingService.startPurchase(produkt, async (msg) => {
@@ -1259,29 +1429,32 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         );
 
         if (isOwnedMsg) {
-          setError("Kauf in Google Play gefunden. Schalte Inhalte frei...");
+          setError(`Kauf im ${storeName} gefunden. Schalte Inhalte frei...`);
           
           try {
-            let purchaseToken = 'GPLAY_OWNED_' + Date.now();
-            try {
-              const CdvPurchase = (window as any).CdvPurchase;
-              if (CdvPurchase && CdvPurchase.store) {
-                const p = CdvPurchase.store.get(playId) || CdvPurchase.store.get(produkt.id);
-                if (p && p.transaction) {
-                  purchaseToken = p.transaction.purchaseToken || p.transaction.id || purchaseToken;
-                  if (typeof p.transaction.finish === 'function') {
-                    await p.transaction.finish();
-                  }
-                }
-              }
-            } catch (e) {}
+            // iOS: Wiederherstellen liefert die echte Transaktion an den approved-Listener (Prüfung bei Apple)
+            if (isIOSApp()) {
+              await BillingService.restorePurchases();
+              setShowUnlockBanner(true);
+              await onSuccess();
+              setError(null);
+              setTimeout(() => setShowUnlockBanner(false), 2000);
+              return;
+            }
 
-            // WICHTIG: Erzwinge Eintrag in Supabase public.kaeufe & Profil-Update!
+            // Echten Kauf-Token aus dem lokalen Google-Beleg holen und serverseitig prüfen lassen
+            const CdvPurchase = (window as any).CdvPurchase;
+            const p = CdvPurchase?.store?.get(playId) || CdvPurchase?.store?.get(produkt.id);
+            const ownedTx = p ? CdvPurchase.store.findInLocalReceipts(p) : undefined;
+            if (!ownedTx?.purchaseId) {
+              throw new Error('Kein Google-Play-Beleg für dieses Produkt gefunden.');
+            }
+
             await handlePurchaseSuccess({
-              purchaseToken,
+              purchaseToken: ownedTx.purchaseId,
               productId: produkt.id,
               price: parseFloat(produkt.preis) || 1.99
-            }, user.id);
+            });
 
             setShowUnlockBanner(true);
             await onSuccess(); // Lädt Shop-Daten sofort neu, aktualisiert gekaufteSet und schaltet Play Button frei!
@@ -1291,6 +1464,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
             }, 2000);
           } catch (syncErr) {
             console.error("Sync-Fehler bei ITEM_ALREADY_OWNED:", syncErr);
+            setError(`Kauf konnte nicht bestätigt werden. Bitte später erneut versuchen oder an info@flow-der-stille.de wenden.`);
             onSuccess();
           }
         } else {
@@ -1301,17 +1475,23 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
             setToast({
               show: true,
               type: 'cancelled',
-              title: 'Google Play Kauf abgebrochen',
+              title: `${storeName} Kauf abgebrochen`,
               productTitle: produkt?.titel,
-              message: 'Du hast den Bezahlvorgang in Google Play abgebrochen. Es wurde kein Betrag von deinem Google-Konto abgebucht.'
+              message: `Du hast den Bezahlvorgang in ${storeName} abgebrochen. Es wurde kein Betrag abgebucht.`
+            });
+            reportAbandonedCheckout({
+              produkt,
+              paymentMethod: storeName,
+              userEmail: user?.email,
+              reason: `In ${storeName} auf Abbrechen geklickt`
             });
           } else {
             setToast({
               show: true,
               type: 'failed',
-              title: 'Google Play Kauf nicht möglich',
+              title: `${storeName} Kauf nicht möglich`,
               productTitle: produkt?.titel,
-              message: 'Der Bezahlvorgang konnte über den Play Store nicht durchgeführt werden. Es wurde kein Geld abgebucht.',
+              message: `Der Bezahlvorgang konnte über ${storeName} nicht durchgeführt werden. Es wurde kein Geld abgebucht.`,
               showSupportLink: true
             });
           }
@@ -1323,7 +1503,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
       setToast({
         show: true,
         type: 'failed',
-        title: 'Google Play Kauf fehlgeschlagen',
+        title: `${storeName} Kauf fehlgeschlagen`,
         productTitle: produkt?.titel,
         message: err?.message || 'Der Bezahlvorgang konnte nicht gestartet werden. Es wurde kein Geld abgebucht.',
         showSupportLink: true
@@ -1349,7 +1529,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('already owned') || lower.includes('bereits gekauft') || lower.includes('kauf gefunden')) {
       return {
-        text: 'Kauf in Google Play gefunden. Schalte Inhalte frei...',
+        text: `Kauf im ${storeName} gefunden. Schalte Inhalte frei...`,
         isInfo: true,
         showSupport: false
       };
@@ -1357,7 +1537,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('item_unavailable') || lower.includes('not_found') || lower.includes('nicht verfügbar') || lower.includes('nicht gefunden') || lower.includes('unavailable')) {
       return {
-        text: 'Dieses Produkt ist derzeit im Google Play Store noch nicht verfügbar oder wird gerade geprüft.',
+        text: `Dieses Produkt ist derzeit im ${storeName} noch nicht verfügbar oder wird gerade geprüft.`,
         isInfo: false,
         showSupport: true
       };
@@ -1365,7 +1545,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
 
     if (lower.includes('network') || lower.includes('connection') || lower.includes('verbindung')) {
       return {
-        text: 'Verbindungsfehler zum Google Play Store. Bitte prüfe deine Internetverbindung.',
+        text: `Verbindungsfehler zu ${storeName}. Bitte prüfe deine Internetverbindung.`,
         isInfo: false,
         showSupport: false
       };
@@ -1406,7 +1586,7 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
           {errorInfo.showSupport && (
             <div className="mt-2 text-center">
               <a
-                href={`mailto:hallo@flow-der-stille.de?subject=${encodeURIComponent(`Kundenservice-Anfrage: Produkt "${produkt.titel}"`)}&body=${encodeURIComponent(`Hallo Flow der Stille Team,\n\nich möchte gerne das Produkt "${produkt.titel}" (ID: ${produkt.id}) kaufen, erhalte aber im App Store folgende Rückmeldung:\n${error}\n\nBitte helft mir beim Kauf/Freischalten.`)}`}
+                href={`mailto:hallo@flow-der-stille.de?subject=${encodeURIComponent(`Kundenservice-Anfrage: Produkt "${produkt.titel}"`)}&body=${encodeURIComponent(`Hallo Flow der Stille Team,\n\nich möchte gerne das Produkt "${produkt.titel}" (ID: ${produkt.id}) kaufen, erhalte aber im Store folgende Rückmeldung:\n${error}\n\nBitte helft mir beim Kauf/Freischalten.`)}`}
                 className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline font-semibold pt-1"
               >
                 <Mail size={14} />
@@ -1422,11 +1602,33 @@ function GooglePlayCheckoutButton({ produkt, user, setShowUnlockBanner, onSucces
         className="w-full py-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-2xl transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <CreditCard size={18} />}
-        <span>{storeReady ? `Über Google Play kaufen (${produkt.preis} €)` : 'Verbinde Play Store...'}</span>
+        <span>{storeReady ? <>Über {storeName} kaufen (<span className="whitespace-nowrap">{produkt.preis}&nbsp;€</span>)</> : `Verbinde ${storeName}...`}</span>
       </button>
-      <div className="text-center mt-3 text-[10px] text-[var(--text-muted)] italic">
-        Sichere Zahlung über dein Google Konto.
+
+      <div className="text-center mt-3 text-[11px] text-[var(--text-muted)] leading-relaxed">
+        <span className="font-semibold text-emerald-800 dark:text-emerald-400">📱 Sofort-Freischaltung auf diesem Gerät:</span>
+        <span className="block mt-0.5 text-[10px]">
+          Du kannst diesen Titel direkt ohne Registrierung über {storeName} kaufen und dauerhaft in dieser App anhören. Möchtest du deine Inhalte später auch im Browser auf dem PC nutzen, kannst du dich jederzeit nachträglich kostenlos mit 1 Klick anmelden.
+        </span>
       </div>
+
+      {/* 🔄 Apple App Store & Google Play: Käufe wiederherstellen Button */}
+      <button
+        type="button"
+        onClick={handleRestore}
+        disabled={isRestoring}
+        className="mt-3.5 text-xs text-[var(--accent)] hover:underline inline-flex items-center gap-1.5 font-medium cursor-pointer"
+        title={`Bereits über ${storeName} erworben? Hier tippen, um deinen Kauf wiederherzustellen.`}
+      >
+        <RotateCcw size={13} className={isRestoring ? "animate-spin" : ""} />
+        <span>{isRestoring ? "Käufe werden geprüft..." : "Bereits gekauft? Käufe wiederherstellen"}</span>
+      </button>
+
+      {restoreFeedback && (
+        <div className="mt-2 w-full text-[11px] text-center text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-fadeIn">
+          {restoreFeedback}
+        </div>
+      )}
 
       {/* Floating Purchase Toast Notification */}
       <PurchaseToast 
