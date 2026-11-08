@@ -57,8 +57,11 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
 10. `fds_mensch_sein` (4,99 €) – Hörbuch: Mut zum Echtsein
 11. `fds_rauhnaechte` (9,99 €) – Meditationszyklus: Yggdrasils Atem – 12 Rauhnächte auf der Schwelle (13 Seelenreisen)
 
-## 6. WORKFLOW-REGELN ZUR DATENSICHERHEIT
+## 6. WORKFLOW-REGELN ZUR DATENSICHERHEIT & BUILDS
 1. **Bei Arbeitsbeginn**: Stets prüfen, ob der lokale Branch `main` mit `git pull origin main` aktuell ist.
-2. **Build-Steuerung (Manuell)**: Führe **NIEMALS automatisch `npm run build`** bei Code-Änderungen oder Commits aus. Builds werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** ausgeführt.
-3. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
+2. **Web-Build**: Für die Hostinger-Webseite ist `npm run build` (`dist/`) in Ordnung, damit die Webseite live sofort funktioniert.
+3. **App-Builds (iOS & Android) – STRIKTE SPERRE**:
+   - Führe **NIEMALS automatisch Capacitor-Syncs (`npx cap sync`, `npx cap copy`) oder native App-Builds** für iOS oder Android aus!
+   - Native App-Builds (Xcode Cloud, Android Bundles) werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** angestoßen.
+4. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
 

@@ -122,11 +122,12 @@
      - **Option 2: Kostenloses Hörer-Konto (0 €)**: 1-Klick-Registrierung über Google, Meta (Facebook) oder E-Mail.
   3. **Für eingeloggte Nutzer (`user`)**: Kompakter Hinweis über den Express-Kauf mit Magic Link (sofortige Freischaltung im bestehenden Mediathek-Konto + E-Mail-Zugangslink für weitere Endgeräte).
 
-## 7. BUILD-PROZESS: NUR NACH MANUELLER AUFFORDERUNG
-- **STRIKTE REGEL**: Führe **NIEMALS automatisch einen Build (`npm run build` oder `npm run build:web`)** bei normalen Code-Änderungen oder vor Git-Commits aus!
-- Der Build wird **ausschließlich manuell** auf ausdrücklichen Wunsch des Users ausgeführt (z. B. wenn der User schreibt „Erstelle einen Build“, „Jetzt bauen“ oder „Für Live-Deployment vorbereiten“).
-- Normale Code-Änderungen an `src/` werden direkt entwickelt, getestet und committet – ohne den Produktions-Build `dist/` neu zu generieren.
-- **Wenn ein manueller Web-Build gewünscht wird**: `npm run build:web` (= `npm run build` + `scripts/prerender.mjs`). Auf dem Mac mit `caffeinate -dimsu npm run build:web`.
+## 7. BUILD-PROZESS: WEB VS. MOBILE APPS (STRIKTE TRENNUNG)
+- **Webseite**: Der Web-Build (`npm run build`) für das statische Web-Deployment auf Hostinger (`dist/`) ist in Ordnung und erwünscht, damit die Webseite live aktuell bleibt.
+- **Mobile Apps (iOS & Android) – NIEMALS AUTOMATISCH**:
+  - Führe **NIEMALS automatisch Capacitor-Syncs (`npx cap sync`, `npx cap copy`) oder native App-Builds** für iOS oder Android aus!
+  - Native App-Builds, Xcode-Archivierungen, Xcode-Cloud-Trigger und Android-Releases werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** ausgeführt (z. B. wenn der User schreibt „Synchronisiere die Apps“, „Bereite iOS-Build vor“ oder „Neuer Android-Build“).
+  - Web-Änderungen dürfen die native App-Codebasis (`ios/` und `android/`) nicht ungefragt überschreiben oder anstoßen.
 - **Neue Seite für Google** → in `public/sitemap.xml` eintragen.
 - **Neue Top-Level-Route in `src/index.tsx`** → zusätzlich in `public/.htaccess` eintragen.
 - **Live läuft kein Node-/Express-Server** (Hostinger liefert das statische Frontend aus). Weiterleitungen gehören in die `.htaccess`, nicht in `server.ts`.
