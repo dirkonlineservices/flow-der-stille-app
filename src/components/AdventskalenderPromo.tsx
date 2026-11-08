@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles, Gift, Calendar, X, ArrowRight, CheckCircle2,
-  Mail, Loader2, BookOpen, Moon, Flame
+  Mail, Loader2, ExternalLink, Globe, Smartphone, Bell
 } from 'lucide-react';
-import { ADVENT_PILLARS, ADVENT_DAYS } from '../data/adventskalender';
+import { ADVENT_PILLARS } from '../data/adventskalender';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
 import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
+import { BillingService } from '../lib/billing';
 
 const POPUP_STORAGE_KEY = 'fds_adventskalender_popup_seen_2026_v1';
+const WEB_CALENDAR_URL = 'https://flow-der-stille.de/adventskalender';
 
 interface AdventskalenderPopupModalProps {
   isOpen: boolean;
@@ -24,6 +26,9 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
   const [email, setEmail] = useState(user?.email || '');
   const [submitting, setSubmitting] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Plattform-Erkennung: Läuft der Code nativ in der Android / iOS App?
+  const isNativeApp = typeof window !== 'undefined' && BillingService.isNative();
 
   useEffect(() => {
     if (user?.email && !email) {
@@ -45,12 +50,14 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
       const res = await subscribeToNewsletter({
         email: email.trim(),
         userId: user?.id,
-        source: 'adventskalender_popup_2026'
+        source: isNativeApp ? 'adventskalender_popup_app_2026' : 'adventskalender_popup_web_2026'
       });
       if (res.success) {
         setStatusMsg({
           type: 'success',
-          text: res.message || 'Fast geschafft! Bitte bestätige kurz den Link in deiner E-Mail für deine tägliche Advents-Begleitung.'
+          text:
+            res.message ||
+            'Fast geschafft! Bitte bestätige kurz den Link in deiner E-Mail für deine tägliche Advents-Begleitung.'
         });
       } else {
         setStatusMsg({
@@ -65,57 +72,83 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
     }
   };
 
+  const openInExternalBrowser = () => {
+    onClose();
+    if (typeof window !== 'undefined') {
+      window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-[var(--bg-card)] border border-amber-500/40 rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-left"
+        className="relative w-full max-w-2xl bg-[#F5F5F0] dark:bg-stone-900 border border-[#C8A96E]/50 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[92vh] text-left text-stone-800 dark:text-stone-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Dekorativer Lichtschein */}
-        <div className="absolute -top-24 -right-24 w-56 h-56 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-56 h-56 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-56 h-56 bg-[#C8A96E]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-56 h-56 bg-[#7C8B6F]/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Schließen-Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer z-10"
+          className="absolute top-4 right-4 p-2.5 rounded-full bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer z-10"
           aria-label="Adventskalender-Vorschau schließen"
         >
           <X size={18} />
         </button>
 
         {/* Top-Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-bold uppercase tracking-wider mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#C8A96E]/25 border border-[#C8A96E]/40 text-[#6E531D] dark:text-[#EBD3A2] text-xs font-bold uppercase tracking-wider mb-3">
           <Sparkles size={13} />
-          <span>Dezember-Begleiter • 100 % Kostenfrei</span>
+          <span>Dezember-Begleitung • 100 % Kostenfrei</span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[var(--text-main)] leading-tight mb-2">
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-white leading-tight mb-2">
           Der Adventskalender – 24 Tage Innehalten
         </h2>
 
-        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-5">
-          Ein ganzheitlicher Begleiter durch den Dezember: vom bewussten Ankommen im Stillstand der Natur über die Wintersonnenwende bis zur Schwelle der heiligen Rauhnächte.
+        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed mb-5">
+          Ein ganzheitlicher Begleiter durch den Dezember: vom bewussten Ankommen im Stillstand der
+          Natur über die Wintersonnenwende bis zur Schwelle der heiligen Rauhnächte.
         </p>
+
+        {/* 📱 Plattformweiche-Hinweis für App-Nutzer */}
+        {isNativeApp && (
+          <div className="mb-5 p-4 rounded-2xl bg-gradient-to-r from-[#7C8B6F]/20 to-[#C8A96E]/15 border border-[#7C8B6F]/40 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#5C6B50] text-white flex items-center justify-center shrink-0">
+              <Smartphone size={20} />
+            </div>
+            <div className="text-xs sm:text-sm">
+              <span className="font-bold text-stone-900 dark:text-white block mb-0.5">
+                Interaktive Web-Erfahrung
+              </span>
+              <span className="text-stone-700 dark:text-stone-300 leading-relaxed">
+                Das 24-Türchen-Erlebnis mit täglicher Entriegelung und Hörbuch-Verlosungen läuft
+                vollständig im mobilen Browser. Du kannst den Kalender mit einem Klick öffnen.
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Die 4 Säulen kompakt */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
           {ADVENT_PILLARS.map((pillar) => (
             <div
               key={pillar.title}
-              className="p-3 rounded-2xl bg-[var(--bg-main)] border border-[var(--border)] text-center flex flex-col items-center justify-center"
+              className="p-3 rounded-2xl bg-white dark:bg-stone-800 border border-stone-200/90 dark:border-stone-700 text-center flex flex-col items-center justify-center shadow-xs"
             >
               <span className="text-lg mb-0.5">{pillar.emoji}</span>
-              <span className="text-base sm:text-lg font-serif font-bold text-[var(--text-main)]">
+              <span className="text-base sm:text-lg font-serif font-bold text-stone-900 dark:text-white">
                 {pillar.count}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5C6B50] dark:text-[#EBD3A2]">
                 {pillar.title}
               </span>
-              <span className="text-[11px] text-[var(--text-muted)] mt-1 leading-snug line-clamp-2">
+              <span className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-snug line-clamp-2">
                 {pillar.description}
               </span>
             </div>
@@ -123,8 +156,8 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
         </div>
 
         {/* Highlight: 3x Rauhnacht-Hörbuch Gewinnspiele */}
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 mb-5 flex flex-col sm:flex-row items-center gap-3.5">
-          <div className="w-16 h-16 rounded-xl overflow-hidden border border-amber-500/40 shrink-0 shadow-sm">
+        <div className="p-4 rounded-2xl bg-[#C8A96E]/15 border border-[#C8A96E]/40 mb-5 flex flex-col sm:flex-row items-center gap-3.5">
+          <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#C8A96E]/50 shrink-0 shadow-sm bg-stone-900">
             <img
               src="/images/products/cover_rauhnaechte.jpg"
               alt="Yggdrasils Atem – 12 Rauhnächte"
@@ -135,45 +168,52 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
             />
           </div>
           <div className="flex-1 text-center sm:text-left">
-            <div className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center justify-center sm:justify-start gap-1.5">
+            <div className="text-xs font-bold uppercase tracking-wider text-[#6E531D] dark:text-[#EBD3A2] flex items-center justify-center sm:justify-start gap-1.5">
               <Gift size={14} />
               <span>3 × Große Hörbuch-Verlosung im Kalender</span>
             </div>
-            <p className="text-xs sm:text-sm text-[var(--text-main)] font-medium mt-0.5">
-              Am <strong>06. Dez (Nikolaus)</strong>, <strong>13. Dez (Halbzeit)</strong> &amp; <strong>21. Dez (Sonnenwende)</strong> verlosen wir unser neues Werk <em>„Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“</em>!
+            <p className="text-xs sm:text-sm text-stone-800 dark:text-stone-100 font-medium mt-0.5">
+              Am <strong>06. Dez (Nikolaus)</strong>, <strong>13. Dez (Halbzeit)</strong> &amp;{' '}
+              <strong>21. Dez (Sonnenwende)</strong> verlosen wir unser neues Werk{' '}
+              <em>„Yggdrasils Atem – 12 Rauhnächte auf der Schwelle“</em>!
             </p>
           </div>
         </div>
 
-        {/* Optionale E-Mail-Erinnerung */}
-        <form onSubmit={handleSubscribe} className="mb-5 p-3.5 rounded-2xl bg-[var(--bg-main)] border border-[var(--border)]">
-          <label className="block text-xs font-bold text-[var(--text-main)] mb-1.5">
-            🔔 Tägliche Türchen-Impulse &amp; Verlosungs-Erinnerung kostenfrei per E-Mail erhalten:
+        {/* E-Mail-Erinnerung mit Resend-Anbindung */}
+        <form
+          onSubmit={handleSubscribe}
+          className="mb-5 p-4 rounded-2xl bg-white dark:bg-stone-800/90 border border-stone-200 dark:border-stone-700"
+        >
+          <label className="block text-xs font-bold text-stone-800 dark:text-stone-100 mb-1.5">
+            🔔 Tägliche Erinnerung für das neue Türchen erhalten (0&nbsp;€):
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Deine E-Mail-Adresse..."
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] text-xs sm:text-sm text-[var(--text-main)] focus:outline-none focus:border-[var(--accent)]"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 text-xs sm:text-sm text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#7C8B6F]"
               />
             </div>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-60"
+              className="px-4 py-2.5 rounded-xl bg-[#5C6B50] hover:bg-[#4A563E] text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0 disabled:opacity-60 shadow-xs"
             >
               {submitting ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
-              <span>Kostenfrei eintragen</span>
+              <span>Erinnerung aktivieren</span>
             </button>
           </div>
           {statusMsg && (
             <p
               className={`text-xs mt-2 font-medium ${
-                statusMsg.type === 'success' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                statusMsg.type === 'success'
+                  ? 'text-emerald-700 dark:text-emerald-400'
+                  : 'text-red-600 dark:text-red-400'
               }`}
             >
               {statusMsg.text}
@@ -181,20 +221,33 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
           )}
         </form>
 
-        {/* Haupt-Buttons */}
+        {/* Plattform-Aktions-Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            to="/adventskalender"
-            onClick={onClose}
-            className="flex-1 py-3.5 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs sm:text-sm text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Calendar size={16} />
-            <span>Alle 24 Türchen &amp; Programm entdecken</span>
-            <ArrowRight size={16} />
-          </Link>
+          {isNativeApp ? (
+            <button
+              type="button"
+              onClick={openInExternalBrowser}
+              className="flex-1 py-3.5 px-5 rounded-2xl bg-[#C8A96E] hover:bg-[#B89758] text-stone-950 font-bold text-xs sm:text-sm text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <ExternalLink size={16} />
+              <span>Im Browser öffnen (24 Türchen)</span>
+              <ArrowRight size={16} />
+            </button>
+          ) : (
+            <Link
+              to="/adventskalender"
+              onClick={onClose}
+              className="flex-1 py-3.5 px-5 rounded-2xl bg-[#5C6B50] hover:bg-[#4A563E] text-white font-bold text-xs sm:text-sm text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Calendar size={16} />
+              <span>Zu den 24 Türchen</span>
+              <ArrowRight size={16} />
+            </Link>
+          )}
+
           <button
             onClick={onClose}
-            className="py-3.5 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] font-semibold text-xs sm:text-sm text-center transition-colors cursor-pointer"
+            className="py-3.5 px-4 rounded-2xl bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-semibold text-xs sm:text-sm text-center transition-colors cursor-pointer"
           >
             Später ansehen
           </button>
@@ -214,6 +267,8 @@ export const AdventskalenderHomeSection: React.FC = () => {
     return isKnownAdminEmail(user?.email);
   });
 
+  const isNativeApp = typeof window !== 'undefined' && BillingService.isNative();
+
   useEffect(() => {
     if (!user) {
       setIsAdminUser(
@@ -230,7 +285,7 @@ export const AdventskalenderHomeSection: React.FC = () => {
     });
   }, [user]);
 
-  // Automatisches einmaliges Einblenden als Pop-Up (nur für Admins)
+  // Automatisches einmaliges Einblenden als Pop-Up (aktuell in Vorbereitung nur für Admins)
   useEffect(() => {
     if (!isAdminUser) return;
     try {
@@ -254,24 +309,21 @@ export const AdventskalenderHomeSection: React.FC = () => {
     return null;
   }
 
-  const highlightDays = ADVENT_DAYS.filter((d) => [1, 6, 13, 21, 24].includes(d.day));
-
   return (
     <>
       <section
         id="adventskalender-teaser"
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-stone-900 to-stone-950 text-stone-100 p-5 sm:p-7 md:p-8 border border-amber-500/30 shadow-lg"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#232B22] via-[#2F3A2B] to-[#1A2019] text-stone-100 p-5 sm:p-7 md:p-8 border border-[#C8A96E]/35 shadow-lg"
       >
-        {/* Sanfter goldener & waldgrüner Lichtschimmer */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-72 h-72 bg-[#C8A96E]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-[#7C8B6F]/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C8A96E]/20 border border-[#C8A96E]/40 text-[#EBD3A2] text-xs font-bold uppercase tracking-wider">
                   <Sparkles size={13} />
                   <span>Flow der Stille • Winter- &amp; Adventsbegleitung</span>
                 </div>
@@ -279,28 +331,43 @@ export const AdventskalenderHomeSection: React.FC = () => {
                   <span>🔒 Nur für Admins sichtbar (Vorschau)</span>
                 </div>
               </div>
+
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-normal text-white leading-tight">
                 Der Adventskalender – 24 Tage Innehalten
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-stone-300 max-w-2xl leading-relaxed">
-                Vom bewussten Ankommen im Stillstand der Natur über die Wintersonnenwende bis zur Schwelle der heiligen Rauhnächte: Entdecke jeden Tag einen achtsamen Impuls für dein Nervensystem.
+                Klassisches 24-Türchen-Raster: Tag für Tag öffnet sich ein neuer Impuls zur
+                Entschleunigung für dein Nervensystem.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
-              <Link
-                to="/adventskalender"
-                className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
-              >
-                <Calendar size={16} />
-                <span>Zum 24-Tage Adventskalender</span>
-                <ArrowRight size={16} />
-              </Link>
+              {isNativeApp ? (
+                <button
+                  type="button"
+                  onClick={() => window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer')}
+                  className="px-5 py-3 rounded-2xl bg-[#C8A96E] hover:bg-[#B89758] text-stone-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                >
+                  <ExternalLink size={16} />
+                  <span>Im Browser öffnen</span>
+                  <ArrowRight size={16} />
+                </button>
+              ) : (
+                <Link
+                  to="/adventskalender"
+                  className="px-5 py-3 rounded-2xl bg-[#C8A96E] hover:bg-[#B89758] text-stone-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                >
+                  <Calendar size={16} />
+                  <span>Zum 24-Türchen-Kalender</span>
+                  <ArrowRight size={16} />
+                </Link>
+              )}
+
               <button
                 onClick={() => setIsPopupOpen(true)}
                 className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-stone-100 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
               >
-                <Gift size={14} className="text-amber-300" />
+                <Gift size={14} className="text-[#EBD3A2]" />
                 <span>Schnellvorschau (Pop-Up)</span>
               </button>
             </div>
@@ -309,61 +376,26 @@ export const AdventskalenderHomeSection: React.FC = () => {
           {/* 4 Säulen Übersicht */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {ADVENT_PILLARS.map((pillar) => (
-              <Link
+              <div
                 key={pillar.title}
-                to={`/adventskalender?kategorie=${pillar.category}`}
-                className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/40 transition-all group flex flex-col justify-between"
+                className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col justify-between"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl">{pillar.emoji}</span>
-                  <span className="text-xl sm:text-2xl font-serif font-bold text-amber-300">
+                  <span className="text-xl sm:text-2xl font-serif font-bold text-[#EBD3A2]">
                     {pillar.count}
                   </span>
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-amber-200 transition-colors">
+                  <div className="text-xs font-bold uppercase tracking-wider text-white">
                     {pillar.title}
                   </div>
                   <p className="text-[11px] sm:text-xs text-stone-300 mt-1 leading-relaxed">
                     {pillar.description}
                   </p>
                 </div>
-              </Link>
+              </div>
             ))}
-          </div>
-
-          {/* 5 Ausgewählte Meilenstein-Tage als Vorschau-Leiste */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between text-xs text-stone-300">
-              <span className="font-bold uppercase tracking-wider text-amber-200/90 flex items-center gap-1.5">
-                <Flame size={13} />
-                <span>Wichtige Stationen &amp; Verlosungs-Tage im Dezember:</span>
-              </span>
-              <Link to="/adventskalender" className="text-amber-300 hover:underline font-semibold">
-                Alle 24 Tage ansehen →
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-              {highlightDays.map((item) => (
-                <Link
-                  key={item.day}
-                  to={`/adventskalender?tag=${item.day}`}
-                  className="p-3 rounded-xl bg-black/30 hover:bg-black/45 border border-white/10 hover:border-amber-400/40 transition flex flex-col justify-between gap-1.5"
-                >
-                  <div className="flex items-center justify-between text-[11px] font-bold text-amber-300">
-                    <span>{item.dateLabel}</span>
-                    <span>{item.emoji} {item.categoryLabel}</span>
-                  </div>
-                  <div className="text-xs font-serif font-bold text-white leading-snug">
-                    {item.title}
-                  </div>
-                  <div className="text-[11px] text-stone-300 line-clamp-2 leading-relaxed">
-                    {item.coreImpulse}
-                  </div>
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -376,4 +408,3 @@ export const AdventskalenderHomeSection: React.FC = () => {
     </>
   );
 };
-

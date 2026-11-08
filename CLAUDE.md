@@ -16,7 +16,11 @@
 >   - US-Steuerformulare (Form W-8BEN & Foreign Status) vollständig übermittelt & aktiv (0 % US-Quellensteuer gem. Doppelbesteuerungsabkommen).
 > - **EU-DSA-Händlerverifizierung übermittelt.**
 > - **🎄 24-Tage Adventskalender („24 Tage Innehalten“)**:
->   - Live unter `/adventskalender` (inkl. `/weihnachtskalender` & `/advent`), prominent auf der Startseite (`AdventskalenderHomeSection`) und als Pop-Up Modal (`AdventskalenderPopupModal`, auch direkt per `?popup=advent` aufrufbar).
+>   - Komplett überarbeitet: Traditionelles 24-Türchen-Raster ohne inhaltliche Vorschau im geschlossenen Zustand.
+>   - Zeitbasierte Sperre (öffnet sich erst am jeweiligen Tag im Dezember oder rückwirkend; freundlicher Hinweis für zukünftige Tage; Admin-Testschalter zum Testen aller Tage).
+>   - Resend E-Mail-Erinnerung (`AdventEmailReminder`) mit DSGVO-konformem Double-Opt-In für morgendliche Benachrichtigungen.
+>   - Plattformweiche für iOS/Android App im Pop-Up (`AdventskalenderPromo` leitet App-Nutzer sauber mit „Im Browser öffnen“ auf die mobile Webansicht).
+>   - Aktuell geschützt im internen Admin-Vorschaumodus.
 > - **Branch**: `main` (immer up to date mit `origin/main`).
 
 ---
