@@ -103,6 +103,10 @@ import AdventskalenderPage from './pages/AdventskalenderPage';
 import MeditationLanding from './pages/MeditationLanding';
 import HypnosisLanding from './pages/HypnosisLanding';
 import SoundSamplesLanding from './pages/SoundSamplesLanding';
+import AudioSessionPage from './pages/AudioSessionPage';
+import PricingPackages from './pages/PricingPackages';
+import Community from './pages/Community';
+import AboutUs from './pages/AboutUs';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
@@ -160,6 +164,45 @@ export default function App() {
                   <Route path="ruhe-shop" element={<Premium />} />
                   <Route path="shop" element={<Navigate to="/ruhe-shop" replace />} />
                   <Route path="premium-dashboard" element={<Navigate to="/ruhe-shop" replace />} />
+                  
+                  {/* Über uns & Vision */}
+                  <Route path="ueber-uns" element={<AboutUs />} />
+                  <Route path="about" element={<AboutUs />} />
+                  <Route path="team" element={<AboutUs />} />
+                  <Route path="kontakt" element={<Contact />} />
+
+                  {/* Audio-Sessions & Detailseiten */}
+                  <Route path="audio/:id" element={<AudioSessionPage />} />
+                  <Route path="selbsthypnose/:id" element={<AudioSessionPage />} />
+                  <Route path="meditation/:id" element={<AudioSessionPage />} />
+
+                  {/* Pakete, Preise & Community */}
+                  <Route path="pakete" element={<PricingPackages />} />
+                  <Route path="preise" element={<PricingPackages />} />
+                  <Route path="vorteile" element={<PricingPackages />} />
+                  <Route path="angebote" element={<PricingPackages />} />
+                  <Route path="community" element={<Community />} />
+                  <Route path="gemeinschaft" element={<Community />} />
+
+                  {/* Deutsche Sprach- & Themenaliase */}
+                  <Route path="uebungen" element={<Exercises />} />
+                  <Route path="uebungen/:id" element={<ExerciseDetail />} />
+                  <Route path="atemuebungen" element={<Exercises />} />
+                  <Route path="rezepte" element={<Recipes />} />
+                  <Route path="rezepte/:id" element={<RecipeDetail />} />
+                  <Route path="wissen" element={<Learn />} />
+                  <Route path="morgen" element={<Morning />} />
+                  <Route path="abend" element={<Evening />} />
+                  <Route path="abendritual" element={<Evening />} />
+                  <Route path="einstellungen" element={<Settings />} />
+                  <Route path="profil" element={<Settings />} />
+                  <Route path="anmelden" element={<Login />} />
+                  <Route path="einloggen" element={<Login />} />
+                  <Route path="registrieren" element={<Register />} />
+                  <Route path="passwort-vergessen" element={<ForgotPassword />} />
+                  <Route path="passwort-zuruecksetzen" element={<ResetPassword />} />
+                  <Route path="meditationen" element={<MeditationLanding />} />
+
                   <Route path="hoerbuch" element={<AudiobookPage />} />
                   <Route path="hoerbuch/:id" element={<AudiobookPage />} />
                   <Route path="hoerbuecher" element={<AudiobooksHub />} />

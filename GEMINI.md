@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 12:33 Uhr (🎨 Kontrast-Fix für Magic-Link Box: Alle `dark:` Textklassen entfernt, Schriftfarben fest auf sattes Schwarz `#0c0a09` (text-stone-950) und Fließtext auf dunkles Anthrazit fixiert, sodass auch bei aktivem System-Dark-Mode auf der hellen Karte maximaler Kontrast garantiert ist; Web-Build fehlerfrei)
+> - **Letzter Stand**: 08.11.2026, 12:41 Uhr (🔗 Wiederherstellung: Route '/ueber-uns' (AboutUs.tsx), Audio-Session-Routen, Pakete, Community und deutsche Aliase in 'src/index.tsx' reaktiviert & in 'sitemap.xml' eingetragen; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
