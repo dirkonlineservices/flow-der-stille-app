@@ -62,28 +62,28 @@ export function RauhnaechtePreviewModal() {
           </div>
 
           <div className="space-y-1.5 text-center sm:text-left">
-            <h3 className="font-serif font-bold text-xl sm:text-2xl text-[var(--text-main)] leading-tight">
+            <h3 className="font-serif font-bold text-xl sm:text-2xl text-stone-950 leading-tight">
               Yggdrasils Atem
             </h3>
-            <p className="text-xs sm:text-sm text-[var(--accent)] font-medium">
+            <p className="text-xs sm:text-sm text-emerald-900 font-semibold">
               12 Rauhnächte auf der Schwelle
             </p>
-            <div className="flex flex-wrap gap-2 justify-center sm:justify-start pt-1 text-[11px] text-[var(--text-muted)]">
-              <span className="inline-flex items-center gap-1">
-                <Moon size={11} className="text-[var(--accent)]" />
+            <div className="flex flex-wrap gap-2 justify-center sm:justify-start pt-1 text-[11px] text-stone-600">
+              <span className="inline-flex items-center gap-1 font-medium">
+                <Moon size={11} className="text-emerald-700" />
                 <span>Auftakt: 21. Dezember</span>
               </span>
               <span>•</span>
-              <span className="inline-flex items-center gap-1">
-                <BookOpen size={11} className="text-[var(--accent)]" />
+              <span className="inline-flex items-center gap-1 font-medium">
+                <BookOpen size={11} className="text-emerald-700" />
                 <span>13 Meditationen</span>
               </span>
             </div>
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed mb-5">
-          Erlebe 13 geführte schamanische Seelenreisen an den Wurzeln des Weltenbaums Yggdrasil. Du kannst dir das Hörbuch schon jetzt für <strong>9,99&nbsp;€</strong> vorab sichern und selbst entscheiden, wann es für dich stimmig ist hineinzuhören – oder dich kostenlos für Rauhnächte-News und Begleit-Impulse eintragen.
+        <p className="text-xs sm:text-sm text-stone-700 leading-relaxed mb-5 font-normal">
+          Erlebe 13 geführte schamanische Seelenreisen an den Wurzeln des Weltenbaums Yggdrasil. Du kannst dir das Hörbuch schon jetzt für <strong className="text-stone-950 font-bold whitespace-nowrap">9,99&nbsp;€</strong> vorab sichern und selbst entscheiden, wann es für dich stimmig ist hineinzuhören, oder dich kostenlos für Rauhnächte-News und Begleit-Impulse eintragen.
         </p>
 
         {/* Action Buttons */}
@@ -91,15 +91,15 @@ export function RauhnaechtePreviewModal() {
           <Link
             to="/hoerbuch/rauhnaechte"
             onClick={handleClose}
-            className="flex-1 py-3 px-5 rounded-2xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold text-xs sm:text-sm text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 px-5 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Zur Vorschau & Vorabkauf</span>
+            <span>Zur Vorschau und Vorabkauf</span>
             <ArrowRight size={15} />
           </Link>
 
           <button
             onClick={handleClose}
-            className="py-3 px-4 rounded-2xl bg-[var(--bg-alt)] hover:bg-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] font-semibold text-xs text-center transition-colors cursor-pointer"
+            className="py-3 px-4 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 hover:text-stone-950 font-semibold text-xs text-center transition-colors cursor-pointer"
           >
             Später
           </button>

@@ -168,13 +168,13 @@ function AudioConsentModal({ isOpen, category, contentTitle, onAccept, onClose }
                     {CATEGORY_LABELS[category]} · Wichtiger Hinweis
                   </p>
                   <h2
-                    className="text-xl sm:text-2xl font-bold leading-tight"
-                    style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--text-main)' }}
+                    className="text-xl sm:text-2xl font-bold leading-tight text-stone-950"
+                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
                   >
                     Haftungsausschluss
                   </h2>
                   {contentTitle && (
-                    <p className="text-xs mt-1 italic" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-xs mt-1 italic text-stone-600">
                       „{contentTitle}"
                     </p>
                   )}
@@ -183,24 +183,22 @@ function AudioConsentModal({ isOpen, category, contentTitle, onAccept, onClose }
 
               {/* Text */}
               <div
-                className="text-sm leading-relaxed space-y-3 mb-5 max-h-[38vh] overflow-y-auto pr-1"
-                style={{ color: 'var(--text-muted)' }}
+                className="text-sm leading-relaxed space-y-3 mb-5 max-h-[38vh] overflow-y-auto pr-1 text-stone-700 font-normal"
               >
                 <p>
                   Die hier angebotenen Meditationen, Tiefenentspannungen und Selbsthypnosen dienen
                   ausschließlich der persönlichen Entspannung und Selbsterfahrung. Sie stellen
-                  ausdrücklich <strong style={{ color: 'var(--text-main)' }}>keine therapeutischen oder fachlichen
+                  ausdrücklich <strong className="text-stone-950 font-bold">keine therapeutischen oder fachlichen
                   Behandlungen</strong> dar und ersetzen keinen Arzt, Therapeuten oder Fachberater.
                 </p>
 
                 <div
-                  className="rounded-xl p-4 space-y-2"
-                  style={{ backgroundColor: 'var(--bg-alt)', border: '1px solid var(--border)' }}
+                  className="rounded-xl p-4 space-y-2 bg-stone-50 border border-stone-200"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-main)' }}>
+                  <p className="text-xs font-bold uppercase tracking-wider text-stone-950">
                     Voraussetzungen für die Nutzung:
                   </p>
-                  <ul className="list-disc pl-4 space-y-1 text-xs">
+                  <ul className="list-disc pl-4 space-y-1 text-xs text-stone-700 font-normal">
                     <li>Setzt körperliche und geistige Gesundheit voraus.</li>
                     <li>Nicht bei Epilepsie, schweren Herzerkrankungen, Psychosen oder unter bewusstseinsverändernden Mitteln anwenden.</li>
                     <li>Niemals während des Autofahrens oder bei Tätigkeiten mit Aufmerksamkeitspflicht anwenden.</li>

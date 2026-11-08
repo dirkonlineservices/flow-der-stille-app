@@ -84,47 +84,47 @@ export default function FullAudioRegistrationModal({
           </div>
 
           <div className="space-y-1.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--accent)]">
-              {subtitle || 'Rechtliche Absicherung & Haftungsausschluss'}
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-950 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 inline-block">
+              {subtitle || 'Rechtliche Absicherung und Haftungsausschluss'}
             </span>
-            <h3 className="text-xl sm:text-2xl font-bold font-serif leading-tight">
+            <h3 className="text-xl sm:text-2xl font-bold font-serif leading-tight text-stone-950">
               {title || 'Möchtest du die gesamte Session kostenlos hören?'}
             </h3>
             {durationText && (
-              <p className="text-xs font-mono text-[var(--accent)]">
+              <p className="text-xs font-mono text-emerald-900 font-semibold">
                 Volle Länge: {durationText}
               </p>
             )}
           </div>
 
-          <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed text-left bg-[var(--bg-alt)] p-4 rounded-2xl border border-[var(--border)]">
-            Du hast gerade die ersten <strong>45 Sekunden</strong> zur Stimmprobe gehört. 
+          <p className="text-xs sm:text-sm text-stone-700 leading-relaxed text-left bg-stone-50 p-4 rounded-2xl border border-stone-200 font-normal">
+            Du hast gerade die ersten <strong className="text-stone-950 font-bold">45 Sekunden</strong> zur Stimmprobe gehört. 
             Da es bei Entspannung und mentalem Wohlbefinden um Gesundheitsthemen geht, gelten in Deutschland besonders strenge Gesetze (u.&nbsp;a. Abgrenzung zur ärztlichen Therapie). Um beide Seiten fair und rechtssicher abzusichern, ist für die vollständige Sitzung eine einmalige, kostenlose Registrierung erforderlich.{' '}
-            <Link to="/faq" target="_blank" className="text-[var(--accent)] hover:underline font-medium inline-block">
+            <Link to="/faq" target="_blank" className="text-emerald-900 hover:underline font-bold inline-block">
               Warum genau? (FAQ) →
             </Link>
           </p>
 
-          <div className="space-y-2 text-left text-xs text-[var(--text-muted)]">
+          <div className="space-y-2 text-left text-xs text-stone-700 font-medium">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
+              <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
               <span>100 % kostenfrei und unverbindlich | Kein Abo</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
+              <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
               <span>Bestätigung des Haftungsausschlusses wird sicher in deinem Profil hinterlegt</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-[var(--accent)] shrink-0" />
+              <CheckCircle2 size={14} className="text-emerald-700 shrink-0" />
               <span>Sofortiger Zugriff auf alle kostenfreien Vollversionen und Schnupperübungen</span>
             </div>
           </div>
 
-          <div className="space-y-2.5 pt-3 border-t border-[var(--border)]">
-            {/* Primäre Aktionen: Registrierung & Login */}
+          <div className="space-y-2.5 pt-3 border-t border-stone-200">
+            {/* Primäre Aktionen: Registrierung und Login */}
             <button
               onClick={handleRegister}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-[var(--accent)] text-white font-semibold text-sm shadow-md hover:bg-[var(--accent-hover)] transition-all cursor-pointer active:scale-95"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-emerald-800 text-white font-bold text-sm shadow-md hover:bg-emerald-900 transition-all cursor-pointer active:scale-95"
             >
               <UserPlus size={17} />
               <span>Jetzt kostenfrei registrieren und freischalten</span>
@@ -132,7 +132,7 @@ export default function FullAudioRegistrationModal({
 
             <button
               onClick={handleLogin}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] text-[var(--text-main)] font-medium text-xs hover:bg-[var(--border)] transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-stone-100 border border-stone-300 text-stone-900 font-semibold text-xs hover:bg-stone-200 transition-all cursor-pointer"
             >
               <LogIn size={15} />
               <span>Bereits registriert? Anmelden</span>
