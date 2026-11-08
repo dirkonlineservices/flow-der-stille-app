@@ -22,6 +22,7 @@ import { AdminWelcomeModal } from './AdminWelcomeModal';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
 import { APP_VERSION } from '../version';
 import { trackMetaPageView } from '../lib/metaPixel';
+import { AdventTopBanner } from './AdventTopBanner';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -152,6 +153,9 @@ export default function Layout() {
       </div>
 
       <div className="w-full">
+        {/* Oben angehefteter Weihnachtskalender-Badge mit personalisierter Voranmeldung */}
+        <AdventTopBanner />
+
         {/* Desktop Sidebar */}
         <nav aria-label="Hauptnavigation Desktop" className="hidden md:flex fixed left-0 top-0 bottom-0 w-24 flex-col items-center py-8 bg-[var(--bg-card)] border-r border-[var(--border)] z-50 overflow-y-auto">
           <Link to="/" className="mb-10 p-2 rounded-full hover:bg-[var(--bg-alt)] transition-colors shrink-0">
