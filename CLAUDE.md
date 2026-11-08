@@ -66,3 +66,17 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
    - Führe **NIEMALS automatisch Capacitor-Syncs (`npx cap sync`, `npx cap copy`) oder native App-Builds** für iOS oder Android aus!
 4. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
 
+## 7. SCHREIBSTIL- UND TYPOGRAFIE-RICHTLINIE (FLOW DER STILLE)
+- **Verbot von KI-Gedankenstrichen**:
+  - Keine langen Striche mitten im Satz: Verwende weder Halbgeviertstriche (`–`) noch Geviertstriche (`—`) als Satzeinschübe.
+  - Satzstruktur statt Einschub: Gedanken mit Punkt oder Komma trennen.
+  - Bindestriche nur wo nötig: Ausschließlich reguläres Trennzeichen (`-`), sparsam und ohne Leerzeichen davor oder danach.
+- **Strukturierung & visuelle Trennung**:
+  - Kurze Angaben in Meta-Daten oder Kopfzeilen trennen mit schlichtem senkrechtem Strich (`|`) oder Punkt (`·`) statt Gedankenstrichen (z. B. `12 Minuten | Geführte Meditation` oder `Achtsamkeit · Kostenfrei`).
+- **Satzbau & Lesbarkeit**:
+  - Punkt vor Schachtelsatz. Echte Kommasetzung. Fließender, ruhiger Atemrhythmus beim Lesen.
+- **Tonalität & Wortwahl**:
+  - Einladung statt Druck: Formulierungen wie „Wenn du magst“, „Du kannst“ oder „Einladung zu“ bevorzugen. Keine Aufforderungen im Befehlston.
+  - Keine leeren Phrasen: Begriffe wie „Tauche ein“, „Hektischer Alltag“, „Transformativ“ oder „Reise zu dir selbst“ konsequent vermeiden.
+  - Klare deutsche Worte: Zusammengesetzte Wörter nach Möglichkeit zusammenschreiben.
+

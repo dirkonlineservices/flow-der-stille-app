@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 11:13 Uhr (🌟 Top-Banner Badge auf „Kostenfrei“ umgestellt; Pop-up-Sequenzierung aktiv: Cookiebanner vorrangig, Advents-Popup 20s Delay + Unterdrückung bei Besuch, Hörbuch-Widget 8s Delay; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
+> - **Letzter Stand**: 08.11.2026, 11:20 Uhr (🔒 Pop-up vollständig fixiert: kein internes Scrollen/Wackeln, Hintergrund-Scrollsperre aktiv, `draggable=false` & `select-none`; ✍️ Neue Schreibstil- und Typografie-Richtlinie in `GEMINI.md` & `CLAUDE.md` integriert und auf alle Advents-Texte angewendet: keine KI-Gedankenstriche, saubere Punkte & Trenner; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
@@ -132,3 +132,17 @@
 - **Neue Seite für Google** → in `public/sitemap.xml` eintragen.
 - **Neue Top-Level-Route in `src/index.tsx`** → zusätzlich in `public/.htaccess` eintragen.
 - **Live läuft kein Node-/Express-Server** (Hostinger liefert das statische Frontend aus). Weiterleitungen gehören in die `.htaccess`, nicht in `server.ts`.
+
+## 8. SCHREIBSTIL- UND TYPOGRAFIE-RICHTLINIE (FLOW DER STILLE)
+- **Verbot von KI-Gedankenstrichen**:
+  - Keine langen Striche mitten im Satz: Verwende weder Halbgeviertstriche (`–`) noch Geviertstriche (`—`) als Satzeinschübe.
+  - Satzstruktur statt Einschub: Gedanken mit Punkt oder Komma trennen.
+  - Bindestriche nur wo nötig: Ausschließlich reguläres Trennzeichen (`-`), sparsam und ohne Leerzeichen davor oder danach.
+- **Strukturierung & visuelle Trennung**:
+  - Kurze Angaben in Meta-Daten oder Kopfzeilen trennen mit schlichtem senkrechtem Strich (`|`) oder Punkt (`·`) statt Gedankenstrichen (z. B. `12 Minuten | Geführte Meditation` oder `Achtsamkeit · Kostenfrei`).
+- **Satzbau & Lesbarkeit**:
+  - Punkt vor Schachtelsatz. Echte Kommasetzung. Fließender, ruhiger Atemrhythmus beim Lesen.
+- **Tonalität & Wortwahl**:
+  - Einladung statt Druck: Formulierungen wie „Wenn du magst“, „Du kannst“ oder „Einladung zu“ bevorzugen. Keine Aufforderungen im Befehlston.
+  - Keine leeren Phrasen: Begriffe wie „Tauche ein“, „Hektischer Alltag“, „Transformativ“ oder „Reise zu dir selbst“ konsequent vermeiden.
+  - Klare deutsche Worte: Zusammengesetzte Wörter nach Möglichkeit zusammenschreiben.

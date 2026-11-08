@@ -165,8 +165,8 @@ export const AdventTopBanner: React.FC = () => {
           </div>
         ) : (
           <div className="text-xs sm:text-sm text-[#3D3B35] font-medium leading-normal">
-            <strong className="font-semibold text-[#344034]">24 Tage Innehalten</strong>
-            <span className="text-[#695C4D]"> – Täglich Meditationen &amp; Hörbuch-Gewinnspiele ab 1. Dez.</span>
+            <strong className="font-semibold text-[#344034]">24 Tage Innehalten.</strong>
+            <span className="text-[#695C4D]"> Täglich kostenfreie Meditationen und Hörbuch-Gewinnspiele ab 1. Dezember.</span>
           </div>
         )}
 

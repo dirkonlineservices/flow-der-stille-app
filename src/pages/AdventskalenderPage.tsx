@@ -268,7 +268,7 @@ export const AdventskalenderPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A9A8A]/20 border border-[#8A9A8A]/40 text-[#4A563E] text-xs font-bold uppercase tracking-widest">
               <Sparkles className="w-3.5 h-3.5" />
-              FLOW DER STILLE • 24 TAGE INNEHALTEN
+              FLOW DER STILLE · 24 TAGE INNEHALTEN
             </div>
 
             <button
@@ -282,7 +282,7 @@ export const AdventskalenderPage: React.FC = () => {
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#3D3B35] leading-tight tracking-tight max-w-4xl mx-auto">
-            Der Adventskalender –{' '}
+            Der Adventskalender:{' '}
             <span className="text-[#8A9A8A] italic font-normal block sm:inline">
               24 Tage Innehalten
             </span>
@@ -478,7 +478,7 @@ export const AdventskalenderPage: React.FC = () => {
               </div>
 
               <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#3D3B35] leading-tight">
-                Yggdrasils Atem – 12 Rauhnächte auf der Schwelle
+                Yggdrasils Atem | 12 Rauhnächte auf der Schwelle
               </h3>
 
               <p className="text-sm sm:text-base text-[#695C4D] leading-relaxed max-w-2xl">
