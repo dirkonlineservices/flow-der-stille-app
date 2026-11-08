@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
+import { AdventskalenderHomeSection } from './AdventskalenderPromo';
 
 interface HomeAdminLandingProps {
   user: any;
@@ -225,6 +226,9 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
           </div>
         </div>
       </section>
+
+      {/* ─── 1B. ADVENTSKALENDER (24 TAGE INNEHALTEN + POP-UP) ─────────── */}
+      <AdventskalenderHomeSection />
 
       {/* ─── 2. CUSTOMER JOURNEY: BEDÜRFNIS-FINDER (FÜR GESTRESSTE NUTZER) ── */}
       <section className="space-y-4">

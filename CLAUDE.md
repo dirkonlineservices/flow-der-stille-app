@@ -14,7 +14,9 @@
 >   - Bankkonto für Auszahlungen (EUR / USD) aktiv.
 >   - Vertrag für gebührenpflichtige Apps aktiv.
 >   - US-Steuerformulare (Form W-8BEN & Foreign Status) vollständig übermittelt & aktiv (0 % US-Quellensteuer gem. Doppelbesteuerungsabkommen).
->   - EU-DSA-Händlerverifizierung übermittelt.
+> - **EU-DSA-Händlerverifizierung übermittelt.**
+> - **🎄 24-Tage Adventskalender („24 Tage Innehalten“)**:
+>   - Live unter `/adventskalender` (inkl. `/weihnachtskalender` & `/advent`), prominent auf der Startseite (`AdventskalenderHomeSection`) und als Pop-Up Modal (`AdventskalenderPopupModal`, auch direkt per `?popup=advent` aufrufbar).
 > - **Branch**: `main` (immer up to date mit `origin/main`).
 
 ---
@@ -54,3 +56,4 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
 ## 6. WORKFLOW-REGELN ZUR DATENSICHERHEIT
 1. **Bei Arbeitsbeginn**: Stets prüfen, ob der lokale Branch `main` mit `git pull origin main` aktuell ist.
 2. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
+

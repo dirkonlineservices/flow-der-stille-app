@@ -99,6 +99,7 @@ function ReferralCapture() {
 import AudiobookPage from './pages/AudiobookPage';
 import AudiobooksHub from './pages/AudiobooksHub';
 import RauhnaechtePreviewPage from './pages/RauhnaechtePreviewPage';
+import AdventskalenderPage from './pages/AdventskalenderPage';
 import MeditationLanding from './pages/MeditationLanding';
 import HypnosisLanding from './pages/HypnosisLanding';
 import SoundSamplesLanding from './pages/SoundSamplesLanding';
@@ -167,6 +168,9 @@ export default function App() {
                   <Route path="yggdrasil" element={<Navigate to="/hoerbuch/rauhnaechte" replace />} />
                   <Route path="rauhnaechte-vorschau" element={<RauhnaechtePreviewPage />} />
                   <Route path="rauhnaechte-themen" element={<RauhnaechtePreviewPage />} />
+                  <Route path="adventskalender" element={<AdventskalenderPage />} />
+                  <Route path="weihnachtskalender" element={<AdventskalenderPage />} />
+                  <Route path="advent" element={<AdventskalenderPage />} />
                   <Route path="audiobooks" element={<AudiobooksHub />} />
                   <Route path="meditation" element={<MeditationLanding />} />
                   <Route path="gefuehrte-meditation" element={<MeditationLanding />} />

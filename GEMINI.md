@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 09:12 Uhr (🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 mit neuem Marken-AppIcon & Kauf-Sicherheit in Apple-Prüfung; Bankverbindung, Vertrag für gebührenpflichtige Apps, US-Steuerformulare W-8BEN & Foreign Status sowie EU-DSA-Dokumente vollständig genehmigt/hinterlegt)
+> - **Letzter Stand**: 08.11.2026, 09:50 Uhr (🎄 Neu: 24-Tage Adventskalender „24 Tage Innehalten“ als Landing Page `/adventskalender`, Startseiten-Sektion & Pop-Up eingebaut; 🎉 Version 1.0 live im App Store; Version 1.0.1 Build 28 in Prüfung; Verträge & US-Steuerformulare aktiv)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
@@ -24,6 +24,9 @@
 >    - EU-DSA-Compliance-Dokumente hochgeladen.
 > 4. **Codebase- & Datenkonsistenz**:
 >    - Alle 11 In-App-Käufe (inklusive der neuen Rauhnächte `fds_rauhnaechte` ↔ `rauhnaechte`, 9,99 €) sind 1:1 identisch zwischen Supabase-Datenbank, Code (`billing.ts`, `verify-apple-purchase`) und App Store Connect gemappt.
+> 5. **🎄 24-Tage Adventskalender („Der Adventskalender – 24 Tage Innehalten“)**:
+>    - Eigene interaktive Landing Page unter `/adventskalender` (sowie Aliase `/weihnachtskalender` und `/advent`) mit allen 24 Türchen (Teil 1: Tage 1–12 Verlangsamung & Loslassen; Teil 2: Tage 13–24 Wendepunkt & Weihezeit), den 4 Säulen (5× Meditationen, 3× Gewinnspiele am 06., 13. & 21. Dez, 8× Altes Wissen, 8× Achtsamkeit), Kachel- & Tabellenansicht sowie Brücke zum Rauhnacht-Hörbuch.
+>    - Direkt auf der Startseite (`HomeAdminLanding.tsx`) als prominente Sektion eingebunden + wiederverwendbares Pop-Up Modal (`AdventskalenderPopupModal`), das sich einmalig pro Sitzung, per Button oder per `?popup=advent` öffnen lässt.
 >
 > ### ✅ OFFENE TO-DOS AUS DER SEO-/BACKEND-SESSION (17.10.2026)
 > 1. **🔎 Google Search Console – ab 18.10. morgens** (max. ~10× „Indexierung beantragen“ pro Tag; je URL: oben einfügen → *Live-URL testen* → *Indexierung beantragen*):
