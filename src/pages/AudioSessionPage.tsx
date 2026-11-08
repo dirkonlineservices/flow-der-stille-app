@@ -335,7 +335,7 @@ export default function AudioSessionPage() {
                             <Key size={16} />
                           </div>
                           <div>
-                            <span className="font-bold text-sm text-amber-950 dark:text-amber-200 block">
+                            <span className="font-bold text-sm text-black dark:text-white block">
                               Option 1: Express-Kauf mit Magic Link ({priceDisplay})
                             </span>
                             <span className="text-[11px] text-[var(--text-muted)] block">
@@ -362,7 +362,7 @@ export default function AudioSessionPage() {
                             to="/pakete#magic-link"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] text-amber-900 dark:text-amber-300 hover:underline font-semibold inline-flex items-center gap-1"
+                            className="text-[11px] text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white font-bold underline inline-flex items-center gap-1"
                           >
                             <span>Details und FAQ zum Magic Link ansehen</span>
                             <ExternalLink size={11} className="shrink-0" />
@@ -392,7 +392,7 @@ export default function AudioSessionPage() {
               {user && !isFreeProduct && !isOwned && (
                 <div className="pt-2 p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 font-bold text-sm text-amber-950 dark:text-amber-200">
+                    <div className="flex items-center gap-1.5 font-bold text-sm text-black dark:text-white">
                       <Key size={15} className="text-amber-800 dark:text-amber-400 shrink-0" />
                       <span>Express-Kauf mit Magic Link ({priceDisplay})</span>
                     </div>

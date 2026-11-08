@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 08.11.2026, 12:25 Uhr (🎯 Typografie-Harmonisierung & SEO-Optimierung abgeschlossen: Alle sichtbaren Kaufmanns-Und '&' und '&amp;' durch das deutsche Wort 'und' ersetzt; Xcode Cloud 'Zweigänderungen' in App Store Connect erfolgreich entfernt, automatische Fehl-Builds gestoppt; Web-Build fehlerfrei)
+> - **Letzter Stand**: 08.11.2026, 12:28 Uhr (🎨 Kontrast-Optimierung: Magic-Link Box Überschriften 'Wie funktioniert der Magic Link?', 'Kaufanleitung in 3 Schritten' und Link auf klares Schwarz umgestellt; CLAUDE.md & GEMINI.md synchronisiert; Web-Build fehlerfrei)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).

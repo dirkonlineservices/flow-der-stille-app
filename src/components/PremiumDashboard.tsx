@@ -1105,8 +1105,8 @@ export default function PremiumShopDashboard() {
                         <div className="w-full flex flex-col gap-3">
                             {!user && !isNativeApp && (
                               <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2.5 shadow-2xs">
-                                <div className="flex items-center gap-1.5 font-bold text-amber-950">
-                                  <Key size={15} className="text-amber-800 shrink-0" />
+                                <div className="flex items-center gap-1.5 font-bold text-black dark:text-white">
+                                  <Key size={15} className="text-amber-700 dark:text-amber-400 shrink-0" />
                                   <span>Express-Gastkauf mit Magic Link</span>
                                 </div>
                                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
@@ -1115,24 +1115,24 @@ export default function PremiumShopDashboard() {
 
                                 {/* Kaufanleitung in 3 einfachen Schritten */}
                                 <div className="pt-2 border-t border-amber-500/20 space-y-2 text-[11px] text-[var(--text-main)]">
-                                  <span className="font-bold text-amber-950 dark:text-amber-200 block text-xs">Kaufanleitung in 3 Schritten:</span>
+                                  <span className="font-bold text-black dark:text-white block text-xs">Kaufanleitung in 3 Schritten:</span>
                                   <div className="flex items-start gap-2">
-                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
                                     <span>Unten das Häkchen für den sofortigen Beginn setzen.</span>
                                   </div>
                                   <div className="flex items-start gap-2">
-                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
                                     <span>Auf den gelben PayPal-Button (oder Karte / SEPA) tippen und sicher bezahlen.</span>
                                   </div>
                                   <div className="flex items-start gap-2">
-                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+                                    <span className="w-4 h-4 rounded-full bg-amber-200 text-stone-900 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
                                     <span>Fertig! Du kannst sofort im Web-Player hören. Dein privater Magic Link wird zusätzlich per E-Mail gesendet.</span>
                                   </div>
 
                                   {/* Direkt vor Ort integrierte Magic-Link Erklärung */}
                                   <div className="mt-2 p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[11px] space-y-1">
-                                    <div className="flex items-center gap-1.5 font-bold text-amber-950 dark:text-amber-200">
-                                      <Sparkles size={12} className="text-amber-800 dark:text-amber-300 shrink-0" />
+                                    <div className="flex items-center gap-1.5 font-bold text-black dark:text-white">
+                                      <Sparkles size={12} className="text-amber-700 dark:text-amber-400 shrink-0" />
                                       <span>Wie funktioniert der Magic Link?</span>
                                     </div>
                                     <p className="text-[var(--text-muted)] leading-relaxed">
@@ -1146,7 +1146,7 @@ export default function PremiumShopDashboard() {
                                     to="/pakete#magic-link"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-[11px] text-amber-900 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 font-semibold underline inline-flex items-center gap-1"
+                                    className="text-[11px] text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white font-bold underline inline-flex items-center gap-1"
                                     title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
                                   >
                                     <span>Ausführliche Details und FAQ zum Magic Link ansehen</span>
@@ -1159,12 +1159,12 @@ export default function PremiumShopDashboard() {
                             {/* Für eingeloggte Nutzer: Kompakte Notiz "Express-Kauf mit Magic Link" direkt über der Zustimmung */}
                             {user && !isNativeApp && (
                               <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-left space-y-2 shadow-2xs">
-                                <div className="flex items-center justify-between gap-1.5 font-bold text-amber-950 dark:text-amber-200">
+                                <div className="flex items-center justify-between gap-1.5 font-bold text-black dark:text-white">
                                   <div className="flex items-center gap-1.5">
-                                    <Key size={14} className="text-amber-800 dark:text-amber-400 shrink-0" />
+                                    <Key size={14} className="text-amber-700 dark:text-amber-400 shrink-0" />
                                     <span>Express-Kauf mit Magic Link</span>
                                   </div>
-                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-950 dark:text-amber-200">
+                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-stone-900 dark:text-stone-100">
                                     Eingeloggt
                                   </span>
                                 </div>
@@ -1178,7 +1178,7 @@ export default function PremiumShopDashboard() {
                                     to="/pakete#magic-link"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-[11px] text-amber-900 dark:text-amber-300 hover:text-amber-950 dark:hover:text-amber-100 font-semibold underline inline-flex items-center gap-1"
+                                    className="text-[11px] text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white font-bold underline inline-flex items-center gap-1"
                                     title="Öffnet die ausführliche Erklärung auf der Paket-Seite in einem neuen Tab"
                                   >
                                     <span>Details zum Magic Link</span>
