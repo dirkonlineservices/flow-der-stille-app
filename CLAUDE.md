@@ -59,5 +59,6 @@ Alle Store-IDs sind 1:1 identisch zwischen iOS App Store, Google Play und Supaba
 
 ## 6. WORKFLOW-REGELN ZUR DATENSICHERHEIT
 1. **Bei Arbeitsbeginn**: Stets prüfen, ob der lokale Branch `main` mit `git pull origin main` aktuell ist.
-2. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
+2. **Build-Steuerung (Manuell)**: Führe **NIEMALS automatisch `npm run build`** bei Code-Änderungen oder Commits aus. Builds werden **ausschließlich manuell auf ausdrückliche Aufforderung des Users** ausgeführt.
+3. **Vor Arbeitsende**: Änderungen committen und mit `git push origin main` zu GitHub übertragen.
 
