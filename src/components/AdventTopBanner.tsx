@@ -133,10 +133,14 @@ export const AdventTopBanner: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-center md:text-left">
           <Link
             to="/adventskalender"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#8A9A8A] text-white font-bold text-[11px] uppercase tracking-wider shadow-2xs hover:bg-[#728372] transition-colors shrink-0 cursor-pointer"
+            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-[11px] uppercase tracking-wider shadow-sm transition-all shrink-0 cursor-pointer hover:scale-[1.02]"
+            title="Zum kostenfreien Weihnachtskalender"
           >
             <span>🎄</span>
-            <span>Weihnachtskalender</span>
+            <span>Kostenfreier Weihnachtskalender</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] text-white font-semibold">
+              0&nbsp;€
+            </span>
           </Link>
 
           {/* Persönliche Ansprache für eingeloggte Nutzer */}
@@ -150,14 +154,14 @@ export const AdventTopBanner: React.FC = () => {
                 </span>
               ) : (
                 <span className="text-[#695C4D]">
-                  24 Tage Innehalten &amp; Rauhnacht-Hörbuch Verlosungen starten am 1. Dezember.
+                  24 Tage Innehalten &amp; Hörbuch-Verlosungen starten am 1. Dezember.
                 </span>
               )}
             </span>
           ) : (
             <span className="text-[#695C4D] font-medium leading-tight">
               <strong className="text-[#3D3B35]">24 Tage Innehalten</strong> – Starte am 1. Dezember
-              mit täglichen Meditationen &amp; Hörbuch-Gewinnspielen.
+              mit täglichen Meditationen &amp; Hörbuch-Gewinnspielen (100&nbsp;% gratis).
             </span>
           )}
         </div>
