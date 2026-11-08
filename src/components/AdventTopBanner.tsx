@@ -126,21 +126,20 @@ export const AdventTopBanner: React.FC = () => {
   return (
     <aside
       aria-label="Weihnachtskalender Vorankündigung"
-      className="relative z-40 w-full bg-gradient-to-r from-[#8A9A8A]/25 via-[#F5F5F0] to-[#C8A96E]/25 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
+      className="relative z-30 w-full bg-gradient-to-r from-[#8A9A8A]/15 via-[#F5F5F0] to-[#C8A96E]/15 border-b border-[#E3E1D9] text-[#3D3B35] transition-all duration-300"
     >
-      <div className="max-w-6xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-2 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 text-xs sm:text-sm">
-        {/* Linke Seite: Kalender-Badge & Begrüßung */}
-        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 text-center md:text-left">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 text-xs sm:text-sm lg:pr-36">
+        {/* Linke Seite: Feines Badge & Begrüßung / Text auf einer Linie */}
+        <div className="flex items-center gap-2.5 text-center md:text-left flex-wrap md:flex-nowrap justify-center md:justify-start">
           <Link
             to="/adventskalender"
-            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8A9A8A] hover:bg-[#728372] text-white font-bold text-[11px] uppercase tracking-wider shadow-sm transition-all shrink-0 cursor-pointer hover:scale-[1.02]"
-            title="Zum kostenfreien Weihnachtskalender"
+            className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8A9A8A]/15 hover:bg-[#8A9A8A]/25 border border-[#8A9A8A]/40 text-[#3D3B35] font-semibold text-xs transition-all shrink-0 cursor-pointer shadow-2xs hover:shadow-xs hover:scale-[1.02]"
+            title="Zum kostenfreien Adventskalender"
           >
-            <span>🎄</span>
-            <span>Kostenfreier Weihnachtskalender</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] text-white font-semibold">
-              0&nbsp;€
-            </span>
+            <Sparkles className="w-3.5 h-3.5 text-[#C8A96E] shrink-0" />
+            <span className="font-bold tracking-tight text-[#344034]">Adventskalender</span>
+            <span className="text-[#8A9A8A] font-bold">•</span>
+            <span className="text-[#4A563E] font-medium text-[11px]">0&nbsp;€</span>
           </Link>
 
           {/* Persönliche Ansprache für eingeloggte Nutzer */}
@@ -159,29 +158,29 @@ export const AdventTopBanner: React.FC = () => {
               )}
             </span>
           ) : (
-            <span className="text-[#695C4D] font-medium leading-tight">
-              <strong className="text-[#3D3B35]">24 Tage Innehalten</strong> – Starte am 1. Dezember
-              mit täglichen Meditationen &amp; Hörbuch-Gewinnspielen (100&nbsp;% gratis).
+            <span className="text-[#695C4D] font-normal leading-tight">
+              <strong className="text-[#3D3B35] font-semibold">24 Tage Innehalten</strong> – Täglich
+              kostenfreie Meditationen &amp; Hörbuch-Gewinnspiele ab 1. Dez.
             </span>
           )}
         </div>
 
         {/* Rechte Seite: Interaktions-Buttons / Voranmeldung */}
-        <div className="flex flex-wrap items-center justify-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-center">
           {/* Eingeloggter Nutzer: Wenn noch nicht vorgemerkt, 1-Klick Voranmeldung */}
           {user && !isSubscribed && (
             <button
               type="button"
               onClick={handleQuickOptinForUser}
               disabled={isSubmitting}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A] text-[#4A563E] text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A]/50 text-[#4A563E] text-xs font-semibold transition-all shadow-2xs cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? (
                 <Loader2 size={12} className="animate-spin" />
               ) : (
                 <Bell size={12} className="text-[#8A9A8A]" />
               )}
-              <span>Erinnerung vormerken ({user.email})</span>
+              <span>Erinnerung vormerken</span>
             </button>
           )}
 
@@ -221,7 +220,7 @@ export const AdventTopBanner: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowInputForm(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A] text-[#4A563E] text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-stone-50 border border-[#8A9A8A]/50 text-[#4A563E] text-xs font-semibold transition-all shadow-2xs cursor-pointer"
                 >
                   <Bell size={12} className="text-[#8A9A8A]" />
                   <span>Kostenlos vormerken</span>
@@ -240,7 +239,7 @@ export const AdventTopBanner: React.FC = () => {
           {/* Link zum Kalender */}
           <Link
             to="/adventskalender"
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/80 hover:bg-white text-[#3D3B35] border border-[#E3E1D9] text-xs font-semibold transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/90 hover:bg-white text-[#3D3B35] border border-[#E3E1D9] text-xs font-semibold transition-colors cursor-pointer shrink-0 shadow-2xs"
           >
             <span>Kalender ansehen</span>
             <ArrowRight size={13} className="text-[#8A9A8A]" />

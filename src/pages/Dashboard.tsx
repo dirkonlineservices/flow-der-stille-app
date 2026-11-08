@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
   Wind, Sun, Moon, Coffee, CheckCircle, Circle, BookOpen, 
-  Send, MessageCircle, Share2, Eye, RefreshCw, ArrowRight,
+  MessageCircle, Share2, Eye, RefreshCw, ArrowRight,
   Sparkles, Headphones, Check, ChevronDown
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -470,17 +470,6 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <a 
-              href="https://t.me/+ccWPbkn00zs4Zjc6" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-card)] text-[var(--color-text-main)] border border-[var(--color-border-main)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--color-accent-primary)]"
-              title="Folge uns auf Telegram"
-            >
-              <Send size={15} className="text-sky-500" />
-              <span>Telegram</span>
-            </a>
-
             <a 
               href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 
               target="_blank" 

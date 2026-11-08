@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { 
   Wind, Play, Pause, Sparkles, 
-  ArrowRight, Eye, RefreshCw, Check, Send, MessageCircle, 
+  ArrowRight, Eye, RefreshCw, Check, MessageCircle, 
   Share2, Moon, BookOpen, Heart, ShieldCheck, WifiOff, LogIn, X, Headphones
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -861,23 +861,11 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             Werde Pionier unserer neuen Community
           </h4>
           <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 max-w-xl">
-            Im März 2026 entstanden, im August/September live gegangen: Unsere Telegram- &amp; WhatsApp-Gruppen öffnen gerade erst ihre Türen. Sei von Tag 1 an dabei und gestalte diesen geschützten Raum für Achtsamkeit mit uns!
+            Im März 2026 entstanden, im August/September live gegangen: Unser WhatsApp-Kanal öffnet gerade erst seine Türen. Sei von Tag 1 an dabei und gestalte diesen geschützten Raum für Achtsamkeit mit uns!
           </p>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2.5">
-          {/* Telegram */}
-          <a 
-            href="https://t.me/+ccWPbkn00zs4Zjc6" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--bg-alt)] hover:bg-[var(--bg-main)] text-[var(--text-main)] border border-[var(--border)] text-xs sm:text-sm font-medium transition shadow-2xs hover:border-[var(--accent)]"
-            title="Folge uns auf Telegram"
-          >
-            <Send size={15} className="text-sky-500" />
-            <span>Telegram</span>
-          </a>
-
           {/* WhatsApp */}
           <a 
             href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M" 

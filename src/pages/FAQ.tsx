@@ -20,7 +20,7 @@ const faqData: FAQItem[] = [
   {
     category: "Über Flow der Stille",
     question: "Seit wann gibt es Flow der Stille? (Entstehung im März, Go-Live im August 2026)",
-    answer: "Die Idee und das Fundament für Flow der Stille entstanden im März 2026 aus einer tiefen Herzensvision von Jacqueline, Lisa und Dirk. Nach vielen Monaten sorgfältiger, liebevoller Handarbeit für Texte, Audioaufnahmen und App-Entwicklung ging unsere Plattform im August/September 2026 ganz frisch an den Start.\n\nDas bedeutet auch: Unsere Community-Kanäle auf Telegram und WhatsApp sind brandneu und öffnen gerade erst ihre Türen! Wenn du jetzt beitrittst, bist du einer unserer allerersten Pionier-Nutzer der ersten Stunde. Du hilfst uns, diesen geschützten Raum für Achtsamkeit und Ruhe von Anfang an mitzugestalten – ganz ohne unpersönliche Großgruppen-Dynamik."
+    answer: "Die Idee und das Fundament für Flow der Stille entstanden im März 2026 aus einer tiefen Herzensvision von Jacqueline, Lisa und Dirk. Nach vielen Monaten sorgfältiger, liebevoller Handarbeit für Texte, Audioaufnahmen und App-Entwicklung ging unsere Plattform im August/September 2026 ganz frisch an den Start.\n\nDas bedeutet auch: Unser Community-Kanal auf WhatsApp ist brandneu und öffnet gerade erst seine Türen! Wenn du jetzt beitrittst, bist du einer unserer allerersten Pionier-Nutzer der ersten Stunde. Du hilfst uns, diesen geschützten Raum für Achtsamkeit und Ruhe von Anfang an mitzugestalten – ganz ohne unpersönliche Großgruppen-Dynamik."
   },
   {
     category: "Über Flow der Stille",

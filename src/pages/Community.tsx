@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Users, Lock, Sparkles, CheckCircle2, ShieldCheck, Heart, 
-  Send, MessageCircle, ArrowLeft, ArrowRight, Share2, LogIn, ExternalLink 
+  MessageCircle, ArrowLeft, ArrowRight, Share2, LogIn, ExternalLink 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -166,41 +166,17 @@ export default function Community() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                {/* Telegram Gruppe */}
-                <div className="p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col justify-between space-y-3">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <Send size={18} className="text-sky-500 shrink-0" />
-                      <h4 className="font-bold text-stone-900 dark:text-stone-100 text-sm sm:text-base">
-                        Telegram: Geschützter Ruheraum
-                      </h4>
-                    </div>
-                    <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-                      Austausch mit Gleichgesinnten über Atemtechniken, Selbsthypnose-Erfahrungen und seelische Entlastung im Alltag.
-                    </p>
-                  </div>
-                  <a
-                    href="https://t.me/+ccWPbkn00zs4Zjc6"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
-                  >
-                    <Send size={14} />
-                    <span>Telegram-Gruppe beitreten</span>
-                  </a>
-                </div>
-
+              <div className="pt-2">
                 {/* WhatsApp Kanal */}
-                <div className="p-5 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col justify-between space-y-3">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <MessageCircle size={18} className="text-emerald-500 shrink-0" />
-                      <h4 className="font-bold text-stone-900 dark:text-stone-100 text-sm sm:text-base">
-                        WhatsApp: Tägliche Impulse
+                <div className="p-6 rounded-2xl bg-[var(--bg-alt)] border border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="space-y-1.5 flex-1 min-w-0 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <MessageCircle size={20} className="text-emerald-500 shrink-0" />
+                      <h4 className="font-bold text-stone-900 dark:text-stone-100 text-base sm:text-lg">
+                        WhatsApp: Tägliche Impulse &amp; Achtsamkeit
                       </h4>
                     </div>
-                    <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-xl">
                       Erhalte sanfte Morgen- und Abend-Gedanken, neue Klangproben und kurze Achtsamkeits-Erinnerungen direkt auf dein Smartphone.
                     </p>
                   </div>
@@ -208,9 +184,9 @@ export default function Community() {
                     href="https://whatsapp.com/channel/0029VbDGNKFKmCPPBOppWs2M"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer active:scale-95 shrink-0"
                   >
-                    <MessageCircle size={14} />
+                    <MessageCircle size={16} />
                     <span>WhatsApp-Kanal abonnieren</span>
                   </a>
                 </div>
