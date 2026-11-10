@@ -2,7 +2,7 @@
  * useProtectedStream – gemeinsame Abspiel-Logik für alle Player mit Vollversionen.
  *
  * - Holt erst beim Klick auf Play einen Kurzzeit-Link vom Audio-Worker.
- * - Gratis-Produkte (preis = 0) werden dabei automatisch freigeschaltet.
+ * - Gratis-Produkte (preis = 0) laufen auch ohne Login, Bezahlprodukte brauchen Login und Kauf.
  * - Ist der Link nach einer langen Pause abgelaufen (Player-Fehler 410/403),
  *   wird ein neuer Link geholt und an der gemerkten Position weitergespielt.
  * - Zeigt Login-Dialog (nicht eingeloggt), Kauf-Dialog (403) oder einen Hinweis
@@ -13,7 +13,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import AuthRequiredModal from '../components/AuthRequiredModal';
 import NoAccessModal from '../components/NoAccessModal';
 import {
-  resolveAudioStreamUrl,
+  getAudioStreamUrl,
   LoginRequiredError,
   NoAccessError,
   STREAM_LINK_TTL_MS,
@@ -56,7 +56,7 @@ export function useProtectedStream(produkt: StreamProdukt) {
   /** Holt einen frischen Link und setzt ihn als Quelle, Position bleibt erhalten. */
   const loadFreshLink = useCallback(async (audio: HTMLAudioElement, position: number) => {
     if (!produkt?.id) throw new NoAccessError();
-    const url = await resolveAudioStreamUrl(produkt);
+    const url = await getAudioStreamUrl(produkt.id);
     audio.src = url;
     linkFetchedAtRef.current = Date.now();
     seekWhenReady(audio, position);

@@ -13,7 +13,6 @@ import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
-import { PUBLIC_HOERPROBEN } from '../config/audio';
 import { useProtectedStream } from '../hooks/useProtectedStream';
 
 interface MeditationItem {
@@ -79,9 +78,8 @@ export default function MeditationLanding() {
   // Nicht-eingeloggte Besucher dürfen 45 Sek. reinhören
   const GUEST_PREVIEW_LIMIT = 45;
 
-  // Gäste hören die öffentliche Hörprobe, eingeloggte Nutzer die geschützte Gratis-Vollversion
+  // Gratis-Vollversion über das geschützte Streaming (ohne Login möglich)
   const SAMPLE_PRODUKT = { id: 'meditation_zur_herzoeffnung', titel: 'Meditation zur Herzöffnung', preis: 0 };
-  const PUBLIC_SAMPLE_URL = PUBLIC_HOERPROBEN.meditation_zur_herzoeffnung;
   const sampleStream = useProtectedStream(SAMPLE_PRODUKT);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -103,12 +101,7 @@ export default function MeditationLanding() {
         setShowRegModal(true);
         return;
       }
-      if (user) {
-        sampleStream.play(audio).then((ok) => { if (ok) setIsPlaying(true); });
-      } else {
-        if (!audio.src || audio.src === window.location.href) audio.src = PUBLIC_SAMPLE_URL;
-        audio.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
+      sampleStream.play(audio).then((ok) => { if (ok) setIsPlaying(true); });
     }
   };
 
@@ -152,7 +145,7 @@ export default function MeditationLanding() {
         preload="none"
         controlsList="nodownload"
         onContextMenu={(e) => e.preventDefault()}
-        onError={user ? sampleStream.onAudioError : undefined}
+        onError={sampleStream.onAudioError}
         onLoadedMetadata={() => {
           if (audioRef.current) {
             setDuration(audioRef.current.duration || 1005);

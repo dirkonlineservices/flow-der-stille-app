@@ -11,12 +11,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Play, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
 import DisclaimerModal from './DisclaimerModal';
-import { useAuth } from '../context/AuthContext';
 import { useProtectedStream } from '../hooks/useProtectedStream';
 import { PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
-  const { user } = useAuth();
   const [produkt, setProdukt] = useState<any>(null);
   const [streamReady, setStreamReady] = useState(false);
   const [titel, setTitel] = useState('');
@@ -72,10 +70,6 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
 
   // Erster Start: Login und Haftungshinweis prüfen, dann Kurzzeit-Link holen
   const startStream = async () => {
-    if (!user) {
-      stream.requireLogin();
-      return;
-    }
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
     if (!accepted) {
       setShowDisclaimer(true);
@@ -94,12 +88,6 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
 
   // ⚡ FIX: Multitasking-Sperre auch für diesen nativen Player
   const handlePlay = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
-    if (!user) {
-      e.currentTarget.pause();
-      stream.requireLogin();
-      return;
-    }
-
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
     if (!accepted) {
       e.currentTarget.pause();

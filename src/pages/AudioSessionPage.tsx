@@ -117,7 +117,8 @@ export default function AudioSessionPage() {
   }, [resolvedId, id, user]);
 
   const isFreeProduct = !productData?.preis || Number(productData.preis) === 0;
-  const hasFullAccess = isFreeProduct ? !!user : isOwned;
+  // Gratis-Produkte sind ohne Login voll abspielbar (Haftungsausschluss vorab)
+  const hasFullAccess = isFreeProduct ? true : isOwned;
 
   const title = productData?.titel || 'Selbsthypnose: Tiefer und erholsamer Schlaf';
   const description = productData?.beschreibung || 'Gedankenkarussell abschalten: Gleite durch sanfte Trance-Impulse in eine schwere, wohlige Tiefenentspannung und regenerierenden Schlaf.';

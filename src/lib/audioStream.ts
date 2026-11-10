@@ -2,9 +2,9 @@
  * audioStream.ts – Geschütztes Audio-Streaming über den Cloudflare Worker.
  *
  * Ablauf:
- *  1. Supabase-Session des Nutzers holen (ohne Session: LoginRequiredError).
- *  2. POST {AUDIO_BASE_URL}/link/{produktId} mit Bearer-Token.
- *  3. Bei 401 einmal die Session erneuern und wiederholen.
+ *  1. Supabase-Session des Nutzers holen (optional: Gratis-Produkte gehen ohne Login).
+ *  2. POST {AUDIO_BASE_URL}/link/{produktId}, Bearer-Token nur mit Session.
+ *  3. Bei 401: mit Session einmal erneuern und wiederholen, ohne Session LoginRequiredError.
  *  4. Bei 403 NoAccessError (UI zeigt Kaufen bzw. Freischalten).
  *  5. Die zurückgegebene Kurzzeit-URL (10 Minuten gültig) direkt als Player-Quelle nutzen.
  *
@@ -40,10 +40,10 @@ export class AudioUnavailableError extends Error {
   }
 }
 
-async function requestLink(produktId: string, accessToken: string): Promise<Response> {
+async function requestLink(produktId: string, accessToken?: string): Promise<Response> {
   return fetch(`${AUDIO_BASE_URL}/link/${encodeURIComponent(produktId)}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
   });
 }
 
@@ -55,17 +55,19 @@ export async function getAudioStreamUrl(produktId: string): Promise<string> {
 
   const supabase = getSupabase();
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.access_token) throw new LoginRequiredError();
+  const token = session?.access_token;
 
   let res: Response;
   try {
-    res = await requestLink(produktId, session.access_token);
+    res = await requestLink(produktId, token);
 
     if (res.status === 401) {
+      // Ohne Session: Bezahlprodukt braucht Login
+      if (!token) throw new LoginRequiredError();
       const { data: refreshed, error } = await supabase.auth.refreshSession();
-      const token = refreshed?.session?.access_token;
-      if (error || !token) throw new LoginRequiredError();
-      res = await requestLink(produktId, token);
+      const freshToken = refreshed?.session?.access_token;
+      if (error || !freshToken) throw new LoginRequiredError();
+      res = await requestLink(produktId, freshToken);
     }
   } catch (e) {
     if (e instanceof LoginRequiredError) throw e;
@@ -97,44 +99,4 @@ export function isFreeProduct(produkt: { id?: string; preis?: number | string | 
   }
   const match = getOfflineProducts().find((p) => p.id === produkt.id);
   return !!match && Number(match.preis) === 0;
-}
-
-/**
- * Schaltet ein Gratis-Produkt (preis = 0) für den eingeloggten Nutzer frei,
- * indem ein Eintrag in `kaeufe` angelegt wird. Nur für 0-€-Produkte verwenden.
- * Bezahlprodukte laufen ausschließlich über die Edge Functions.
- */
-export async function unlockFreeProduct(produktId: string): Promise<void> {
-  const supabase = getSupabase();
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-  if (!userId) throw new LoginRequiredError();
-
-  const { error } = await supabase
-    .from('kaeufe')
-    .insert({ user_id: userId, produkt_id: produktId, preis: 0 });
-
-  // 23505 = Eintrag existiert bereits (unique user_id, produkt_id)
-  if (error && error.code !== '23505') {
-    // Kein Kauf-Dialog für Gratis-Produkte: stattdessen Hinweis „nicht verfügbar“
-    throw new AudioUnavailableError('Freischaltung fehlgeschlagen');
-  }
-}
-
-/**
- * Wie getAudioStreamUrl, schaltet aber Gratis-Produkte bei 403 automatisch frei
- * (Eintrag in kaeufe mit preis 0) und versucht es dann einmal erneut.
- */
-export async function resolveAudioStreamUrl(
-  produkt: { id: string; preis?: number | string | null }
-): Promise<string> {
-  try {
-    return await getAudioStreamUrl(produkt.id);
-  } catch (e) {
-    if (e instanceof NoAccessError && isFreeProduct(produkt)) {
-      await unlockFreeProduct(produkt.id);
-      return await getAudioStreamUrl(produkt.id);
-    }
-    throw e;
-  }
 }

@@ -3,7 +3,7 @@
  *
  * - Mit hoerprobe_url: öffentliche Hörprobe, wird direkt abgespielt.
  * - Ohne hoerprobe_url, aber Gratis-Produkt (preis = 0): Auszug aus der Vollversion
- *   über das geschützte Streaming (Login nötig, Freischaltung erfolgt automatisch).
+ *   über das geschützte Streaming (ohne Login möglich).
  * - Ohne hoerprobe_url bei Bezahlprodukten: kein Player (Vollversion ist geschützt).
  * Bei Vollversionen werden die ersten 70 Sek. (1:10 Min.) übersprungen,
  * sodass direkt die beruhigende Klangprobe (90 Sek.) ertönt.
@@ -12,7 +12,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Headphones, Loader2 } from 'lucide-react';
 import { useAudioConsentGate } from './AudioConsentModal';
-import { useAuth } from '../context/AuthContext';
 import { useProtectedStream } from '../hooks/useProtectedStream';
 import { isFreeProduct } from '../lib/audioStream';
 
@@ -36,7 +35,6 @@ export function hasHoerprobe(produkt: any): boolean {
 }
 
 export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
-  const { user } = useAuth();
   // Öffentliche, eigens geschnittene Hörprobe (bleibt frei abspielbar)
   const publicUrl: string = (produkt?.hoerprobe_url && typeof produkt.hoerprobe_url === 'string' && produkt.hoerprobe_url.trim() !== '')
     ? produkt.hoerprobe_url.trim()
@@ -113,10 +111,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     // Über das Consent-Gate routen
     requestPlay('sample', produkt.titel, async () => {
       if (useProtected) {
-        if (!user) {
-          stream.requireLogin();
-          return;
-        }
         const outsideSnippet = audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration;
         setIsLoading(true);
         const started = await stream.play(audio, outsideSnippet ? { startAt: startTime } : {});

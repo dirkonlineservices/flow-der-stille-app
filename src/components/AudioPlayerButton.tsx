@@ -10,11 +10,9 @@ Hinweis: Kritische Audio-Logik.
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause, Loader2 } from 'lucide-react';
 import DisclaimerModal from './DisclaimerModal';
-import { useAuth } from '../context/AuthContext';
 import { useProtectedStream } from '../hooks/useProtectedStream';
 
 export function AudioPlayerButton({ produkt }: { produkt: any }) {
-  const { user } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -97,10 +95,8 @@ export function AudioPlayerButton({ produkt }: { produkt: any }) {
   };
 
   const handlePlayClick = () => {
-    if (!user) {
-      stream.requireLogin();
-      return;
-    }
+    // Kein Login-Zwang im Client: Gratis-Produkte laufen ohne Login,
+    // bei Bezahlprodukten antwortet der Worker mit 401 und der Login-Dialog erscheint.
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
     if (!accepted) {
       setShowDisclaimer(true);
