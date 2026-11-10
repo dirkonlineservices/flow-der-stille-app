@@ -6,7 +6,8 @@
  * - Kapitel-Navigation (Schnellfinder für Kapitel 1, 2, 3, 4 etc.).
  * - Automatischer Speicherstand (Fortschritt merken & an letzter Stelle weiterhören).
  * - Vor- und Zurückspulen um 15 Sekunden.
- * - Geschütztes Streaming über den Audio-Worker (Kurzzeit-Link, kein Download).
+ * - Geschütztes Streaming über den Audio-Worker (Kurzzeit-Link).
+ * - Geschützte Offline-Funktion (Flugmodus) über den internen App-Speicher.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -17,6 +18,7 @@ import {
   Lock, AlertCircle, Shield
 } from 'lucide-react';
 import { useProtectedStream } from '../hooks/useProtectedStream';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 export interface AudiobookChapter {
   id: string;
@@ -630,6 +632,15 @@ export function AudiobookPlayerModal({
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                   Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
+
+                {/* Offline-Speicher Button */}
+                <div className="pt-2">
+                  <OfflineDownloadButton
+                    productId={streamProdukt.id}
+                    title={title}
+                    variant="button"
+                  />
+                </div>
 
               </div>
             </div>

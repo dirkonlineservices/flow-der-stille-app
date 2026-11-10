@@ -3,7 +3,7 @@ Hinweis: Kritische Audio-Logik.
 1. Native DOM-Event Listeners (play/pause) für globalen Multitasking-Schutz.
 2. GA4 Tracking (audio_play_start, audio_complete).
 3. Geschütztes Streaming: Die Quelle wird erst beim Klick auf Play per
-   useProtectedStream (Audio-Worker, Kurzzeit-Link) gesetzt. Kein audio_path, kein Download.
+   useProtectedStream (Offline-Speicher oder Audio-Worker mit Kurzzeit-Link) gesetzt. Kein audio_path.
 =========================================================================================
 */
 
@@ -11,6 +11,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause, Loader2 } from 'lucide-react';
 import DisclaimerModal from './DisclaimerModal';
 import { useProtectedStream } from '../hooks/useProtectedStream';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 
 export function AudioPlayerButton({ produkt }: { produkt: any }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -103,12 +104,6 @@ export function AudioPlayerButton({ produkt }: { produkt: any }) {
       return;
     }
 
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      setOfflineAlert('Keine Internetverbindung: Audios werden gestreamt. Bitte verbinde dich kurz mit dem Internet.');
-      setTimeout(() => setOfflineAlert(''), 4500);
-      return;
-    }
-
     togglePlay();
   };
 
@@ -151,6 +146,13 @@ export function AudioPlayerButton({ produkt }: { produkt: any }) {
           </div>
           <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] mx-auto break-words leading-normal">{produkt.titel}</div>
         </div>
+
+        {/* Offline speichern (App-Speicher, z. B. für Meditationen mit ausgeschaltetem Display) */}
+        <OfflineDownloadButton
+          productId={produkt.id}
+          title={produkt.titel}
+          variant="button"
+        />
 
         <audio
           ref={audioRef}

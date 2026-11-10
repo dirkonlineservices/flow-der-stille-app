@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
 import { getOfflineProductById, PRODUKT_COLUMNS } from '../lib/offlineProductsService';
+import { OfflineDownloadButton } from '../components/OfflineDownloadButton';
 import { isKnownAdminEmail } from '../lib/adminSecurity';
 
 export interface FormattedAudiobookChapter extends AudiobookChapter {
@@ -714,6 +715,13 @@ export default function AudiobookPage() {
                     </span>
                   </button>
 
+                  <div className="flex-1 min-h-[64px] flex flex-col justify-center">
+                    <OfflineDownloadButton
+                      productId={streamProdukt.id}
+                      title={title}
+                      variant="button"
+                    />
+                  </div>
                 </>
               ) : (
                 /* Fall 2: Produkt NOCH NICHT GEKAUFT -> Kauf-Button & 90s Hörprobe */

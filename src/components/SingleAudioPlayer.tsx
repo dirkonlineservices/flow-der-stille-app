@@ -3,7 +3,7 @@ Hinweis: Kritische Audio-Logik.
 1. Native DOM-Event Listeners (play/pause) für globalen Multitasking-Schutz.
 2. Dynamisches Laden des Labels (audio_hinweis) aus Supabase.
 3. Geschütztes Streaming: Die Quelle wird erst beim Klick auf Play per
-   useProtectedStream (Audio-Worker, Kurzzeit-Link) gesetzt. Kein audio_path, kein Download.
+   useProtectedStream (Offline-Speicher oder Audio-Worker mit Kurzzeit-Link) gesetzt. Kein audio_path.
 =========================================================================================
 */
 
@@ -12,6 +12,7 @@ import { Play, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
 import DisclaimerModal from './DisclaimerModal';
 import { useProtectedStream } from '../hooks/useProtectedStream';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 import { PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
@@ -140,6 +141,13 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         <div className="text-sm text-[var(--color-text-muted)] mt-2 font-medium">
           {formatTime(currentTime)} / {formatTime(duration)}
         </div>
+
+        {/* Schalter für Offline-Verfügbarkeit im Flugmodus */}
+        <OfflineDownloadButton
+          productId={produktId}
+          title={titel}
+          variant="button"
+        />
 
         {/* KI-Label dezent integriert */}
         {audioHinweis && (

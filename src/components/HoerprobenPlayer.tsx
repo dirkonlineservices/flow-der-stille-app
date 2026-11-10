@@ -13,6 +13,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Headphones, Loader2 } from 'lucide-react';
 import { useAudioConsentGate } from './AudioConsentModal';
 import { useProtectedStream } from '../hooks/useProtectedStream';
+import { getPlayableAudioUrl } from '../lib/offlineAudioService';
+import { OfflineDownloadButton } from './OfflineDownloadButton';
 import { isFreeProduct } from '../lib/audioStream';
 
 interface Props {
@@ -118,7 +120,8 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         else setIsPlaying(true);
       } else {
         if (!audio.src || audio.src === window.location.href) {
-          audio.src = publicUrl;
+          // Offline gespeicherte Hörprobe bevorzugen
+          audio.src = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, publicUrl);
         }
 
         // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
@@ -202,6 +205,12 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           </div>
 
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
+            <OfflineDownloadButton
+              productId={useProtected ? produkt.id : `hoerprobe_${produkt.id}`}
+              audioUrl={useProtected ? undefined : publicUrl}
+              title={useProtected ? produkt.titel : `Klangprobe: ${produkt.titel}`}
+              variant="icon"
+            />
             {showProductLink && (
               <button
                 onClick={scrollToProduct}

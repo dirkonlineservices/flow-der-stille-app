@@ -1,7 +1,8 @@
 /**
  * useProtectedStream – gemeinsame Abspiel-Logik für alle Player mit Vollversionen.
  *
- * - Holt erst beim Klick auf Play einen Kurzzeit-Link vom Audio-Worker.
+ * - Offline gespeicherte Audios (App-Speicher) werden direkt lokal abgespielt, auch ohne Netz.
+ * - Sonst holt er erst beim Klick auf Play einen Kurzzeit-Link vom Audio-Worker.
  * - Gratis-Produkte (preis = 0) laufen auch ohne Login, Bezahlprodukte brauchen Login und Kauf.
  * - Ist der Link nach einer langen Pause abgelaufen (Player-Fehler 410/403),
  *   wird ein neuer Link geholt und an der gemerkten Position weitergespielt.
@@ -18,6 +19,7 @@ import {
   NoAccessError,
   STREAM_LINK_TTL_MS,
 } from '../lib/audioStream';
+import { getOfflineBlobUrl } from '../lib/offlineAudioService';
 
 type StreamProdukt = { id: string; titel?: string; preis?: number | string | null } | null | undefined;
 
@@ -68,7 +70,29 @@ export function useProtectedStream(produkt: StreamProdukt) {
    */
   const play = useCallback(async (audio: HTMLAudioElement | null, opts: { startAt?: number } = {}): Promise<boolean> => {
     if (!audio) return false;
+
+    // Bereits lokal geladen (Offline-Speicher): einfach weiterspielen
+    if (audio.src.startsWith('blob:')) {
+      if (opts.startAt !== undefined) seekWhenReady(audio, opts.startAt);
+      try { await audio.play(); return true; } catch { return false; }
+    }
+
     const hasSrc = isStreamSrc(audio);
+
+    // Erster Start: offline gespeicherte Datei bevorzugen
+    if (!hasSrc && produkt?.id) {
+      const blobUrl = await getOfflineBlobUrl(produkt.id);
+      if (blobUrl) {
+        audio.src = blobUrl;
+        seekWhenReady(audio, opts.startAt ?? 0);
+        try { await audio.play(); return true; } catch { return false; }
+      }
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        flashError('Keine Internetverbindung. Dieses Audio ist noch nicht offline gespeichert.');
+        return false;
+      }
+    }
+
     const expired = Date.now() - linkFetchedAtRef.current > STREAM_LINK_TTL_MS;
 
     if (!hasSrc || expired) {
@@ -96,7 +120,7 @@ export function useProtectedStream(produkt: StreamProdukt) {
       }
       return false;
     }
-  }, [loadFreshLink, handleFailure, flashError]);
+  }, [produkt, loadFreshLink, handleFailure, flashError]);
 
   /** Positionen mitschreiben, damit nach einem Fehler korrekt fortgesetzt wird. */
   const onAudioTimeUpdate = useCallback((e: React.SyntheticEvent<HTMLAudioElement>) => {

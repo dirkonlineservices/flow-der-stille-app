@@ -15,7 +15,8 @@ import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newslet
 import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
-import { offlineManager } from '../lib/offlineAudioService';
+import { getStorageUsageSummary, offlineManager } from '../lib/offlineAudioService';
+import { OfflineStorageModal } from '../components/OfflineStorageModal';
 import { FriendInviteWidget } from '../components/FriendInviteWidget';
 import { GamificationRadar } from '../components/GamificationRadar';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
@@ -54,6 +55,9 @@ export default function Settings() {
   const [purchases, setPurchases] = useState<any[]>([]);
   const [totalSpent, setTotalSpent] = useState(0);
 
+  // Offline audio storage state
+  const [showOfflineModal, setShowOfflineModal] = useState(false);
+  const [offlineStats, setOfflineStats] = useState({ totalMBFormatted: '0 MB', totalTracks: 0 });
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isPurchasesOpen, setIsPurchasesOpen] = useState(false);
   const [isAdminSectionOpen, setIsAdminSectionOpen] = useState(false);
@@ -108,8 +112,14 @@ export default function Settings() {
     }
   };
 
+  const refreshOfflineStats = () => {
+    const summary = getStorageUsageSummary();
+    setOfflineStats({ totalMBFormatted: summary.totalMBFormatted, totalTracks: summary.totalTracks });
+  };
+
   // Sync profile fields from user context once loaded
   useEffect(() => {
+    refreshOfflineStats();
     if (user) {
       setFirstName(user.first_name || '');
       setLastName(user.last_name || '');
@@ -1118,17 +1128,33 @@ export default function Settings() {
           {/* 7. Speicher, Datenschutz & Abmelden (3 Spalten Footer) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
             
-            {/* Streaming-Hinweis (keine Offline-Speicherung von Audiodateien) */}
+            {/* Flugmodus & Offline-Speicher Card */}
             <div className="bg-[var(--color-bg-card)] rounded-3xl p-6 border border-[var(--color-border-main)] shadow-sm flex flex-col justify-between">
               <div>
-                <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold mb-2 flex items-center gap-2">
-                  <Headphones size={18} className="text-[var(--color-accent-primary)]" />
-                  <span>Geschütztes Streaming</span>
-                </h4>
-                <p className="text-[var(--color-text-muted)] text-xs leading-relaxed">
-                  Deine Audios werden sicher gestreamt und nicht auf dem Gerät gespeichert. Zum Abspielen brauchst du eine Internetverbindung. Bei gesperrtem Bildschirm läuft die Wiedergabe weiter.
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-serif text-[var(--color-text-main)] text-base font-semibold flex items-center gap-2">
+                    <WifiOff size={18} className="text-[var(--color-accent-primary)]" />
+                    <span>Flugmodus-Speicher</span>
+                  </h4>
+                  <span className="text-xs font-mono font-semibold text-[var(--color-accent-primary)] bg-[var(--color-bg-alt)] px-2.5 py-1 rounded-full border border-[var(--color-border-main)]">
+                    {offlineStats.totalMBFormatted}
+                  </span>
+                </div>
+                <p className="text-[var(--color-text-muted)] text-xs leading-relaxed mb-4">
+                  Sicher im geschützten App-Speicher hinterlegt ({offlineStats.totalTracks} {offlineStats.totalTracks === 1 ? 'Audio' : 'Audios'}).
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => setShowOfflineModal(true)}
+                className="w-full py-2.5 px-3 bg-[var(--color-bg-alt)] hover:bg-[var(--color-bg-border)] text-[var(--color-text-main)] text-xs font-semibold rounded-xl flex items-center justify-between transition-all cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <HardDrive size={14} className="text-[var(--color-accent-primary)]" />
+                  <span>Speicher verwalten</span>
+                </span>
+                <span className="text-[11px] text-[var(--color-accent-primary)] font-bold">Öffnen →</span>
+              </button>
             </div>
 
             {/* GDPR Box */}
@@ -1209,6 +1235,12 @@ export default function Settings() {
         </div>
       )}
 
+      {/* Offline Storage Management Modal */}
+      <OfflineStorageModal
+        isOpen={showOfflineModal}
+        onClose={() => setShowOfflineModal(false)}
+        onTracksUpdated={refreshOfflineStats}
+      />
     </div>
   );
 }
