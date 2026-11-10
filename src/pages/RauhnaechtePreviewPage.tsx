@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 import { isKnownAdminEmail } from '../lib/adminSecurity';
 import { offlineManager } from '../lib/offlineAudioService';
 import { getSupabase } from '../lib/supabaseClient';
@@ -194,7 +195,8 @@ export default function RauhnaechtePreviewPage() {
   }, [user]);
 
   // Audio Player Zustand (Hörprobe bis ca. 2:30 Min.)
-  const AUDIO_SRC = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3';
+  // Vorschau aus der Vollversion: nur über das geschützte Streaming (Login und Freischaltung nötig)
+  const previewStream = useProtectedStream({ id: 'rauhnaechte', titel: 'Yggdrasils Atem | 12 Rauhnächte auf der Schwelle', preis: 9.99 });
   const PREVIEW_LIMIT = 150; // 2:30 Min. Vorschau
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -284,14 +286,12 @@ export default function RauhnaechtePreviewPage() {
       audio.pause();
       setIsPlaying(false);
     } else {
-      if (currentTime >= PREVIEW_LIMIT) {
-        audio.currentTime = 0;
+      if (!user) {
+        previewStream.requireLogin();
+        return;
       }
-      audio.play().then(() => {
-        setIsPlaying(true);
-      }).catch(err => {
-        console.warn('Audio play blocked:', err);
-      });
+      previewStream.play(audio, currentTime >= PREVIEW_LIMIT ? { startAt: 0 } : {})
+        .then((ok) => { if (ok) setIsPlaying(true); });
     }
   };
 
@@ -324,10 +324,14 @@ export default function RauhnaechtePreviewPage() {
         description="13 geführte schamanische Meditationen & Seelenreisen zur Wintersonnenwende und den 12 heiligen Rauhnächten. Jetzt vorab sichern und anhören, wann immer es für dich stimmig ist."
       />
 
+      {previewStream.modals}
+
       <audio 
         ref={audioRef} 
-        src={AUDIO_SRC} 
-        preload="metadata" 
+        preload="none" 
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        onError={previewStream.onAudioError}
       />
 
       {/* Hero Section mit Winteratmosphäre */}

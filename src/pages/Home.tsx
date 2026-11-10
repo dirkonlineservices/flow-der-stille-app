@@ -12,7 +12,7 @@ import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { getSupabase } from '../lib/supabaseClient';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
-import { getOfflineHoerproben } from '../lib/offlineProductsService';
+import { getOfflineHoerproben, PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 import { HomeAdminLanding } from '../components/HomeAdminLanding';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
 
@@ -53,7 +53,7 @@ export default function Home() {
     Promise.race([
       getSupabase()
         .from('produkte')
-        .select('*')
+        .select(PRODUKT_COLUMNS)
         .not('hoerprobe_url', 'is', null)
         .neq('hoerprobe_url', ''),
       new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))

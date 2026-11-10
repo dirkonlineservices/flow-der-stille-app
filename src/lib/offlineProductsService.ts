@@ -3,15 +3,17 @@
  *
  * Stellt den kompletten Produktkatalog offline in der App-Sandbox bereit.
  * Sorgt dafür, dass auch im Flugmodus (ohne Internet/Supabase) alle Produkte,
- * Beschreibungen, Preise, Kategorien und Audio-Pfade sofort sichtbar und nutzbar sind.
+ * Beschreibungen, Preise und Kategorien sofort sichtbar sind.
+ * Audiodateien selbst werden ausschließlich geschützt gestreamt (siehe lib/audioStream.ts).
  */
+
+import { PUBLIC_HOERPROBEN } from '../config/audio';
 
 export interface ProductData {
   id: string;
   titel: string;
   beschreibung: string;
   kategorie: string;
-  audio_path: string;
   created_at: string;
   preis: number;
   waehrung: string;
@@ -24,6 +26,26 @@ export interface ProductData {
   image_url?: string;
 }
 
+/**
+ * Spaltenliste für alle Abfragen auf `produkte`.
+ * `audio_path` wird bewusst NICHT geladen: Audios laufen nur über den geschützten Worker.
+ */
+export const PRODUKT_COLUMNS =
+  'id, titel, beschreibung, kategorie, created_at, preis, waehrung, dauer, highlights, audio_hinweis, play_store_id, hoerprobe_url, is_active';
+
+/**
+ * Entfernt ggf. noch vorhandene audio_path-Felder (z. B. aus altem localStorage-Cache)
+ * und ergänzt bekannte öffentliche Hörproben aus der Konfiguration.
+ */
+function stripAudioPath<T extends Record<string, any>>(p: T): T {
+  if (!p) return p;
+  const { audio_path: _omit, ...rest } = p as any;
+  if (!rest.hoerprobe_url && PUBLIC_HOERPROBEN[rest.id]) {
+    rest.hoerprobe_url = PUBLIC_HOERPROBEN[rest.id];
+  }
+  return rest as T;
+}
+
 const STORAGE_KEY_PRODUCTS = 'flow_offline_products_cache';
 const STORAGE_KEY_PURCHASES = 'flow_offline_my_purchases_cache';
 
@@ -34,14 +56,13 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Geführte Atemübung  ",
     "beschreibung": "Geführte Atemübung\nHöre eine geführte Atemübung zur Beruhigung deines Nervensystems.\n\nStelle sicher, dass deine Gerätelautstärke eingeschaltet ist.",
     "kategorie": "Kostenfreie Anwendungen",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3",
     "created_at": "2026-06-14T10:35:29+00:00",
     "preis": 0,
     "waehrung": "EUR",
     "dauer": 109,
     "highlights": null,
     "audio_hinweis": "Kostenfreie Schnupper-Übung: Kompakt mit moderner KI generiert, um dir sofort und ohne Hürde Ruhe zu schenken.",
-    "play_store_id": "fds_gefuehrte_atemuebung",
+    "play_store_id": null,
     "hoerprobe_url": null,
     "is_active": true
   },
@@ -50,14 +71,13 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Progressive Muskelentspannung",
     "beschreibung": "Tiefenentspannung für deinen Körper: Progressive Muskelentspannung (PMR)\r\n\r\nAnwendung zur Progressiven Muskelentspannung Schalte den Stress des Alltags aktiv ab. Diese geführte PMR-Sitzung nutzt das wissenschaftlich bewiesene Prinzip der bewussten Anspannung und Entspannung, um tiefe körperliche Ruhe zu erzeugen, Stresssymptome zu lindern und deine Schlafqualität nachhaltig zu verbessern. Ideal für zwischendurch oder als Abendroutine.",
     "kategorie": "Kostenfreie Anwendungen",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/Progressive%20Muskelentspannung.mp3",
     "created_at": "2026-06-14T11:14:23+00:00",
     "preis": 0,
     "waehrung": "EUR",
     "dauer": 254,
     "highlights": null,
     "audio_hinweis": "Kostenfreie Schnupper-Übung: Kompakt mit moderner KI generiert, um dir sofort und ohne Hürde Ruhe zu schenken.",
-    "play_store_id": "fds_pmr_basis",
+    "play_store_id": null,
     "hoerprobe_url": null,
     "is_active": true
   },
@@ -66,7 +86,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Meditation Loslassen",
     "beschreibung": "Kurz Meditation zum Loslassen (4:54) \nTauche ein in vollkommene innere Ruhe und lasse emotionale Lasten hinter dir.\nTrägst du unbewusst Stress, alte Sorgen oder blockierende Emotionen mit dir herum? \nDiese tiefenentspannende, geführte Meditation ist dein sicherer Raum, um den Geist zu klären und schwere Energien sanft dem Wind zu übergeben.",
     "kategorie": "Meditation ",
-    "audio_path": "",
     "created_at": "2026-06-16T06:31:55+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -82,14 +101,13 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Selbsthypnose: Gesunde Ernährung & Aktiver Lebensstil",
     "beschreibung": "Kennst du das? Der Kopf weiß genau, was gut für den Körper wäre, doch im stressigen Alltag greifen wir oft automatisch zu alten Mustern. Echte Veränderung beginnt nicht mit Verzicht, sondern mit einer neuen inneren Ausrichtung.\n\nDiese 14-minütige Selbsthypnose ist deine tägliche Abkürzung zu mehr Wohlbefinden. Sie verbindet modernste Mentaltechniken mit tiefer Entspannung, um dein Unterbewusstsein sanft auf eine gesunde Ernährung und die Freude an der Bewegung auszurichten. In weniger als einer Viertelstunde baust du inneren Druck ab und stärkst die intuitive Lust auf einen aktiven Lebensstil.\n\nFür wen geeignet?\nIdeal für alle, die wenig Zeit haben, aber nachhaltig und ohne Kampf ihre Gewohnheiten auf ein neues, vitales Level heben möchten.",
     "kategorie": "Selbsthypnose",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3",
     "created_at": "2026-06-24T13:05:30+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
     "dauer": 847,
     "highlights": null,
     "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_hypnose_gesunde_ernaehrung",
+    "play_store_id": "fds_selbsthypnose_gesunde_ernaehrung",
     "hoerprobe_url": null,
     "is_active": true
   },
@@ -98,7 +116,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Selbsthypnose: Mehr Selbstbewusstsein & Inneres Vertrauen",
     "beschreibung": "Echtes Selbstbewusstsein entsteht nicht durch laute Worte, sondern durch eine tiefe, unerschütterliche Ruhe in dir selbst. Die App Flow der Stille begleitet dich in einer 15:30 Minuten dauernden Session Schritt für Schritt in eine wohlthuende mentale Entspannung.\n\nIndem dein Verstand zur Ruhe kommt, lösen sich Selbstzweifel und innere Unruhe auf. Die gezielte Selbsthypnose hilft dir dabei, deinen eigenen Wert wieder klar zu spüren und mit gesundem Vertrauen auf deine Stärken zu blicken. Du begegnest Herausforderungen gelassener, triffst Entscheidungen mit Klarheit und ruhst fest in dir selbst.\n\nDeine Vorteile\nInnere Stabilität: Löse Zweifel und verankere ein ruhiges, solides Grundvertrauen.\n\nKlarer Auftritt: Begegne deinen Aufgaben und Mitmenschen aus einer Haltung der Gelassenheit.\n\nEffektives Ritual: In 15:30 Minuten zu einer gestärkten Wahrnehmung deiner eigenen Ressourcen.",
     "kategorie": "Selbsthypnose",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3",
     "created_at": "2026-07-21T07:31:06+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -107,7 +124,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
       "Ruhige Stärke von innen heraus. Verankere tiefes Vertrauen in deine eigenen Fähigkeiten."
     ],
     "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_hypnose_selbstbewusstsein",
+    "play_store_id": "fds_selbsthypnose_selbstbewusstsein",
     "hoerprobe_url": null,
     "is_active": true
   },
@@ -116,7 +133,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Selbsthypnose: Fokus & Absolute Konzentration",
     "beschreibung": "In einer Welt voller Ablenkungen ist ungestörte Konzentration eine deiner wertvollsten Ressourcen. Die App Flow der Stille begleitet dich mit gezielter Selbsthypnose direkt in den Zustand absoluter Klarheit.\r\n\r\nAnstatt dich mit Mühe und Willenskraft zum Fokussieren zu zwingen, führt dich die Audio Session sanft in eine tiefe mentale Ruhe. Dein Verstand lässt störende Gedankenschleifen los. Dein Fokus richtet sich vollständig auf das, was jetzt gerade zählt.\r\n\r\nOb vor wichtigen Projekten, intensiven Lernphasen oder komplexen Aufgaben: Mit Flow der Stille verankerst du tiefe Konzentration als natürliche Routine im Alltag.\r\n\r\nDeine Vorteile\r\nKlarer Geist: Beende inneren Lärm und mentale Zerstreuung.\r\n\r\nMüheloser Fokus: Gelange ohne Druck in deinen persönlichen Flow Zustand.\r\n\r\nSchnelle Aktivierung: Ideal als kurzes Pre-Work-Ritual vor anspruchsvollen Aufgaben.",
     "kategorie": "Selbsthypnose",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3",
     "created_at": "2026-07-22T07:19:01+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -125,7 +141,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
       "Schalte den Lärm aus. Aktiviere deinen tiefen Arbeitsmodus in nur wenigen Minuten."
     ],
     "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_hypnose_fokus",
+    "play_store_id": "fds_selbsthypnose_fokus_absolute_konzentration",
     "hoerprobe_url": null,
     "is_active": true
   },
@@ -134,7 +150,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Meditation Innere Ruhe",
     "beschreibung": "Viele Anforderungen und Reize lassen den eigenen Raum manchmal eng werden. Diese Übung lädt dich ein, gedanklichen Druck sanft loszulassen und wieder festen Boden unter den Füßen zu spüren.\r\n\r\nDu richtest die Aufmerksamkeit nach innen und schenkst deinem Körper eine ehrliche Pause. Mit jedem bewussten Atemzug entsteht Platz für Sicherheit und Verankerung, sodass sich dein Geist wieder ordnen kann.\r\n\r\nIn 19:10 Min. findest du Schritt für Schritt zurück in dein eigenes Tempo und gewinnst wohltuende Klarheit. Wenn du magst, begleitet dich diese Meditation dabei, wieder ganz bei dir anzukommen.",
     "kategorie": "Meditation",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3",
     "created_at": "2026-07-30T08:36:12+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -150,7 +165,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Meditation Inneres Kind",
     "beschreibung": "Manchmal melden sich alte Schutzmuster im Heute, wenn Situationen uns unerwartet berühren. Diese Meditation bietet dir einen geschützten Rahmen, um deinem inneren Kind wohlwollend zu begegnen. In 16 Minuten und 10 Sekunden hörst du deinen Bedürfnissen zu und schenkst dir ehrliche Zuwendung. So kann Schritt für Schritt wieder Vertrauen entstehen und Geborgenheit im eigenen Körper spürbar werden. Wenn du magst, begleitet dich diese Übung bei einer achtsamen Annahme deiner selbst.",
     "kategorie": "Meditation",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3",
     "created_at": "2026-08-03T09:10:13+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -166,7 +180,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Meditation Herzkompass",
     "beschreibung": "Eine Einladung, dem eigenen Herzen mit Sanftheit zu begegnen und mehr Weite zuzulassen. Du schaffst Raum für Mitgefühl und spürbare Geborgenheit.\n\nManchmal zieht sich der Brustraum eng zusammen, wenn Schutzmuster uns vor Enttäuschungen bewahren wollen. Diese Meditation bietet dir die Möglichkeit, Anspannung im Herzbereich behutsam abzulegen. In 20 Minuten schenkst du deinen Gefühlen ehrliche Aufmerksamkeit und verbindest dich wieder mit dir selbst. So kann Schritt für Schritt ein Gefühl von wohlwollender Wärme und innerer Sicherheit wachsen. Wenn du magst, begleitet dich diese Übung bei einem behutsamen Öffnen nach innen.",
     "kategorie": "Meditation",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3",
     "created_at": "2026-08-05T13:00:21+00:00",
     "preis": 1.99,
     "waehrung": "EUR",
@@ -182,15 +195,14 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Meditation zur Herzöffnung",
     "beschreibung": "Eine Einladung, dem eigenen Brustbereich mit Sanftheit zu begegnen und innere Wärme zuzulassen. Du schaffst Raum für Mitgefühl und spürbare Verbundenheit.\nManchmal fühlt sich der Brustbereich eng an, wenn Ereignisse oder Sorgen Spuren hinterlassen. Diese Meditation bietet dir die Möglichkeit, Anspannung im Herzbereich behutsam abzulegen. In 16 Minuten und 45 Sekunden schenkst du deinen Empfindungen aufrichtige Zuwendung und begegnest dir selbst mit Wohlwollen. So kann Schritt für Schritt wieder ein Gefühl von Weite und innerer Sicherheit wachsen. Wenn du magst, begleitet dich diese Übung dabei, dich sanft nach innen zu öffnen.",
     "kategorie": "Meditation",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3",
     "created_at": "2026-08-05T14:00:46+00:00",
     "preis": 0,
     "waehrung": "EUR",
     "dauer": 1005,
     "highlights": null,
     "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_herzoeffnung_meditation",
-    "hoerprobe_url": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3",
+    "play_store_id": null,
+    "hoerprobe_url": null,
     "is_active": true
   },
   {
@@ -198,7 +210,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Selbsthypnose Tiefer und erholsamer Schlaf",
     "beschreibung": "Am Abend fällt es manchmal schwer, die vielen erlebten Dinge ruhen zu lassen. Diese Selbsthypnose bietet dir einen sicheren Raum, um die Anspannung des Tages Stück für Stück abzugeben. Wenn du magst, begleitet dich die Anleitung in eine tiefe und natürliche körperliche Entspannung. Du gibst dir selbst die Erlaubnis loszulassen und ganz in deinem eigenen Tempo in einen erholsamen Schlaf zu finden.",
     "kategorie": "Selbsthypnose",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3",
     "created_at": "2026-08-14T08:28:15+00:00",
     "preis": 0,
     "waehrung": "EUR",
@@ -207,8 +218,8 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
       "Kostenfrei"
     ],
     "audio_hinweis": "Herzenswerk: Von uns selbst geschrieben & mit warmer Stimme von Lisa Ragusa persönlich eingesprochen. Hintergrundmusik mit KI-Unterstützung komponiert.",
-    "play_store_id": "fds_selbsthypnose_besserer_tieferer_schlaf",
-    "hoerprobe_url": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3",
+    "play_store_id": null,
+    "hoerprobe_url": null,
     "is_active": true
   },
   {
@@ -216,7 +227,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Der Tag, an dem der Schmetterling erwachte",
     "beschreibung": "Hast du dich schon einmal gefragt, warum wir solche Angst vor dem Loslassen haben und was passiert, wenn wir die Schwelle überschreiten? \r\n​In diesem Hörbuch betrachten wir den Tod nicht als dunklen Abgrund, sondern als natürlichen Umzug unseres Bewusstseins: wie eine Raupe, die ihren Kokon verlässt, um als Schmetterling zu fliegen.",
     "kategorie": "Hörbuch",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3",
     "created_at": "2026-08-19T07:16:41+00:00",
     "preis": 4.99,
     "waehrung": "EUR",
@@ -234,7 +244,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Mut zum Echtsein - Was steckt hinter einem echtem Menschen",
     "beschreibung": "Oft passen wir uns an, um Erwartungen im Außen zu erfüllen, und verlieren dabei den Kontakt zu unseren eigentlichen Bedürfnissen. Dieses Hörbuch lädt dich ein, innezuhalten und zu erkunden, was dich in der Tiefe wirklich ausmacht. Du erforschst Schritt für Schritt, wie sich ein Leben in Einklang mit den eigenen Werten anfühlt. In deinem eigenen Tempo darf ein Gefühl von innerer Sicherheit und Klarheit wachsen, das dich stärkt, ganz du selbst zu sein.",
     "kategorie": "Hörbuch",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3",
     "created_at": "2026-09-16T07:40:36+00:00",
     "preis": 4.99,
     "waehrung": "EUR",
@@ -250,7 +259,6 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     "titel": "Yggdrasils Atem – 12 Rauhnächte auf der Schwelle",
     "beschreibung": "Schamanische Seelenreisen durch die Julzeit und die Rauhnächte.\r\n13 geführte Meditationen – Auftakt zur Wintersonnenwende & die 12 geweihten Nächte an den Wurzeln des Weltenbaums Yggdrasil, mit heimischen Pflanzenhelfern, Räucherwerk und den Fylgja-Krafttieren.",
     "kategorie": "Hörbuch",
-    "audio_path": "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3",
     "created_at": "2026-11-01T08:00:00+00:00",
     "preis": 9.99,
     "waehrung": "EUR",
@@ -280,13 +288,13 @@ export function getOfflineProducts(): ProductData[] {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.map(stripAudioPath);
       }
     }
   } catch (e) {
     console.warn('[OfflineProducts] Fehler beim Lesen des Caches:', e);
   }
-  return DEFAULT_PRODUCTS;
+  return DEFAULT_PRODUCTS.map(stripAudioPath);
 }
 
 /**
@@ -295,7 +303,7 @@ export function getOfflineProducts(): ProductData[] {
 export function saveOfflineProducts(products: ProductData[]): void {
   if (typeof window === 'undefined' || !Array.isArray(products) || products.length === 0) return;
   try {
-    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products.map(stripAudioPath)));
   } catch (e) {
     console.warn('[OfflineProducts] Fehler beim Speichern des Caches:', e);
   }

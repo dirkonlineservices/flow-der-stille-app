@@ -68,7 +68,6 @@ export default function ExerciseDetail() {
   }, [isActive, isPaused, showCelebration, exercise]);
 
   const [audioHinweis, setAudioHinweis] = useState('');
-  const [audioPath, setAudioPath] = useState('');
 
   useEffect(() => {
     async function fetchAudioData() {
@@ -77,7 +76,6 @@ export default function ExerciseDetail() {
         const off = getOfflineProductById(exercise.audioId);
         if (off) {
           if (off.audio_hinweis) setAudioHinweis(off.audio_hinweis);
-          if (off.audio_path) setAudioPath(off.audio_path);
         }
 
         try {
@@ -85,14 +83,13 @@ export default function ExerciseDetail() {
           const res: any = await Promise.race([
             supabase
               .from('produkte')
-              .select('audio_hinweis, audio_path')
+              .select('audio_hinweis')
               .eq('id', exercise.audioId)
               .maybeSingle(),
             new Promise<never>((_, r) => setTimeout(() => r(new Error('timeout')), 3000))
           ]);
           if (res?.data) {
             if (res.data.audio_hinweis) setAudioHinweis(res.data.audio_hinweis);
-            if (res.data.audio_path) setAudioPath(res.data.audio_path);
           }
         } catch {
           // Im Flugmodus bleiben die Offline-Audiodaten erhalten
@@ -481,16 +478,7 @@ export default function ExerciseDetail() {
                     if (minMatch) return parseInt(minMatch[1]) * 60;
                     return parseInt(exercise.duration) || 0;
                   })(),
-                  audio_hinweis: audioHinweis,
-                  audio_path: audioPath
-                }}
-                getUrl={async (p: any) => {
-                  if (p.audio_path && p.audio_path.startsWith('http')) {
-                    return p.audio_path;
-                  }
-                  const supabase = getSupabase();
-                  const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                  return data.publicUrl;
+                  audio_hinweis: audioHinweis
                 }}
               />
             </div>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
@@ -37,8 +38,12 @@ export default function AudiobooksHub() {
   // 3. FAQ Accordion State
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
 
-  // Klangprobe URL (Cloudflare R2)
-  const SAMPLE_AUDIO_URL = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3';
+  // Klangprobe: Auszug aus der Vollversion, nur über das geschützte Streaming
+  const snippetStream = useProtectedStream({
+    id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
+    titel: 'Der Tag, an dem der Schmetterling erwachte',
+    preis: 4.99,
+  });
 
   useEffect(() => {
     async function checkOwnership() {
@@ -95,19 +100,17 @@ export default function AudiobooksHub() {
       audio.pause();
       setIsPlayingSnippet(false);
     } else {
-      // Wenn Gast und bereits 45 Sek. gehört, Modal öffnen
-      const elapsed = audio.currentTime - SNIPPET_START_TIME;
-      if (!user && elapsed >= GUEST_PREVIEW_LIMIT) {
+      // Gäste: Vollversionen sind geschützt, daher Registrierung bzw. Login anbieten
+      if (!user) {
         setShowRegModal(true);
         return;
       }
 
       // Wenn die Position außerhalb des 90-Sekunden-Bereichs liegt, zurück zu 1:19 Min. springen
-      if (audio.currentTime < SNIPPET_START_TIME || audio.currentTime >= SNIPPET_START_TIME + SNIPPET_DURATION) {
-        audio.currentTime = SNIPPET_START_TIME;
-        setSnippetCurrentTime(SNIPPET_START_TIME);
-      }
-      audio.play().then(() => setIsPlayingSnippet(true)).catch(() => {});
+      const outside = audio.currentTime < SNIPPET_START_TIME || audio.currentTime >= SNIPPET_START_TIME + SNIPPET_DURATION;
+      if (outside) setSnippetCurrentTime(SNIPPET_START_TIME);
+      snippetStream.play(audio, outside ? { startAt: SNIPPET_START_TIME } : {})
+        .then((ok) => { if (ok) setIsPlayingSnippet(true); });
     }
   };
 
@@ -129,10 +132,14 @@ export default function AudiobooksHub() {
       />
 
       {/* Audio-Element für die Klangprobe (startet ab 1:19 Min. und läuft für genau 90 Sek. bzw. 45 Sek. Gast) */}
+      {snippetStream.modals}
+
       <audio
         ref={snippetAudioRef}
-        src={SAMPLE_AUDIO_URL}
         preload="none"
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        onError={snippetStream.onAudioError}
         onTimeUpdate={() => {
           if (snippetAudioRef.current) {
             const cur = snippetAudioRef.current.currentTime;
@@ -521,7 +528,6 @@ export default function AudiobooksHub() {
                   produkt={{
                     id: 'mensch_sein',
                     titel: 'Mut zum Echtsein - Was steckt hinter einem echtem Menschen',
-                    audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3',
                     dauer: 3519
                   }}
                   variant="compact"

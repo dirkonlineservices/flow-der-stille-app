@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import NewsletterBanner from './NewsletterBanner';
 import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
+import { PUBLIC_HOERPROBEN } from '../config/audio';
 import { AdventskalenderHomeSection } from './AdventskalenderPromo';
 
 interface HomeAdminLandingProps {
@@ -63,9 +64,6 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
   // Aktiver Tab für die Schnupper-Klangprobe auf der Startseite
   const [activeSampleHighlight, setActiveSampleHighlight] = useState<'meditation' | 'selbsthypnose' | 'hoerbuch' | 'rauhnaechte'>('rauhnaechte');
-
-  // Platzhalter-Audio (kann sofort durch die finale Begrüßung ersetzt werden)
-  const VOICE_INTRO_URL = "https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3";
 
   const toggleVoicePlay = () => {
     const audio = voiceAudioRef.current;
@@ -562,7 +560,6 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 produkt: getOfflineProductById('rauhnaechte') || {
                   id: 'rauhnaechte',
                   titel: 'Yggdrasils Atem | 12 Rauhnächte auf der Schwelle',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Raun%C3%A4chte%20-%20final-neu.mp3',
                   dauer: 10740
                 },
                 badge: '13 geführte Meditationen • 2 Std. 59 Min. Gesamtlaufzeit',
@@ -572,8 +569,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 produkt: getOfflineProductById('meditation_zur_herzoeffnung') || {
                   id: 'meditation_zur_herzoeffnung',
                   titel: 'Meditation zur Herzöffnung',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
-                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3',
+                  hoerprobe_url: PUBLIC_HOERPROBEN.meditation_zur_herzoeffnung,
                   dauer: 1005
                 },
                 badge: 'Geführte Meditation • 100 % Gratis Vollversion verfügbar',
@@ -583,8 +579,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 produkt: getOfflineProductById('selbsthypnose_besser_und_erholsamer_schlaf') || {
                   id: 'selbsthypnose_besser_und_erholsamer_schlaf',
                   titel: 'Selbsthypnose: Tiefer und erholsamer Schlaf',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
-                  hoerprobe_url: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3',
+                  hoerprobe_url: PUBLIC_HOERPROBEN.selbsthypnose_besser_und_erholsamer_schlaf,
                   dauer: 774
                 },
                 badge: 'Gezielte Selbsthypnose • 100 % Gratis Vollversion verfügbar',
@@ -594,7 +589,6 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
                 produkt: getOfflineProductById('hoerbuch_der_tag_an_dem_der_schmetterling_erwachte') || {
                   id: 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte',
                   titel: 'Der Tag, an dem der Schmetterling erwachte',
-                  audio_path: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3',
                   dauer: 3523
                 },
                 badge: 'Ganzheitliches Hörbuch (58:43 Min. Gesamtlaufzeit)',

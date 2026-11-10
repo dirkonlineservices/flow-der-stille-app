@@ -35,7 +35,7 @@ export const PRODUCTS: Product[] = [
     audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
-    id: 'fds_hypnose_selbstbewusstsein',
+    id: 'fds_selbsthypnose_selbstbewusstsein',
     title: 'Mehr Selbstbewusstsein & Inneres Vertrauen',
     description: 'Tiefenwirksame Selbsthypnose zur Stärkung deines Selbstwerts und Selbstvertrauens.',
     highlights: ['Positive Glaubenssätze verankern', 'Innere Stärke aktivieren', 'Selbstzweifel überwinden'],
@@ -46,7 +46,7 @@ export const PRODUCTS: Product[] = [
     audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
-    id: 'fds_hypnose_fokus',
+    id: 'fds_selbsthypnose_fokus_absolute_konzentration',
     title: 'Selbsthypnose: Fokus & Absolute Klarheit',
     description: 'Geführte Hypnose-Session zur Steigerung der Konzentration und ultimativen mentalen Schärfe.',
     highlights: ['Fokus & Produktivität steigern', 'Mentale Klarheit gewinnen', 'Ablenkungen ausblenden'],
@@ -57,7 +57,7 @@ export const PRODUCTS: Product[] = [
     audioHinweis: 'Audio-Hinweis: Text selbst eingesprochen, Hintergrundmusik mit KI-Unterstützung erstellt.'
   },
   {
-    id: 'fds_hypnose_gesunde_ernaehrung',
+    id: 'fds_selbsthypnose_gesunde_ernaehrung',
     title: 'Gesunde Ernährung & Aktiver Lebensstil',
     description: 'Programmierung deines Unterbewusstseins auf natürliche, gesunde Entscheidungen im Alltag.',
     highlights: ['Gesunde Gewohnheiten etablieren', 'Heißhunger natürlich reduzieren', 'Körpergefühl stärken'],

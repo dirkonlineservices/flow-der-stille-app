@@ -12,8 +12,8 @@ import NewsletterBanner from '../components/NewsletterBanner';
 import WeeklyChallenge from '../components/WeeklyChallenge';
 import SEO from '../components/SEO';
 import { getSupabase } from '../lib/supabaseClient';
-import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
-import { getOfflineProducts, ProductData } from '../lib/offlineProductsService';
+import { HoerprobenPlayer, hasHoerprobe } from '../components/HoerprobenPlayer';
+import { getOfflineProducts, ProductData, PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 import { checkUserIsAdmin } from '../lib/adminSecurity';
 
 const dailyWisdoms = [
@@ -32,7 +32,7 @@ export default function Dashboard() {
   const { user, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localCompleted, setLocalCompleted] = useState(false);
-  const initialProducts = getOfflineProducts().filter(p => p.is_active && (p.audio_path || p.hoerprobe_url));
+  const initialProducts = getOfflineProducts().filter(p => p.is_active && hasHoerprobe(p));
   const [productList, setProductList] = useState<ProductData[]>(initialProducts);
   const [klangprobeFilter, setKlangprobeFilter] = useState<'Alle' | 'Meditation' | 'Selbsthypnose' | 'Hörbuch' | 'Kostenfreie Anwendungen'>('Alle');
   const [showAllKlangproben, setShowAllKlangproben] = useState(false);
@@ -51,14 +51,14 @@ export default function Dashboard() {
     Promise.race([
       getSupabase()
         .from('produkte')
-        .select('*')
+        .select(PRODUKT_COLUMNS)
         .eq('is_active', true),
       new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
     ])
       .then((res: any) => {
         const data = res?.data;
         if (data && Array.isArray(data) && data.length > 0) {
-          const playable = data.filter((p: any) => p.audio_path || p.hoerprobe_url);
+          const playable = data.filter((p: any) => hasHoerprobe(p));
           if (playable.length > 0) {
             setProductList(playable);
           }

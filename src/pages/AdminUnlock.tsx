@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
+import { PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, ShieldAlert, Search, Gift, CheckCircle2, 
@@ -221,7 +222,7 @@ export default function AdminUnlock() {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from('produkte')
-        .select('*')
+        .select(PRODUKT_COLUMNS)
         .order('titel', { ascending: true });
 
       if (error) {

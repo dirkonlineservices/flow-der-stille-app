@@ -11,7 +11,7 @@ import { BillingService, getPlayStoreProductId, REVERSE_PLAY_STORE_PRODUCT_MAP, 
 import { handlePurchaseSuccess } from '../lib/googlePlayVerification';
 import { verifyApplePurchase } from '../lib/appleVerification';
 import { transactionLogger } from '../lib/transactionLogger';
-import { HoerprobenPlayer } from './HoerprobenPlayer';
+import { HoerprobenPlayer, hasHoerprobe } from './HoerprobenPlayer';
 import QuickSocialUnlockBox from './QuickSocialUnlockBox';
 import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
 import { useSearchParams, useLocation, useNavigate, Link } from 'react-router-dom';
@@ -22,7 +22,8 @@ import {
   saveOfflineProducts, 
   getOfflineProductById, 
   getCachedPurchases, 
-  saveCachedPurchases 
+  saveCachedPurchases,
+  PRODUKT_COLUMNS
 } from '../lib/offlineProductsService';
 import { ProductRating } from './ProductRating';
 import { getAllProductRatings } from '../lib/reviewsService';
@@ -261,7 +262,7 @@ export default function PremiumShopDashboard() {
       const supabase = getSupabase();
       try {
         const prodRes: any = await Promise.race([
-          supabase.from('produkte').select('*'),
+          supabase.from('produkte').select(PRODUKT_COLUMNS),
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Products Timeout')), 3500))
         ]);
         if (!prodRes.error && prodRes.data && prodRes.data.length > 0) {
@@ -1026,7 +1027,7 @@ export default function PremiumShopDashboard() {
                     </p>
 
                     {/* 1-Minuten Hörprobe direkt auf der Produktkarte */}
-                    {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
+                    {!hatZugriff && hasHoerprobe(produkt) && (
                       <div className="mt-3.5">
                         <HoerprobenPlayer 
                           produkt={produkt} 
@@ -1070,7 +1071,7 @@ export default function PremiumShopDashboard() {
                     </div>
 
                     {/* Direkter Klick auf Hörseite & Anleitung mit sofortigem Autoplay */}
-                    {!hatZugriff && (produkt.hoerprobe_url || produkt.audio_path) && (
+                    {!hatZugriff && (
                       <div className="mt-3.5 pt-1">
                         {produkt.kategorie?.toLowerCase().includes('hörbuch') || produkt.titel?.toLowerCase().includes('schmetterling') || produkt.titel?.toLowerCase().includes('seele') || produkt.titel?.toLowerCase().includes('wind') || produkt.titel?.toLowerCase().includes('echtsein') || produkt.id?.includes('mensch') ? (
                           <Link
@@ -1245,23 +1246,7 @@ export default function PremiumShopDashboard() {
                           </Link>
                         </div>
                         <AudioPlayerButton 
-                          produkt={produkt}  
-                          getUrl={async (p: any) => {
-                            if (p.audio_path && p.audio_path.startsWith('http')) {
-                              return p.audio_path;
-                            }
-                            const off = getOfflineProductById(p.id);
-                            if (off?.audio_path && off.audio_path.startsWith('http')) {
-                              return off.audio_path;
-                            }
-                            try {
-                              const supabase = getSupabase();
-                              const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                              return data?.publicUrl || '';
-                            } catch {
-                              return '';
-                            }
-                          }} 
+                          produkt={produkt}
                         />
                       </div>
                     ) : (
@@ -1281,23 +1266,7 @@ export default function PremiumShopDashboard() {
                           </Link>
                         </div>
                         <AudioPlayerButton 
-                          produkt={produkt}  
-                          getUrl={async (p: any) => {
-                            if (p.audio_path && p.audio_path.startsWith('http')) {
-                              return p.audio_path;
-                            }
-                            const off = getOfflineProductById(p.id);
-                            if (off?.audio_path && off.audio_path.startsWith('http')) {
-                              return off.audio_path;
-                            }
-                            try {
-                              const supabase = getSupabase();
-                              const { data } = await supabase.storage.from('audio-bucket').getPublicUrl(`${p.id}.mp3`);
-                              return data?.publicUrl || '';
-                            } catch {
-                              return '';
-                            }
-                          }} 
+                          produkt={produkt}
                         />
                       </div>
                     )}

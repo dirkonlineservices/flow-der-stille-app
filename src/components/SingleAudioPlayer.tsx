@@ -1,36 +1,32 @@
 /* =========================================================================================
-🚨 AI SYSTEM INSTRUCTION - STRICT GUARDRAIL - DO NOT MODIFY 🚨
-This component contains critical, cross-component audio logic.
-CRITICAL SYSTEMS INSIDE:
-1. Native DOM-Event Listeners (play/pause) for Global Multitasking Protection.
-2. Custom GA4 Tracking hooks (audio_play, audio_complete).
-3. Dynamic Supabase label fetching (audio_hinweis).
-
-DO NOT apply generic "Defensive Checks", DO NOT alter the useEffect hooks, and 
-DO NOT modify the asynchronous URL loading logic. Read-only permitted.
+Hinweis: Kritische Audio-Logik.
+1. Native DOM-Event Listeners (play/pause) für globalen Multitasking-Schutz.
+2. Dynamisches Laden des Labels (audio_hinweis) aus Supabase.
+3. Geschütztes Streaming: Die Quelle wird erst beim Klick auf Play per
+   useProtectedStream (Audio-Worker, Kurzzeit-Link) gesetzt. Kein audio_path, kein Download.
 =========================================================================================
 */
 
 import React, { useEffect, useState, useRef } from 'react';
+import { Play, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabaseClient';
 import DisclaimerModal from './DisclaimerModal';
-import AuthRequiredModal from './AuthRequiredModal';
 import { useAuth } from '../context/AuthContext';
-import { getPlayableAudioUrl } from '../lib/offlineAudioService';
-import { OfflineDownloadButton } from './OfflineDownloadButton';
+import { useProtectedStream } from '../hooks/useProtectedStream';
+import { PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 
 export default function SingleAudioPlayer({ produktId }: { produktId: string }) {
   const { user } = useAuth();
-  const [url, setUrl] = useState('');
-  const [rawUrl, setRawUrl] = useState('');
+  const [produkt, setProdukt] = useState<any>(null);
+  const [streamReady, setStreamReady] = useState(false);
   const [titel, setTitel] = useState('');
   const [audioHinweis, setAudioHinweis] = useState('');
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const stream = useProtectedStream(produkt);
 
   const formatTime = (secs: number) => {
     if (isNaN(secs)) return "0:00";
@@ -54,18 +50,15 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         const supabase = getSupabase();
         const { data: prod, error: prodError } = await supabase
           .from('produkte')
-          .select('*')
+          .select(PRODUKT_COLUMNS)
           .eq('id', produktId)
           .single();
 
         if (prodError) throw prodError;
         
-        if (prod && prod.audio_path) {
+        if (prod) {
+          setProdukt(prod);
           setTitel(prod.titel);
-          setRawUrl(prod.audio_path);
-          // ⚡ Auflösen: Blob-URL falls offline gecacht oder Remote-URL
-          const playableUrl = await getPlayableAudioUrl(produktId, prod.audio_path, prod.titel);
-          setUrl(playableUrl);
           setAudioHinweis(prod.audio_hinweis || '');
         }
       } catch (e: any) {
@@ -77,11 +70,33 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
     loadAudio();
   }, [produktId]);
 
+  // Erster Start: Login und Haftungshinweis prüfen, dann Kurzzeit-Link holen
+  const startStream = async () => {
+    if (!user) {
+      stream.requireLogin();
+      return;
+    }
+    const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
+    if (!accepted) {
+      setShowDisclaimer(true);
+      return;
+    }
+    const started = await stream.play(audioRef.current);
+    if (started) setStreamReady(true);
+  };
+
+  // Native Steuerung: abgelaufenen Link nach langer Pause automatisch erneuern
+  const handleNativePlay = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    const audio = e.currentTarget;
+    handlePlay(e);
+    if (!audio.paused) stream.play(audio);
+  };
+
   // ⚡ FIX: Multitasking-Sperre auch für diesen nativen Player
   const handlePlay = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
     if (!user) {
       e.currentTarget.pause();
-      setShowAuthModal(true);
+      stream.requireLogin();
       return;
     }
 
@@ -101,23 +116,35 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
   };
 
   if (loading) return <span className="text-stone-400 text-xs">Lädt Audio-Spur...</span>;
-  if (!url && !rawUrl) return <span className="text-red-400 text-xs">Fehler: Audio-URL fehlt in Datenbank</span>;
+  if (!produkt) return <span className="text-red-800 text-xs">Audio gerade nicht verfügbar</span>;
 
   return (
     <>
       <div className="mt-8 p-4 sm:p-6 md:p-8 bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-2xl w-full shadow-sm">
         <h4 className="text-sm sm:text-base md:text-lg font-bold text-[var(--text-main)] mb-4">{titel}</h4>
         
-        {/* Nativer Browser-Player, aber mit globaler Pausen-Kontrolle (onPlay) */}
+        {!streamReady && (
+          <button
+            onClick={startStream}
+            disabled={stream.isFetchingLink}
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#344034] text-white font-semibold shadow-sm hover:bg-[#2a342a] transition-all disabled:opacity-70"
+          >
+            {stream.isFetchingLink ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} fill="white" stroke="none" />}
+            <span>{stream.isFetchingLink ? 'Audio wird geladen …' : 'Audio abspielen'}</span>
+          </button>
+        )}
+
+        {/* Nativer Browser-Player, aber mit globaler Pausen-Kontrolle (onPlay). Quelle erst nach Klick. */}
         <audio 
           ref={audioRef}
-          src={url || rawUrl} 
-          controls 
-          className="w-full" 
-          preload="metadata" 
-          controlsList="nodownload"
-          onPlay={handlePlay}
-          onTimeUpdate={handleTimeUpdate}
+          controls={streamReady}
+          className={streamReady ? 'w-full' : 'hidden'}
+          preload="none" 
+          controlsList="nodownload noplaybackrate"
+          onContextMenu={(e) => e.preventDefault()}
+          onPlay={handleNativePlay}
+          onError={stream.onAudioError}
+          onTimeUpdate={(e) => { handleTimeUpdate(); stream.onAudioTimeUpdate(e); }}
           onLoadedMetadata={handleLoadedMetadata}
         />
         
@@ -126,16 +153,6 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
           {formatTime(currentTime)} / {formatTime(duration)}
         </div>
 
-        {/* Schalter für Offline-Verfügbarkeit im Flugmodus */}
-        {rawUrl && (
-          <OfflineDownloadButton
-            productId={produktId}
-            audioUrl={rawUrl}
-            title={titel}
-            variant="button"
-          />
-        )}
-        
         {/* KI-Label dezent integriert */}
         {audioHinweis && (
           <p className="text-[10px] text-[var(--color-text-muted)] mt-5 pt-3 border-t border-[var(--color-border-main)] italic">
@@ -148,16 +165,11 @@ export default function SingleAudioPlayer({ produktId }: { produktId: string }) 
         isOpen={showDisclaimer} 
         onAccepted={() => {
           setShowDisclaimer(false);
-          if (audioRef.current) {
-            audioRef.current.play().catch(() => {});
-          }
+          startStream();
         }} 
       />
 
-      <AuthRequiredModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
+      {stream.modals}
     </>
   );
 }

@@ -5,10 +5,13 @@ import App from './index.tsx';
 import './index.css';
 import { logSupabaseEnvStatus } from './lib/verifySupabaseEnv';
 import { initConsentState } from './lib/tracking';
+import { purgeLegacyOfflineAudio } from './lib/offlineAudioService';
 
 // Client-side environment verification for Supabase credentials & Google Consent Mode init
 logSupabaseEnvStatus();
 initConsentState();
+// Früher offline gespeicherte Audiodateien entfernen (nur noch geschütztes Streaming)
+purgeLegacyOfflineAudio();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

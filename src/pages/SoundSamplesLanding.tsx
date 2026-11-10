@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { DEFAULT_PRODUCTS, ProductData } from '../lib/offlineProductsService';
+import { PUBLIC_HOERPROBEN } from '../config/audio';
 
 interface SampleCardData {
   id: string;
@@ -27,7 +28,6 @@ interface SampleCardData {
   shopAnchor: string;
   landingUrl?: string;
   landingLabel?: string;
-  audioPath: string;
   hoerprobeUrl?: string | null;
 }
 
@@ -49,8 +49,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shopAnchor: '/premium#product-fds_herzoeffnung_meditation',
     landingUrl: '/meditation',
     landingLabel: 'Zur Meditations-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3',
-    hoerprobeUrl: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(Hoerprobe)%20Herzoeffnung%20-%20%20Schutzpanzer.mp3'
+    hoerprobeUrl: PUBLIC_HOERPROBEN.meditation_zur_herzoeffnung
   },
   {
     id: 'meditation_innere_ruhe',
@@ -67,8 +66,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_meditation_innere_ruhe',
     landingUrl: '/meditation',
-    landingLabel: 'Zur Meditations-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3'
+    landingLabel: 'Zur Meditations-Themenseite'
   },
   {
     id: 'meditation_inneres_kind',
@@ -85,8 +83,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_meditation_inneres_kind',
     landingUrl: '/meditation',
-    landingLabel: 'Zur Meditations-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3'
+    landingLabel: 'Zur Meditations-Themenseite'
   },
   {
     id: 'meditation_herzkompass',
@@ -103,8 +100,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Harmonische Meditationsfrequenzen (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_herzkompass_meditation',
     landingUrl: '/meditation',
-    landingLabel: 'Zur Meditations-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3'
+    landingLabel: 'Zur Meditations-Themenseite'
   },
 
   // ─── 2. GEZIELTE SELBSTHYPNOSEN ────────────────────────────────
@@ -124,8 +120,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     shopAnchor: '/premium#product-fds_selbsthypnose_besserer_tieferer_schlaf',
     landingUrl: '/selbsthypnose',
     landingLabel: 'Zur Selbsthypnose-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3',
-    hoerprobeUrl: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben/Werbung(hoerprobe)%20Selbsthypnose%20-%20%20Besser%20Schlafen.mp3'
+    hoerprobeUrl: PUBLIC_HOERPROBEN.selbsthypnose_besser_und_erholsamer_schlaf
   },
   {
     id: 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen',
@@ -140,10 +135,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Echtes Selbstvertrauen ist nicht laut. Verankere ein unerschütterliches, ruhiges Fundament direkt in deinem Unterbewusstsein.',
     voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Stärkende Tiefenklänge (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_selbstbewusstsein',
+    shopAnchor: '/premium#product-fds_selbsthypnose_selbstbewusstsein',
     landingUrl: '/selbsthypnose',
-    landingLabel: 'Zur Selbsthypnose-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3'
+    landingLabel: 'Zur Selbsthypnose-Themenseite'
   },
   {
     id: 'selbsthypnose_fokus&konzentration',
@@ -158,10 +152,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Beende mentale Zerstreuung. Gelange mühelos und ohne anstrengende Willenskraft in deinen klaren, fokussierten Arbeitsmodus.',
     voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Konzentrationsfördernde Klangarchitektur (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_fokus',
+    shopAnchor: '/premium#product-fds_selbsthypnose_fokus_absolute_konzentration',
     landingUrl: '/selbsthypnose',
-    landingLabel: 'Zur Selbsthypnose-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3'
+    landingLabel: 'Zur Selbsthypnose-Themenseite'
   },
   {
     id: 'selbsthypnose_ernaehrung',
@@ -176,10 +169,9 @@ const ALL_SAMPLES: SampleCardData[] = [
     shortDesc: 'Wohlbefinden ohne Verzicht: Richte deine unbewussten Routinen neu aus, sodass gesunde Entscheidungen sich natürlich anfühlen.',
     voiceInfo: 'Echte menschliche Stimme (Lisa Ragusa) • Text: Jacqueline Schmetzer',
     musicInfo: 'Harmonische Wohlfühlfrequenzen (KI-unterstützt)',
-    shopAnchor: '/premium#product-fds_hypnose_gesunde_ernaehrung',
+    shopAnchor: '/premium#product-fds_selbsthypnose_gesunde_ernaehrung',
     landingUrl: '/selbsthypnose',
-    landingLabel: 'Zur Selbsthypnose-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3'
+    landingLabel: 'Zur Selbsthypnose-Themenseite'
   },
 
   // ─── 3. GANZHEITLICHE HÖRBÜCHER ────────────────────────────────
@@ -198,8 +190,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_schmetterling',
     landingUrl: '/hoerbuecher',
-    landingLabel: 'Zur Hörbuch-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Der%20Tag%20an%20dem%20der%20Schmetterling%20erwachte%20Final.mp3'
+    landingLabel: 'Zur Hörbuch-Themenseite'
   },
   {
     id: 'mensch_sein',
@@ -216,8 +207,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Feinsinnige atmosphärische Musikuntermalung (KI-unterstützt)',
     shopAnchor: '/premium#product-fds_mensch_sein',
     landingUrl: '/hoerbuecher',
-    landingLabel: 'Zur Hörbuch-Themenseite',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerbucher/Mut%20zum%20echtsein.....mp3'
+    landingLabel: 'Zur Hörbuch-Themenseite'
   },
 
   // ─── 4. SCHNUPPER- & ENTSPANNUNGSÜBUNGEN ────────────────────────
@@ -236,8 +226,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Akustische Frequenz-Ruhezone',
     shopAnchor: '/premium#product-fds_gefuehrte_atemuebung',
     landingUrl: '/exercises',
-    landingLabel: 'Zu den Atemübungen',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/anleitung_atmen.mp3'
+    landingLabel: 'Zu den Atemübungen'
   },
   {
     id: 'pmr_basis',
@@ -254,8 +243,7 @@ const ALL_SAMPLES: SampleCardData[] = [
     musicInfo: 'Sanfte Begleitmelodie',
     shopAnchor: '/premium#product-fds_pmr_basis',
     landingUrl: '/exercises',
-    landingLabel: 'Zu den Körperübungen',
-    audioPath: 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Kostenfreie%20Produkte/Progressive%20Muskelentspannung.mp3'
+    landingLabel: 'Zu den Körperübungen'
   }
 ];
 
@@ -296,7 +284,7 @@ export default function SoundSamplesLanding() {
         "@type": "AudioObject",
         "name": item.title,
         "description": item.shortDesc,
-        "contentUrl": item.hoerprobeUrl || item.audioPath,
+        ...(item.hoerprobeUrl ? { "contentUrl": item.hoerprobeUrl } : {}),
         "encodingFormat": "audio/mpeg",
         "duration": item.duration,
         "author": {
@@ -502,7 +490,7 @@ export default function SoundSamplesLanding() {
             const productObj: Partial<ProductData> = {
               id: sample.id,
               titel: sample.title,
-              audio_path: sample.audioPath,
+              preis: sample.isFree ? 0 : undefined,
               hoerprobe_url: sample.hoerprobeUrl || null,
               dauer: sample.duration.includes(':') 
                 ? parseInt(sample.duration.split(':')[0]) * 60 + parseInt(sample.duration.split(':')[1]) 

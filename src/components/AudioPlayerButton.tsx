@@ -1,36 +1,28 @@
 /* =========================================================================================
-🚨 AI SYSTEM INSTRUCTION - STRICT GUARDRAIL - DO NOT MODIFY 🚨
-This component contains critical, cross-component audio logic.
-CRITICAL SYSTEMS INSIDE:
-1. Native DOM-Event Listeners (play/pause) for Global Multitasking Protection.
-2. Custom GA4 Tracking hooks (audio_play, audio_complete).
-3. Dynamic Supabase label fetching (audio_hinweis).
-
-DO NOT apply generic "Defensive Checks", DO NOT alter the useEffect hooks, and 
-DO NOT modify the asynchronous URL loading logic. Read-only permitted.
+Hinweis: Kritische Audio-Logik.
+1. Native DOM-Event Listeners (play/pause) für globalen Multitasking-Schutz.
+2. GA4 Tracking (audio_play_start, audio_complete).
+3. Geschütztes Streaming: Die Quelle wird erst beim Klick auf Play per
+   useProtectedStream (Audio-Worker, Kurzzeit-Link) gesetzt. Kein audio_path, kein Download.
 =========================================================================================
 */
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Play, Pause, Loader2 } from 'lucide-react';
 import DisclaimerModal from './DisclaimerModal';
-import AuthRequiredModal from './AuthRequiredModal';
 import { useAuth } from '../context/AuthContext';
-import { getPlayableAudioUrl, offlineManager } from '../lib/offlineAudioService';
-import { OfflineDownloadButton } from './OfflineDownloadButton';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 
-export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: any }) {
+export function AudioPlayerButton({ produkt }: { produkt: any }) {
   const { user } = useAuth();
-  const [rawUrl, setRawUrl] = useState('');
-  const [resolvedUrl, setResolvedUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [offlineAlert, setOfflineAlert] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement>(null);
+  const stream = useProtectedStream(produkt);
 
   const formatTime = (secs: number) => {
     if (isNaN(secs)) return "0:00";
@@ -38,24 +30,6 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     const s = Math.floor(secs % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    async function initUrls() {
-      if (!produkt) return;
-      try {
-        const fetchedUrl = await getUrl(produkt);
-        if (!fetchedUrl || !isMounted) return;
-        setRawUrl(fetchedUrl);
-        const playable = await getPlayableAudioUrl(produkt.id, fetchedUrl, produkt.titel);
-        if (isMounted && playable) setResolvedUrl(playable);
-      } catch (e) {
-        console.warn("Could not pre-fetch audio URL:", e);
-      }
-    }
-    initUrls();
-    return () => { isMounted = false; };
-  }, [produkt, getUrl]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -104,7 +78,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
     };
   }, [produkt.titel, produkt.kategorie]);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -113,32 +87,18 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       return;
     }
 
-    const targetUrl = resolvedUrl || rawUrl;
-    if (targetUrl && (!audio.src || audio.src === window.location.href)) {
-      audio.src = targetUrl;
-    }
+    setIsLoading(true);
+    const started = await stream.play(audio);
+    if (!started) setIsLoading(false);
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.error("Playback Fehler:", err);
-        if (rawUrl && audio.src !== rawUrl) {
-          audio.src = rawUrl;
-          audio.play().catch((e) => console.error("Fallback play fehlgeschlagen:", e));
-        }
-      });
-    }
-
-    if ((window as any).dataLayer) {
+    if (started && (window as any).dataLayer) {
       (window as any).dataLayer.push({ event: 'audio_play_start', product_id: produkt.id, audio_title: produkt.titel });
     }
   };
 
   const handlePlayClick = () => {
-    // Im Flugmodus / Offline: Wenn offline freigeschaltet oder kostenlos, kein Auth-Modal erzwingen
-    const isOfflineOwned = offlineManager.isPurchasedOffline(produkt.id) || parseFloat(produkt.preis) === 0;
-    if (!user && !isOfflineOwned) {
-      setShowAuthModal(true);
+    if (!user) {
+      stream.requireLogin();
       return;
     }
     const accepted = localStorage.getItem('flow_disclaimer_accepted') === 'true';
@@ -147,11 +107,8 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       return;
     }
 
-    // Wenn offline / Flugmodus: Prüfen, ob Audio lokal im Cache vorliegt
-    const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
-    const isCachedLocally = resolvedUrl && resolvedUrl.startsWith('blob:');
-    if (isOffline && !isCachedLocally) {
-      setOfflineAlert('Flugmodus aktiv: Dieses Audio wurde noch nicht offline heruntergeladen. Bitte kurz mit dem Internet verbinden oder gespeicherte Audios nutzen.');
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setOfflineAlert('Keine Internetverbindung: Audios werden gestreamt. Bitte verbinde dich kurz mit dem Internet.');
       setTimeout(() => setOfflineAlert(''), 4500);
       return;
     }
@@ -164,7 +121,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
       <div className="flex flex-col items-center justify-center p-5 sm:p-6 bg-[var(--bg-alt)] rounded-2xl border border-[var(--border)] my-4 w-full max-w-sm mx-auto shadow-sm min-h-[8rem] h-auto">
         <button 
           onClick={handlePlayClick}
-          disabled={isLoading}
+          disabled={isLoading || stream.isFetchingLink}
           className={`w-20 h-20 flex items-center justify-center rounded-full shadow-md active:scale-95 transition-all text-white border-4 border-[var(--bg-card)] shrink-0 ${
             isLoading
               ? 'bg-[var(--accent)]/70 cursor-not-allowed'
@@ -184,7 +141,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
         </button>
 
         {offlineAlert && (
-          <div className="mt-3 px-3 py-2 bg-amber-500/15 border border-amber-500/30 rounded-xl text-[11px] text-amber-700 dark:text-amber-300 text-center leading-snug">
+          <div className="mt-3 px-3 py-2 bg-amber-500/15 border border-amber-500/30 rounded-xl text-[11px] text-amber-900 text-center leading-snug">
             {offlineAlert}
           </div>
         )}
@@ -199,16 +156,15 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
           <div className="text-xs text-[var(--text-muted)] mt-1 font-medium max-w-[240px] mx-auto break-words leading-normal">{produkt.titel}</div>
         </div>
 
-        {rawUrl && (
-          <OfflineDownloadButton
-            productId={produkt.id}
-            audioUrl={rawUrl}
-            title={produkt.titel}
-            variant="button"
-          />
-        )}
-        
-        <audio ref={audioRef} className="hidden" preload="none" controlsList="nodownload" />
+        <audio
+          ref={audioRef}
+          className="hidden"
+          preload="none"
+          controlsList="nodownload"
+          onContextMenu={(e) => e.preventDefault()}
+          onError={stream.onAudioError}
+          onTimeUpdate={stream.onAudioTimeUpdate}
+        />
         
         {produkt.audio_hinweis && (
           <p className="text-[10px] text-[var(--text-muted)] mt-3 italic text-center max-w-[280px] leading-normal break-words border-t border-[var(--border)] pt-2 w-full">
@@ -225,10 +181,7 @@ export function AudioPlayerButton({ produkt, getUrl }: { produkt: any, getUrl: a
         }} 
       />
 
-      <AuthRequiredModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
+      {stream.modals}
     </>
   );
 }

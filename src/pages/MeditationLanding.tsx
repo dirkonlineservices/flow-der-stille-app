@@ -13,6 +13,8 @@ import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
+import { PUBLIC_HOERPROBEN } from '../config/audio';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 
 interface MeditationItem {
   id: string;
@@ -77,7 +79,10 @@ export default function MeditationLanding() {
   // Nicht-eingeloggte Besucher dürfen 45 Sek. reinhören
   const GUEST_PREVIEW_LIMIT = 45;
 
-  const SAMPLE_AUDIO_URL = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20zur%20Herz%C3%B6ffnung.mp3';
+  // Gäste hören die öffentliche Hörprobe, eingeloggte Nutzer die geschützte Gratis-Vollversion
+  const SAMPLE_PRODUKT = { id: 'meditation_zur_herzoeffnung', titel: 'Meditation zur Herzöffnung', preis: 0 };
+  const PUBLIC_SAMPLE_URL = PUBLIC_HOERPROBEN.meditation_zur_herzoeffnung;
+  const sampleStream = useProtectedStream(SAMPLE_PRODUKT);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -98,7 +103,12 @@ export default function MeditationLanding() {
         setShowRegModal(true);
         return;
       }
-      audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      if (user) {
+        sampleStream.play(audio).then((ok) => { if (ok) setIsPlaying(true); });
+      } else {
+        if (!audio.src || audio.src === window.location.href) audio.src = PUBLIC_SAMPLE_URL;
+        audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
     }
   };
 
@@ -135,10 +145,14 @@ export default function MeditationLanding() {
         description="Finde zurück in deine Stille. Geführte Meditationen von Jacqueline Schmetzer, gesprochen von Lisa Ragusa. Jetzt kostenlos reinhören ohne Abo."
       />
 
+      {sampleStream.modals}
+
       <audio
         ref={audioRef}
-        src={SAMPLE_AUDIO_URL}
-        preload="metadata"
+        preload="none"
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        onError={user ? sampleStream.onAudioError : undefined}
         onLoadedMetadata={() => {
           if (audioRef.current) {
             setDuration(audioRef.current.duration || 1005);
@@ -353,12 +367,7 @@ export default function MeditationLanding() {
                     <HoerprobenPlayer 
                       produkt={getOfflineProductById(item.id) || {
                         id: item.id,
-                        titel: item.title,
-                        audio_path: item.id === 'meditation_innere_ruhe' 
-                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20innere%20Ruhe.mp3'
-                          : item.id === 'meditation_inneres_kind'
-                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20inneres%20Kind.mp3'
-                          : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/meditation/Meditation%20Herzkompass.mp3'
+                        titel: item.title
                       }} 
                       variant="compact" 
                     />

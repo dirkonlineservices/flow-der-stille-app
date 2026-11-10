@@ -6,7 +6,7 @@
  * - Kapitel-Navigation (Schnellfinder für Kapitel 1, 2, 3, 4 etc.).
  * - Automatischer Speicherstand (Fortschritt merken & an letzter Stelle weiterhören).
  * - Vor- und Zurückspulen um 15 Sekunden.
- * - Geschützte Offline-Funktion (Flugmodus) über den internen App-Speicher.
+ * - Geschütztes Streaming über den Audio-Worker (Kurzzeit-Link, kein Download).
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -16,8 +16,7 @@ import {
   Bookmark, CheckCircle2, ListMusic, Sparkles, HardDrive, WifiOff, Clock,
   Lock, AlertCircle, Shield
 } from 'lucide-react';
-import { getPlayableAudioUrl } from '../lib/offlineAudioService';
-import { OfflineDownloadButton } from './OfflineDownloadButton';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 
 export interface AudiobookChapter {
   id: string;
@@ -35,7 +34,8 @@ interface Props {
   author?: string;
   reader?: string;
   coverImage?: string;
-  audioUrl: string;
+  /** Produkt für das geschützte Streaming (produkte.id, Titel, Preis) */
+  streamProdukt: { id: string; titel?: string; preis?: number | string | null };
   durationSeconds?: number; // z. B. 3523 für 58:43 Min
   chapters?: AudiobookChapter[];
   initialStartTime?: number;
@@ -87,7 +87,7 @@ export function AudiobookPlayerModal({
   author = 'Jacqueline Schmetzer',
   reader = 'Lisa Ragusa',
   coverImage = '/images/products/cover_schmetterling.jpg',
-  audioUrl,
+  streamProdukt,
   durationSeconds = 3523,
   chapters = DEFAULT_CHAPTERS,
   initialStartTime
@@ -100,7 +100,7 @@ export function AudiobookPlayerModal({
   const [duration, setDuration] = useState<number>(durationSeconds);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [playableUrl, setPlayableUrl] = useState<string>(audioUrl);
+  const stream = useProtectedStream(streamProdukt);
   const [activeChapterId, setActiveChapterId] = useState<string>(chapters[0]?.id || '');
   const [savedPosition, setSavedPosition] = useState<number | null>(null);
   const [showResumeBanner, setShowResumeBanner] = useState<boolean>(false);
@@ -136,20 +136,11 @@ export function AudiobookPlayerModal({
     }
   };
 
-  // 1. Audio-URL auflösen (Sandbox Cache oder Direkt-URL) & Startposition
+  // 1. Startposition bestimmen (die Stream-URL wird erst beim Klick auf Play geholt)
   useEffect(() => {
-    if (!isOpen || !audioUrl) return;
+    if (!isOpen || !streamProdukt?.id) return;
 
     let isMounted = true;
-    setPlayableUrl(audioUrl);
-
-    getPlayableAudioUrl(productId, audioUrl, title).then((resolvedUrl) => {
-      if (isMounted && resolvedUrl) {
-        setPlayableUrl(resolvedUrl);
-      }
-    }).catch(() => {
-      if (isMounted) setPlayableUrl(audioUrl);
-    });
 
     const isDisclaimerListened = localStorage.getItem(DISCLAIMER_KEY) === 'true';
 
@@ -202,7 +193,7 @@ export function AudiobookPlayerModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, productId, audioUrl, initialStartTime]);
+  }, [isOpen, productId, streamProdukt?.id, initialStartTime]);
 
   // Automatisches Speichern bei Verlassen der Seite / App-Schließen
   useEffect(() => {
@@ -237,7 +228,7 @@ export function AudiobookPlayerModal({
 
       navigator.mediaSession.setActionHandler('play', () => {
         if (audioRef.current && audioRef.current.paused) {
-          audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+          stream.play(audioRef.current).then((ok) => { if (ok) setIsPlaying(true); });
         }
       });
 
@@ -328,6 +319,7 @@ export function AudiobookPlayerModal({
       const targetPos = (typeof initialStartTime === 'number' && initialStartTime > 0)
         ? initialStartTime
         : savedPosition;
+      const isDisclaimerListened = localStorage.getItem(DISCLAIMER_KEY) === 'true';
       if (targetPos && targetPos > 5 && isDisclaimerListened && audio.currentTime < 1) {
         audio.currentTime = targetPos;
         setCurrentTime(targetPos);
@@ -398,46 +390,44 @@ export function AudiobookPlayerModal({
       audio.removeEventListener('pause', handlePauseEvent);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [playableUrl, chapters, productId, title]);
+  }, [isOpen, chapters, productId, title]);
 
   // 4. Steuerungsfunktionen
-  const togglePlay = () => {
+  /** Startet ab einer Position. Holt bei Bedarf (erster Start, abgelaufen) einen neuen Link. */
+  const playFrom = async (position?: number): Promise<boolean> => {
+    const audio = audioRef.current;
+    if (!audio) return false;
+    const hasSrc = !!audio.src && audio.src !== window.location.href;
+    if (hasSrc && typeof position === 'number') {
+      audio.currentTime = position;
+    }
+    setIsLoadingAudio(true);
+    const ok = await stream.play(audio, hasSrc ? {} : { startAt: position ?? currentTime });
+    setIsLoadingAudio(false);
+    if (ok) setIsPlaying(true);
+    return ok;
+  };
+
+  const togglePlay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
-    } else {
-      const targetSrc = playableUrl || audioUrl;
-      if (!audio.src || audio.src !== targetSrc) {
-        audio.src = targetSrc;
-      }
+      return;
+    }
 
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setIsPlaying(true);
-            if ((window as any).dataLayer) {
-              (window as any).dataLayer.push({
-                event: 'fds_audio_interaction',
-                audio_action: 'play',
-                audio_id: productId,
-                audio_title: title,
-                audio_category: 'Hörbuch',
-                timestamp: new Date().toISOString()
-              });
-            }
-          })
-          .catch((err) => {
-            console.warn('Playback fallback to direct audioUrl:', err);
-            if (audioUrl && audio.src !== audioUrl) {
-              audio.src = audioUrl;
-              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback failed:', e));
-            }
-          });
-      }
+    const ok = await playFrom();
+    if (ok && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'fds_audio_interaction',
+        audio_action: 'play',
+        audio_id: productId,
+        audio_title: title,
+        audio_category: 'Hörbuch',
+        timestamp: new Date().toISOString()
+      });
     }
   };
 
@@ -473,11 +463,12 @@ export function AudiobookPlayerModal({
       return;
     }
     if (!audioRef.current) return;
-    audioRef.current.currentTime = chapter.startTime;
     setCurrentTime(chapter.startTime);
     setActiveChapterId(chapter.id);
     if (!isPlaying) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      playFrom(chapter.startTime);
+    } else {
+      audioRef.current.currentTime = chapter.startTime;
     }
   };
 
@@ -487,10 +478,9 @@ export function AudiobookPlayerModal({
         setShowResumeBanner(false);
         return;
       }
-      audioRef.current.currentTime = savedPosition;
       setCurrentTime(savedPosition);
       setShowResumeBanner(false);
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      playFrom(savedPosition);
     }
   };
 
@@ -540,11 +530,16 @@ export function AudiobookPlayerModal({
         {/* Hidden HTML5 Audio Element – kein preload, kein Loop (stoppt nach einmaligem Hören) */}
         <audio
           ref={audioRef}
-          src={playableUrl || audioUrl}
           controlsList="nodownload"
           preload="none"
           loop={false}
+          onContextMenu={(e) => e.preventDefault()}
+          onError={stream.onAudioError}
+          onTimeUpdate={stream.onAudioTimeUpdate}
         />
+
+        {/* Login-, Kauf- und Fehlerhinweise des geschützten Streamings */}
+        <div onClick={(e) => e.stopPropagation()}>{stream.modals}</div>
 
         {/* Player Modal Window */}
         <motion.div
@@ -636,15 +631,6 @@ export function AudiobookPlayerModal({
                   Autorin: <strong className="text-[var(--text-main)]">{author}</strong> • Sprecherin: <strong className="text-[var(--text-main)]">{reader}</strong>
                 </p>
 
-                {/* Offline-Speicher Button */}
-                <div className="pt-2">
-                  <OfflineDownloadButton
-                    productId={productId}
-                    audioUrl={audioUrl}
-                    title={title}
-                    variant="button"
-                  />
-                </div>
               </div>
             </div>
 

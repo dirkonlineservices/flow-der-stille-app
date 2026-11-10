@@ -13,6 +13,8 @@ import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import FullAudioRegistrationModal from '../components/FullAudioRegistrationModal';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
+import { PUBLIC_HOERPROBEN } from '../config/audio';
+import { useProtectedStream } from '../hooks/useProtectedStream';
 
 interface HypnosisItem {
   id: string;
@@ -77,7 +79,10 @@ export default function HypnosisLanding() {
   // Nicht-eingeloggte Besucher dürfen 45 Sek. reinhören
   const GUEST_PREVIEW_LIMIT = 45;
 
-  const SAMPLE_AUDIO_URL = 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Tiefer%20%26%20Erholsamer%20Schlaf.mp3';
+  // Gäste hören die öffentliche Hörprobe, eingeloggte Nutzer die geschützte Gratis-Vollversion
+  const SAMPLE_PRODUKT = { id: 'selbsthypnose_besser_und_erholsamer_schlaf', titel: 'Selbsthypnose: Tiefer und erholsamer Schlaf', preis: 0 };
+  const PUBLIC_SAMPLE_URL = PUBLIC_HOERPROBEN.selbsthypnose_besser_und_erholsamer_schlaf;
+  const sampleStream = useProtectedStream(SAMPLE_PRODUKT);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -98,7 +103,12 @@ export default function HypnosisLanding() {
         setShowRegModal(true);
         return;
       }
-      audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      if (user) {
+        sampleStream.play(audio).then((ok) => { if (ok) setIsPlaying(true); });
+      } else {
+        if (!audio.src || audio.src === window.location.href) audio.src = PUBLIC_SAMPLE_URL;
+        audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
     }
   };
 
@@ -135,10 +145,14 @@ export default function HypnosisLanding() {
         description="Löse Blockaden im Unterbewusstsein. Sanfte Selbsthypnosen von Jacqueline Schmetzer & Lisa Ragusa. Jetzt kostenlos testen: 100 % werbe- und abofrei."
       />
 
+      {sampleStream.modals}
+
       <audio
         ref={audioRef}
-        src={SAMPLE_AUDIO_URL}
-        preload="metadata"
+        preload="none"
+        controlsList="nodownload"
+        onContextMenu={(e) => e.preventDefault()}
+        onError={user ? sampleStream.onAudioError : undefined}
         onLoadedMetadata={() => {
           if (audioRef.current) {
             setDuration(audioRef.current.duration || 774);
@@ -408,12 +422,7 @@ export default function HypnosisLanding() {
                     <HoerprobenPlayer 
                       produkt={getOfflineProductById(item.id) || {
                         id: item.id,
-                        titel: item.title,
-                        audio_path: item.id === 'selbsthypnose_ernaehrung'
-                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Hynose%20Gesunde%20Ern%C3%A4hrung%20%26%20Aktiver%20Lebensstil.mp3'
-                          : item.id === 'selbshypnose_mehr_selbsbewusstsein_&_inneres_vertrauen'
-                          ? 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Mehr%20Selbstbewusstsein%20%26%20Inneres%20Vertrauen%2015_30%20min.mp3'
-                          : 'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/Selbsthypnosen/Selbsthypnose%20Fokus%20%26%20Absolute%20Konzentration%2015_41%20min.mp3.mp3'
+                        titel: item.title
                       }} 
                       variant="compact" 
                     />

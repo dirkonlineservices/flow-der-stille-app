@@ -1,17 +1,20 @@
 /**
  * HoerprobenPlayer – Kostenlose Klangprobe für alle Produkte.
  *
- * Nutzt hoerprobe_url (falls vorhanden) oder greift direkt auf audio_path zu.
- * Überspringt bei Voll-Audios automatisch die ersten 70 Sek. (1:10 Min.),
- * sodass der gesprochene Haftungsausschluss/Disclaimer übersprungen wird
- * und direkt die beruhigende Klangprobe (90 Sek.) ertönt.
+ * - Mit hoerprobe_url: öffentliche Hörprobe, wird direkt abgespielt.
+ * - Ohne hoerprobe_url, aber Gratis-Produkt (preis = 0): Auszug aus der Vollversion
+ *   über das geschützte Streaming (Login nötig, Freischaltung erfolgt automatisch).
+ * - Ohne hoerprobe_url bei Bezahlprodukten: kein Player (Vollversion ist geschützt).
+ * Bei Vollversionen werden die ersten 70 Sek. (1:10 Min.) übersprungen,
+ * sodass direkt die beruhigende Klangprobe (90 Sek.) ertönt.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Headphones, Loader2 } from 'lucide-react';
-import { getPlayableAudioUrl } from '../lib/offlineAudioService';
-import { OfflineDownloadButton } from './OfflineDownloadButton';
 import { useAudioConsentGate } from './AudioConsentModal';
+import { useAuth } from '../context/AuthContext';
+import { useProtectedStream } from '../hooks/useProtectedStream';
+import { isFreeProduct } from '../lib/audioStream';
 
 interface Props {
   /** Das komplette Produkt-Objekt aus Supabase */
@@ -22,15 +25,25 @@ interface Props {
   showProductLink?: boolean;
   /** Callback beim Klick auf "Zum Produkt" */
   onProductClick?: (productId: string) => void;
+  autoPlay?: boolean;
+  enableFloatingPlayer?: boolean;
+}
+
+/** Hat das Produkt eine abspielbare Hörprobe (öffentlich oder Gratis-Vollversion)? */
+export function hasHoerprobe(produkt: any): boolean {
+  const publicUrl = typeof produkt?.hoerprobe_url === 'string' && produkt.hoerprobe_url.trim() !== '';
+  return publicUrl || isFreeProduct(produkt);
 }
 
 export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink = false, onProductClick }: Props) {
-  // Bevorzugt eine speziell geschnittene hoerprobe_url, sonst greift er auf das Hauptaudio audio_path zu
-  const rawUrl: string = (produkt?.hoerprobe_url && typeof produkt.hoerprobe_url === 'string' && produkt.hoerprobe_url.trim() !== '')
+  const { user } = useAuth();
+  // Öffentliche, eigens geschnittene Hörprobe (bleibt frei abspielbar)
+  const publicUrl: string = (produkt?.hoerprobe_url && typeof produkt.hoerprobe_url === 'string' && produkt.hoerprobe_url.trim() !== '')
     ? produkt.hoerprobe_url.trim()
-    : (produkt?.audio_path && typeof produkt.audio_path === 'string' && produkt.audio_path.trim() !== '')
-    ? produkt.audio_path.trim()
     : '';
+  // Ohne öffentliche Hörprobe nur bei Gratis-Produkten: Auszug über geschütztes Streaming
+  const useProtected = !publicUrl && isFreeProduct(produkt);
+  const stream = useProtectedStream(useProtected ? produkt : null);
 
   // Startzeit bestimmen:
   // - Wenn eigens geschnittene hoerprobe_url vorhanden: 0
@@ -57,7 +70,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   const startTime = getStartTime();
   const SNIPPET_DURATION = 90; // 90 Sekunden Auszug
 
-  const [audioUrl, setAudioUrl] = useState<string>(rawUrl);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -68,23 +80,8 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
   // Consent-Gate: öffnet sich beim ersten Klick wenn noch nicht zugestimmt
   const { gate, requestPlay } = useAudioConsentGate();
 
-  useEffect(() => {
-    let isMounted = true;
-    async function resolveAudio() {
-      if (!rawUrl) return;
-      try {
-        const playable = await getPlayableAudioUrl(`hoerprobe_${produkt.id}`, rawUrl, `Klangprobe: ${produkt.titel}`);
-        if (isMounted && playable) setAudioUrl(playable);
-      } catch (e) {
-        console.warn('Could not resolve offline audio for hoerprobe:', e);
-      }
-    }
-    resolveAudio();
-    return () => { isMounted = false; };
-  }, [rawUrl, produkt.id, produkt.titel]);
-
-  // Nichts rendern, wenn weder Hörprobe noch Audio-Pfad vorhanden ist
-  if (!rawUrl) return null;
+  // Nichts rendern, wenn weder öffentliche Hörprobe noch Gratis-Vollversion vorhanden ist
+  if (!publicUrl && !useProtected) return null;
 
   const actualSnippetDuration = Math.min(
     SNIPPET_DURATION, 
@@ -114,30 +111,31 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     });
 
     // Über das Consent-Gate routen
-    requestPlay('sample', produkt.titel, () => {
-      const srcToPlay = audioUrl || rawUrl;
-      if (!audio.src || audio.src === '' || audio.src === window.location.href) {
-        audio.src = srcToPlay;
-      }
+    requestPlay('sample', produkt.titel, async () => {
+      if (useProtected) {
+        if (!user) {
+          stream.requireLogin();
+          return;
+        }
+        const outsideSnippet = audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration;
+        setIsLoading(true);
+        const started = await stream.play(audio, outsideSnippet ? { startAt: startTime } : {});
+        if (!started) setIsLoading(false);
+        else setIsPlaying(true);
+      } else {
+        if (!audio.src || audio.src === window.location.href) {
+          audio.src = publicUrl;
+        }
 
-      // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
-      if (audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration) {
-        audio.currentTime = startTime;
-        setCurrentTime(startTime);
-      }
+        // Falls die Position vor dem Startzeitpunkt liegt oder den Ausschnitt überschritten hat
+        if (audio.currentTime < startTime || audio.currentTime >= startTime + actualSnippetDuration) {
+          audio.currentTime = startTime;
+          setCurrentTime(startTime);
+        }
 
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise
+        audio.play()
           .then(() => setIsPlaying(true))
-          .catch((err) => {
-            console.error('Audio play error:', err);
-            if (rawUrl && audio.src !== rawUrl) {
-              audio.src = rawUrl;
-              audio.currentTime = startTime;
-              audio.play().then(() => setIsPlaying(true)).catch((e) => console.error('Fallback play failed:', e));
-            }
-          });
+          .catch((err) => console.error('Audio play error:', err?.name));
       }
 
       if ((window as any).dataLayer) {
@@ -182,6 +180,7 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
     <>
       {/* Consent-Gate Modal (rendert nur wenn nötig) */}
       {gate}
+      {useProtected && stream.modals}
 
       <div className={`w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] shadow-xs transition-all ${variant === 'compact' ? 'p-3.5 sm:p-4' : 'p-5'}`}>
         {/* Header-Zeile mit Titel, Disclaimer-Skip-Badge, Offline-Icon und optionalem "Zum Produkt"-Button */}
@@ -209,13 +208,6 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
           </div>
 
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
-            <OfflineDownloadButton
-              productId={`hoerprobe_${produkt.id}`}
-              audioUrl={rawUrl}
-              title={`Klangprobe: ${produkt.titel}`}
-              variant="icon"
-            />
-
             {showProductLink && (
               <button
                 onClick={scrollToProduct}
@@ -278,8 +270,9 @@ export function HoerprobenPlayer({ produkt, variant = 'compact', showProductLink
         {/* Audio-Element mit preload="none" */}
         <audio
           ref={audioRef}
-          src={audioUrl || rawUrl}
           controlsList="nodownload"
+          onContextMenu={(e) => e.preventDefault()}
+          onError={useProtected ? stream.onAudioError : undefined}
           preload="none"
           className="hidden"
           onTimeUpdate={() => {

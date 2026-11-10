@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { useAuth } from '../context/AuthContext';
-import { getOfflineProductById, DEFAULT_PRODUCTS } from '../lib/offlineProductsService';
+import { getOfflineProductById, DEFAULT_PRODUCTS, PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 import { getSupabase } from '../lib/supabaseClient';
 import { AudioPlayerButton } from '../components/AudioPlayerButton';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
@@ -83,7 +83,7 @@ export default function AudioSessionPage() {
         const supabase = getSupabase();
         const { data, error } = await supabase
           .from('produkte')
-          .select('*')
+          .select(PRODUKT_COLUMNS)
           .or(`id.eq.${resolvedId},titel.ilike.%${id}%`)
           .limit(1)
           .maybeSingle();
@@ -309,15 +309,14 @@ export default function AudioSessionPage() {
           {hasFullAccess ? (
             <div className="pt-2">
               <AudioPlayerButton 
-                produkt={productData || { id: resolvedId, titel: title, audio_path: productData?.audio_path }}
-                getUrl={async () => productData?.audio_path || ''}
+                produkt={productData || { id: resolvedId, titel: title }}
               />
             </div>
           ) : (
             /* Wenn noch kein Vollzugriff: Hörproben-Player mit 25% / 60s Vorschau */
             <div className="space-y-4 pt-1">
               <HoerprobenPlayer 
-                produkt={productData || { id: resolvedId, titel: title, audio_path: productData?.audio_path, dauer: productData?.dauer }}
+                produkt={productData || { id: resolvedId, titel: title, dauer: productData?.dauer }}
                 variant="full"
                 autoPlay={searchParams.get('autoplay') === 'true' || searchParams.get('play') === 'true'}
                 enableFloatingPlayer={true}

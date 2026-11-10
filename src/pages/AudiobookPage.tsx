@@ -7,11 +7,10 @@ import {
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import { AudiobookPlayerModal, AudiobookChapter } from '../components/AudiobookPlayerModal';
-import { OfflineDownloadButton } from '../components/OfflineDownloadButton';
 import { useAuth } from '../context/AuthContext';
 import { getSupabase } from '../lib/supabaseClient';
 import { offlineManager } from '../lib/offlineAudioService';
-import { getOfflineProductById } from '../lib/offlineProductsService';
+import { getOfflineProductById, PRODUKT_COLUMNS } from '../lib/offlineProductsService';
 import { isKnownAdminEmail } from '../lib/adminSecurity';
 
 export interface FormattedAudiobookChapter extends AudiobookChapter {
@@ -345,7 +344,8 @@ export default function AudiobookPage() {
   }, [productData, productId, isPlayerOpen]);
 
   // 90 Sekunden Hörprobe (ab 1:19 Min. = 79 Sek.)
-  const SNIPPET_START_TIME = 79;
+  // Hörproben kommen nur noch aus der öffentlichen hoerprobe_url (eigener Schnitt, Start bei 0)
+  const SNIPPET_START_TIME = 0;
   const SNIPPET_DURATION = 90;
   const [isPlayingSnippet, setIsPlayingSnippet] = useState(false);
   const [snippetCurrentTime, setSnippetCurrentTime] = useState(79);
@@ -377,7 +377,7 @@ export default function AudiobookPage() {
       try {
         const supabase = getSupabase();
         const isDefaultSchmetterling = !productId || productId === 'fds_hoerbuch_schmetterling' || productId === 'schmetterling' || productId === 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte';
-        let query = supabase.from('produkte').select('*');
+        let query = supabase.from('produkte').select(PRODUKT_COLUMNS);
         if (!isDefaultSchmetterling) {
           query = query.eq('id', productId);
         } else {
@@ -466,7 +466,9 @@ export default function AudiobookPage() {
     : isMenschSein 
       ? 'Mut zum Echtsein | Was steckt hinter einem echten Menschen' 
       : 'Der Tag, an dem der Schmetterling erwachte');
-  const audioUrl = productData?.audio_path || productData?.audio_url || productData?.hoerprobe_url || '';
+  // Öffentliche Hörprobe (frei abspielbar). Die Vollversion läuft nur über das geschützte Streaming.
+  const snippetUrl: string = (typeof productData?.hoerprobe_url === 'string' && productData.hoerprobe_url.trim()) || '';
+  const streamProdukt = { id: productData?.id || productId || 'hoerbuch_der_tag_an_dem_der_schmetterling_erwachte', titel: productData?.titel, preis: productData?.preis };
   const priceDisplay = productData?.preis ? `${Number(productData.preis).toFixed(2).replace('.', ',')} €` : (isRauhnaechte ? '9,99 €' : '4,99 €');
 
   // Hörproben-Steuerung
@@ -564,11 +566,13 @@ export default function AudiobookPage() {
       />
 
       {/* Audio-Element für die 90s Hörprobe ab 1:19 Min. */}
-      {audioUrl && (
+      {snippetUrl && (
         <audio
           ref={snippetAudioRef}
-          src={audioUrl}
+          src={snippetUrl}
           preload="none"
+          controlsList="nodownload"
+          onContextMenu={(e) => e.preventDefault()}
           onTimeUpdate={() => {
             if (snippetAudioRef.current) {
               const cur = snippetAudioRef.current.currentTime;
@@ -686,11 +690,9 @@ export default function AudiobookPage() {
                 <>
                   <button
                     onClick={() => {
-                      if (!audioUrl) return;
                       setInitialChapterTime(hasListenedDisclaimer && savedProgressTime ? savedProgressTime : 0);
                       setIsPlayerOpen(true);
                     }}
-                    disabled={!audioUrl}
                     className="flex-1 py-3.5 px-6 rounded-2xl font-semibold transition-all shadow-md active:scale-95 flex flex-col items-center justify-center text-center min-h-[64px] bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white cursor-pointer hover:shadow-lg"
                   >
                     <div className="flex items-center gap-2 text-sm font-bold">
@@ -712,16 +714,6 @@ export default function AudiobookPage() {
                     </span>
                   </button>
 
-                  {audioUrl && (
-                    <div className="flex-1 min-h-[64px] flex flex-col justify-center">
-                      <OfflineDownloadButton
-                        productId={productData?.id || productId}
-                        audioUrl={audioUrl}
-                        title={title}
-                        variant="button"
-                      />
-                    </div>
-                  )}
                 </>
               ) : (
                 /* Fall 2: Produkt NOCH NICHT GEKAUFT -> Kauf-Button & 90s Hörprobe */
@@ -739,6 +731,7 @@ export default function AudiobookPage() {
                       </span>
                     </Link>
 
+                  {snippetUrl && (
                   <button
                     type="button"
                     onClick={togglePlaySnippet}
@@ -749,9 +742,10 @@ export default function AudiobookPage() {
                       <span>{isPlayingSnippet ? 'Hörprobe stoppen' : '90 Sek. Hörprobe'}</span>
                     </div>
                     <span className="text-[10px] text-[var(--text-muted)] font-normal mt-0.5">
-                      {isRauhnaechte ? 'Kapitel 1 (Auszug)' : 'Kapitel 1 (Auszug)'}
+                      Kapitel 1 (Auszug)
                     </span>
                   </button>
+                  )}
                 </>
               )}
             </div>
@@ -998,6 +992,7 @@ export default function AudiobookPage() {
                 <span>Jetzt für {priceDisplay} freischalten</span>
               </Link>
 
+              {snippetUrl && (
               <button
                 type="button"
                 onClick={() => {
@@ -1009,6 +1004,7 @@ export default function AudiobookPage() {
                 <Play size={13} className="fill-current" />
                 <span>Kostenlose 90 Sek. Hörprobe abspielen</span>
               </button>
+              )}
 
               <button
                 type="button"
@@ -1047,7 +1043,7 @@ export default function AudiobookPage() {
           title={title}
           author="Jacqueline Schmetzer"
           reader="Lisa Ragusa"
-          audioUrl={audioUrl}
+          streamProdukt={streamProdukt}
           coverImage={coverImage}
           durationSeconds={productData?.dauer || (isRauhnaechte ? 10740 : (isMenschSein ? 3519 : 3523))}
           chapters={chapters}
