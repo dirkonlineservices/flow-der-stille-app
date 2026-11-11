@@ -364,7 +364,7 @@ export default function RauhnaechtePreviewPage() {
                     Administrator-Zugang aktiv
                   </div>
                   <div className="text-xs text-amber-800/90 dark:text-amber-200/90">
-                    Du hast vollen Zugriff auf das komplette Hörbuch (2 Std. 58 Min.) mit allen 16 Kapitel-Sprungmarken.
+                    Du hast vollen Zugriff auf das komplette Hörbuch (2 Std. 59 Min.) mit allen 16 Kapitel-Sprungmarken.
                   </div>
                 </div>
               </div>
@@ -410,7 +410,7 @@ export default function RauhnaechtePreviewPage() {
                 </div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] text-xs text-[var(--text-main)] font-medium shadow-xs">
                   <Clock size={14} className="text-[var(--accent)]" />
-                  <span>2 Std. 58 Min. Gesamtdauer</span>
+                  <span>2 Std. 59 Min. Gesamtdauer</span>
                 </div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] text-xs text-[var(--text-main)] font-medium shadow-xs">
                   <Music size={14} className="text-[var(--accent)]" />
