@@ -411,6 +411,9 @@ export default function PremiumShopDashboard() {
     const title = prod.titel?.toLowerCase() || '';
     const kat = prod.kategorie?.toLowerCase() || '';
 
+    if (id.includes('rauhn') || title.includes('rauhn') || title.includes('yggdrasil')) {
+      return '/images/products/cover_rauhnaechte.jpg';
+    }
     if (id.includes('seele') || id.includes('wind') || title.includes('seele') || title.includes('wind')) {
       return '/images/products/cover_seele_wind.jpg';
     }
