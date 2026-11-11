@@ -516,31 +516,31 @@ export default function PremiumShopDashboard() {
     return matchesSearch && matchesCategory;
   });
 
+  // Formatiert eine Laufzeit (Sekunden oder "mm:ss" / "hh:mm:ss") inkl. Einheit.
+  // Ab 60 Minuten: "2 Std. 59 Min.", darunter: "17:48 Min."
   const formatDuration = (dauerStr: any) => {
     if (!dauerStr && dauerStr !== 0) return '';
     const str = String(dauerStr).trim();
+    let totalSeconds: number;
     if (str.includes(':')) {
-      const parts = str.split(':');
-      if (parts.length === 2) {
-        const min = parseInt(parts[0], 10);
-        const sec = parseInt(parts[1], 10);
-        return `${isNaN(min) ? 0 : min}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
-      }
-      if (parts.length === 3) {
-        const totalMin = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-        const sec = parseInt(parts[2], 10);
-        return `${isNaN(totalMin) ? 0 : totalMin}:${isNaN(sec) ? '00' : (sec < 10 ? '0' + sec : sec)}`;
-      }
-      return str;
+      const parts = str.split(':').map((p) => parseInt(p, 10) || 0);
+      if (parts.length === 2) totalSeconds = parts[0] * 60 + parts[1];
+      else if (parts.length === 3) totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+      else return str;
+    } else {
+      totalSeconds = parseInt(str.replace(/\D/g, ''), 10);
+      if (isNaN(totalSeconds)) return str;
     }
-    const totalSeconds = parseInt(str.replace(/\D/g, ''), 10);
-    if (isNaN(totalSeconds)) return str;
+
+    if (totalSeconds >= 3600) {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.round((totalSeconds % 3600) / 60);
+      return minutes > 0 ? `${hours}\u00A0Std. ${minutes}\u00A0Min.` : `${hours}\u00A0Std.`;
+    }
 
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    const formattedSec = seconds < 10 ? `0${seconds}` : `${seconds}`;
-
-    return `${minutes}:${formattedSec}`;
+    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}\u00A0Min.`;
   };
 
   const categories = [
@@ -892,7 +892,7 @@ export default function PremiumShopDashboard() {
                       className="mt-1"
                     />
                     {produkt.dauer && (
-                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)} Min.</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">⏱ {formatDuration(produkt.dauer)}</p>
                     )}
                   </div>
 
@@ -983,7 +983,7 @@ export default function PremiumShopDashboard() {
                 )}
                 {produkt.dauer && (
                   <span className="absolute bottom-3 right-3 text-xs font-semibold text-white/95 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-md">
-                    ⏱ {formatDuration(produkt.dauer)} Min.
+                    ⏱ {formatDuration(produkt.dauer)}
                   </span>
                 )}
               </div>
@@ -1245,7 +1245,7 @@ export default function PremiumShopDashboard() {
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-2xs active:scale-95 cursor-pointer"
                           >
                             <Sparkles size={13} />
-                            <span>Hörbuch-Player mit Kapiteln öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)} Min.` : 'Vollversion'}) →</span>
+                            <span>Hörbuch-Player mit Kapiteln öffnen ({produkt.dauer ? `${formatDuration(produkt.dauer)}` : 'Vollversion'}) →</span>
                           </Link>
                         </div>
                         <AudioPlayerButton 
