@@ -16,6 +16,9 @@ import {
 } from '../data/adventskalender';
 import { AdventskalenderPopupModal } from '../components/AdventskalenderPromo';
 import { AdventEmailReminder } from '../components/AdventEmailReminder';
+import { useAudioConsentGate } from '../components/AudioConsentModal';
+import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
+import { hasAcceptedAudioConsent } from '../lib/consentManager';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
 import { checkUserIsAdmin, isKnownAdminEmail } from '../lib/adminSecurity';
@@ -43,6 +46,10 @@ function isDayUnlockedByDate(dayNum: number): boolean {
 export const AdventskalenderPage: React.FC = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { hasAccepted: hasAcceptedDisclaimer, loading: disclaimerLoading } = useDisclaimerStatus();
+  const { gate: disclaimerGate, requestPlay: requestConsent } = useAudioConsentGate({
+    acceptLabel: 'Verstanden und Türchen öffnen'
+  });
 
   // Admin Status
   const [isAdminUser, setIsAdminUser] = useState<boolean>(() => {
@@ -142,6 +149,8 @@ export const AdventskalenderPage: React.FC = () => {
 
   // URL Deep-Link (?tag=6 oder ?popup=1)
   useEffect(() => {
+    // Erst prüfen, wenn der Haftungsausschluss-Status geladen ist (sonst doppeltes Modal)
+    if (disclaimerLoading) return;
     const tagParam = searchParams.get('tag');
     const popupParam = searchParams.get('popup');
 
@@ -151,8 +160,10 @@ export const AdventskalenderPage: React.FC = () => {
       if (found) {
         const canOpen = (isAdminUser && adminTimeBypass) || isDayUnlockedByDate(found.day);
         if (canOpen) {
-          setActiveDay(found);
-          markDayAsOpened(found.day);
+          withDisclaimer(found, () => {
+            setActiveDay(found);
+            markDayAsOpened(found.day);
+          });
         } else {
           setLockedNoticeDay(found);
         }
@@ -161,7 +172,8 @@ export const AdventskalenderPage: React.FC = () => {
     if (popupParam === '1' || popupParam === 'true') {
       setIsPopupOpen(true);
     }
-  }, [searchParams, isAdminUser, adminTimeBypass]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, isAdminUser, adminTimeBypass, disclaimerLoading]);
 
   const markDayAsOpened = (dayNum: number) => {
     setOpenedDays((prev) => {
@@ -174,6 +186,22 @@ export const AdventskalenderPage: React.FC = () => {
     });
   };
 
+  // Haftungsausschluss: muss vor dem ersten Türchen einmalig angehakt werden.
+  // Die Zustimmung wird in Supabase `user_consents` gespeichert (Gäste mit anonymer guest_session_id).
+  const needsDisclaimer = () => {
+    if (hasAcceptedAudioConsent()) return false;
+    if (user && hasAcceptedDisclaimer) return false;
+    return true;
+  };
+
+  const withDisclaimer = (day: AdventDay, open: () => void) => {
+    if (!needsDisclaimer()) {
+      open();
+      return;
+    }
+    requestConsent('meditation', `Adventskalender | Türchen ${day.day}`, open);
+  };
+
   const handleDoorClick = (day: AdventDay) => {
     const isUnlocked = (isAdminUser && adminTimeBypass) || isDayUnlockedByDate(day.day);
 
@@ -182,6 +210,10 @@ export const AdventskalenderPage: React.FC = () => {
       return;
     }
 
+    withDisclaimer(day, () => openDoor(day));
+  };
+
+  const openDoor = (day: AdventDay) => {
     setActiveDay(day);
     setLockedNoticeDay(null);
     setRaffleSuccess(null);
@@ -251,6 +283,9 @@ export const AdventskalenderPage: React.FC = () => {
         description="24 Tage Innehalten durch den Dezember. 100 % kostenfrei: 5 geführte Meditationen, 8× Altes Wissen zur Julzeit, 8× Achtsamkeit und 3× Rauhnacht-Hörbuch Verlosungen."
         canonical="https://flow-der-stille.de/adventskalender"
       />
+
+      {/* Haftungsausschluss-Modal (einmalig vor dem ersten Türchen) */}
+      {disclaimerGate}
 
       {/* Admin-Hinweis-Banner nur für Admins (mit Zeittest-Schalter) */}
       {isAdminUser && (

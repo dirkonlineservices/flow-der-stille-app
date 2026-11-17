@@ -42,7 +42,7 @@ const INITIAL: GateState = { open: false, category: 'sample', title: '', callbac
  * - `gate`        – das Modal als JSX-Element (immer im Tree rendern)
  * - `requestPlay` – vor jedem Audio-Start statt direktem audio.play() aufrufen
  */
-export function useAudioConsentGate() {
+export function useAudioConsentGate(options: { acceptLabel?: string } = {}) {
   const { user } = useAuth();
   const [state, setState] = useState<GateState>(INITIAL);
 
@@ -87,6 +87,7 @@ export function useAudioConsentGate() {
       isOpen={state.open}
       category={state.category}
       contentTitle={state.title}
+      acceptLabel={options.acceptLabel}
       onAccept={handleAccept}
       onClose={handleClose}
     />
@@ -101,6 +102,7 @@ interface ModalProps {
   isOpen: boolean;
   category: AudioCategory;
   contentTitle: string;
+  acceptLabel?: string;
   onAccept: () => void;
   onClose: () => void;
 }
@@ -112,7 +114,7 @@ const CATEGORY_LABELS: Record<AudioCategory, string> = {
   audiobook: 'Hörbuch',
 };
 
-function AudioConsentModal({ isOpen, category, contentTitle, onAccept, onClose }: ModalProps) {
+function AudioConsentModal({ isOpen, category, contentTitle, acceptLabel, onAccept, onClose }: ModalProps) {
   const [checked, setChecked] = useState(false);
 
   // Checkbox zurücksetzen wenn Modal neu öffnet
@@ -248,7 +250,7 @@ function AudioConsentModal({ isOpen, category, contentTitle, onAccept, onClose }
                 }}
               >
                 <Play size={16} fill="currentColor" stroke="none" />
-                Verstanden und Abspielen
+                {acceptLabel ?? 'Verstanden und Abspielen'}
               </button>
             </div>
           </motion.div>

@@ -64,7 +64,7 @@ export async function confirmAudioConsent(
   (async () => {
     try {
       const supabase = getSupabase();
-      await supabase.from('user_consents').insert({
+      const { error } = await supabase.from('user_consents').insert({
         user_id:             userId ?? null,
         guest_session_id:    userId ? null : guestId,
         content_category:    category,
@@ -72,6 +72,8 @@ export async function confirmAudioConsent(
         accepted_at:         timestamp,
         user_agent:          typeof navigator !== 'undefined' ? navigator.userAgent : null,
       });
+      // supabase-js wirft bei RLS- oder Schemafehlern nicht, sondern liefert `error` zurück
+      if (error) console.warn('[consentManager] Supabase insert rejected:', error.message);
     } catch (e) {
       console.warn('[consentManager] Supabase write failed (non-blocking):', e);
     }
