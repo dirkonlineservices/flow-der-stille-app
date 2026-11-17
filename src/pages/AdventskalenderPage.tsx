@@ -304,18 +304,58 @@ export const AdventskalenderPage: React.FC = () => {
 
           <div className="pt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#695C4D]">
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
-              100&nbsp;% kostenfreie Advents-Impulse
+              <CheckCircle2 className="w-4 h-4 text-[#4A563E]" />
+              100&nbsp;% kostenfrei
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
-              Täglich ein neuer Impuls zur Entschleunigung
+              <CheckCircle2 className="w-4 h-4 text-[#4A563E]" />
+              Ohne Anmeldung und ohne Konto
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8A9A8A]" />
+              <CheckCircle2 className="w-4 h-4 text-[#4A563E]" />
               3× Rauhnacht-Hörbuch-Verlosung
             </span>
           </div>
+
+          {/* ─── SO FUNKTIONIERT ES: FREI NUTZBAR, E-MAIL NUR FÜR DIE VERLOSUNG ─── */}
+          <div className="pt-4 sm:pt-6 max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
+            <div className="bg-white rounded-2xl border border-[#E3E1D9] p-4 sm:p-5 shadow-2xs">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="p-1.5 rounded-lg bg-emerald-100 text-emerald-900">
+                  <Unlock className="w-4 h-4" />
+                </span>
+                <h2 className="text-sm sm:text-base font-bold text-stone-950">
+                  Für alle frei nutzbar
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                Alle 24 Türchen mit Meditationen, Achtsamkeitsimpulsen und altem Wissen kannst du
+                einfach öffnen. Ohne Anmeldung, ohne Konto und ohne E-Mail-Adresse.
+              </p>
+            </div>
+
+            <div className="bg-[#FBF6EA] rounded-2xl border border-[#C8A96E]/50 p-4 sm:p-5 shadow-2xs">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="p-1.5 rounded-lg bg-[#C8A96E]/25 text-stone-950">
+                  <Gift className="w-4 h-4" />
+                </span>
+                <h2 className="text-sm sm:text-base font-bold text-stone-950">
+                  Nur für die Verlosung: deine E-Mail
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-stone-800 leading-relaxed">
+                Am 6., 13. und 21. Dezember verlosen wir das Rauhnacht-Hörbuch „Yggdrasils Atem“.
+                Wenn du mitmachen möchtest, trägst du dort deine E-Mail-Adresse ein. So können wir
+                dich im Gewinnfall benachrichtigen.
+              </p>
+            </div>
+          </div>
+
+          {!isAdminUser && new Date().getMonth() < 11 && (
+            <p className="pt-1 text-xs sm:text-sm font-semibold text-[#344034]">
+              Das erste Türchen öffnet sich am 1.&nbsp;Dezember. Du kannst dich jetzt schon umschauen.
+            </p>
+          )}
         </div>
       </section>
 
@@ -566,6 +606,11 @@ export const AdventskalenderPage: React.FC = () => {
                 question: 'Ist der Adventskalender wirklich komplett kostenfrei?',
                 answer:
                   'Ja, der gesamte Adventskalender ist zu 100 % kostenfrei. Es gibt kein verstecktes Abonnement und keine Kaufverpflichtung. Du kannst alle 24 Türchen, Meditationen und Übungen uneingeschränkt nutzen.'
+              },
+              {
+                question: 'Muss ich mich anmelden oder meine E-Mail-Adresse angeben?',
+                answer:
+                  'Nein. Den Adventskalender kannst du ohne Anmeldung, ohne Konto und ohne E-Mail-Adresse nutzen. Nur wenn du an einer der drei Verlosungen teilnehmen möchtest, brauchen wir deine E-Mail-Adresse, damit wir dich im Gewinnfall benachrichtigen können. Die tägliche E-Mail-Erinnerung ist ebenfalls freiwillig.'
               },
               {
                 question: 'Kann ich bereits vergangene Türchen nachholen?',
