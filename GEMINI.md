@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 17.11.2026, 12:15 Uhr (🎯 Canva Master-Ad & Audio-Sync: Einheitliche 5-Slide-Werbevorlage DAHbKuEPfRE in Canva erstellt; Google Drive Audios geprüft: 21 fertige MP3s mit Musik von Lisa + 3 Gewinnspiel-Tage)
+> - **Letzter Stand**: 17.11.2026, 12:25 Uhr (🎯 Canva Master-Ad Text-Optimierung: Ständige Wortwiederholungen „zur Ruhe kommen“ entfernt & durch abwechslungsreiche, emotionale Botschaften wie „Zeit zum Durchatmen“, „Chance sichern“ ersetzt)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
