@@ -3,7 +3,7 @@
 ## 0. SICHERHEITSBLOCK: GERÄTE-SYNCHRONISATION (MAC <-> WINDOWS)
 > ### 🔒 AKTUELLER SYNCHRONISATIONS-STATUS
 > - **Zuletzt bearbeiteter Rechner**: 🍏 Apple Mac (MacBook)
-> - **Letzter Stand**: 15.11.2026, 17:05 Uhr (🎯 Android & Web Sync: npm run build & npx cap sync android ausgeführt; Weltenbaum-Cover & 2 Std. 59 Min. Laufzeit im Android-Assets-Paket integriert)
+> - **Letzter Stand**: 17.11.2026, 12:15 Uhr (🎯 Canva Master-Ad & Audio-Sync: Einheitliche 5-Slide-Werbevorlage DAHbKuEPfRE in Canva erstellt; Google Drive Audios geprüft: 21 fertige MP3s mit Musik von Lisa + 3 Gewinnspiel-Tage)
 > - **Branch**: `main` (up to date mit origin/main)
 > - **Status**: 🚀 Großer Meilenstein erreicht! 
 >   1. **Version 1.0 ist LIVE im App Store**: [https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372](https://apps.apple.com/us/app/flow-der-stille-selbsthypnose/id6821544372) (Apple ID `6821544372`).
