@@ -17,7 +17,6 @@ import {
 import { AdventskalenderPopupModal } from '../components/AdventskalenderPromo';
 import { AdventEmailReminder } from '../components/AdventEmailReminder';
 import { useAudioConsentGate } from '../components/AudioConsentModal';
-import { useDisclaimerStatus } from '../hooks/useDisclaimerStatus';
 import { hasAcceptedAudioConsent } from '../lib/consentManager';
 import { subscribeToNewsletter } from '../lib/newsletterService';
 import { useAuth } from '../context/AuthContext';
@@ -46,7 +45,6 @@ function isDayUnlockedByDate(dayNum: number): boolean {
 export const AdventskalenderPage: React.FC = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { hasAccepted: hasAcceptedDisclaimer, loading: disclaimerLoading } = useDisclaimerStatus();
   const { gate: disclaimerGate, requestPlay: requestConsent } = useAudioConsentGate({
     acceptLabel: 'Verstanden und Türchen öffnen'
   });
@@ -149,8 +147,6 @@ export const AdventskalenderPage: React.FC = () => {
 
   // URL Deep-Link (?tag=6 oder ?popup=1)
   useEffect(() => {
-    // Erst prüfen, wenn der Haftungsausschluss-Status geladen ist (sonst doppeltes Modal)
-    if (disclaimerLoading) return;
     const tagParam = searchParams.get('tag');
     const popupParam = searchParams.get('popup');
 
@@ -173,7 +169,7 @@ export const AdventskalenderPage: React.FC = () => {
       setIsPopupOpen(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, isAdminUser, adminTimeBypass, disclaimerLoading]);
+  }, [searchParams, isAdminUser, adminTimeBypass]);
 
   const markDayAsOpened = (dayNum: number) => {
     setOpenedDays((prev) => {
@@ -186,16 +182,18 @@ export const AdventskalenderPage: React.FC = () => {
     });
   };
 
-  // Haftungsausschluss: muss vor dem ersten Türchen einmalig angehakt werden.
+  // Haftungsausschluss: nur bei Meditations-Türchen und nur für Gäste, einmalig pro Gerät.
+  // Angemeldete Nutzer haben ihn bei der Registrierung bereits angenommen.
   // Die Zustimmung wird in Supabase `user_consents` gespeichert (Gäste mit anonymer guest_session_id).
-  const needsDisclaimer = () => {
+  const needsDisclaimer = (day: AdventDay) => {
+    if (day.category !== 'meditation') return false;
+    if (user) return false;
     if (hasAcceptedAudioConsent()) return false;
-    if (user && hasAcceptedDisclaimer) return false;
     return true;
   };
 
   const withDisclaimer = (day: AdventDay, open: () => void) => {
-    if (!needsDisclaimer()) {
+    if (!needsDisclaimer(day)) {
       open();
       return;
     }
