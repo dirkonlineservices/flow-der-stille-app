@@ -526,7 +526,7 @@ export default function MeditationLanding() {
             {
               id: 3,
               q: 'Kann ich die Meditationen auch in der App anhören?',
-              a: 'Ja! Du kannst alle Meditationen sowohl hier im Web als auch in unserer Flow der Stille Android-App nutzen. In der App stehen dir zusätzlich Offline-Speicherung und Schlaf-Timer zur Verfügung.'
+              a: 'Ja! Du kannst alle Meditationen sowohl hier im Web als auch in unserer Flow der Stille App für iPhone und Android nutzen. In der App stehen dir zusätzlich Offline-Speicherung und Schlaf-Timer zur Verfügung.'
             },
             {
               id: 4,

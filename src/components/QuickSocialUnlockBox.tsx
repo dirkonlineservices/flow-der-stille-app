@@ -261,7 +261,7 @@ export default function QuickSocialUnlockBox({
         </p>
       </div>
 
-      {/* Klassischer E-Mail Registrierungs-Link & Android App */}
+      {/* Klassischer E-Mail Registrierungs-Link und App */}
       <div className="mt-2.5 pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-xs">
         <Link
           to={`/registrieren?redirectTo=${encodeURIComponent(targetPath)}`}
@@ -278,7 +278,7 @@ export default function QuickSocialUnlockBox({
             className="text-[10px] font-mono text-emerald-800 hover:underline inline-flex items-center gap-1 font-semibold"
           >
             <Smartphone size={11} />
-            <span>Android App laden</span>
+            <span>App für iPhone und Android</span>
           </Link>
         )}
       </div>

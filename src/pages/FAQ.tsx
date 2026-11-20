@@ -64,7 +64,7 @@ const faqData: FAQItem[] = [
   {
     category: "Plattform- & App-Nutzung",
     question: "Wie nutze ich Flow der Stille auf dem Smartphone und im Browser?",
-    answer: "Flow der Stille steht dir sowohl als eigenständige Android-App im Google Play Store als auch als moderne Web-App unter https://flow-der-stille.de zur Verfügung. Du kannst dich auf jedem Gerät mit deinem Account anmelden."
+    answer: "Flow der Stille steht dir als kostenlose App für iPhone und iPad im Apple App Store, als Android-App im Google Play Store und als Web-App unter https://flow-der-stille.de zur Verfügung. Du kannst dich auf jedem Gerät mit deinem Account anmelden."
   },
   {
     category: "Plattform- & App-Nutzung",
@@ -85,8 +85,8 @@ const faqData: FAQItem[] = [
   // 3. Kauf, Abwicklung & Support
   {
     category: "Kauf & Abwicklung",
-    question: "Wie funktioniert der Kauf über Google Play und PayPal?",
-    answer: "In der Android-App erfolgen Käufe sicher und bequem über Google Play In-App-Käufe. Auf unserer Webseite kannst du deinen Kauf direkt über PayPal abwickeln. Nach erfolgreichem Abschluss schaltet sich dein Inhalt augenblicklich in deinem Account frei."
+    question: "Wie funktioniert der Kauf über App Store, Google Play und PayPal?",
+    answer: "In der iPhone-App erfolgen Käufe sicher über den Apple App Store, in der Android-App über Google Play In-App-Käufe. Auf unserer Webseite kannst du deinen Kauf direkt über PayPal abwickeln. Nach erfolgreichem Abschluss schaltet sich dein Inhalt augenblicklich in deinem Account frei."
   },
   {
     category: "Kauf & Abwicklung",

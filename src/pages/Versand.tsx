@@ -135,6 +135,7 @@ export default function Versand() {
           <ul className="list-disc list-inside pl-2 space-y-1 text-sm">
             <li><strong>PayPal</strong> (inkl. PayPal Guthaben, Lastschrift, Kreditkarte)</li>
             <li><strong>Kreditkarte / Debitkarte</strong> (Visa, Mastercard, American Express via PayPal Checkout)</li>
+            <li><strong>Apple App Store In-App-Kauf</strong> (beim Kauf über die iPhone-App)</li>
             <li><strong>Google Play In-App-Kauf</strong> (beim Kauf über die Android-App)</li>
             <li><strong>Kostenfreie Anwendungen:</strong> 0,00 € Sofort-Freischaltung ohne Bezahldaten</li>
           </ul>

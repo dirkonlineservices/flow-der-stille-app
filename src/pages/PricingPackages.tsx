@@ -245,7 +245,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-950">Geräteübergreifendes Streaming:</strong> Im Web-Player und in der kostenlosen Android App nahtlos weiterhören</span>
+                  <span><strong className="text-stone-950">Geräteübergreifendes Streaming:</strong> Im Web-Player und in der kostenlosen App für iPhone und Android nahtlos weiterhören</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
@@ -365,7 +365,7 @@ export default function PricingPackages() {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Check size={16} className="text-emerald-700 shrink-0 mt-0.5" />
-                  <span><strong className="text-stone-950">Web- und App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen Android App streamen</span>
+                  <span><strong className="text-stone-950">Web- und App-Streaming inklusive:</strong> Direkt im Web-Player oder in der kostenlosen App für iPhone und Android streamen</span>
                 </li>
               </ul>
             </div>
@@ -448,7 +448,7 @@ export default function PricingPackages() {
                   <td className="p-4 sm:p-5 text-center font-bold text-amber-800 dark:text-amber-300"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /> Per E-Mail nach Kauf</td>
                 </tr>
                 <tr>
-                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming (Web und Android App)</td>
+                  <td className="p-4 sm:p-5 font-semibold text-stone-900 dark:text-stone-100">Geräteübergreifendes Streaming (Web, iPhone und Android)</td>
                   <td className="p-4 sm:p-5 text-center"><X className="inline text-rose-700 dark:text-rose-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center bg-emerald-500/5"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>
                   <td className="p-4 sm:p-5 text-center"><Check className="inline text-emerald-700 dark:text-emerald-400" size={18} /></td>

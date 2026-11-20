@@ -1,11 +1,12 @@
 /**
- * AppDownload.tsx – Dedicated landing page for the Flow der Stille Android App.
+ * AppDownload.tsx – Dedicated landing page for the Flow der Stille apps (iOS and Android).
  */
 
 import React from 'react';
 import { motion } from 'motion/react';
 import { Smartphone, Download, ShieldCheck, Zap, Sparkles, CheckCircle2, Headphones, Bell } from 'lucide-react';
 import SEO from '../components/SEO';
+import { StoreBadges } from '../components/StoreBadges';
 
 export function GooglePlayIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -19,70 +20,50 @@ export function GooglePlayIcon({ className = "w-5 h-5" }: { className?: string }
 }
 
 export default function AppDownload() {
-  const playStoreUrl = "https://play.google.com/store/apps/details?id=app.flowderstille.de";
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(playStoreUrl)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://flow-der-stille.de/app')}`;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <SEO 
-        title="Flow der Stille App – Android App im Google Play Store" 
-        description="Lade die offizielle Flow der Stille Android App herunter. Achtsamkeit, Atemübungen & Meditationen direkt auf deinem Smartphone."
+      <SEO
+        title="Flow der Stille App für iPhone und Android | App Store und Google Play"
+        description="Lade die kostenlose Flow der Stille App für iPhone, iPad und Android. Meditation, Selbsthypnose und Atemübungen als Streaming, ohne Abo."
       />
 
       <header className="text-center space-y-3">
-        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-[var(--color-accent-primary)]/15 text-[var(--color-accent-primary)] inline-flex items-center gap-1.5">
-          <Smartphone size={14} /> Offizielle Android App
+        <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-emerald-800/10 text-emerald-900 inline-flex items-center gap-1.5">
+          <Smartphone size={14} /> Neu im Apple App Store
         </span>
-        <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-[var(--color-text-main)]">
+        <h1 className="text-3xl sm:text-5xl font-serif font-semibold text-stone-950">
           Flow der Stille auf deinem Smartphone
         </h1>
-        <p className="text-[var(--color-text-muted)] text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-          Nimm deine täglichen Atempausen, Entspannungsübungen und Meditationen überall hin mit.
+        <p className="text-stone-700 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+          Wenn du magst, nimm deine Atempausen, Entspannungsübungen und Meditationen überall mit hin. Jetzt auch auf dem iPhone.
         </p>
       </header>
 
-      {/* Haupt-Download-Box */}
-      <motion.div 
+      {/* Main download box */}
+      <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-[var(--color-bg-card)] border border-[var(--color-border-main)] rounded-3xl p-6 sm:p-10 shadow-md text-center space-y-6"
       >
-        <h2 className="text-xl sm:text-2xl font-serif font-semibold text-[var(--color-text-main)]">
-          Jetzt bei Google Play herunterladen
+        <h2 className="text-xl sm:text-2xl font-serif font-semibold text-stone-950">
+          Kostenlos für iPhone und Android
         </h2>
-        <p className="text-xs sm:text-sm text-[var(--color-text-muted)] max-w-md mx-auto">
-          Kostenlos im Google Play Store verfügbar. Kompatibel mit allen Android-Smartphones und Tablets.
+        <p className="text-xs sm:text-sm text-stone-700 max-w-md mx-auto">
+          Im Apple App Store für iPhone und iPad. Bei Google Play für alle Android-Smartphones und Tablets. Dein Konto und deine Käufe nutzt du auf allen Geräten.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-2">
-          {/* Direct Play Store Link */}
           <div className="flex flex-col items-center gap-3">
-            <a 
-              href={playStoreUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:scale-105 transition-transform shrink-0"
-            >
-              <img 
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png" 
-                alt="Jetzt bei Google Play" 
-                width="220" 
-                className="h-16 w-auto object-contain"
-              />
-            </a>
-            <span className="text-xs text-[var(--color-text-muted)]">Für Smartphone-Nutzer</span>
+            <StoreBadges source="app_landing_page" size="lg" className="flex-col sm:flex-row" />
+            <span className="text-xs text-stone-700">Kostenlos | Kein Abo | Einmalkäufe ab 1,99&nbsp;€</span>
           </div>
 
-          {/* QR Code für Desktop */}
-          <div className="hidden sm:flex flex-col items-center gap-2 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-[var(--color-border-main)] shadow-xs">
-            <img 
-              src={qrCodeUrl} 
-              alt="QR Code zum Play Store" 
-              width="150" 
-              height="150" 
-              className="rounded-xl"
-            />
-            <span className="text-[11px] font-medium text-[var(--color-text-muted)]">Mit der Handykamera scannen</span>
+          {/* QR code for desktop: opens this page on the phone, which shows both stores */}
+          <div className="hidden sm:flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-[var(--color-border-main)] shadow-xs">
+            <img src={qrCodeUrl} alt="QR-Code zur App-Seite" width="150" height="150" className="rounded-xl" />
+            <span className="text-[11px] font-medium text-stone-700">Mit der Handykamera scannen</span>
           </div>
         </div>
       </motion.div>
@@ -124,7 +105,7 @@ export default function AppDownload() {
             <Sparkles size={20} />
           </div>
           <div>
-            <h3 className="font-semibold text-sm text-[var(--color-text-main)] mb-1">Morgen- & Abendrituale</h3>
+            <h3 className="font-semibold text-sm text-[var(--color-text-main)] mb-1">Morgen- und Abendrituale</h3>
             <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">Gezielte Übungen zur Aktivierung des Vagusnervs für deinen Alltag.</p>
           </div>
         </div>

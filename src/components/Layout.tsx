@@ -5,7 +5,7 @@ import {
   Home, Wind, Utensils, BookOpen, ShoppingBag, X, Menu, 
   Moon, Sun, Settings as SettingsIcon, LogIn, UserCheck, 
   Info, Shield, FileText, Scale, Headphones, HelpCircle,
-  ShieldCheck, Gift, User
+  ShieldCheck, Gift, User, Smartphone
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -144,9 +144,9 @@ export default function Layout() {
           <Link
             to="/app"
             className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)] text-[var(--text-main)] text-xs font-semibold hover:border-[var(--accent)] hover:bg-[var(--bg-alt)] transition-all shadow-xs cursor-pointer"
-            title="Flow der Stille Android App Seite öffnen"
+            title="Flow der Stille App für iPhone und Android"
           >
-            <GooglePlayIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <Smartphone size={15} className="shrink-0 text-emerald-900" />
             <span className="font-medium">App</span>
           </Link>
         )}
@@ -184,10 +184,10 @@ export default function Layout() {
             <Link
               to="/app"
               className="inline-flex items-center justify-center p-1.5 rounded-full bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-700 hover:text-stone-950 transition-colors cursor-pointer"
-              title="Android App"
-              aria-label="Android App herunterladen"
+              title="App für iPhone und Android"
+              aria-label="App für iPhone und Android herunterladen"
             >
-              <GooglePlayIcon className="w-3.5 h-3.5" />
+              <Smartphone size={14} />
             </Link>
           )}
         </div>
@@ -255,7 +255,7 @@ export default function Layout() {
         </main>
       </div>
 
-      {/* Kompakt-Banner für Android App (Nicht auf /premium oder /app Unterseiten) */}
+      {/* Kompakt-Banner für die Apps (iOS und Android) (Nicht auf /premium oder /app Unterseiten) */}
       {!isNativeApp && !isPremiumOrAppPage && (
         <div className="px-4 md:px-8">
           <AppDownloadBanner />
@@ -268,7 +268,7 @@ export default function Layout() {
           { to: '/contact', label: 'Kontakt', isButton: true },
           { to: '/adventskalender', label: '🎄 Adventskalender' },
           { to: '/klangproben', label: 'Klangproben' },
-          { to: '/app', label: 'Android App' },
+          { to: '/app', label: 'App für iPhone und Android' },
           { to: '/faq', label: 'FAQ' },
           { to: '/impressum', label: 'Impressum' },
           { to: '/datenschutz', label: 'Datenschutz' },

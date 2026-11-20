@@ -13,6 +13,7 @@ import { getSupabase } from '../lib/supabaseClient';
 import { AudioPlayerButton } from '../components/AudioPlayerButton';
 import { HoerprobenPlayer } from '../components/HoerprobenPlayer';
 import QuickSocialUnlockBox from '../components/QuickSocialUnlockBox';
+import { StoreBadges } from '../components/StoreBadges';
 import AudioDisclaimerNotice from '../components/AudioDisclaimerNotice';
 import { offlineManager } from '../lib/offlineAudioService';
 import { trackMetaViewContent } from '../lib/metaPixel';
@@ -467,7 +468,7 @@ export default function AudioSessionPage() {
                 <span>4. Flugmodus und dunkles Display</span>
               </div>
               <p className="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Schalte dein Smartphone vor dem Einschlafen in den Flugmodus. In unserer Android-App kannst du das Audio vorab offline speichern und bei gesperrtem, dunklem Display anhören, ganz ohne Strahlung.
+                Schalte dein Smartphone vor dem Einschlafen in den Flugmodus. In unserer App für iPhone und Android kannst du das Audio vorab offline speichern und bei gesperrtem, dunklem Display anhören, ganz ohne Strahlung.
               </p>
             </div>
           </div>
@@ -490,22 +491,14 @@ export default function AudioSessionPage() {
               <span>Offline-Hören im Flugmodus</span>
             </div>
             <h4 className="font-serif font-bold text-xl text-[var(--text-main)]">
-              Hol dir die Flow der Stille Android-App
+              Hol dir die Flow der Stille App für iPhone und Android
             </h4>
             <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-lg">
               Speichere diese Session mit einem Klick in der App, schalte nachts den Flugmodus ein und lausche ohne störendes Display oder Strahlung am Bett.
             </p>
           </div>
 
-          <a
-            href="https://play.google.com/store/apps/details?id=app.flowderstille.de"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer shrink-0"
-          >
-            <span>Im Google Play Store laden</span>
-            <ArrowLeft size={14} className="rotate-180" />
-          </a>
+          <StoreBadges source="audio_session_page" className="shrink-0" />
         </div>
       </div>
     </div>

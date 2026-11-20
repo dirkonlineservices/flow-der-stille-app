@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Star } from 'lucide-react';
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=app.flowderstille.de';
+import { detectMobilePlatform, getStoreUrlForDevice, trackAppDownloadClick } from '../lib/appStoreLinks';
 
 export default function SmartAppBanner() {
   // 🚀 Synchron initialisieren: Verhindert, dass der Banner 100ms nach Render den gesamten Inhalt herunterschiebt (CLS)
@@ -17,14 +17,11 @@ export default function SmartAppBanner() {
     sessionStorage.setItem('fds_smart_banner_dismissed', 'true');
   };
 
+  const isIOS = detectMobilePlatform() === 'ios';
+  const storeUrl = getStoreUrlForDevice();
+
   const handleDownloadClick = () => {
-    if (typeof window !== 'undefined' && (window as any).dataLayer) {
-      (window as any).dataLayer.push({
-        event: 'app_download_click',
-        source: 'smart_app_banner',
-        destination: 'google_play_store'
-      });
-    }
+    trackAppDownloadClick('smart_app_banner', isIOS ? 'app_store' : 'google_play_store');
   };
 
   if (!isVisible) return null;
@@ -56,7 +53,7 @@ export default function SmartAppBanner() {
         <div className="min-w-0 flex-1">
           <div className="font-bold text-xs sm:text-sm truncate leading-tight flex items-center gap-2">
             <span>Flow der Stille: Innere Ruhe</span>
-            <span className="text-[10px] bg-emerald-600/15 text-emerald-700 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-full hidden sm:inline">Android App</span>
+            <span className="text-[10px] bg-emerald-600/15 text-emerald-700 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-full hidden sm:inline">{isIOS ? 'iPhone App' : 'App'}</span>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-xs text-[var(--text-muted)] mt-0.5">
             <div className="flex items-center text-amber-500 shrink-0">
@@ -64,16 +61,14 @@ export default function SmartAppBanner() {
               <span className="ml-0.5 font-bold text-[10px]">5.0</span>
             </div>
             <span>•</span>
-            <span className="font-medium text-[var(--text-main)]">Android App jetzt herunterladen</span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline opacity-75">(iOS folgt im nächsten Monat)</span>
+            <span className="font-medium text-[var(--text-main)]">Kostenlos für iPhone und Android</span>
           </div>
         </div>
       </div>
 
       {/* Download Action Button */}
       <a
-        href={PLAY_STORE_URL}
+        href={storeUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleDownloadClick}

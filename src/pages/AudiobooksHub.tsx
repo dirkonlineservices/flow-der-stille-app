@@ -839,7 +839,7 @@ export default function AudiobooksHub() {
             {
               id: 2,
               q: 'Funktioniert das Hörbuch auch ohne Internetverbindung?',
-              a: 'Ja! In der Flow der Stille Android-App kannst du das Hörbuch mit einem Klick im geschützten App-Speicher hinterlegen. So steht es dir auch im Flugmodus oder bei ausgeschaltetem WLAN unterbrechungsfrei zur Verfügung.'
+              a: 'Ja! In der Flow der Stille App für iPhone und Android kannst du das Hörbuch mit einem Klick im geschützten App-Speicher hinterlegen. So steht es dir auch im Flugmodus oder bei ausgeschaltetem WLAN unterbrechungsfrei zur Verfügung.'
             },
             {
               id: 3,
