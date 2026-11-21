@@ -63,7 +63,7 @@ SET search_path = public
 AS $$
 DECLARE
   v_email text := lower(trim(p_email));
-  v_token text := gen_random_uuid()::text;
+  v_token uuid := gen_random_uuid();  -- confirm_token ist vom Typ uuid
   v_status text;
 BEGIN
   IF v_email IS NULL OR v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' THEN
@@ -89,7 +89,7 @@ BEGIN
      WHERE email = v_email;
   END IF;
 
-  RETURN v_token;
+  RETURN v_token::text;
 END;
 $$;
 
@@ -113,7 +113,7 @@ BEGIN
          confirm_token = NULL,
          updated_at = now()
    WHERE email = lower(trim(p_email))
-     AND confirm_token = p_token;
+     AND confirm_token::text = p_token;
 
   GET DIAGNOSTICS v_rows = ROW_COUNT;
   RETURN v_rows > 0;
