@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, CheckCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
-import { subscribeToNewsletter } from '../lib/newsletterService';
+import { subscribeToNewsletter, requestNewsletterDoi } from '../lib/newsletterService';
 import SEO from '../components/SEO';
 import { checkConsentForAuth } from '../components/CookieBanner';
 import { Capacitor } from '@capacitor/core';
@@ -133,22 +133,19 @@ export default function Register() {
 
       // 2. Newsletter Logik isoliert ausführen (Nur wenn Checkbox aktiv ist)
       if (newsletter) {
-        const confirmToken = typeof crypto !== 'undefined' && crypto.randomUUID
-          ? crypto.randomUUID()
-          : 'doi_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+        // A: Anmeldung serverseitig anlegen (newsletter_request_doi), Token für die Mail
+        let confirmToken: string | null = null;
+        let dbError: { message: string } | null = null;
+        try {
+          confirmToken = await requestNewsletterDoi(
+            normalizedEmail,
+            isNative ? 'app_registration' : 'registration_form'
+          );
+        } catch (err: any) {
+          dbError = { message: err?.message || 'Newsletter-Anmeldung fehlgeschlagen' };
+        }
 
-        // A: Insert in die Datenbank (newsletter_leads)
-        const { error: dbError } = await supabase
-          .from('newsletter_leads')
-          .insert({
-            email: normalizedEmail,
-            status: 'pending_doi',
-            confirm_token: confirmToken,
-            source: isNative ? 'app_registration' : 'registration_form',
-            updated_at: new Date().toISOString()
-          });
-
-        if (!dbError) {
+        if (!dbError && confirmToken) {
           // B: Edge Function für DOI Mail aufrufen
           const { error: edgeError } = await supabase.functions.invoke('send-double-opt-in-email', {
             body: { 

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CheckCircle2, Sparkles, Mail, Heart, ArrowRight, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
-import { getSupabase, normalizeEmail } from '../lib/supabaseClient';
+import { normalizeEmail } from '../lib/supabaseClient';
+import { confirmNewsletter } from '../lib/newsletterService';
 import { reportCriticalError } from '../lib/errorLogger';
 import SEO from '../components/SEO';
 
@@ -33,36 +34,25 @@ export default function NewsletterConfirmation() {
 
     const normalized = normalizeEmail(email);
     const nowIso = new Date().toISOString();
-    const supabase = getSupabase();
-
-    // 1. Write / Update in Supabase newsletter_leads setting status = 'confirmed'
+    // 1. Bestätigen: nur mit dem Token aus der Bestätigungs-Mail
+    let ok = false;
     try {
-      const { error: supabaseErr } = await supabase
-        .from('newsletter_leads')
-        .upsert({
-          email: normalized,
-          status: 'confirmed',
-          confirm_token: null, // token removed upon confirmation
-          confirmed_at: nowIso,
-          updated_at: nowIso,
-          source: 'landing_page_confirmation'
-        }, { onConflict: 'email' });
-
-      if (supabaseErr) {
-        console.warn('Supabase confirmation warning:', supabaseErr.message);
-        await reportCriticalError({
-          context: 'Newsletter Bestätigung (Supabase)',
-          error: supabaseErr,
-          userEmail: normalized
-        });
-      }
+      ok = await confirmNewsletter(normalized, urlToken);
     } catch (err) {
-      console.warn('Supabase confirmation caught exception:', err);
+      console.warn('Newsletter-Bestätigung fehlgeschlagen:', err);
       await reportCriticalError({
-        context: 'Newsletter Bestätigung Ausnahme',
+        context: 'Newsletter Bestätigung',
         error: err,
         userEmail: normalized
       });
+    }
+
+    if (!ok) {
+      setLoading(false);
+      setErrorMessage(
+        'Dieser Bestätigungslink ist ungültig oder wurde bereits verwendet. Wenn du magst, melde dich einfach noch einmal für den Newsletter an.'
+      );
+      return;
     }
 
     // 2. Also notify backend API (SQLite)

@@ -12,7 +12,6 @@ import { BillingService } from '../lib/billing';
 import { hasResolvedCookieConsent } from '../lib/tracking';
 
 const POPUP_STORAGE_KEY = 'fds_adventskalender_popup_seen_2026_v1';
-const WEB_CALENDAR_URL = 'https://flow-der-stille.de/adventskalender';
 
 interface AdventskalenderPopupModalProps {
   isOpen: boolean;
@@ -84,13 +83,6 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
     }
   };
 
-  const openInExternalBrowser = () => {
-    onClose();
-    if (typeof window !== 'undefined') {
-      window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer');
-    }
-  };
-
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in duration-200 select-none overscroll-contain"
@@ -127,22 +119,6 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
           Ein ruhiger Begleiter durch den Dezember. Vom Ankommen im Stillstand der Natur über die Wintersonnenwende bis zur Schwelle der heiligen Rauhnächte öffnet sich Tag für Tag ein neuer Impuls.
         </p>
 
-        {/* Plattformweiche-Hinweis für App-Nutzer */}
-        {isNativeApp && (
-          <div className="mb-3 p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-amber-500/10 border border-emerald-600/30 flex items-start gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-800 text-white flex items-center justify-center shrink-0">
-              <Smartphone size={16} />
-            </div>
-            <div className="text-xs">
-              <span className="font-bold text-stone-950 block mb-0.5">
-                Interaktive Web-Erfahrung
-              </span>
-              <span className="text-stone-700 leading-relaxed font-normal">
-                Das 24-Türchen-Erlebnis mit täglicher Entriegelung und Hörbuch-Verlosungen läuft im mobilen Browser. Du kannst den Kalender mit einem Klick öffnen.
-              </span>
-            </div>
-          </div>
-        )}
 
         {/* Die 4 Säulen kompakt */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3.5">
@@ -229,27 +205,15 @@ export const AdventskalenderPopupModal: React.FC<AdventskalenderPopupModalProps>
 
         {/* Plattform-Aktions-Buttons */}
         <div className="flex flex-col sm:flex-row gap-2">
-          {isNativeApp ? (
-            <button
-              type="button"
-              onClick={openInExternalBrowser}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm text-center transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-            >
-              <ExternalLink size={15} />
-              <span>Im Browser öffnen (24 Türchen)</span>
-              <ArrowRight size={15} />
-            </button>
-          ) : (
-            <Link
-              to="/adventskalender"
-              onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm text-center transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-            >
-              <Calendar size={15} />
-              <span>Zu den 24 Türchen</span>
-              <ArrowRight size={15} />
-            </Link>
-          )}
+          <Link
+            to="/adventskalender"
+            onClick={onClose}
+            className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm text-center transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+          >
+            <Calendar size={15} />
+            <span>Zu den 24 Türchen</span>
+            <ArrowRight size={15} />
+          </Link>
 
           <button
             onClick={onClose}
@@ -355,38 +319,20 @@ export const AdventskalenderHomeSection: React.FC = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
-              {isNativeApp ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    try {
-                      localStorage.setItem('hasVisitedAdventskalender', 'true');
-                      localStorage.setItem('fds_advent_visited', 'true');
-                    } catch {}
-                    window.open(WEB_CALENDAR_URL, '_blank', 'noopener,noreferrer');
-                  }}
-                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-center"
-                >
-                  <ExternalLink size={16} />
-                  <span>Im Browser öffnen</span>
-                  <ArrowRight size={16} />
-                </button>
-              ) : (
-                <Link
-                  to="/adventskalender"
-                  onClick={() => {
-                    try {
-                      localStorage.setItem('hasVisitedAdventskalender', 'true');
-                      localStorage.setItem('fds_advent_visited', 'true');
-                    } catch {}
-                  }}
-                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-center"
-                >
-                  <Calendar size={16} />
-                  <span>Zum 24-Türchen-Kalender</span>
-                  <ArrowRight size={16} />
-                </Link>
-              )}
+              <Link
+                to="/adventskalender"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('hasVisitedAdventskalender', 'true');
+                    localStorage.setItem('fds_advent_visited', 'true');
+                  } catch {}
+                }}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-center"
+              >
+                <Calendar size={16} />
+                <span>Zum 24-Türchen-Kalender</span>
+                <ArrowRight size={16} />
+              </Link>
 
               <button
                 onClick={() => setIsPopupOpen(true)}

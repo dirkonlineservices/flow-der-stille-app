@@ -11,9 +11,14 @@ import SEO from '../components/SEO';
 import {
   ADVENT_DAYS,
   ADVENT_PILLARS,
+  ADVENT_AUDIO_DAYS,
+  ADVENT_AUDIO_LABELS,
   AdventCategory,
   AdventDay
 } from '../data/adventskalender';
+import { AdventAudioPlayer } from '../components/AdventAudioPlayer';
+import { teilnehmenAmGewinnspiel } from '../lib/gewinnspielService';
+import { getAdventAudioUrl } from '../config/audio';
 import { AdventskalenderPopupModal } from '../components/AdventskalenderPromo';
 import { AdventEmailReminder } from '../components/AdventEmailReminder';
 import { useAudioConsentGate } from '../components/AudioConsentModal';
@@ -93,6 +98,8 @@ export const AdventskalenderPage: React.FC = () => {
   const [raffleEmail, setRaffleEmail] = useState(user?.email || '');
   const [raffleSubmitting, setRaffleSubmitting] = useState(false);
   const [raffleSuccess, setRaffleSuccess] = useState<string | null>(null);
+  const [raffleError, setRaffleError] = useState<string | null>(null);
+  const [raffleNewsletter, setRaffleNewsletter] = useState(false);
 
   // FAQ Akkordeon State
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -237,20 +244,35 @@ export const AdventskalenderPage: React.FC = () => {
       return;
     }
     setRaffleSubmitting(true);
-    try {
-      await subscribeToNewsletter({
-        email: raffleEmail.trim(),
-        userId: user?.id,
-        source: `adventskalender_gewinnspiel_tag_${activeDay?.day || 0}`
-      });
+    setRaffleError(null);
+    const ergebnis = await teilnehmenAmGewinnspiel(activeDay?.day || 0, raffleEmail.trim(), raffleAnswer.trim());
+
+    if (ergebnis === 'ok' || ergebnis === 'bereits_teilgenommen') {
+      // Newsletter nur mit eigener, freiwilliger Einwilligung (nicht an die Teilnahme gekoppelt)
+      if (raffleNewsletter) {
+        try {
+          await subscribeToNewsletter({
+            email: raffleEmail.trim(),
+            userId: user?.id,
+            source: `adventskalender_gewinnspiel_tag_${activeDay?.day || 0}`
+          });
+        } catch {
+          // Teilnahme bleibt davon unberührt
+        }
+      }
       setRaffleSuccess(
-        'Dein Impuls wurde gespeichert und du bist für die Verlosung des Rauhnacht-Hörbuchs eingetragen! Bitte bestätige falls nötig noch kurz deine E-Mail-Adresse.'
+        ergebnis === 'ok'
+          ? `Danke für deinen Impuls. Du bist für die Verlosung eingetragen.${raffleNewsletter ? ' Für den Newsletter bekommst du noch eine Mail zur Bestätigung.' : ''}`
+          : 'Du bist für diese Verlosung bereits eingetragen. Danke, dass du dabei bist.'
       );
-    } catch {
-      setRaffleSuccess('Vielen Dank für deinen Impuls! Du nimmst an der Verlosung teil.');
-    } finally {
-      setRaffleSubmitting(false);
+    } else if (ergebnis === 'nicht_offen') {
+      setRaffleError('Die Teilnahme ist nur am Tag der Verlosung möglich. Schau gern zur passenden Zeit wieder vorbei.');
+    } else if (ergebnis === 'ungueltig') {
+      setRaffleError('Bitte prüfe deine E-Mail-Adresse.');
+    } else {
+      setRaffleError('Die Teilnahme hat gerade nicht geklappt. Bitte versuche es gleich noch einmal.');
     }
+    setRaffleSubmitting(false);
   };
 
   const navigateDay = (direction: 'prev' | 'next') => {
@@ -796,6 +818,14 @@ export const AdventskalenderPage: React.FC = () => {
 
             {/* Modal Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-[#3D3B35]">
+              {ADVENT_AUDIO_DAYS.includes(activeDay.day) && (
+                <AdventAudioPlayer
+                  src={getAdventAudioUrl(activeDay.day)}
+                  label={ADVENT_AUDIO_LABELS[activeDay.category]}
+                  title={`Türchen ${activeDay.day}: ${activeDay.title}`}
+                />
+              )}
+
               <div className="space-y-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-[#695C4D]">
                   Tagesimpuls und Hintergrund
@@ -870,8 +900,65 @@ export const AdventskalenderPage: React.FC = () => {
                           {raffleSubmitting ? 'Wird gesendet...' : '🎁 Jetzt im Lostopf sichern'}
                         </button>
                       </div>
+                      <label className="flex items-start gap-2.5 text-xs text-stone-800 leading-relaxed cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={raffleNewsletter}
+                          onChange={(e) => setRaffleNewsletter(e.target.checked)}
+                          className="mt-0.5 w-4 h-4 accent-[#344034] shrink-0"
+                        />
+                        <span>
+                          Freiwillig: Ich möchte zusätzlich den Newsletter von Flow der Stille erhalten. Die
+                          Teilnahme an der Verlosung hängt davon nicht ab. Abmeldung jederzeit möglich.
+                        </span>
+                      </label>
+                      {raffleError && (
+                        <p className="text-xs font-semibold text-stone-950">{raffleError}</p>
+                      )}
                     </form>
                   )}
+
+                  {/* Pflichtangaben für Gewinnspiele (u. a. App Store Richtlinie 5.3) */}
+                  <p className="text-[11px] text-stone-800 leading-relaxed">
+                    Apple und Google sind keine Sponsoren dieses Gewinnspiels und in keiner Weise daran
+                    beteiligt.
+                  </p>
+                  <details className="rounded-xl bg-white/70 border border-[#E3E1D9] px-4 py-3 text-[11px] sm:text-xs text-stone-800 leading-relaxed">
+                    <summary className="cursor-pointer font-bold text-stone-950">
+                      Teilnahmebedingungen
+                    </summary>
+                    <ul className="mt-2 space-y-1.5 list-disc pl-4">
+                      <li>
+                        Veranstalter: DS Online Services (Flow der Stille), Riedgrasweg 30, 70599 Stuttgart.
+                      </li>
+                      <li>
+                        Gewinn: das Hörbuch „Yggdrasils Atem | 12 Rauhnächte auf der Schwelle“ im Wert von
+                        9,99&nbsp;€ als Freischaltung zum Streaming. Keine Barauszahlung.
+                      </li>
+                      <li>
+                        Teilnahme kostenlos, ohne Kaufverpflichtung und unabhängig von einer Newsletter-Anmeldung.
+                        Einmal je Verlosung und Person.
+                      </li>
+                      <li>
+                        {activeDay.day === 21
+                          ? 'Teilnahmeschluss: 21. Dezember, 18:00 Uhr. Die Auslosung erfolgt im Anschluss.'
+                          : `Teilnahmeschluss: ${activeDay.day}. Dezember, 23:59 Uhr. Die Auslosung findet am ${activeDay.day === 6 ? '7. Dezember' : '14. Dezember'} statt.`}
+                      </li>
+                      <li>
+                        Die Gewinnerin oder der Gewinner wird per E-Mail benachrichtigt. Der Gewinn wird im
+                        persönlichen Bereich freigeschaltet.
+                      </li>
+                      <li>
+                        Deine E-Mail-Adresse nutzen wir zur Durchführung der Verlosung und zur
+                        Gewinnbenachrichtigung. Mehr dazu in der{' '}
+                        <Link to="/datenschutz" className="underline font-semibold text-stone-950">
+                          Datenschutzerklärung
+                        </Link>
+                        .
+                      </li>
+                      <li>Der Rechtsweg ist ausgeschlossen.</li>
+                    </ul>
+                  </details>
                 </div>
               )}
 

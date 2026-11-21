@@ -15,14 +15,27 @@ export const AUDIO_BASE_URL: string = (
  * Öffentliche Hörproben (eigens geschnittene Kurzfassungen, frei abspielbar).
  * Vollversionen laufen NIE über diese Adresse, sondern nur über den Worker.
  *
- * ACHTUNG: Die Hörproben liegen derzeit noch im öffentlichen r2.dev-Bereich.
- * Bevor dieser abgeschaltet wird, die Hörproben an einen neuen öffentlichen Ort
- * verschieben und VITE_HOERPROBEN_BASE_URL bzw. produkte.hoerprobe_url anpassen.
+ * Ausgeliefert über den Worker-Pfad /hoerprobe auf audio.flow-der-stille.de
+ * (gleiche Adressen wie in produkte.hoerprobe_url). Der öffentliche r2.dev-Zugang
+ * des Buckets fds-audio wird nicht mehr genutzt und kann abgeschaltet werden.
  */
 export const HOERPROBEN_BASE_URL: string = (
   (import.meta.env.VITE_HOERPROBEN_BASE_URL as string | undefined) ||
-  'https://pub-c96216cb10da46cdb69f5cdbc44b742c.r2.dev/hoerproben'
+  'https://audio.flow-der-stille.de/hoerprobe'
 ).replace(/\/+$/, '');
+
+/**
+ * Kostenfreie Aufnahmen des Adventskalenders (öffentlicher Bucket fds-public,
+ * Ordner adventskalender/, Dateien tag-01.mp3 bis tag-24.mp3).
+ */
+export const ADVENT_AUDIO_BASE_URL: string = (
+  (import.meta.env.VITE_ADVENT_AUDIO_BASE_URL as string | undefined) ||
+  'https://pub-96f9d5befdf34ab29400d2486180932e.r2.dev/adventskalender'
+).replace(/\/+$/, '');
+
+/** Stream-Adresse der Aufnahme eines Adventskalender-Tages. */
+export const getAdventAudioUrl = (day: number): string =>
+  `${ADVENT_AUDIO_BASE_URL}/tag-${String(day).padStart(2, '0')}.mp3`;
 
 /** Bekannte öffentliche Hörproben je produkte.id (Fallback, falls die DB nicht erreichbar ist). */
 export const PUBLIC_HOERPROBEN: Record<string, string> = {

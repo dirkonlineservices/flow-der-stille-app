@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabaseClient';
-import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newsletterService';
+import { subscribeToNewsletter, unsubscribeFromNewsletter, requestNewsletterDoi } from '../lib/newsletterService';
 import SEO from '../components/SEO';
 import { AuthLink } from '../components/CookieBanner';
 import { PRODUCTS } from '../data/store';
@@ -240,25 +240,15 @@ export default function Settings() {
 
   // 1. Funktion: Newsletter nachträglich abonnieren (beim Klick auf Profil speichern)
   const handleNewsletterOptIn = async (userEmail: string) => {
-    const confirmToken = typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : 'doi_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-
-    // A: Upsert in die Supabase Tabelle (falls der Nutzer noch gar nicht drin stand)
-    const { error: dbError } = await getSupabase()
-      .from('newsletter_leads')
-      .upsert({ 
-        email: userEmail, 
-        status: 'pending_doi',
-        confirm_token: confirmToken,
-        source: 'account_settings',
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'email' });
-
-    if (dbError) {
-      console.error("Fehler beim Datenbankupdate:", dbError.message);
+    // A: Anmeldung serverseitig anlegen (newsletter_request_doi), Token für die Mail
+    let confirmToken: string | null = null;
+    try {
+      confirmToken = await requestNewsletterDoi(userEmail, 'account_settings');
+    } catch (dbError: any) {
+      console.error("Fehler beim Datenbankupdate:", dbError?.message);
       return;
     }
+    if (!confirmToken) return; // bereits bestätigt
 
     // B: Edge Function für Resend Mail aufrufen
     const { error: edgeError } = await getSupabase().functions.invoke('send-double-opt-in-email', {
@@ -284,17 +274,10 @@ export default function Settings() {
 
   // 2. Funktion: Newsletter abbestellen (beim Klick auf den roten Button)
   const handleNewsletterOptOut = async (userEmail: string) => {
-    const { error: unsubError } = await getSupabase()
-      .from('newsletter_leads')
-      .update({ 
-        status: 'unsubscribed',
-        updated_at: new Date().toISOString()
-      })
-      .eq('email', userEmail);
+    const unsub = await unsubscribeFromNewsletter({ email: userEmail });
 
-    if (unsubError) {
-      console.error("Fehler beim Abmelden:", unsubError.message);
-      setProfileError("Fehler beim Abmelden: " + unsubError.message);
+    if (!unsub.success) {
+      setProfileError(unsub.message || 'Die Abmeldung hat gerade nicht geklappt.');
       return;
     }
 

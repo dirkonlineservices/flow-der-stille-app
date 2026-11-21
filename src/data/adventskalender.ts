@@ -46,6 +46,19 @@ export const ADVENT_PILLARS = [
   }
 ];
 
+/** Tage mit gesprochener Aufnahme (die Gewinnspiel-Tage 6, 13 und 21 haben keine). */
+export const ADVENT_AUDIO_DAYS: number[] = [
+  1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24
+];
+
+/** Beschriftung des Players je Kategorie. */
+export const ADVENT_AUDIO_LABELS: Record<AdventCategory, string> = {
+  meditation: 'Geführte Meditation',
+  achtsamkeit: 'Übung zum Mitmachen',
+  altes_wissen: 'Geschichte aus altem Wissen',
+  gewinnspiel: 'Gewinnspiel'
+};
+
 export const ADVENT_DAYS: AdventDay[] = [
   // ─── TEIL 1: TAGE 1 BIS 12 (VERLANGSAMUNG & LOSLASSEN) ────────────────────
   {

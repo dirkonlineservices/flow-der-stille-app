@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { subscribeToNewsletter } from '../lib/newsletterService';
+import { subscribeToNewsletter, unsubscribeFromNewsletter } from '../lib/newsletterService';
 import { reportCriticalError } from '../lib/errorLogger';
 import { Mail, Loader2, CheckCircle2, BellOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -110,10 +110,7 @@ export default function NewsletterBanner({ variant }: NewsletterBannerProps) {
         .eq('id', user.id);
 
       if (userEmail) {
-        await supabase
-          .from('newsletter_leads')
-          .update({ status: 'unsubscribed', updated_at: new Date().toISOString() })
-          .eq('email', userEmail.toLowerCase().trim());
+        await unsubscribeFromNewsletter({ email: userEmail });
       }
 
       if ((window as any).dataLayer) {

@@ -4,7 +4,7 @@ import {
   Sparkles, Gift, CheckCircle2, ArrowRight, Mail, Loader2, X, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { subscribeToNewsletter } from '../lib/newsletterService';
+import { subscribeToNewsletter, getMyNewsletterStatus } from '../lib/newsletterService';
 import { getSupabase } from '../lib/supabaseClient';
 
 const BANNER_STORAGE_KEY = 'fds_advent_top_banner_dismissed_2026';
@@ -40,14 +40,9 @@ export const AdventTopBanner: React.FC = () => {
     let active = true;
     const checkLead = async () => {
       try {
-        const supabase = getSupabase();
-        const { data } = await supabase
-          .from('newsletter_leads')
-          .select('id, status')
-          .eq('email', user.email!.toLowerCase().trim())
-          .maybeSingle();
+        const status = await getMyNewsletterStatus();
 
-        if (active && data) {
+        if (active && status && status !== 'unsubscribed') {
           setIsSubscribed(true);
         }
       } catch {
