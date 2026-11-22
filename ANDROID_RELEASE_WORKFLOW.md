@@ -4,6 +4,25 @@ Dieses Dokument beschreibt den exakten Ablauf, um für **Flow der Stille** ein n
 
 ---
 
+## 🚀 Schnellweg: ein Skript macht alles (empfohlen)
+
+Auf dem Rechner mit dem Keystore, im Projektordner:
+
+**Windows (PowerShell):**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\android-release.ps1
+```
+
+**macOS / Linux:**
+```bash
+sh scripts/android-release.sh
+```
+
+Das Skript holt den aktuellen Stand von `main`, installiert die Abhängigkeiten, baut die Web-App, synchronisiert sie ins Android-Projekt und baut das **signierte** App Bundle. Ergebnis:
+`android/app/build/outputs/bundle/release/flow-der-stille-<versionName>-<versionCode>.aab`
+
+Einmalig nötig: Node.js 22+, Git, Android Studio und die Datei `android/key.properties` (Vorlage im Skript, wird nie ins Git übernommen). Die Versionsnummer (`versionCode`) wird vorher im Repo erhöht, nicht im Skript.
+
 ## ⚠️ Die wichtigste Regel: Der Keystore (Upload-Key)
 
 > [!WARNING]
