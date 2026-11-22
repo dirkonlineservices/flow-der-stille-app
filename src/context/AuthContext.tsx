@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { APP_VERSION } from '../version';
-import { setMetaUserProperties } from '../lib/metaPixel';
+import { setMetaUserProperties, trackMetaRegistration } from '../lib/metaPixel';
 
 // Das Interface angepasst an Supabase (id ist jetzt ein string)
 interface User {
@@ -113,6 +113,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mapAndSetUser(session.user);
       } else if (event === 'SIGNED_IN' && session?.user) {
         mapAndSetUser(session.user);
+        // Meta-Pixel: Neuregistrierung über Apple, Google oder Facebook (SSO) melden.
+        // E-Mail-Registrierungen meldet Register.tsx; je Konto nur einmal (Dedupe in trackMetaRegistration).
+        try {
+          const provider = (session.user.app_metadata?.provider as string | undefined) || 'email';
+          const createdMs = session.user.created_at ? Date.parse(session.user.created_at) : 0;
+          const isNewAccount = createdMs > 0 && Date.now() - createdMs < 10 * 60 * 1000;
+          if (provider !== 'email' && isNewAccount) {
+            trackMetaRegistration({ method: provider, email: session.user.email || undefined, userId: session.user.id });
+          }
+        } catch {
+          // Tracking darf den Login nie stören
+        }
         // Gast-Consent mit echter user_id verknüpfen (fire-and-forget)
         syncConsentAfterLogin(session.user.id).catch(() => {});
       } else if (event === 'SIGNED_OUT') {

@@ -1,4 +1,5 @@
 import { getSupabase, normalizeEmail } from './supabaseClient';
+import { trackMetaLead } from './metaPixel';
 
 export type GewinnspielErgebnis = 'ok' | 'bereits_teilgenommen' | 'nicht_offen' | 'ungueltig' | 'fehler';
 
@@ -19,7 +20,9 @@ export async function teilnehmenAmGewinnspiel(
       p_antwort: antwort
     });
     if (error) return 'fehler';
-    return (data as GewinnspielErgebnis) || 'fehler';
+    const ergebnis = (data as GewinnspielErgebnis) || 'fehler';
+    if (ergebnis === 'ok') trackMetaLead(`Adventskalender Gewinnspiel Tag ${tag}`);
+    return ergebnis;
   } catch {
     return 'fehler';
   }

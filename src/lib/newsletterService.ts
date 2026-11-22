@@ -1,5 +1,6 @@
 import { getSupabase, normalizeEmail } from './supabaseClient';
 import { reportCriticalError } from './errorLogger';
+import { trackMetaLead } from './metaPixel';
 
 export interface NewsletterSubscriptionParams {
   email: string;
@@ -135,6 +136,10 @@ export async function subscribeToNewsletter({
   }
 
   await triggerDoiEmail(normalized, token);
+  // Gewinnspiel-Teilnahmen meldet gewinnspielService selbst (kein doppelter Lead)
+  if (!source.includes('gewinnspiel')) {
+    trackMetaLead(source.startsWith('advent') ? 'Adventskalender' : 'Newsletter');
+  }
 
   return { success: true, message: 'Erfolgreich zum Newsletter angemeldet.', token };
 }
