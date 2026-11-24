@@ -272,7 +272,7 @@ export const DEFAULT_PRODUCTS: ProductData[] = [
     ],
     "audio_hinweis": "Audio-Hinweis: Gesprochen von Lisa Ragusa. Tiefenentspannung & Seelenreisen.",
     "play_store_id": "fds_rauhnaechte",
-    "hoerprobe_url": null,
+    "hoerprobe_url": "https://audio.flow-der-stille.de/hoerprobe/Hoerprobe-Rauhnaechte-Yggdrasils-Atem.mp3",
     "is_active": true
   }
 ];
