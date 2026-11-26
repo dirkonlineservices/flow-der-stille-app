@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabase } from '../lib/supabaseClient';
-import { PROMO_KEYS, loadPromo } from '../lib/promo';
+import { PROMO_KEYS, PROMO_APP_KEYS, loadPromo } from '../lib/promo';
+
+const ALL_KEYS = [...PROMO_KEYS, ...PROMO_APP_KEYS];
 
 /** Admin card to control the web-wide promo (keys promo_* in public.app_config). */
 export const PromoAdminCard: React.FC = () => {
@@ -10,6 +12,8 @@ export const PromoAdminCard: React.FC = () => {
     promo_start: '',
     promo_ende: '',
     promo_titel: 'Black Friday Wochenende',
+    promo_app_aktiv: 'false',
+    promo_app_plattformen: 'ios',
   });
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -18,7 +22,7 @@ export const PromoAdminCard: React.FC = () => {
     getSupabase()
       .from('app_config')
       .select('key, value')
-      .in('key', PROMO_KEYS)
+      .in('key', ALL_KEYS)
       .then(({ data }) => {
         if (!data) return;
         setValues((prev) => {
@@ -37,7 +41,7 @@ export const PromoAdminCard: React.FC = () => {
     setSaving(true);
     setStatus(null);
     const now = new Date().toISOString();
-    const rows = PROMO_KEYS.map((key) => ({ key, value: (values[key] || '').trim(), updated_at: now }));
+    const rows = ALL_KEYS.map((key) => ({ key, value: (values[key] || '').trim(), updated_at: now }));
     const { error } = await getSupabase().from('app_config').upsert(rows, { onConflict: 'key' });
     setSaving(false);
     if (error) {
@@ -62,6 +66,14 @@ export const PromoAdminCard: React.FC = () => {
       <label className="flex items-center gap-2 text-sm font-semibold text-stone-950">
         <input type="checkbox" checked={values.promo_aktiv === 'true'} onChange={set('promo_aktiv')} className="w-4 h-4 accent-emerald-700" />
         Aktion aktiv
+      </label>
+      <label className="flex items-center gap-2 text-sm font-semibold text-stone-950">
+        <input type="checkbox" checked={values.promo_app_aktiv === 'true'} onChange={set('promo_app_aktiv')} className="w-4 h-4 accent-emerald-700" />
+        Pop-up in der App zeigen (ab App-Version mit Pop-up)
+      </label>
+      <label className="block text-xs font-semibold text-stone-800 space-y-1">
+        <span>App-Plattformen (ios, android, kommagetrennt). Nur Plattformen eintragen, deren Store-Preise reduziert sind.</span>
+        <input className={inputClass} value={values.promo_app_plattformen} onChange={set('promo_app_plattformen')} />
       </label>
       <div className="grid sm:grid-cols-2 gap-3">
         <label className="text-xs font-semibold text-stone-800 space-y-1">

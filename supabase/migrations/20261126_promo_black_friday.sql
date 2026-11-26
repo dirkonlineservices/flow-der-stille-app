@@ -29,5 +29,8 @@ insert into public.app_config (key, value, updated_at) values
   ('promo_rabatt_prozent', '10', now()),
   ('promo_start', '2026-11-27T00:00:00+01:00', now()),
   ('promo_ende', '2026-11-29T23:59:59+01:00', now()),
-  ('promo_titel', 'Black Friday Wochenende', now())
+  ('promo_titel', 'Black Friday Wochenende', now()),
+  -- Native app popup: iOS only, Google Play has no discount for this promotion
+  ('promo_app_aktiv', 'true', now()),
+  ('promo_app_plattformen', 'ios', now())
 on conflict (key) do update set value = excluded.value, updated_at = excluded.updated_at;

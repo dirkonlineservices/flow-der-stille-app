@@ -94,3 +94,40 @@ export function useLivePromo(): PromoConfig | null {
 
   return isPromoLive(promo, now) ? promo : null;
 }
+
+/**
+ * Native app popup for the same promotion. Store prices are set in App Store Connect /
+ * Play Console; this only announces them. Extra app_config keys:
+ *   promo_app_aktiv       'true' | 'false'
+ *   promo_app_plattformen comma list, e.g. 'ios' or 'ios,android'
+ */
+export const PROMO_APP_KEYS = ['promo_app_aktiv', 'promo_app_plattformen'];
+
+export interface AppPromoConfig extends PromoConfig {
+  platforms: string[];
+}
+
+export async function loadAppPromo(platform: string): Promise<AppPromoConfig | null> {
+  try {
+    const { data, error } = await getSupabase()
+      .from('app_config')
+      .select('key, value')
+      .in('key', [...PROMO_KEYS, ...PROMO_APP_KEYS]);
+    if (error || !data) return null;
+    const map: Record<string, string> = {};
+    data.forEach((row: any) => { map[row.key] = row.value; });
+    const percent = Math.min(90, Math.max(0, parseInt(map.promo_rabatt_prozent || '0', 10) || 0));
+    const platforms = (map.promo_app_plattformen || 'ios').split(',').map((p) => p.trim().toLowerCase()).filter(Boolean);
+    const promo: AppPromoConfig = {
+      enabled: map.promo_app_aktiv === 'true' && percent > 0 && platforms.includes(platform),
+      percent,
+      startsAt: parseDate(map.promo_start),
+      endsAt: parseDate(map.promo_ende),
+      title: map.promo_titel || 'Black Friday Wochenende',
+      platforms,
+    };
+    return isPromoLive(promo) ? promo : null;
+  } catch {
+    return null;
+  }
+}
