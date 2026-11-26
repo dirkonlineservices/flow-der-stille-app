@@ -84,8 +84,26 @@ serve(async (req) => {
     if (!produktRow) {
       throw new Error(`Unbekanntes Produkt: ${product_id}`);
     }
-    if (paidAmount?.currency_code !== 'EUR' || paidValue + 0.001 < Number(produktRow.preis)) {
-      throw new Error(`Bezahlter Betrag ${paidAmount?.value} ${paidAmount?.currency_code} passt nicht zum Produktpreis ${produktRow.preis} EUR.`);
+    // Optional web promotion (app_config promo_*): accept the discounted price while it runs.
+    // 2 hours grace after promo_ende so orders started just before midnight still unlock.
+    let mindestPreis = Number(produktRow.preis);
+    const { data: promoRows } = await supabaseClient
+      .from('app_config')
+      .select('key, value')
+      .in('key', ['promo_aktiv', 'promo_rabatt_prozent', 'promo_start', 'promo_ende']);
+    if (promoRows && promoRows.length > 0) {
+      const promo: Record<string, string> = {};
+      promoRows.forEach((row: any) => { promo[row.key] = row.value; });
+      const prozent = Math.min(90, Math.max(0, parseInt(promo.promo_rabatt_prozent || '0', 10) || 0));
+      const jetzt = Date.now();
+      const start = promo.promo_start ? new Date(promo.promo_start).getTime() : -Infinity;
+      const ende = promo.promo_ende ? new Date(promo.promo_ende).getTime() + 2 * 60 * 60 * 1000 : Infinity;
+      if (promo.promo_aktiv === 'true' && prozent > 0 && jetzt >= start && jetzt <= ende) {
+        mindestPreis = Math.round(mindestPreis * (100 - prozent)) / 100;
+      }
+    }
+    if (paidAmount?.currency_code !== 'EUR' || paidValue + 0.001 < mindestPreis) {
+      throw new Error(`Bezahlter Betrag ${paidAmount?.value} ${paidAmount?.currency_code} passt nicht zum Produktpreis ${produktRow.preis} EUR (Mindestbetrag ${mindestPreis} EUR).`);
     }
     console.log(`Transaktion ${transaction_id} von PayPal bestätigt (${paidValue} EUR).`);
 

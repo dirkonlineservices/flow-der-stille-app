@@ -27,6 +27,7 @@ import {
 } from '../lib/offlineProductsService';
 import { ProductRating } from './ProductRating';
 import { getAllProductRatings } from '../lib/reviewsService';
+import { useLivePromo, applyPromo, formatEuro } from '../lib/promo';
 
 export default function PremiumShopDashboard() {
   const { user } = useAuth();
@@ -137,6 +138,7 @@ export default function PremiumShopDashboard() {
   const [loadingPurchases, setLoadingPurchases] = useState(true);
 
   const isNativeApp = BillingService.isNative();
+  const promo = useLivePromo();
   const HEART_OPENING_ID = 'fds_herzoeffnung_meditation';
   
   // Zieht den Key aus .env oder nutzt Fallback für veröffentlichte Apps
@@ -1003,10 +1005,19 @@ export default function PremiumShopDashboard() {
                       className="mb-2.5"
                     />
                     {!hatZugriff && !istKostenlos && (
+                        promo && !isNativeApp ? (
+                          <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                            <span className="whitespace-nowrap font-serif text-2xl sm:text-3xl font-bold text-stone-950">{formatEuro(applyPromo(parseFloat(String(produkt.preis)), promo.percent))}&nbsp;€</span>
+                            <span className="whitespace-nowrap text-sm font-semibold text-stone-700">statt <span className="line-through">{formatEuro(parseFloat(String(produkt.preis)))}&nbsp;€</span></span>
+                            <span className="whitespace-nowrap text-xs font-bold bg-amber-300 text-stone-950 px-2.5 py-0.5 rounded-full">{promo.title} | {promo.percent}&nbsp;% Rabatt</span>
+                            <span className="w-full text-xs font-medium text-stone-700 font-sans">Einmalig, kein Abo. Niedrigster Preis der letzten 30 Tage: {formatEuro(parseFloat(String(produkt.preis)))}&nbsp;€</span>
+                          </div>
+                        ) : (
                         <div className="text-[1.5rem] font-bold text-[var(--text-main)] mb-3 flex items-baseline gap-2">
                             <span className="whitespace-nowrap font-serif text-2xl sm:text-3xl font-bold">{typeof produkt.preis === 'number' ? produkt.preis.toFixed(2).replace('.', ',') : String(produkt.preis).replace('.', ',')}&nbsp;€</span>{' '}
                             <span className="text-xs font-semibold text-[var(--text-muted)] font-sans">einmalig • kein Abo</span>
                         </div>
+                        )
                     )}
                     {!hatZugriff && istKostenlos && (
                         <div className="flex flex-wrap items-center gap-2 mb-3">

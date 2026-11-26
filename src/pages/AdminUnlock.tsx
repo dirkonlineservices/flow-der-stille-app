@@ -12,6 +12,7 @@ import SEO from '../components/SEO';
 import { AdminSecurityLock } from '../components/AdminSecurityLock';
 import { isAdminSessionVerified, lockAdminSession, checkUserIsAdmin } from '../lib/adminSecurity';
 import { GamificationRadar } from '../components/GamificationRadar';
+import { PromoAdminCard } from '../components/PromoAdminCard';
 
 interface UserProfile {
   id: string;
@@ -1244,6 +1245,8 @@ export default function AdminUnlock() {
       {/* ========================================================================= */}
       {/* TAB 3: APP-UPDATE STEUERUNG                                                */}
       {/* ========================================================================= */}
+      {activeTab === 'update' && <PromoAdminCard />}
+
       {activeTab === 'update' && (
         <div className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

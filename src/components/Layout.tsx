@@ -23,6 +23,7 @@ import { checkUserIsAdmin } from '../lib/adminSecurity';
 import { APP_VERSION } from '../version';
 import { trackMetaPageView } from '../lib/metaPixel';
 import { AdventTopBanner } from './AdventTopBanner';
+import { PromoTopBanner } from './PromoTopBanner';
 
 // 📊 Typsicherer Tracking-Helper für virtuelle Seitenaufrufe (SPA-Ready)
 const pushVirtualPageView = (pathname: string, search: string) => {
@@ -195,6 +196,8 @@ export default function Layout() {
 
       <div className="w-full">
         {/* Oben angehefteter Weihnachtskalender-Badge mit personalisierter Voranmeldung */}
+        {/* Zeitlich begrenzte Rabattaktion (gesteuert über app_config, nur Web) */}
+        <PromoTopBanner />
         <AdventTopBanner />
 
         {/* Desktop Sidebar */}

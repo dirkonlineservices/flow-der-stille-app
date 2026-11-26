@@ -10,6 +10,7 @@ import { PurchaseToast, PurchaseToastData } from './PurchaseToast';
 import { trackMetaPurchase, trackMetaInitiateCheckout } from '../lib/metaPixel';
 import { offlineManager } from '../lib/offlineAudioService';
 import { reportAbandonedCheckout } from '../lib/checkoutAbandonment';
+import { loadPromo, isPromoLive, applyPromo } from '../lib/promo';
 
 interface PayPalCheckoutButtonProps {
   produkt: any;
@@ -128,8 +129,10 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
           >
             <PayPalButtons
               style={{ layout: 'vertical', shape: 'pill', label: 'checkout', height: 40 }}
-              createOrder={(data, actions) => {
-                const safePrice = parseFloat(produkt?.preis || '0').toFixed(2);
+              createOrder={async (data, actions) => {
+                const basePrice = parseFloat(produkt?.preis || '0');
+                const promo = await loadPromo();
+                const safePrice = (isPromoLive(promo) ? applyPromo(basePrice, promo.percent) : basePrice).toFixed(2);
 
                 trackMetaInitiateCheckout({
                   value: parseFloat(safePrice),
