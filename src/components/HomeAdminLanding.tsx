@@ -10,6 +10,7 @@ import { HoerprobenPlayer } from './HoerprobenPlayer';
 import { getOfflineProductById } from '../lib/offlineProductsService';
 import { PUBLIC_HOERPROBEN } from '../config/audio';
 import { AdventskalenderHomeSection } from './AdventskalenderPromo';
+import { LisaVoiceVideo } from './LisaVoiceVideo';
 
 interface HomeAdminLandingProps {
   user: any;
@@ -147,9 +148,12 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             <span className="px-3.5 py-1 rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-bold tracking-wider uppercase inline-block">
               Von Herzen für dich gemacht
             </span>
-            <span className="px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold tracking-wider uppercase inline-flex items-center gap-1.5">
-              <Sparkles size={12} /> Neu: Live seit August 2026
-            </span>
+            <a
+              href="#lisa-video"
+              className="px-3.5 py-1 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 text-xs font-bold tracking-wider uppercase inline-flex items-center gap-1.5 transition-colors"
+            >
+              <Sparkles size={12} /> Lisas echte Stimme im Video
+            </a>
           </div>
         </div>
 
@@ -159,8 +163,7 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
 
         <p className="text-xs sm:text-sm md:text-base text-[var(--text-muted)] max-w-3xl mx-auto leading-relaxed mb-4">
           Schön, dass du da bist. Wir sind <strong className="text-[var(--text-main)] font-semibold">Jacqueline, Lisa und Dirk</strong>. 
-          Unser Projekt entstand im März 2026 aus einer tiefen Herzensvision und ist im August 2026 frisch an den Start gegangen. 
-          Wir haben dieses Projekt ins Leben gerufen, weil echte Entspannung, 
+          Wir haben Flow der Stille aus einer tiefen Herzensvision ins Leben gerufen, weil echte Entspannung, 
           Achtsamkeit und Vagusnerv-Regulation keine teuren Luxusgüter sein dürfen.
         </p>
 
@@ -614,6 +617,11 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
             );
           })()}
         </div>
+
+        {/* Lisa im Video: echte Sprecherstimme statt KI (lädt erst beim Antippen) */}
+        <div className="mt-5">
+          <LisaVoiceVideo />
+        </div>
       </section>
 
       {/* ─── 4. UNSER VERSPRECHEN: DER UNTERSCHIED ZU WERBE-PLATTFORMEN & ABO-APPS ─── */}
@@ -847,15 +855,15 @@ export const HomeAdminLanding: React.FC<HomeAdminLandingProps> = ({
       {/* ─── 8. SYMMETRISCHE COMMUNITY & SOCIAL MEDIA BAR ─────────────────── */}
       <section className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold uppercase tracking-wider mb-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-bold uppercase tracking-wider mb-1.5">
             <Sparkles size={12} />
-            <span>Ganz frisch gestartet • August 2026</span>
+            <span>Community | WhatsApp-Kanal</span>
           </div>
           <h4 className="text-base sm:text-lg font-semibold text-[var(--text-main)]">
-            Werde Pionier unserer neuen Community
+            Werde Teil unserer Community
           </h4>
           <p className="text-xs sm:text-sm text-[var(--text-muted)] mt-0.5 max-w-xl">
-            Im März 2026 entstanden, im August/September live gegangen: Unser WhatsApp-Kanal öffnet gerade erst seine Türen. Sei von Tag 1 an dabei und gestalte diesen geschützten Raum für Achtsamkeit mit uns!
+            In unserem WhatsApp-Kanal teilen wir Impulse, neue Meditationen und kleine Einladungen zum Innehalten. Wenn du magst, sei dabei und gestalte diesen geschützten Raum für Achtsamkeit mit uns.
           </p>
         </div>
 
